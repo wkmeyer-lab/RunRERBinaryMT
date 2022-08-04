@@ -2,7 +2,6 @@ This is a pre-made framework for your R project. It has everything set up for
 you, and is ready to be linked to a github repository. It also has pre-made
 folders for organizing your files to the lab standard. 
 
-testline
 
 How To Use: 
   Download this from the github, and place a copy of it somewhere convenient.
