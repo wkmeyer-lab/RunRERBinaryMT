@@ -55,9 +55,19 @@ Git:
 
 
 ---- To connect this to a Github repository --- 
-MAKE SURE Git (not just github) IS INSTALLED ON YOUR COMPUTER. (see below) 
 
-First, make a repository on github (online). Ask for help if you don't know how. 
+--Step one: turn on version control--
+  In the top bar, go to Tools>Version Control>Project Setup. 
+  In that window, make sure thatthe 'version control' 
+  dropdown is set to "git". 
+  Restart RStudio. 
+  Once you have done that, the green and red symbol should appear.
+  
+  This step can be skipped if you are copying a local version of the folder,
+  where version control was already enabled. 
+
+--Step two: connect to online Github repository--
+First, make a repository on github (online). Ask for help if you don't know how.
 
 Once the repository has been made, in the middle there is a section
 titled "...or or push an existing repository from the command line".
