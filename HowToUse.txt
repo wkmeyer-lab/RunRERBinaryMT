@@ -1,4 +1,16 @@
-This is a pre-made framework for your R project. It has everything set up for you, and is ready to be linked to a github repository. It also has pre-made folders for organizing your files to the lab standard. 
+This is a pre-made framework for your R project. It has everything set up for 
+you, and is ready to be linked to a github repository. It also has pre-made
+folders for organizing your files to the lab standard. 
+
+
+How To Use: 
+  Download this from the github, and place a copy of it somewhere convenient.
+  When you want to make a new R project, make a copy of this folder, and then
+  name the copied folder to the name of the project, eg. "MyNewProject".
+  Then, use the "new project..." function in R, select existing directory, and
+  select the newly renamed directory ("MyNewProject") as the directory for it 
+  to use. 
+
 
 Folders: 
   /data -- This folder is for storing your raw data in (whatever you
@@ -28,6 +40,7 @@ Folders:
     /loc -- This folder holds any scripts which are "local."
     These are scripts which would only be relevant to the specific
     project they are in, and aren't going to be used anywhere else.
+    
     
     
 Git:
