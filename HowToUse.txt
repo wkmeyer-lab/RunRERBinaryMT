@@ -5,11 +5,13 @@ folders for organizing your files to the lab standard.
 
 How To Use: 
   Download this from the github, and place a copy of it somewhere convenient.
+  Turn on version control (see below). DO NOT LINK TO REPOSITORY.
   When you want to make a new R project, make a copy of this folder, and then
   name the copied folder to the name of the project, eg. "MyNewProject".
   Then, use the "new project..." function in R, select existing directory, and
   select the newly renamed directory ("MyNewProject") as the directory for it 
-  to use. 
+  to use.
+  Link the new project to a github repository (see below).
 
 
 Folders: 
@@ -52,21 +54,21 @@ Git:
   (as they can be quite large). THIS MEANS THAT ANY DATA
   IN THESE FOLDERS IS NOT BEING BACKED UP TO THE CLOUD.
 
+---- Turn On Version Control -----
+
+In the top bar, go to Tools>Version Control>Project Setup. 
+In that window, make sure thatthe 'version control' dropdown is set to "git". 
+Restart RStudio. 
+Once you have done that, the green and red symbol should appear.
+  
+This step can be skipped if you are copying a local version of the folder,
+where version control was already enabled. 
+
+
 
 
 ---- To connect this to a Github repository --- 
 
---Step one: turn on version control--
-  In the top bar, go to Tools>Version Control>Project Setup. 
-  In that window, make sure thatthe 'version control' 
-  dropdown is set to "git". 
-  Restart RStudio. 
-  Once you have done that, the green and red symbol should appear.
-  
-  This step can be skipped if you are copying a local version of the folder,
-  where version control was already enabled. 
-
---Step two: connect to online Github repository--
 First, make a repository on github (online). Ask for help if you don't know how.
 
 Once the repository has been made, in the middle there is a section
