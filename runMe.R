@@ -5,4 +5,6 @@ system('git remote remove origin')
 file.sources = list.files(c("src/reu", "src/reu/import"), 
                           pattern="*.R$", full.names=TRUE, 
                           ignore.case=TRUE)
-sapply(file.sources,source,.GlobalEnv)
+#Below code would auto-import the results from file.sources. I've turned it off for now, to avoid cultting the environment. 
+
+#sapply(file.sources,source,.GlobalEnv) 
