@@ -12,17 +12,17 @@ library(RERconverge) #load RERconverge package
 # ---- MAIN ----
 
 #Read in main tree file 
-mainTrees = readTrees("filename.txt") #This is assuming a filetree outside the project on sol 
+mainTrees = readTrees("mainTreeFilename.txt") #This is assuming a filetree outside the project on sol 
 
 #Read in the phenotype tree -- branch length is phenotype value, binary 
-binaryPhenotypeTree = read.tree("filename.txt")
+binaryPhenotypeTree = read.tree("binaryTreeFilename.txt")
 
 #prefix for output files. Typically the phenotype of interest. 
 filePrefix = "test" 
 
-#Put a filter for species here. Default is to use all species in the master tree. 
-#copy of the default code: speciesFilter = c(mainTrees$masterTree$tip.label)
-speciesFilter = c(mainTrees$masterTree$tip.label)
+#Put a filter for species here. Default is NULL, which means useSpecies is not applied, and all species are used.
+#copy of default code: speciesFilter = NULL
+speciesFilter = NULL
 
 # ---- RERs ----
 
