@@ -7,7 +7,7 @@
 #args = c("m=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/subsetMammalGeneTrees.txt","p=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/MarineTreeBinCommonNames_noCGM.txt", "r=Command", 'f=names(logAdultWeightcm)')
 #args = c("m=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/subsetMammalGeneTrees.txt","p=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/MarineTreeBinCommonNames_noCGM.txt", 'f=names(logAdultWeightcm)')
 #testTreePath = paste(find.package('RERconverge'),"/extdata/","subsetMammalGeneTrees.txt",sep="")
-args = c('m=paste(find.package("RERconverge"),"/extdata/","subsetMammalGeneTrees.txt",sep="")', 'p=paste(find.package("RERconverge"),"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep="")','r="Command"', 'f=names(logAdultWeightcm)')
+#args = c('m=paste(find.package("RERconverge"),"/extdata/","subsetMammalGeneTrees.txt",sep="")', 'p=paste(find.package("RERconverge"),"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep="")','r="Command"', 'f=names(logAdultWeightcm)')
 
 #Library setup 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
@@ -38,7 +38,7 @@ speciesFilter = NULL
 
 # ---- Command Line Imports ----
 
-#args = commandArgs(trailingOnly = TRUE)
+args = commandArgs(trailingOnly = TRUE)
 paste(args)
 
 #Main Tree Location
