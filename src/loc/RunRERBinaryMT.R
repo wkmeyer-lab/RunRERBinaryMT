@@ -40,7 +40,7 @@ args = commandArgs(trailingOnly = TRUE)
 
 #Main Tree Location
 mTreesCommandline = grep("m=",args, value = TRUE) #get a string based on the identifier
-if(mTreesCommandline != ""){                      #If the string is not empty:
+if(length(mTreesCommandline) != 0){                      #If the string is not empty:
   mainTreesLocation = substring(mTreesCommandline, 3)    #set to a string without the identifier
 }else{
   paste("No maintrees arg, using default")

@@ -14,7 +14,7 @@
 
 #Usage: 
 #Cd to the project's main directory 
-#sbatch runRERmt.slr <Project name> <R script name>
+#sbatch runRERmt.slr <Project name> <R script name> <Argument 1> <Agument 2> <etc.>
 
 # This loads the r module
 module load r
