@@ -7,6 +7,7 @@
 #args = c("m=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/subsetMammalGeneTrees.txt","p=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/MarineTreeBinCommonNames_noCGM.txt", "r=Command", 'f=names(logAdultWeightcm)')
 #args = c("m=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/subsetMammalGeneTrees.txt","p=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/MarineTreeBinCommonNames_noCGM.txt", 'f=names(logAdultWeightcm)')
 #testTreePath = paste(find.package('RERconverge'),"/extdata/","subsetMammalGeneTrees.txt",sep="")
+args = c('m=paste(find.package("RERconverge"),"/extdata/","subsetMammalGeneTrees.txt",sep="")', 'p=paste(find.package("RERconverge"),"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep="")','r="Command"', 'f=names(logAdultWeightcm)')
 
 #Library setup 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
@@ -15,9 +16,10 @@ library(RERconverge)
 
 # ---- USAGE,README ----
 # Command line arguments: 
+#All strings must be in quotes. Arguments are evaluated as code.
 #m=mainTreeFilename.txt
 #p=phenotypeTreeFilename
-#r=filePrefix
+#r="filePrefix"
 #f=speciesFilterText
 
 
@@ -36,40 +38,42 @@ speciesFilter = NULL
 
 # ---- Command Line Imports ----
 
-args = commandArgs(trailingOnly = TRUE)
-
-
+#args = commandArgs(trailingOnly = TRUE)
 paste(args)
+
 #Main Tree Location
-mTreesCommandline = grep("m=",args, value = TRUE) #get a string based on the identifier
+mTreesCommandline = grep("^m=",args, value = TRUE) #get a string based on the identifier
 if(length(mTreesCommandline) != 0){                      #If the string is not empty:
-  mainTreesLocation = substring(mTreesCommandline, 3)    #set to a string without the identifier
+  mainTreesLocationString = substring(mTreesCommandline, 3)    #make a string without the identifier
+  mainTreesLocation = eval(str2lang(mainTreesLocationString))  #convert that string to code, then evaluate that code
 }else{
   paste("No maintrees arg, using default")
 }
 
 #phenotype tree location
-pTreesCommandline = grep("p=",args, value = TRUE)
+pTreesCommandline = grep("^p=",args, value = TRUE)
 if(length(pTreesCommandline) != 0){
-  binaryPhenotypeTreeLocation = substring(pTreesCommandline,3)
+  binaryPhenotypeTreeLocationString = substring(pTreesCommandline,3)
+  binaryPhenotypeTreeLocation = eval(str2lang(binaryPhenotypeTreeLocationString))
 }else{
   #paste("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
   stop("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
 }
 
 #File Prefix
-fPrefixCommandLine = grep("r=", args, value = TRUE)
+fPrefixCommandLine = grep("^r=", args, value = TRUE)
 if(length(fPrefixCommandLine) != 0){
-  filePrefix = substring(fPrefixCommandLine, 3)
+  filePrefixString = substring(fPrefixCommandLine, 3)
+  filePrefix = eval(str2lang(filePrefixString))
 }else{
   stop("THIS IS AN ERROR MESSAGE; SPECIFY FILE PREFIX")
 }
 
 #speciesFilter
-sFilterCommandLine = grep("f=", args, value = TRUE)      #get a string based on the identifier
+sFilterCommandLine = grep("^f=", args, value = TRUE)      #get a string based on the identifier
 if(length(sFilterCommandLine) != 0){                        #If the string is not empty:
   sFilterCommandString = (substring(sFilterCommandLine, 3))  #get a string without the identifier
-  speciesFilter = eval((str2lang(sFilterCommandString)))     #convert that string to code, then evaluate that code
+  speciesFilter = eval(str2lang(sFilterCommandString))     #convert that string to code, then evaluate that code
 }else{
   paste("No speciesFilter arg, using default")
 }
