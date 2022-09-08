@@ -38,8 +38,6 @@ filePrefix = "test"
 #copy of default code: speciesFilter = NULL
 speciesFilter = NULL
 
-sink("debugmessages.txt")
-
 # ---- Command Line Imports ----
 
 args = commandArgs(trailingOnly = TRUE)
