@@ -87,7 +87,10 @@ mainTrees = readTrees(mainTreesLocation)
 #Read in the phenotype tree -- branch length is phenotype value, binary 
 binaryPhenotypeTree = read.tree(binaryPhenotypeTreeLocation)
 
-
+#make an output directory if one doesn't exist
+if(!dir.exists("output")){
+  dir.create("output")
+}
 
 
 
