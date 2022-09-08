@@ -38,6 +38,9 @@ filePrefix = "test"
 #copy of default code: speciesFilter = NULL
 speciesFilter = NULL
 
+if(getwd() == "loc"){
+  setwd("../../")
+}
 # ---- Command Line Imports ----
 
 args = commandArgs(trailingOnly = TRUE)
