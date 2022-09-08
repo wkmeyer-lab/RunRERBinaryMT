@@ -40,10 +40,6 @@ speciesFilter = NULL
 
 sink("debugmessages.txt")
 
-if(getwd() == "loc"){
-  setwd("../../")
-}
-
 # ---- Command Line Imports ----
 
 args = commandArgs(trailingOnly = TRUE)
