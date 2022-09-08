@@ -82,7 +82,7 @@ if(length(sFilterCommandLine) != 0){                        #If the string is no
 # ---- MAIN ----
 
 #Read in main tree file 
-mainTrees = readTrees(mainTreesLocation) 
+mainTrees = readTrees(mainTreesLocation, max.read = 200) 
 
 #Read in the phenotype tree -- branch length is phenotype value, binary 
 binaryPhenotypeTree = read.tree(binaryPhenotypeTreeLocation)
@@ -132,9 +132,9 @@ correl = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =35)
 write.csv(correl, file= paste(outputFileName, ".csv", sep=""), row.names = T, quote = F)
 saveRDS(correl, paste(outputFileName, ".rds", sep=""))
    
-   
+paste("Script successful.")
 # ----- Arguments integration testing -----
 
-?commandArgs()
+
 
 
