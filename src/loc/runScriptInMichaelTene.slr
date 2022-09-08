@@ -46,4 +46,4 @@ ARG7 = $9
 
 
 #Run the R script, printing out any errors or warnings
-R --verbose --args $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 $ARG6 $ARG7 </share/ceph/wym219group/shared/MichaelTene/Projects/$PROJECTNAME/src/loc/$SCRIPTNAME
+R --verbose --args --no-save $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 $ARG6 $ARG7 </share/ceph/wym219group/shared/MichaelTene/Projects/$PROJECTNAME/src/loc/$SCRIPTNAME
