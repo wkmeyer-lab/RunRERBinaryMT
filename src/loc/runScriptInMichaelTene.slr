@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -p lts
+#SBATCH -p hawkcpu
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -t 10
@@ -25,7 +25,7 @@ PROJECTNAME=$1 #This is the first input after the submission script name
 SCRIPTNAME=$2 #This is the second input after the submission script name
 
 #set wd to where the submission was created
-cd /share/ceph/wym219group/shared/MichaelTene/$PROJECTNAME
+cd /share/ceph/wym219group/shared/MichaelTene/Projects/$PROJECTNAME
 
 SCRIPTDIR=""
 
