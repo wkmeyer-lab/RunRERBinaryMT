@@ -33,6 +33,16 @@ SCRIPTDIR=""
 echo Project: $PROJECTNAME
 echo Script: $SCRIPTNAME
 
+#Collect additional Arguments 
+ARG1 = $3
+ARG2 =$4
+ARG3 =$5
+ARG4 = $6
+ARG5 = $7
+ARG6 = $8
+ARG7 = $9
+
+
 
 #Run the R script, printing out any errors or warnings
-Rscript --verbose Projects/$PROJECTNAME/src/loc/$SCRIPTNAME
+Rscript --verbose --args $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 $ARG6 $ARG7 <Projects/$PROJECTNAME/src/loc/$SCRIPTNAME
