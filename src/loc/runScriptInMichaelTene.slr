@@ -16,7 +16,7 @@
 #Cd to the project's main directory 
 #sbatch runRERmt.slr <Project name> <R script name> <Argument 1> <Agument 2> <etc.>
 
-# This loads the r module
+# This loads the r modu
 module load r
 
 
@@ -25,7 +25,7 @@ PROJECTNAME=$1 #This is the first input after the submission script name
 SCRIPTNAME=$2 #This is the second input after the submission script name
 
 #set wd to where the submission was created
-cd /share/ceph/wym219group/shared/MichaelTene/$PROJECTNAME
+cd /share/ceph/wym219group/shared/MichaelTene/Projects/$PROJECTNAME
 
 SCRIPTDIR=""
 
@@ -45,4 +45,4 @@ ARG7 = $9
 
 
 #Run the R script, printing out any errors or warnings
-Rscript --verbose --args $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 $ARG6 $ARG7 <Projects/$PROJECTNAME/src/loc/$SCRIPTNAME
+Rscript --verbose --args $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 $ARG6 $ARG7 <./src/loc/$SCRIPTNAME
