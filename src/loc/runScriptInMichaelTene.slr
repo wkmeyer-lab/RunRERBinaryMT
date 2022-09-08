@@ -32,6 +32,7 @@ SCRIPTDIR=""
 #Print the script name to the output file
 echo Project: $PROJECTNAME
 echo Script: $SCRIPTNAME
+echo Path: </share/ceph/wym219group/shared/MichaelTene/Projects/$PROJECTNAME/src/loc/$SCRIPTNAME
 
 #Collect additional Arguments 
 ARG1 = $3
