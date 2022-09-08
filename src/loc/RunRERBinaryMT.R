@@ -8,6 +8,17 @@
 #Library setup 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge) #load RERconverge package
+library(RERconverge)
+
+# ---- USAGE,README ----
+# Command line arguments: 
+#m=mainTreeFilename.txt
+#p=phenotypeTreeFilename
+#r=filePrefix
+#f=speciesFilterText
+
+
+
 
 # ---- MAIN ----
 
@@ -23,6 +34,38 @@ filePrefix = "test"
 #Put a filter for species here. Default is NULL, which means useSpecies is not applied, and all species are used.
 #copy of default code: speciesFilter = NULL
 speciesFilter = NULL
+
+# ---- Command Line Imports ----
+
+args = commandArgs(TRUE)
+
+#Main Tree Location
+mTreesCommandline = grep("m=",args, value = TRUE)
+if(!is.null(mTreesCommandline)){
+  mainTrees = mTreesCommandline
+}
+
+#phenotype tree location
+pTreesCommandline = grep("p=",args, value = TRUE)
+if(!is.null(pTreesCommandline)){
+  binaryPhentotypeTree = pTreesCommandline
+}else{
+  paste("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
+}
+
+#File Prefix
+fPrefixCommandLine = grep("r=", args, value = TRUE)
+if(!is.null(fPrefixCommandLine)){
+  filePrefix = fPrefixCommandLine
+}else{
+  paste("THIS IS AN ERROR MESSAGE; SPECIFY FILE PREFIX")
+}
+
+#speciesFilter
+sFilterCommandLine = grep("f=", args, value = TRUE)
+if(!is.null(sFilterCommandLine)){
+  speciesFilter = sFilterCommandLine
+}
 
 # ---- RERs ----
 
@@ -63,4 +106,8 @@ write.csv(correl, file= paste(outputFileName, ".csv", sep=""), row.names = T, qu
 saveRDS(correl, paste(outputFileName, ".rds", sep=""))
    
    
+# ----- Arguments integration testing -----
+
+?commandArgs()
+
 
