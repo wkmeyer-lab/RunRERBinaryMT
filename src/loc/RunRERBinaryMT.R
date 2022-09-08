@@ -38,6 +38,8 @@ speciesFilter = NULL
 
 args = commandArgs(trailingOnly = TRUE)
 
+
+paste(args)
 #Main Tree Location
 mTreesCommandline = grep("m=",args, value = TRUE) #get a string based on the identifier
 if(length(mTreesCommandline) != 0){                      #If the string is not empty:
