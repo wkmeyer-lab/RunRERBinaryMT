@@ -4,8 +4,9 @@
 #marineb=read.tree(paste(rerpath,"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep=""))
 #binaryPhenotypeTree = marineb
 data("logAdultWeightcm")
-args = c("m=maincommandtree.txt", "r=Command", 'f=names(logAdultWeightcm)')
-
+args = c("m=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/subsetMammalGeneTrees.txt","p=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/MarineTreeBinCommonNames_noCGM.txt", "r=Command", 'f=names(logAdultWeightcm)')
+args = c("m=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/subsetMammalGeneTrees.txt","p=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/MarineTreeBinCommonNames_noCGM.txt", 'f=names(logAdultWeightcm)')
+testTreePath = paste(find.package('RERconverge'),"/extdata/","subsetMammalGeneTrees.txt",sep="")
 
 #Library setup 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
@@ -20,15 +21,11 @@ library(RERconverge)
 #f=speciesFilterText
 
 
+# ---- Default values if no arguments
 
-
-# ---- MAIN ----
-
-#Read in main tree file 
-mainTrees = readTrees("mainTreeFilename.txt") #This is assuming a filetree outside the project on sol 
-
-#Read in the phenotype tree -- branch length is phenotype value, binary 
-binaryPhenotypeTree = read.tree("binaryTreeFilename.txt")
+#default maintree and phylo location:
+mainTreesLocation = "filename.txt"
+binaryPhenotypeTreeLocation = ""
 
 #prefix for output files. Typically the phenotype of interest. 
 filePrefix = "test" 
@@ -39,23 +36,23 @@ speciesFilter = NULL
 
 # ---- Command Line Imports ----
 
-args = commandArgs(TRUE)
+args = commandArgs(trailingOnly = TRUE)
 
 #Main Tree Location
 mTreesCommandline = grep("m=",args, value = TRUE) #get a string based on the identifier
 if(mTreesCommandline != ""){                      #If the string is not empty:
-  mainTrees = substring(mTreesCommandline, 3)    #set to a string without the identifier
+  mainTreesLocation = substring(mTreesCommandline, 3)    #set to a string without the identifier
 }else{
   paste("No maintrees arg, using default")
 }
 
 #phenotype tree location
-pTreesCommandline = NULL
 pTreesCommandline = grep("p=",args, value = TRUE)
 if(length(pTreesCommandline) != 0){
-  binaryPhentotypeTree = substring(pTreesCommandline,3)
+  binaryPhenotypeTreeLocation = substring(pTreesCommandline,3)
 }else{
-  paste("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
+  #paste("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
+  stop("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
 }
 
 #File Prefix
@@ -63,7 +60,7 @@ fPrefixCommandLine = grep("r=", args, value = TRUE)
 if(length(fPrefixCommandLine) != 0){
   filePrefix = substring(fPrefixCommandLine, 3)
 }else{
-  paste("THIS IS AN ERROR MESSAGE; SPECIFY FILE PREFIX")
+  stop("THIS IS AN ERROR MESSAGE; SPECIFY FILE PREFIX")
 }
 
 #speciesFilter
@@ -74,6 +71,19 @@ if(length(sFilterCommandLine) != 0){                        #If the string is no
 }else{
   paste("No speciesFilter arg, using default")
 }
+
+
+# ---- MAIN ----
+
+#Read in main tree file 
+mainTrees = readTrees(mainTreesLocation) 
+
+#Read in the phenotype tree -- branch length is phenotype value, binary 
+binaryPhenotypeTree = read.tree(binaryPhenotypeTreeLocation)
+
+
+
+
 
 # ---- RERs ----
 
