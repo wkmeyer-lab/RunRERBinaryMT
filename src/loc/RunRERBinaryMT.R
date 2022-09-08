@@ -38,9 +38,12 @@ filePrefix = "test"
 #copy of default code: speciesFilter = NULL
 speciesFilter = NULL
 
+sink("debugmessages.txt")
+
 if(getwd() == "loc"){
   setwd("../../")
 }
+
 # ---- Command Line Imports ----
 
 args = commandArgs(trailingOnly = TRUE)
