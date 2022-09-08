@@ -1,8 +1,10 @@
 #Tesing code
+#rerpath = find.package('RERconverge')
 #mainTrees = readTrees(paste(find.package('RERconverge'),"/extdata/","subsetMammalGeneTrees.txt",sep=""), max.read = 200)
 #marineb=read.tree(paste(rerpath,"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep=""))
 #binaryPhenotypeTree = marineb
-
+data("logAdultWeightcm")
+args = c("m=maincommandtree.txt", "r=Command", 'f=names(logAdultWeightcm)')
 
 
 #Library setup 
@@ -40,31 +42,37 @@ speciesFilter = NULL
 args = commandArgs(TRUE)
 
 #Main Tree Location
-mTreesCommandline = grep("m=",args, value = TRUE)
-if(!is.null(mTreesCommandline)){
-  mainTrees = mTreesCommandline
+mTreesCommandline = grep("m=",args, value = TRUE) #get a string based on the identifier
+if(mTreesCommandline != ""){                      #If the string is not empty:
+  mainTrees = substring(mTreesCommandline, 3)    #set to a string without the identifier
+}else{
+  paste("No maintrees arg, using default")
 }
 
 #phenotype tree location
+pTreesCommandline = NULL
 pTreesCommandline = grep("p=",args, value = TRUE)
-if(!is.null(pTreesCommandline)){
-  binaryPhentotypeTree = pTreesCommandline
+if(length(pTreesCommandline) != 0){
+  binaryPhentotypeTree = substring(pTreesCommandline,3)
 }else{
   paste("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
 }
 
 #File Prefix
 fPrefixCommandLine = grep("r=", args, value = TRUE)
-if(!is.null(fPrefixCommandLine)){
-  filePrefix = fPrefixCommandLine
+if(length(fPrefixCommandLine) != 0){
+  filePrefix = substring(fPrefixCommandLine, 3)
 }else{
   paste("THIS IS AN ERROR MESSAGE; SPECIFY FILE PREFIX")
 }
 
 #speciesFilter
-sFilterCommandLine = grep("f=", args, value = TRUE)
-if(!is.null(sFilterCommandLine)){
-  speciesFilter = sFilterCommandLine
+sFilterCommandLine = grep("f=", args, value = TRUE)      #get a string based on the identifier
+if(length(sFilterCommandLine) != 0){                        #If the string is not empty:
+  sFilterCommandString = (substring(sFilterCommandLine, 3))  #get a string without the identifier
+  speciesFilter = eval((str2lang(sFilterCommandString)))     #convert that string to code, then evaluate that code
+}else{
+  paste("No speciesFilter arg, using default")
 }
 
 # ---- RERs ----
