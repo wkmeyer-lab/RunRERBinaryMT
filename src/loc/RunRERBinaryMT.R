@@ -45,6 +45,7 @@ if(getwd() == "loc"){
 
 args = commandArgs(trailingOnly = TRUE)
 paste(args)
+message(args)
 
 #Main Tree Location
 mTreesCommandline = grep("^m=",args, value = TRUE) #get a string based on the identifier
@@ -53,6 +54,7 @@ if(length(mTreesCommandline) != 0){                      #If the string is not e
   mainTreesLocation = eval(str2lang(mainTreesLocationString))  #convert that string to code, then evaluate that code
 }else{
   paste("No maintrees arg, using default")
+  message("No maintrees arg, using default")
 }
 
 #phenotype tree location
@@ -138,6 +140,7 @@ write.csv(correl, file= paste(outputFileName, ".csv", sep=""), row.names = T, qu
 saveRDS(correl, paste(outputFileName, ".rds", sep=""))
    
 paste("Script successful.")
+message("Script successful.")
 # ----- Arguments integration testing -----
 
 
