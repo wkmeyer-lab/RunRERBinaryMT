@@ -35,13 +35,13 @@ echo Script: $SCRIPTNAME
 echo Path: </share/ceph/wym219group/shared/MichaelTene/Projects/$PROJECTNAME/src/loc/$SCRIPTNAME
 
 #Collect additional Arguments 
-ARG1 = $3
-ARG2 =$4
-ARG3 =$5
-ARG4 = $6
-ARG5 = $7
-ARG6 = $8
-ARG7 = $9
+ARG1=$3
+ARG2=$4
+ARG3=$5
+ARG4=$6
+ARG5=$7
+ARG6=$8
+ARG7=$9
 
 
 
