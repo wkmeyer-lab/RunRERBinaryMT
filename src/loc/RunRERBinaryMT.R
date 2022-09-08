@@ -117,7 +117,7 @@ if(!file.exists(paste(pathsFileName))){
   pathsObject = tree2Paths(binaryPhenotypeTree, mainTrees, binarize=T, useSpecies = speciesFilter)
   saveRDS(pathsObject, file = pathsFileName)
 }else{
-  RERObject = readRDS(pathsFileName)
+  pathsObject = readRDS(pathsFileName)
 }
 
 
