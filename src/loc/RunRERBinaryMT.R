@@ -15,6 +15,7 @@
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge) #load RERconverge package
 library(RERconverge)
+library("tools")
 
 # ---- USAGE,README ----
 # Command line arguments: 
@@ -28,7 +29,7 @@ library(RERconverge)
 # ---- Default values if no arguments
 
 #default maintree and phylo location:
-mainTreesLocation = "filename.txt"
+mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
 binaryPhenotypeTreeLocation = ""
 
 #prefix for output files. Typically the phenotype of interest. 
@@ -86,8 +87,11 @@ if(length(sFilterCommandLine) != 0){                        #If the string is no
 # ---- MAIN ----
 
 #Read in main tree file 
-mainTrees = readTrees(mainTreesLocation, max.read = 200) 
-
+if(file_ext(mainTreesLocation) == "rds"){
+  mainTrees = readRDS(mainTreesLocation)
+}else{
+mainTrees = readTrees(mainTreesLocation) 
+}
 #Read in the phenotype tree -- branch length is phenotype value, binary 
 binaryPhenotypeTree = read.tree(binaryPhenotypeTreeLocation)
 
