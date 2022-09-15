@@ -96,15 +96,15 @@ mainTrees = readTrees(mainTreesLocation)
 binaryPhenotypeTree = read.tree(binaryPhenotypeTreeLocation)
 
 #make an output directory if one doesn't exist
-if(!dir.exists("output")){
-  dir.create("output")
+if(!dir.exists("Output")){
+  dir.create("Output")
 }
 
 
 
 # ---- RERs ----
 
-RERFileName = paste("output/", filePrefix, "RERFile.rds", sep= "")
+RERFileName = paste("Output/", filePrefix, "RERFile.rds", sep= "")
 
 
 
@@ -119,7 +119,7 @@ if(!file.exists(paste(RERFileName))){
 
 
 
-pathsFileName = paste("output/", filePrefix, "PathsFile.rds", sep= "")
+pathsFileName = paste("Output/", filePrefix, "PathsFile.rds", sep= "")
 
 if(!file.exists(paste(pathsFileName))){
   pathsObject = tree2Paths(binaryPhenotypeTree, mainTrees, binarize=T, useSpecies = speciesFilter)
@@ -131,7 +131,7 @@ if(!file.exists(paste(pathsFileName))){
 
 # ---- Correlate ----
 
-outputFileName = paste("output/", filePrefix, "CorrelationFile", sep= "")
+outputFileName = paste("Output/", filePrefix, "CorrelationFile", sep= "")
 
 correl = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =35)
 
