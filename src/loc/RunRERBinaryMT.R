@@ -39,11 +39,18 @@ filePrefix = "test"
 #copy of default code: speciesFilter = NULL
 speciesFilter = NULL
 
+#make an output directory if one doesn't exist
+if(!dir.exists("Output")){
+  dir.create("Output")
+}
+
 # ---- Command Line Imports ----
 
 args = commandArgs(trailingOnly = TRUE)
 paste(args)
 message(args)
+
+write.csv(args, file = "Output/args.csv")
 
 #Main Tree Location
 mTreesCommandline = grep("^m=",args, value = TRUE) #get a string based on the identifier
@@ -95,10 +102,7 @@ mainTrees = readTrees(mainTreesLocation)
 #Read in the phenotype tree -- branch length is phenotype value, binary 
 binaryPhenotypeTree = read.tree(binaryPhenotypeTreeLocation)
 
-#make an output directory if one doesn't exist
-if(!dir.exists("Output")){
-  dir.create("Output")
-}
+
 
 
 
