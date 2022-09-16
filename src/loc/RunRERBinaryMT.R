@@ -103,13 +103,13 @@ if(length(fPrefixCommandLine) != 0){
 }
 
 #speciesFilter
-sFilterCommandLine = grep("^f=", args, value = TRUE)      #get a string based on the identifier
-if(length(sFilterCommandLine) != 0){                        #If the string is not empty:
-  sFilterCommandString = (substring(sFilterCommandLine, 3))  #get a string without the identifier
-  if(grepl('(', sFilterCommandLine, fixed = TRUE)){
-    speciesFilter = eval(str2lang(sFilterCommandString)) #convert that string to code, then evaluate that code
-  }else{
-    speciesFilter = sFilterCommandString
+sFilterCommandLine = grep("^f=", args, value = TRUE)                   #get a string based on the identifier
+if(length(sFilterCommandLine) != 0){                                   #If the string is not empty:
+  sFilterCommandString = (substring(sFilterCommandLine, 3))            #get a string without the identifier
+  if(grepl('(', sFilterCommandLine, fixed = TRUE)){                    #If the string is code 
+    speciesFilter = eval(str2lang(sFilterCommandString))               #convert that string to code, then evaluate that code
+  }else{                                                               #If not 
+    speciesFilter = sFilterCommandString                               #Use the string directly 
   }
   message(speciesFilter)
 }else{
