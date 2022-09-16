@@ -64,9 +64,12 @@ if(length(mTreesCommandline) != 0){                      #If the string is not e
 
 #phenotype tree location
 pTreesCommandline = grep("^p=",args, value = TRUE)
+paste(pTreesCommandline)
 if(length(pTreesCommandline) != 0){
   binaryPhenotypeTreeLocationString = substring(pTreesCommandline,3)
+  paste(binaryPhenotypeTreeLocationString)
   binaryPhenotypeTreeLocation = eval(str2lang(binaryPhenotypeTreeLocationString))
+  paste(binaryPhenotypeTreeLocation)
 }else{
   #paste("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
   stop("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
