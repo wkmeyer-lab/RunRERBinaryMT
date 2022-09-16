@@ -9,7 +9,9 @@
 #testTreePath = paste(find.package('RERconverge'),"/extdata/","subsetMammalGeneTrees.txt",sep="")
 #args = c('m=paste(find.package("RERconverge"),"/extdata/","subsetMammalGeneTrees.txt",sep="")', 'p=paste(find.package("RERconverge"),"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep="")','r="Command"', 'f=names(logAdultWeightcm)')
 
-# sol args:   'm=paste(find.package("RERconverge"),"/extdata/","subsetMammalGeneTrees.txt",sep="")' 'p=paste(find.package("RERconverge"),"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep="")' 'r="Command"' 'f=names(logAdultWeightcm)'
+# sol args:  'm=paste(find.package("RERconverge"),"/extdata/","subsetMammalGeneTrees.txt",sep="")' 'p=paste(find.package("RERconverge"),"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep="")' 'r="Command"' 'f=names(logAdultWeightcm)'
+
+# insectivory test args: args = c('p=paste("Data/insectivoryBinaryForegroundTree.rds")', 'r=Insectivory')
 
 #Library setup 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
@@ -19,11 +21,12 @@ library("tools")
 
 # ---- USAGE,README ----
 # Command line arguments: 
-#All strings must be in quotes. Arguments are evaluated as code.
-#m=mainTreeFilename.txt
-#p=phenotypeTreeFilename
-#r="filePrefix"
-#f=speciesFilterText
+#All strings must be in quotes. 
+#If an argument contains a '(' it is evaluated as code.
+# 'm=mainTreeFilename.txt or .rds'
+# 'p=phenotypeTreeFilename.txt or .rds'
+# 'r="filePrefix"'
+# 'f=speciesFilterText'
 
 
 # ---- Default values if no arguments
@@ -54,11 +57,18 @@ write.csv(args, file = "Output/args.csv")
 
 #Main Tree Location
 mTreesCommandline = grep("^m=",args, value = TRUE) #get a string based on the identifier
-if(length(mTreesCommandline) != 0){                      #If the string is not empty:
-  mainTreesLocationString = substring(mTreesCommandline, 3)    #make a string without the identifier
-  mainTreesLocation = eval(str2lang(mainTreesLocationString))  #convert that string to code, then evaluate that code
-}else{
-  paste("No maintrees arg, using default")
+
+#Process the input
+if(length(mTreesCommandline) != 0){                                 #If the string is not empty:
+  mainTreesLocationString = substring(mTreesCommandline, 3)         #make a string without the identifier
+  if(grepl('(', mTreesCommandline, fixed = TRUE)){                  # if the input is code -- has a '(' in it
+    mainTreesLocation = eval(str2lang(mainTreesLocationString))     #convert that string to code, then evaluate that code
+  }else{                                                            #if it is not code
+    mainTreesLocation = mainTreesLocationString                     #use the string directly 
+  } 
+  message(mainTreesLocation)                                        #Report the result
+}else{                                                              #if it is empty 
+  paste("No maintrees arg, using default")                          #Report using default
   message("No maintrees arg, using default")
 }
 
@@ -67,9 +77,12 @@ pTreesCommandline = grep("^p=",args, value = TRUE)
 paste(pTreesCommandline)
 if(length(pTreesCommandline) != 0){
   binaryPhenotypeTreeLocationString = substring(pTreesCommandline,3)
-  paste(binaryPhenotypeTreeLocationString)
-  binaryPhenotypeTreeLocation = eval(str2lang(binaryPhenotypeTreeLocationString))
-  paste(binaryPhenotypeTreeLocation)
+  if(grepl('(', pTreesCommandline, fixed = TRUE)){            
+    binaryPhenotypeTreeLocation = eval(str2lang(binaryPhenotypeTreeLocationString))  
+  }else{     
+    binaryPhenotypeTreeLocation = binaryPhenotypeTreeLocationString 
+  }
+  message(binaryPhenotypeTreeLocation)
 }else{
   #paste("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
   stop("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
@@ -79,7 +92,12 @@ if(length(pTreesCommandline) != 0){
 fPrefixCommandLine = grep("^r=", args, value = TRUE)
 if(length(fPrefixCommandLine) != 0){
   filePrefixString = substring(fPrefixCommandLine, 3)
-  filePrefix = eval(str2lang(filePrefixString))
+  if(grepl('(', fPrefixCommandLine, fixed = TRUE)){
+    filePrefix = eval(str2lang(filePrefixString))
+  }else{
+    filePrefix = filePrefixString
+  }
+  message(filePrefix)
 }else{
   stop("THIS IS AN ERROR MESSAGE; SPECIFY FILE PREFIX")
 }
@@ -88,7 +106,12 @@ if(length(fPrefixCommandLine) != 0){
 sFilterCommandLine = grep("^f=", args, value = TRUE)      #get a string based on the identifier
 if(length(sFilterCommandLine) != 0){                        #If the string is not empty:
   sFilterCommandString = (substring(sFilterCommandLine, 3))  #get a string without the identifier
-  speciesFilter = eval(str2lang(sFilterCommandString))     #convert that string to code, then evaluate that code
+  if(grepl('(', sFilterCommandLine, fixed = TRUE)){
+    speciesFilter = eval(str2lang(sFilterCommandString)) #convert that string to code, then evaluate that code
+  }else{
+    speciesFilter = sFilterCommandString
+  }
+  message(speciesFilter)
 }else{
   paste("No speciesFilter arg, using default")
 }
