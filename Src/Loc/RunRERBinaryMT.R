@@ -126,6 +126,11 @@ if(file_ext(mainTreesLocation) == "rds"){
 mainTrees = readTrees(mainTreesLocation) 
 }
 #Read in the phenotype tree -- branch length is phenotype value, binary 
+if(file_ext(binaryPhenotypeTreeLocation) == "rds"){
+  binaryPhenotypeTree = readRDS(binaryPhenotypeTreeLocation)
+}else{
+  binaryPhenotypeTree = readTrees(binaryPhenotypeTreeLocation) 
+}
 binaryPhenotypeTree = read.tree(binaryPhenotypeTreeLocation)
 
 
@@ -150,6 +155,7 @@ if(!file.exists(paste(RERFileName))){
 
 
 pathsFileName = paste("Output/", filePrefix, "PathsFile.rds", sep= "")
+
 
 if(!file.exists(paste(pathsFileName))){
   pathsObject = tree2Paths(binaryPhenotypeTree, mainTrees, binarize=T, useSpecies = speciesFilter)
