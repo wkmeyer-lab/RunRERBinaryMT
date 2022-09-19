@@ -131,7 +131,7 @@ if(file_ext(binaryPhenotypeTreeLocation) == "rds"){
 }else{
   binaryPhenotypeTree = readTrees(binaryPhenotypeTreeLocation) 
 }
-binaryPhenotypeTree = read.tree(binaryPhenotypeTreeLocation)
+
 
 
 
