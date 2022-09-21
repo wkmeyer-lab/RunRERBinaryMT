@@ -103,6 +103,8 @@ if(length(fPrefixCommandLine) != 0){
 }
 
 #speciesFilter
+speciesFilterFileName = paste("Results/", filePrefix, "SpeciesFilter.rds") #Make a name to test for a pre-made filter file
+
 sFilterCommandLine = grep("^f=", args, value = TRUE)                   #get a string based on the identifier
 if(length(sFilterCommandLine) != 0){                                   #If the string is not empty:
   sFilterCommandString = (substring(sFilterCommandLine, 3))            #get a string without the identifier
@@ -112,8 +114,10 @@ if(length(sFilterCommandLine) != 0){                                   #If the s
     speciesFilter = sFilterCommandString                               #Use the string directly 
   }
   message(speciesFilter)
-}else{
-  paste("No speciesFilter arg, using default")
+}else if (file.exists(paste(speciesFilterFileName))){                  #See if a pre-made filter for this prefix exists 
+  speciesFilter = readRDS(speciesFilterFileName)                       #if so, use it 
+}else{                                                    
+  paste("No speciesFilter arg, using NULL")                           #if not, use no filter
 }
 
 
