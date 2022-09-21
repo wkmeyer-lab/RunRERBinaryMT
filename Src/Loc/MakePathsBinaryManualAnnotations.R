@@ -10,6 +10,9 @@ library(tools)
 # 'm=mainTreeFilename.txt or .rds'
 # 'a="annotCollumn"' 
 # 'r="filePrefix"'
+# 't=<"uni"/"bi>"
+# 'c=<"ancestral"/"all"/"terminal">'
+# 'w=<T/F>"
 
 
 # ---- Default Arguments ----
@@ -23,6 +26,9 @@ mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia
 #Other defaults if not specified
 annotCollumn = "ERRORDEFAULT"
 filePrefix = "ERRORDEFAULT"
+transisitionValue = "Default"
+cladeValue = "Default"
+weightValue = FALSE
 
 
 # ---- Command Line Imports ----
@@ -78,6 +84,48 @@ if(length(annotsCommandLine) != 0){
   stop("THIS IS AN ISSUE MESSAGE; SPECIFY ANNOTATION COLLUMN")
 }
 
+#Transition value
+transitionCommandLine = grep("^t=", args, value = TRUE)
+if(length(transitionCommandLine) != 0){
+  transistionCommandString = substring(transitionCommandLine, 3)
+  if(grepl('(', transitionCommandLine, fixed = TRUE)){
+    transisitionValue = eval(str2lang(transistionCommandString))
+  }else{
+    transisitionValue = transistionCommandString
+  }
+  message(transisitionValue)
+}else{
+  message("Using default unidirectional transistion")
+}
+
+#clade value
+cladeCommandLine = grep("^c=", args, value = TRUE)
+if(length(cladeCommandLine) != 0){
+  cladeCommandString = substring(cladeCommandLine, 3)
+  if(grepl('(', cladeCommandLine, fixed = TRUE)){
+    cladeValue = eval(str2lang(cladeCommandString))
+  }else{
+    cladeValue = cladeCommandString
+  }
+  message(cladeValue)
+}else{
+  message("Using default all clade")
+}
+
+#Weight Value
+weightCommandLine = grep("^w=", args, value = TRUE)
+if(length(weightCommandLine) != 0){
+  weightCommandString = substring(weightCommandLine, 3)
+  if(grepl('(', weightCommandLine, fixed = TRUE)){
+    weightValue = eval(str2lang(weightCommandString))
+  }else{
+    weightValue = weightCommandString
+  }
+  message(weightValue)
+}else{
+  message("Weight = false")
+}
+
 
 # -------- Make Paths Main Code ---------------
 
@@ -114,9 +162,45 @@ foregroundSpeciesAnnot = relevantSpecies[ relevantSpecies[[annotCollumn]] %in% 1
 
 foregroundNames = foregroundSpeciesAnnot$FaName
 
-#Make binary tree output 
 
-binaryForegroundTreeOutput = foreground2Tree(foregroundNames, mainTrees, useSpecies = relevantSpeciesNames)
+# -- set arguments for foreground2Trees --
+f2tInputList = list(foregroundNames, mainTrees, useSpecies = relevantSpeciesNames)
+#Transition
+if(transisitionValue == "bi"){
+  f2tInputList[["transition"]]= "bidirectional"
+  message("Bidirectional transition")
+}else{
+  f2tInputList[["transition"]]= "unidirectional"
+  message("Unidirectional transition")
+}
+
+#clade
+if(cladeValue == "ancestral"){
+  f2tInputList[["clade"]] = "ancestral"
+  message("ancestral clade")
+}else if(cladeValue == "terminal"){
+  f2tInputList[["clade"]] = "terminal"
+  message("terminal clade")
+}else{
+  f2tInputList[["clade"]] = "all"
+  message("all clade")
+}
+
+#Weight
+if(weightValue ==TRUE || weightValue == 't'){
+  f2tInputList[["weighted"]] = TRUE
+  message("Weighted = TRUE")
+}else{
+  f2tInputList[["weighted"]] = FALSE
+  message("Weighted = False")
+}
+
+
+#Make binary tree output 
+message(f2tInputlist)
+binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
+
+
 
 #Save that output 
 binaryTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds", sep="")
