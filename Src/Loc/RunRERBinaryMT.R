@@ -87,7 +87,7 @@ if(length(fPrefixCommandLine) != 0){
 }
 
 #phenotype tree location
-binaryPhenotypeTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds") #Make the name of the location a pre-made phenotype tree would have to test for it
+binaryPhenotypeTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds", sep="") #Make the name of the location a pre-made phenotype tree would have to test for it
 
 pTreesCommandline = grep("^p=",args, value = TRUE)
 paste(pTreesCommandline)
@@ -109,7 +109,7 @@ if(length(pTreesCommandline) != 0){
 }
 
 #speciesFilter
-speciesFilterFileName = paste("Results/", filePrefix, "SpeciesFilter.rds") #Make the name of the location a pre-made filter would have to test for it
+speciesFilterFileName = paste("Results/", filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
 
 sFilterCommandLine = grep("^f=", args, value = TRUE)                   #get a string based on the identifier
 if(length(sFilterCommandLine) != 0){                                   #If the string is not empty:

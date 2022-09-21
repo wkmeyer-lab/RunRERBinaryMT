@@ -1,4 +1,4 @@
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+#.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library(tools)
@@ -38,7 +38,7 @@ relevantSpeciesNames = relevantSpecies$FaName
 
 # -- output a species filter for this fileprefix 
 
-speciesFilterFilename = paste("Results/", filePrefix, "SpeciesFilter.rds")
+speciesFilterFilename = paste("Results/", filePrefix, "SpeciesFilter.rds",sep="")
 saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
 
 # -- Setup foreground Species -- 
@@ -52,7 +52,7 @@ foregroundNames = foregroundSpeciesAnnot$FaName
 binaryForegroundTreeOutput = foreground2Tree(foregroundNames, mainTrees, useSpecies = relevantSpeciesNames)
 
 #Save that output 
-binaryTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds")
+binaryTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds", sep="")
 saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
 
 
