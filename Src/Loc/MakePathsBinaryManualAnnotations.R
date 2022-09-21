@@ -1,4 +1,4 @@
-#.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library(tools)
