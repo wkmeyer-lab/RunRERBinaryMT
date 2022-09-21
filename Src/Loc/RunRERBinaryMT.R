@@ -72,22 +72,6 @@ if(length(mTreesCommandline) != 0){                                 #If the stri
   message("No maintrees arg, using default")
 }
 
-#phenotype tree location
-pTreesCommandline = grep("^p=",args, value = TRUE)
-paste(pTreesCommandline)
-if(length(pTreesCommandline) != 0){
-  binaryPhenotypeTreeLocationString = substring(pTreesCommandline,3)
-  if(grepl('(', pTreesCommandline, fixed = TRUE)){            
-    binaryPhenotypeTreeLocation = eval(str2lang(binaryPhenotypeTreeLocationString))  
-  }else{     
-    binaryPhenotypeTreeLocation = binaryPhenotypeTreeLocationString 
-  }
-  message(binaryPhenotypeTreeLocation)
-}else{
-  #paste("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
-  stop("THIS IS AN ERROR MESSAGE; SPECIFY PHENOTYPE TREE")
-}
-
 #File Prefix
 fPrefixCommandLine = grep("^r=", args, value = TRUE)
 if(length(fPrefixCommandLine) != 0){
@@ -99,10 +83,34 @@ if(length(fPrefixCommandLine) != 0){
   }
   message(filePrefix)
 }else{
-  stop("THIS IS AN ERROR MESSAGE; SPECIFY FILE PREFIX")
+  stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
+}
+
+#phenotype tree location
+binaryPhenotypeTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds", sep="") #Make the name of the location a pre-made phenotype tree would have to test for it
+
+pTreesCommandline = grep("^p=",args, value = TRUE)
+paste(pTreesCommandline)
+if(length(pTreesCommandline) != 0){
+  binaryPhenotypeTreeLocationString = substring(pTreesCommandline,3)
+  if(grepl('(', pTreesCommandline, fixed = TRUE)){            
+    binaryPhenotypeTreeLocation = eval(str2lang(binaryPhenotypeTreeLocationString))  
+  }else{     
+    binaryPhenotypeTreeLocation = binaryPhenotypeTreeLocationString 
+  }
+  message(binaryPhenotypeTreeLocation)
+}else if(file.exists(paste(binaryPhenotypeTreeFilename))){                  #See if a pre-made binaryTree for this prefix exists 
+  speciesFilter = readRDS(binaryPhenotypeTreeFilename)                      #if so, use it 
+  paste("Pre-made Phenotype tree found, using pre-made filter.")
+  
+}else{
+  #paste("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE TREE")
+  stop("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE TREE")
 }
 
 #speciesFilter
+speciesFilterFileName = paste("Results/", filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
+
 sFilterCommandLine = grep("^f=", args, value = TRUE)                   #get a string based on the identifier
 if(length(sFilterCommandLine) != 0){                                   #If the string is not empty:
   sFilterCommandString = (substring(sFilterCommandLine, 3))            #get a string without the identifier
@@ -112,8 +120,11 @@ if(length(sFilterCommandLine) != 0){                                   #If the s
     speciesFilter = sFilterCommandString                               #Use the string directly 
   }
   message(speciesFilter)
-}else{
-  paste("No speciesFilter arg, using default")
+}else if (file.exists(paste(speciesFilterFileName))){                  #See if a pre-made filter for this prefix exists 
+  speciesFilter = readRDS(speciesFilterFileName)                       #if so, use it 
+  paste("Pre-made filter found, using pre-made filter.")
+}else{                                                    
+  paste("No speciesFilter arg, using NULL")                           #if not, use no filter
 }
 
 
