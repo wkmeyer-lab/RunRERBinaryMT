@@ -21,7 +21,8 @@ library(tools)
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
 
 #local computer debug version:
-# mainTreesLocation = "../../RemadeTreesAllZoonomiaSpecies.rds"
+# mainTreesLocation = "data/RemadeTreesAllZoonomiaSpecies.rds"
+#args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=Insectivory", "a=Ins_v_herbs", "t=bi", "c=terminal", "w=F")
 
 #Other defaults if not specified
 annotCollumn = "ERRORDEFAULT"
@@ -87,13 +88,13 @@ if(length(annotsCommandLine) != 0){
 #Transition value
 transitionCommandLine = grep("^t=", args, value = TRUE)
 if(length(transitionCommandLine) != 0){
-  transistionCommandString = substring(transitionCommandLine, 3)
+  transitionCommandString = substring(transitionCommandLine, 3)
   if(grepl('(', transitionCommandLine, fixed = TRUE)){
-    transisitionValue = eval(str2lang(transistionCommandString))
+    transitionValue = eval(str2lang(transitionCommandString))
   }else{
-    transisitionValue = transistionCommandString
+    transitionValue = transitionCommandString
   }
-  message(transisitionValue)
+  message(transitionValue)
 }else{
   message("Using default unidirectional transistion")
 }
@@ -166,7 +167,7 @@ foregroundNames = foregroundSpeciesAnnot$FaName
 # -- set arguments for foreground2Trees --
 f2tInputList = list(foregroundNames, mainTrees, useSpecies = relevantSpeciesNames)
 #Transition
-if(transisitionValue == "bi"){
+if(transitionValue == "bi"){
   f2tInputList[["transition"]]= "bidirectional"
   message("Bidirectional transition")
 }else{
@@ -197,7 +198,7 @@ if(weightValue ==TRUE || weightValue == 't'){
 
 
 #Make binary tree output 
-paste(f2tInputlist)
+paste(f2tInputList)
 binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 
 
