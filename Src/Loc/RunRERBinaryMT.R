@@ -11,7 +11,7 @@
 
 # sol args:  'm=paste(find.package("RERconverge"),"/extdata/","subsetMammalGeneTrees.txt",sep="")' 'p=paste(find.package("RERconverge"),"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep="")' 'r="Command"' 'f=names(logAdultWeightcm)'
 
-# insectivory test args: args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds' 'r=Insectivory')
+# insectivory test args: args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=Insectivory')
 
 #Library setup 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
