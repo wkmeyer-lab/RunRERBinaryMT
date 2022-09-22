@@ -100,8 +100,8 @@ if(length(pTreesCommandline) != 0){
   }
   message(binaryPhenotypeTreeLocation)
 }else if(file.exists(paste(binaryPhenotypeTreeFilename))){                  #See if a pre-made binaryTree for this prefix exists 
-  speciesFilter = readRDS(binaryPhenotypeTreeFilename)                      #if so, use it 
-  paste("Pre-made Phenotype tree found, using pre-made filter.")
+  binaryPhenotypeTreeLocation = binaryPhenotypeTreeFilename                      #if so, use it 
+  paste("Pre-made Phenotype tree found, using pre-made tree.")
   
 }else{
   #paste("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE TREE")
