@@ -197,7 +197,7 @@ if(weightValue ==TRUE || weightValue == 't'){
 
 
 #Make binary tree output 
-message(f2tInputlist)
+paste(f2tInputlist)
 binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 
 
