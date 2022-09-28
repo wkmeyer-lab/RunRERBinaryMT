@@ -198,7 +198,8 @@ if(weightValue ==TRUE || weightValue == 't'){
 
 
 #Make binary tree output 
-paste(f2tInputList)
+#paste(f2tInputList)
+f2tInputList
 binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 
 
@@ -206,5 +207,3 @@ binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 #Save that output 
 binaryTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds", sep="")
 saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
-
-
