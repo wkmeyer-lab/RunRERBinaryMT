@@ -207,3 +207,14 @@ binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 #Save that output 
 binaryTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds", sep="")
 saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
+
+#Read back in the outputted tree as a test 
+readTest = readRDS(binaryTreeFilename)
+testTreeDisplayable = readTest
+replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==0, 0.5)
+replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==1, 4)
+
+binaryTreePdfname = paste("Results/", filePrefix, "BinaryForegroundTree.pdf", sep="")
+pdf(binaryTreePdfname, width=8, height = 14)
+plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(readTest$edge.length==1), hlcols="blue",)
+dev.off()
