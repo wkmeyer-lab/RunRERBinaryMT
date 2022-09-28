@@ -2,6 +2,7 @@
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library(tools)
+source(file = "Src/Reu/cmdArgImport.R")
 
 # ---- USAGE,README ----
 # Command line arguments: 
@@ -41,88 +42,44 @@ message(args)
 write.csv(args, file = "Output/MakePathsArgs.csv")
 
 #Main Tree Location
-mTreesCommandline = grep("^m=",args, value = TRUE) #get a string based on the identifier
-
-#Process the input
-if(length(mTreesCommandline) != 0){                                 #If the string is not empty:
-  mainTreesLocationString = substring(mTreesCommandline, 3)         #make a string without the identifier
-  if(grepl('(', mTreesCommandline, fixed = TRUE)){                  # if the input is code -- has a '(' in it
-    mainTreesLocation = eval(str2lang(mainTreesLocationString))     #convert that string to code, then evaluate that code
-  }else{                                                            #if it is not code
-    mainTreesLocation = mainTreesLocationString                     #use the string directly 
-  } 
-  message(mainTreesLocation)                                        #Report the result
-}else{                                                              #if it is empty 
+if(!is.na(cmdArgImport('m'))){
+  mainTreesLocation = cmdArgImport('m')
+}else{
   paste("No maintrees arg, using default")                          #Report using default
   message("No maintrees arg, using default")
 }
 
 #File Prefix
-fPrefixCommandLine = grep("^r=", args, value = TRUE)
-if(length(fPrefixCommandLine) != 0){
-  filePrefixString = substring(fPrefixCommandLine, 3)
-  if(grepl('(', fPrefixCommandLine, fixed = TRUE)){
-    filePrefix = eval(str2lang(filePrefixString))
-  }else{
-    filePrefix = filePrefixString
-  }
-  message(filePrefix)
+if(!is.na(cmdArgImport('r'))){
+  filePrefix = cmdArgImport('r')
 }else{
   stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
 }
 
 #Annots Collumn
-annotsCommandLine = grep("^a=", args, value = TRUE)
-if(length(annotsCommandLine) != 0){
-  annotsCommandString = substring(annotsCommandLine, 3)
-  if(grepl('(', annotsCommandLine, fixed = TRUE)){
-    annotCollumn = eval(str2lang(annotsCommandString))
-  }else{
-    annotCollumn = annotsCommandString
-  }
-  message(annotCollumn)
+if(!is.na(cmdArgImport('a'))){
+  annotCollumn = cmdArgImport('a')
 }else{
   stop("THIS IS AN ISSUE MESSAGE; SPECIFY ANNOTATION COLLUMN")
 }
 
 #Transition value
-transitionCommandLine = grep("^t=", args, value = TRUE)
-if(length(transitionCommandLine) != 0){
-  transitionCommandString = substring(transitionCommandLine, 3)
-  if(grepl('(', transitionCommandLine, fixed = TRUE)){
-    transitionValue = eval(str2lang(transitionCommandString))
-  }else{
-    transitionValue = transitionCommandString
-  }
-  message(transitionValue)
+if(!is.na(cmdArgImport('t'))){
+  transitionValue = cmdArgImport('t')
 }else{
   message("Using default unidirectional transistion")
 }
 
 #clade value
-cladeCommandLine = grep("^c=", args, value = TRUE)
-if(length(cladeCommandLine) != 0){
-  cladeCommandString = substring(cladeCommandLine, 3)
-  if(grepl('(', cladeCommandLine, fixed = TRUE)){
-    cladeValue = eval(str2lang(cladeCommandString))
-  }else{
-    cladeValue = cladeCommandString
-  }
-  message(cladeValue)
+if(!is.na(cmdArgImport('c'))){
+  cladeValue = cmdArgImport('c')
 }else{
   message("Using default all clade")
 }
 
 #Weight Value
-weightCommandLine = grep("^w=", args, value = TRUE)
-if(length(weightCommandLine) != 0){
-  weightCommandString = substring(weightCommandLine, 3)
-  if(grepl('(', weightCommandLine, fixed = TRUE)){
-    weightValue = eval(str2lang(weightCommandString))
-  }else{
-    weightValue = weightCommandString
-  }
-  message(weightValue)
+if(!is.na(cmdArgImport('w'))){
+  weightValue = cmdArgImport('w')
 }else{
   message("Weight = false")
 }
