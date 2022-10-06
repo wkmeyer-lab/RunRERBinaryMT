@@ -3,6 +3,6 @@
 .RData
 .Ruserdata
 
-/data
-/results
+
+RemadeTreesAllZoonomiaSpecies.rds
 ProjectFrameworkPreGitted.Rproj
