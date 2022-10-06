@@ -2,10 +2,10 @@ library(RERconverge)
 source("Src/Reu/ZonomNameConvertMatrixCommon.R")
 source("Src/Reu/ZonomNameConvertVector.R")
 
-allInsectivoryData = read.csv("Data/allInsectivoryCorrelationFile.csv")
+allInsectivoryData = read.csv("Results/allInsectivoryCorrelationFile.csv")
 
-RERs = readRDS("Data/allInsectivoryRERFile.rds")
-Paths = readRDS("Data/allInsectivoryPathsFile.rds")
+RERs = readRDS("Results/allInsectivoryRERFile.rds")
+Paths = readRDS("Results/allInsectivoryPathsFile.rds")
 plotRers(RERs,"KIAA0825", Paths )
 
 CNRers = ZonomNameConvertMatrixCommon(RERs)
@@ -13,7 +13,7 @@ CNNames = CNRers[1,]
 names(CNNames)
 bats = grep("bat", names(CNNames))
 
-binaryTree = readRDS("Data/allInsectivoryBinaryForegroundTree.rds")
+binaryTree = readRDS("Results/allInsectivoryBinaryForegroundTree.rds")
 plotTree(binaryTree)
 
 zonomMaster = readRDS("Data/RemadeTreesAllZoonomiaSpecies.rds")
