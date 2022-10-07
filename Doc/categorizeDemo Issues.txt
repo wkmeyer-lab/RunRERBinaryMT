@@ -10,3 +10,20 @@ The issue can be seen to a lesser degree in the KIA0825 gene where a few backgro
 The desired output is that all foreground bats display as one category (highlighted in red), and the Mongoose, Chinesepangolin, and Sunda pangolin display as a second category (highlighted in green). 
 
 Also attached is an image of the colored selection used to create the pre-made tree, as that can be easier to read than the saved branch lengths plotted by the code. 
+
+
+
+
+
+
+
+
+
+
+
+
+As a fully separate issue, this code produces this error if I try to provide it with a tree that has tree categories. Advice on this would also be apreciated. 
+> plotRers(CNRers,"KIAA0825", functionPaths, sortrers = T)
+Error in `f()`:
+! Insufficient values in manual scale. 5 needed but only 4 provided.
+Run `rlang::last_error()` to see where the error occurred.
