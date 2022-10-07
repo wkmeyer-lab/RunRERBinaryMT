@@ -1,0 +1,12 @@
+This is an explanation of the issues that I'm asking about in the categorizeDemo scipt. 
+
+In short, the categorize feature is not consistently reproducing the species as being in the groups selected. 
+
+A copy of both the non categorized tree (which species should be foreground), and a copy of the categorized tree used are included with the script; I have them both plotted by the script as they are loaded in. 
+
+The issue can be seen to a lesser degree in the KIA0825 gene where a few background bats are highlighted as foreground, eg. Rousette fruit bat. It is much more obvious in the ZNF292 gene, where some entire unrelated species (eg. Yak) are considered as part of category 1 foreground, and some species are considered a part of a 3 category (eg. leaf-chinned bat).
+
+
+The desired output is that all foreground bats display as one category (highlighted in red), and the Mongoose, Chinesepangolin, and Sunda pangolin display as a second category (highlighted in green). 
+
+Also attached is an image of the colored selection used to create the pre-made tree, as that can be easier to read than the saved branch lengths plotted by the code. 
