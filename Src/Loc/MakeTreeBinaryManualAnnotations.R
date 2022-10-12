@@ -32,6 +32,13 @@ transisitionValue = "Default"
 cladeValue = "Default"
 weightValue = FALSE
 
+#results subfolder name
+resultsFolderName = paste("Output/",filePrefix, sep = "")
+#create that directory if it does not exist
+if(!dir.exists(resultsFolderName)){
+  dir.create(resultsFolderName)
+}
+
 
 # ---- Command Line Imports ----
 
@@ -111,7 +118,7 @@ relevantSpeciesNames = relevantSpecies$FaName
 
 # -- output a species filter for this fileprefix 
 
-speciesFilterFilename = paste("Results/", filePrefix, "SpeciesFilter.rds",sep="")
+speciesFilterFilename = paste(resultsFolderName, filePrefix, "SpeciesFilter.rds",sep="")
 saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
 
 # -- Setup foreground Species -- 
@@ -162,7 +169,7 @@ binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 
 
 #Save that output 
-binaryTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds", sep="")
+binaryTreeFilename = paste(resultsFolderName, filePrefix, "BinaryForegroundTree.rds", sep="")
 saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
 
 #Read back in the outputted tree as a test 
@@ -171,7 +178,7 @@ testTreeDisplayable = readTest
 replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==0, 0.5)
 replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==1, 4)
 
-binaryTreePdfname = paste("Results/", filePrefix, "BinaryForegroundTree.pdf", sep="")
+binaryTreePdfname = paste(resultsFolderName, filePrefix, "BinaryForegroundTree.pdf", sep="")
 pdf(binaryTreePdfname, width=8, height = 14)
 plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(readTest$edge.length==1), hlcols="blue",)
 dev.off()
