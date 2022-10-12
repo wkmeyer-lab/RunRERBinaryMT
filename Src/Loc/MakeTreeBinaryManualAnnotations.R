@@ -32,12 +32,19 @@ transisitionValue = "Default"
 cladeValue = "Default"
 weightValue = FALSE
 
-#results subfolder name
-resultsFolderName = paste("Output/",filePrefix, sep = "")
-#create that directory if it does not exist
-if(!dir.exists(resultsFolderName)){
-  dir.create(resultsFolderName)
+#------ Make Outpout directory -----
+
+#Make output directory if it does not exist
+if(!dir.exists("Output")){
+  dir.create("Output")
 }
+#Make a specific subdirectory if it does not exist 
+outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
+#create that directory if it does not exist
+if(!dir.exists(outputFolderNameNoSlash)){
+  dir.create(outputFolderNameNoSlash)
+}
+outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 
 # ---- Command Line Imports ----
@@ -118,7 +125,7 @@ relevantSpeciesNames = relevantSpecies$FaName
 
 # -- output a species filter for this fileprefix 
 
-speciesFilterFilename = paste(resultsFolderName, filePrefix, "SpeciesFilter.rds",sep="")
+speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="")
 saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
 
 # -- Setup foreground Species -- 
@@ -169,7 +176,7 @@ binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 
 
 #Save that output 
-binaryTreeFilename = paste(resultsFolderName, filePrefix, "BinaryForegroundTree.rds", sep="")
+binaryTreeFilename = paste(outputFolderName, filePrefix, "BinaryForegroundTree.rds", sep="")
 saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
 
 #Read back in the outputted tree as a test 
@@ -178,7 +185,7 @@ testTreeDisplayable = readTest
 replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==0, 0.5)
 replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==1, 4)
 
-binaryTreePdfname = paste(resultsFolderName, filePrefix, "BinaryForegroundTree.pdf", sep="")
+binaryTreePdfname = paste(outputFolderName, filePrefix, "BinaryForegroundTree.pdf", sep="")
 pdf(binaryTreePdfname, width=8, height = 14)
 plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(readTest$edge.length==1), hlcols="blue",)
 dev.off()

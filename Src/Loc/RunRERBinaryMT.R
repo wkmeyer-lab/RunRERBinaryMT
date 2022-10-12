@@ -18,6 +18,7 @@
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
+source("Src/Reu/cmdArgImport.R")
 
 # ---- USAGE,README ----
 # Command line arguments: 
@@ -42,10 +43,20 @@ filePrefix = "test"
 #copy of default code: speciesFilter = NULL
 speciesFilter = NULL
 
-#make an output directory if one doesn't exist
+
+#------ Make Outpout directory -----
+
+#Make output directory if it does not exist
 if(!dir.exists("Output")){
   dir.create("Output")
 }
+#Make a specific subdirectory if it does not exist 
+outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
+#create that directory if it does not exist
+if(!dir.exists(outputFolderNameNoSlash)){
+  dir.create(outputFolderNameNoSlash)
+}
+outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 # ---- Command Line Imports ----
 
@@ -74,7 +85,7 @@ if(!is.na(cmdArgImport('r'))){
 }
 
 #phenotype tree location
-binaryPhenotypeTreeFilename = paste("Results/", filePrefix, "BinaryForegroundTree.rds", sep="") #Make the name of the location a pre-made phenotype tree would have to test for it
+binaryPhenotypeTreeFilename = paste(outputFolderName, filePrefix, "BinaryForegroundTree.rds", sep="") #Make the name of the location a pre-made phenotype tree would have to test for it
 
 if(!is.na(cmdArgImport('p'))){
   binaryPhenotypeTreeLocation = cmdArgImport('p')
@@ -88,7 +99,7 @@ if(!is.na(cmdArgImport('p'))){
 }
 
 #speciesFilter
-speciesFilterFileName = paste("Results/", filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
+speciesFilterFileName = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
 
 if(!is.na(cmdArgImport('f'))){
   speciesFilter = cmdArgImport('f')
@@ -122,7 +133,7 @@ if(file_ext(binaryPhenotypeTreeLocation) == "rds"){
 
 # ---- RERs ----
 
-RERFileName = paste("Output/", filePrefix, "RERFile.rds", sep= "")
+RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")
 
 
 
@@ -137,7 +148,7 @@ if(!file.exists(paste(RERFileName))){
 
 
 
-pathsFileName = paste("Output/", filePrefix, "PathsFile.rds", sep= "")
+pathsFileName = paste(outputFolderName, filePrefix, "PathsFile.rds", sep= "")
 
 
 if(!file.exists(paste(pathsFileName))){
@@ -150,7 +161,7 @@ if(!file.exists(paste(pathsFileName))){
 
 # ---- Correlate ----
 
-outputFileName = paste("Output/", filePrefix, "CorrelationFile", sep= "")
+outputFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "")
 
 correl = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =35)
 
