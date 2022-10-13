@@ -33,30 +33,6 @@ cladeValue = "Default"
 weightValue = FALSE
 
 
-# --- Import prefix ----
-
-#File Prefix
-if(!is.na(cmdArgImport('r'))){
-  filePrefix = cmdArgImport('r')
-}else{
-  stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-}
-
-
-#------ Make Output directory -----
-
-#Make output directory if it does not exist
-if(!dir.exists("Output")){
-  dir.create("Output")
-}
-#Make a specific subdirectory if it does not exist 
-outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
-#create that directory if it does not exist
-if(!dir.exists(outputFolderNameNoSlash)){
-  dir.create(outputFolderNameNoSlash)
-}
-outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-
 
 
 # ---- Command Line Imports ----
@@ -73,6 +49,13 @@ if(!is.na(cmdArgImport('m'))){
 }else{
   paste("No maintrees arg, using default")                          #Report using default
   message("No maintrees arg, using default")
+}
+
+#File Prefix
+if(!is.na(cmdArgImport('r'))){
+  filePrefix = cmdArgImport('r')
+}else{
+  stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
 }
 
 #Annots Collumn
@@ -104,7 +87,19 @@ if(!is.na(cmdArgImport('w'))){
 }
 
 
+#------ Make Output directory -----
 
+#Make output directory if it does not exist
+if(!dir.exists("Output")){
+  dir.create("Output")
+}
+#Make a specific subdirectory if it does not exist 
+outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
+#create that directory if it does not exist
+if(!dir.exists(outputFolderNameNoSlash)){
+  dir.create(outputFolderNameNoSlash)
+}
+outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 
 # -------- Make Paths Main Code ---------------
