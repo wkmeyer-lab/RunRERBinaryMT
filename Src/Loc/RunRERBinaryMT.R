@@ -29,6 +29,9 @@ source("Src/Reu/cmdArgImport.R")
 # 'r="filePrefix"'
 # 'f=speciesFilterText'
 
+#Takes an inputed main trees multiphylo, binary phenotype tree, file prefix, and optional species filter list
+#Outputs a path, RER residuals, and correlation files. 
+
 
 # ---- Default values if no arguments
 
