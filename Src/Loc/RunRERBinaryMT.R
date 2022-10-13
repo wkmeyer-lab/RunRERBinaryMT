@@ -48,6 +48,8 @@ speciesFilter = NULL
 
 # --- Import prefix --- 
 
+args = commandArgs(trailingOnly = TRUE)
+
 #File Prefix
 if(!is.na(cmdArgImport('r'))){
   filePrefix = cmdArgImport('r')
