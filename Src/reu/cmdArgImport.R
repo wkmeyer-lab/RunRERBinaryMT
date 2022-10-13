@@ -1,14 +1,18 @@
 ## USAGE:
 # accepts plain text or code command line arguments, and returns the argument's result as a string. 
 #The argument should be in the format of: x=ARGVAL
-# "marker" is the letter used to indicate which argument is which. in the above example, the marker is <x>
-# "message" is the message sent if the 
+# "marker" is the letter used to indicate which argument is which. in the above example, the marker is <x>, in the blow example, it is <j>
+# "message" is the message sent if the arugment is missing
+
+
 # example:
-# jValue = cmdArgImport('j', message = "my message here")
+# Command line argument: j=MyString   Or   j=<CodeToEvaluateHere>
+# jValue = cmdArgImport('j', message = "my message for a missing argument here")
+# Returns: jValue = MyString        Or       jValue = <EvaluatedCode>
 
 cmdArgImport = function(marker, message = ""){
   marker                                                           #send the marker value
-  markerWhole = paste("^", marker, "=", sep='')                    #convert marker to grap format
+  markerWhole = paste("^", marker, "=", sep='')                    #convert marker to grep format
   commandLineValue = grep(markerWhole, args, value = TRUE)         #get a string based on the identifier   
   if(length(commandLineValue != 0)){                               #If the string is not empty:
     commandLineString = substring(commandLineValue, 3)             #make a string without the identifier
