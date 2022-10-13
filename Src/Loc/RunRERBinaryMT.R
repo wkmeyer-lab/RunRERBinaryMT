@@ -47,19 +47,7 @@ filePrefix = "test"
 speciesFilter = NULL
 
 
-#------ Make Output directory -----
 
-#Make output directory if it does not exist
-if(!dir.exists("Output")){
-  dir.create("Output")
-}
-#Make a specific subdirectory if it does not exist 
-outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
-#create that directory if it does not exist
-if(!dir.exists(outputFolderNameNoSlash)){
-  dir.create(outputFolderNameNoSlash)
-}
-outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 # ---- Command Line Imports ----
 
@@ -112,6 +100,20 @@ if(!is.na(cmdArgImport('f'))){
 }else{                                                    
   paste("No speciesFilter arg, using NULL")                           #if not, use no filter
 }
+
+#------ Make Output directory -----
+
+#Make output directory if it does not exist
+if(!dir.exists("Output")){
+  dir.create("Output")
+}
+#Make a specific subdirectory if it does not exist 
+outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
+#create that directory if it does not exist
+if(!dir.exists(outputFolderNameNoSlash)){
+  dir.create(outputFolderNameNoSlash)
+}
+outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 
 # ---- MAIN ----

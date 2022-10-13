@@ -5,6 +5,8 @@ library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
 
+
+#default values: 
 #maintree and phylo location:
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
 mainTrees = readRDS(mainTreesLocation)
@@ -21,21 +23,16 @@ rootSpeciesValue = "REFERENCE"
 #Number of permulations
 permulationNumberValue = 100
 
-#------ Make Output directory -----
-
-#Make output directory if it does not exist
-if(!dir.exists("Output")){
-  dir.create("Output")
-}
-#Make a specific subdirectory if it does not exist 
-outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
-#create that directory if it does not exist
-if(!dir.exists(outputFolderNameNoSlash)){
-  dir.create(outputFolderNameNoSlash)
-}
-outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-
 #------ Command args import ------
+
+#MainTree location
+if(!is.na(cmdArgImport('m'))){
+  mainTreesLocation = cmdArgImport('m')
+}else{
+  paste("No maintrees arg, using default")                          #Report using default
+  message("No maintrees arg, using default")
+}
+mainTrees = readRDS(mainTreesLocation)
 
 #File Prefix
 if(!is.na(cmdArgImport('r'))){
@@ -55,6 +52,34 @@ if(!is.na(cmdArgImport('f'))){
 }else{                                                    
   paste("No speciesFilter arg, using NULL")                           #if not, use no filter
 }
+
+#Root species
+if(!is.na(cmdArgImport('t'))){
+  filePrefix = cmdArgImport('t')
+}else{
+  paste("No root species specified, using 'REFERENCE'")
+}
+
+#Number of permulations
+if(!is.na(cmdArgImport('n'))){
+  filePrefix = cmdArgImport('n')
+}else{
+  paste("NUmber of permulations not specified, using 100")
+}
+
+#------ Make Output directory -----
+
+#Make output directory if it does not exist
+if(!dir.exists("Output")){
+  dir.create("Output")
+}
+#Make a specific subdirectory if it does not exist 
+outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
+#create that directory if it does not exist
+if(!dir.exists(outputFolderNameNoSlash)){
+  dir.create(outputFolderNameNoSlash)
+}
+outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 
 # --------------------------------- MANUAL PORTION ---------------------
