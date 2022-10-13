@@ -8,12 +8,12 @@ source(file = "Src/Reu/cmdArgImport.R")
 # Command line arguments: 
 #All strings must be in quotes. 
 #If an argument contains a '(' it is evaluated as code.
-# 'm=mainTreeFilename.txt or .rds'
-# 'a="annotCollumn"' 
-# 'r="filePrefix"'
-# 't=<"uni"/"bi>"
-# 'c=<"ancestral"/"all"/"terminal">'
-# 'w=<T/F>"
+# 'm=mainTreeFilename.txt or .rds'       This is the main tree's file location
+# 'a="annotCollumn"'                     This is the column in the manual annotations spreadsheet to use
+# 'r="filePrefix"'                       This is the file prefix for this execution
+# 't=<"uni"/"bi>"                        Sets if transitions are unidirectional or bidirectional         
+# 'c=<"ancestral"/"all"/"terminal">'     Sets the clade type 
+# 'w=<T/F>"                              Sets if the foreground2tree is weighted or not 
 
 
 # ---- Default Arguments ----
@@ -32,7 +32,7 @@ transisitionValue = "Default"
 cladeValue = "Default"
 weightValue = FALSE
 
-#------ Make Outpout directory -----
+#------ Make Output directory -----
 
 #Make output directory if it does not exist
 if(!dir.exists("Output")){
