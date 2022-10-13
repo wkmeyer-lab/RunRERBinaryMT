@@ -23,6 +23,31 @@ rootSpeciesValue = "REFERENCE"
 #Number of permulations
 permulationNumberValue = 100
 
+# --- Import prefix ----
+
+#File Prefix
+if(!is.na(cmdArgImport('r'))){
+  filePrefix = cmdArgImport('r')
+}else{
+  stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
+}
+
+
+
+#------ Make Output directory -----
+
+#Make output directory if it does not exist
+if(!dir.exists("Output")){
+  dir.create("Output")
+}
+#Make a specific subdirectory if it does not exist 
+outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
+#create that directory if it does not exist
+if(!dir.exists(outputFolderNameNoSlash)){
+  dir.create(outputFolderNameNoSlash)
+}
+outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+
 #------ Command args import ------
 
 #MainTree location
@@ -34,12 +59,6 @@ if(!is.na(cmdArgImport('m'))){
 }
 mainTrees = readRDS(mainTreesLocation)
 
-#File Prefix
-if(!is.na(cmdArgImport('r'))){
-  filePrefix = cmdArgImport('r')
-}else{
-  stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-}
 
 #speciesFilter
 speciesFilterFileName = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
@@ -67,19 +86,7 @@ if(!is.na(cmdArgImport('n'))){
   paste("NUmber of permulations not specified, using 100")
 }
 
-#------ Make Output directory -----
 
-#Make output directory if it does not exist
-if(!dir.exists("Output")){
-  dir.create("Output")
-}
-#Make a specific subdirectory if it does not exist 
-outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
-#create that directory if it does not exist
-if(!dir.exists(outputFolderNameNoSlash)){
-  dir.create(outputFolderNameNoSlash)
-}
-outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 
 # --------------------------------- MANUAL PORTION ---------------------

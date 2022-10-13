@@ -46,6 +46,29 @@ filePrefix = "test"
 #copy of default code: speciesFilter = NULL
 speciesFilter = NULL
 
+# --- Import prefix --- 
+
+#File Prefix
+if(!is.na(cmdArgImport('r'))){
+  filePrefix = cmdArgImport('r')
+}else{
+  stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
+}
+
+
+#------ Make Output directory -----
+
+#Make output directory if it does not exist
+if(!dir.exists("Output")){
+  dir.create("Output")
+}
+#Make a specific subdirectory if it does not exist 
+outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
+#create that directory if it does not exist
+if(!dir.exists(outputFolderNameNoSlash)){
+  dir.create(outputFolderNameNoSlash)
+}
+outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 
 
@@ -68,12 +91,7 @@ if(!is.na(cmdArgImport('m'))){
   message("No maintrees arg, using default")
 }
 
-#File Prefix
-if(!is.na(cmdArgImport('r'))){
-  filePrefix = cmdArgImport('r')
-}else{
-  stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-}
+
 
 #phenotype tree location
 binaryPhenotypeTreeFilename = paste(outputFolderName, filePrefix, "BinaryForegroundTree.rds", sep="") #Make the name of the location a pre-made phenotype tree would have to test for it
@@ -100,20 +118,6 @@ if(!is.na(cmdArgImport('f'))){
 }else{                                                    
   paste("No speciesFilter arg, using NULL")                           #if not, use no filter
 }
-
-#------ Make Output directory -----
-
-#Make output directory if it does not exist
-if(!dir.exists("Output")){
-  dir.create("Output")
-}
-#Make a specific subdirectory if it does not exist 
-outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
-#create that directory if it does not exist
-if(!dir.exists(outputFolderNameNoSlash)){
-  dir.create(outputFolderNameNoSlash)
-}
-outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 
 # ---- MAIN ----
