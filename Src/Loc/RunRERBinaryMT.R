@@ -44,7 +44,7 @@ filePrefix = "test"
 speciesFilter = NULL
 
 
-#------ Make Outpout directory -----
+#------ Make Output directory -----
 
 #Make output directory if it does not exist
 if(!dir.exists("Output")){
