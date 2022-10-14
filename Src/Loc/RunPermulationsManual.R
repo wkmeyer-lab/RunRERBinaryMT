@@ -21,7 +21,7 @@ speciesFilter = NULL
 rootSpeciesValue = "REFERENCE"
 
 #Number of permulations
-permulationNumberValue = 100
+permulationNumberValue = 648360
 
 # --- Import prefix ----
 args = commandArgs(trailingOnly = TRUE)
@@ -86,6 +86,12 @@ if(!is.na(cmdArgImport('n'))){
   paste("NUmber of permulations not specified, using 100")
 }
 
+#limit boolean
+if(!is.na(cmdArgImport('l'))){
+  weightValue = cmdArgImport('l')
+}else{
+  message("limit = True")
+}
 
 
 
@@ -175,6 +181,27 @@ if(!file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
   cladesCorellation = readRDS(paste(cladesCorellationFileName, ".csv", sep=""))
 }
 
+
+# ----- Limit the number of genes permulations used 
+#if(limit = T){
+#  #get a list of genes with low correlation p values
+#  corellationOrdered = sort(cladesCorrelation)
+#  correlationCutoff = correlationOrdered[correlationOrdered < 0.1]
+#  #add the master tree to that list 
+#  correlationCutoff = append(correlationCutoff, 1, 0)
+#  names(correlationCutoff)[1] = masterTree
+#  correlationCutoff
+  
+  
+  
+  
+  
+  
+  
+  
+}else{
+  trimmedTree = mainTrees
+}
 
 # ----get PermsBinary step ------
 
