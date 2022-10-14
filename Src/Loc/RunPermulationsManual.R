@@ -5,6 +5,8 @@ library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
 
+#testing args 
+#args = c('r=allInsectivory','n=648360')
 
 #default values: 
 #maintree and phylo location:
@@ -25,6 +27,9 @@ permulationNumberValue = 100
 
 # --- Import prefix ----
 args = commandArgs(trailingOnly = TRUE)
+paste(args)
+message(args)
+
 #File Prefix
 if(!is.na(cmdArgImport('r'))){
   filePrefix = cmdArgImport('r')
@@ -74,23 +79,16 @@ if(!is.na(cmdArgImport('f'))){
 
 #Root species
 if(!is.na(cmdArgImport('t'))){
-  filePrefix = cmdArgImport('t')
+  rootSpeciesValue = cmdArgImport('t')
 }else{
   paste("No root species specified, using 'REFERENCE'")
 }
 
 #Number of permulations
 if(!is.na(cmdArgImport('n'))){
-  filePrefix = cmdArgImport('n')
+  permulationNumberValue = cmdArgImport('n')
 }else{
-  paste("NUmber of permulations not specified, using 100")
-}
-
-#limit boolean
-if(!is.na(cmdArgImport('l'))){
-  weightValue = cmdArgImport('l')
-}else{
-  message("limit = True")
+  paste("Number of permulations not specified, using 100")
 }
 
 
@@ -153,7 +151,7 @@ dev.off()
 # ------ Clades Paths -----
 cladesPathsFileName = paste(outputFolderName, filePrefix, "CladesPathsFile.rds", sep= "")
 if(!file.exists(paste(cladesPathsFileName))){
-  pathCladesObject = tree2PathsClades(foregroundCladeTree, mainTrees, binarize=T, useSpecies = speciesFilter)
+  pathCladesObject = tree2PathsClades(foregroundCladeTree, mainTrees)
   saveRDS(pathCladesObject, file = cladesPathsFileName)
 }else{
   pathCladesObject = readRDS(cladesPathsFileName)
@@ -181,27 +179,6 @@ if(!file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
   cladesCorellation = readRDS(paste(cladesCorellationFileName, ".csv", sep=""))
 }
 
-
-# ----- Limit the number of genes permulations used 
-#if(limit = T){
-#  #get a list of genes with low correlation p values
-#  corellationOrdered = sort(cladesCorrelation)
-#  correlationCutoff = correlationOrdered[correlationOrdered < 0.1]
-#  #add the master tree to that list 
-#  correlationCutoff = append(correlationCutoff, 1, 0)
-#  names(correlationCutoff)[1] = masterTree
-#  correlationCutoff
-  
-  
-  
-  
-  
-  
-  
-  
-#}else{
-#  trimmedTree = mainTrees
-#}
 
 # ----get PermsBinary step ------
 
@@ -232,3 +209,27 @@ saveRDS(permulationPValues, file = permulationPValueFileName)
 #names(annotationslist)="MSigDBpathways"
 
 #permsCCWithEnrichment = getPermsBinary(permulationNumber, foregroundString, sistersList, rootSpecies, RERObject, mainTrees, mastertree =  masterTree, permmode = "cc", calculateenrich = T, annotlist =  annotationslist)
+
+
+
+
+# ----- Limit the number of genes permulations used 
+#if(limit = T){
+#  #get a list of genes with low correlation p values
+#  corellationOrdered = sort(cladesCorrelation)
+#  correlationCutoff = correlationOrdered[correlationOrdered < 0.1]
+#  #add the master tree to that list 
+#  correlationCutoff = append(correlationCutoff, 1, 0)
+#  names(correlationCutoff)[1] = masterTree
+#  correlationCutoff
+
+
+
+
+
+
+
+
+#}else{
+#  trimmedTree = mainTrees
+#}
