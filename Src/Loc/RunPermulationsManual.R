@@ -199,9 +199,9 @@ if(!file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
   
   
   
-}else{
-  trimmedTree = mainTrees
-}
+#}else{
+#  trimmedTree = mainTrees
+#}
 
 # ----get PermsBinary step ------
 
