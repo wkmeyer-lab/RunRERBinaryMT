@@ -25,6 +25,9 @@ rootSpeciesValue = "REFERENCE"
 #Number of permulations
 permulationNumberValue = 100
 
+#Run instance value 
+runInstanceValue = NULL
+
 # --- Import prefix ----
 args = commandArgs(trailingOnly = TRUE)
 paste(args)
@@ -91,6 +94,12 @@ if(!is.na(cmdArgImport('n'))){
   paste("Number of permulations not specified, using 100")
 }
 
+#instance of the script 
+if(!is.na(cmdArgImport('i'))){
+  runInstanceValue = cmdArgImport('i')
+}else{
+  paste("This script does not have a run instance value")
+}
 
 
 # --------------------------------- MANUAL PORTION ---------------------
@@ -176,7 +185,7 @@ if(!file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
   write.csv(cladesCorrelation, file= paste(cladesCorellationFileName, ".csv", sep =""), row.names = T, quote = F)
   saveRDS(cladesCorrelation, file= paste(cladesCorellationFileName, ".csv", sep=""))
 }else{
-  cladesCorellation = readRDS(paste(cladesCorellationFileName, ".csv", sep=""))
+  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".csv", sep=""))
 }
 
 
@@ -192,14 +201,21 @@ permulationNumber = permulationNumberValue
 masterTree = mainTrees$masterTree
 
 #set permulation output filename
-permulationPValueFileName = paste(outputFolderName, filePrefix, "PermulationsPValue.rds", sep= "")
+
 
 permulationsCCVersion = getPermsBinary(permulationNumber, foregroundString, sistersList, rootSpecies, RERObject, mainTrees, mastertree =  masterTree, permmode = "cc")
 
-permulationPValues = permpvalcor(cladesCorellation, permulationsCCVersion)
+#save the permulations 
+permualationsDataFileName = paste(outputFolderName, filePrefix, "PermulationsData", runInstanceValue, ".rds", sep= "")
+saveRDS()
+
+
+permulationPValues = permpvalcor(cladesCorrelation, permulationsCCVersion)
 
 #save the permaulations p values
+permulationPValueFileName = paste(outputFolderName, filePrefix, "PermulationsPValue.rds", sep= "")
 saveRDS(permulationPValues, file = permulationPValueFileName)
+
 
 # ----- Permulations with enrichments -----
 #Currently disabled
