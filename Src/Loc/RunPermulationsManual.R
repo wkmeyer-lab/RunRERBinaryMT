@@ -1,5 +1,5 @@
 #Library setup 
-#.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
@@ -21,7 +21,7 @@ speciesFilter = NULL
 rootSpeciesValue = "REFERENCE"
 
 #Number of permulations
-permulationNumberValue = 648360
+permulationNumberValue = 100
 
 # --- Import prefix ----
 args = commandArgs(trailingOnly = TRUE)
