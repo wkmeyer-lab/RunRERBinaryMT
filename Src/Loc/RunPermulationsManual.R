@@ -208,7 +208,7 @@ permulationsCCVersion = getPermsBinary(permulationNumber, foregroundString, sist
 
 #save the permulations 
 permualationsDataFileName = paste(outputFolderName, filePrefix, "PermulationsData", runInstanceValue, ".rds", sep= "")
-saveRDS()
+saveRDS(permulationsCCVersion, file = permualationsDataFileName)
 
 
 permulationPValues = permpvalcor(cladesCorrelation, permulationsCCVersion)
