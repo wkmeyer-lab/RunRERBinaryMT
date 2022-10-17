@@ -90,6 +90,7 @@ if(!is.na(cmdArgImport('t'))){
 #Number of permulations
 if(!is.na(cmdArgImport('n'))){
   permulationNumberValue = cmdArgImport('n')
+  permulationNumberValue = as.numeric(permulationNumberValue)
 }else{
   paste("Number of permulations not specified, using 100")
 }
@@ -100,8 +101,8 @@ if(!is.na(cmdArgImport('i'))){
 }else{
   paste("This script does not have a run instance value")
 }
-
-
+print(permulationNumberValue)
+str(permulationNumberValue)
 # --------------------------------- MANUAL PORTION ---------------------
 #Setup foreground (manual)
 
