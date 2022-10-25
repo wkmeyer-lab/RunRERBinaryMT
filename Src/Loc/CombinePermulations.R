@@ -8,6 +8,8 @@ source("Src/Reu/cmdArgImport.R")
 #-------
 #Debug setup defaults
 #permulationNumberValue = 3
+#Testing args:
+#args = c('r=allInsectivory','n=3', 'e=F')
 #------
 
 # --- Import prefix ----
@@ -23,11 +25,6 @@ if(!is.na(cmdArgImport('r'))){
 }
 
 #------------
-
-#-------
-#Debug setup defaults
-#permulationNumberValue = 3
-#------
 
 #------ Make Output directory -----
 
@@ -48,12 +45,13 @@ outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 #----- Default values -------
 
 permulationNumberValue = 100
+enrichValue = F
 
 #-------
 
 
+
 # -- Import number of permulations to combine ---
-#Number of permulations
 if(!is.na(cmdArgImport('n'))){
   permulationNumberValue = cmdArgImport('n')
   permulationNumberValue = as.numeric(permulationNumberValue)
@@ -61,25 +59,39 @@ if(!is.na(cmdArgImport('n'))){
   paste("Number of permulations not specified, using 100")
 }
 
-
-
+# -- Import if enriched or not --
+if(!is.na(cmdArgImport('e'))){
+  enrichValue = cmdArgImport('e')
+  enrichValue = as.logical(enrichValue)
+  if(is.na(enrichValue)){
+    enrichValue = FALSE
+    paste("Enrichment value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }
+}else{
+  paste("enrichment not specified, using FLASE")
+}
 
 
 # -- Combine permulations data files ----
 
 #Do the first combination:
-basePermulationFilename = permualationsDataFileName = paste(outputFolderName, filePrefix, "PermulationsData")
-firstPermulationFilename = paste(basePermulationFilename, 1, ".rds", sep="")
-secondPermulationFilename = paste(basePermulationFilename, 2, ".rds", sep="")
+basePermulationsFilename = paste(outputFolderName, filePrefix, "PermulationsData",  sep="")
+firstPermulationsFilename = paste(basePermulationsFilename, 1, ".rds", sep="")
+firstPermulationsData = readRDS(firstPermulationsFilename)
 
-combinedPermulationsData = combinePermData(firstPermulationFilename, secondPermulationFilename)
+secondPermulationsFilename = paste(basePermulationsFilename, 2, ".rds", sep="")
+secondPermulationsData = readRDS(secondPermulationsFilename)
+
+combinedPermulationsData = combinePermData(firstPermulationsData, secondPermulationsData, enrich = F)
 
 #Do all subsequent combinations
 for(i in 3:permulationNumberValue){
   iteratingPermulationFilename = paste(basePermulationFilename, i, ".rds", sep="")
-  if(file.exists(iteratingPermulationFilename)){
-   combinedPermulationsData = combinePermData(combinedPermulationsData, interatingPermulationFilename)
-   paste("Added file", i, "to combination.")
+  
+  if(file.exists(iteratingPermulationsFilename)){
+    iteratingPermulationsData = readRDS(iteratingPermulationsFilename)
+    combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData)
+    paste("Added file", i, "to combination.")
   }else{
     paste("Permulation file number", i, "does not exist. Combining other files.")
   }
