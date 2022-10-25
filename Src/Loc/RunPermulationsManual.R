@@ -5,6 +5,25 @@ library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
 
+# --- USAGE ---
+#Used to run permulations on a given phenotype. Will use pre-exisitng RER values for it's prefix, if they exist. 
+#At the moment, the sisters-list must be generated manually. Changing this to automatic is a possible future feature.
+
+# ARUGMENTS: 
+#If an argument contains a '(' it is evaluated as code.
+# 'r="filePrefix"' This is the prefix attached to all files a required argument. 
+# 'm=mainTreeFilename.txt or .rds' This is the location of the maintree file. Accepts .txt or .rds. 
+# 'f=speciesFilterText'  This is the text of a species filter. Expects character string. Will use pre-made file, if one exists. 
+# 't=rootSpeciesName'     This is the name of the root species, if not using REFERENCE(human)
+# 'n=numberOfPermulations' This is the number of permulations to run in the script 
+# 'i=runInstanceValue'    This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel. 
+
+
+
+
+
+
+
 #testing args 
 #args = c('r=allInsectivory','n=648360')
 
