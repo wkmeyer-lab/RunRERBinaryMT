@@ -203,7 +203,7 @@ cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelati
 if(!file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
   cladesCorrelation = correlateWithBinaryPhenotype(RERObject, pathCladesObject, min.sp =35)
   write.csv(cladesCorrelation, file= paste(cladesCorellationFileName, ".csv", sep =""), row.names = T, quote = F)
-  saveRDS(cladesCorrelation, file= paste(cladesCorellationFileName, ".csv", sep=""))
+  saveRDS(cladesCorrelation, file= paste(cladesCorellationFileName, ".rds", sep=""))
 }else{
   cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".csv", sep=""))
 }
