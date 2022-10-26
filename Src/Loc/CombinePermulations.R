@@ -15,7 +15,9 @@ source("Src/Reu/convertLogiToNumeric.R")
 # 'r="filePrefix"'              This is the prefix attached to all files a required argument. 
 # 'n=numberOfPermulations'      This is the number of permulation files the script will try to combine
 # 'e=F' OR 'e=T'                This is if the permulations being combined are enriched or not. Accepts 'T', 'F', 'TRUE', 'FALSE', '0', and '1'. 
-
+# 's=<number>'                  This is the permulation number to start at. Used for parrallelization. 
+# 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel.
+# 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 
 
 #-------
@@ -59,6 +61,9 @@ outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 permulationNumberValue = 100
 enrichValue = F
+startValue = 1
+runInstanceValue = NULL
+metacombineValue = FALSE
 
 #-------
 
@@ -84,17 +89,47 @@ if(!is.na(cmdArgImport('e'))){
   paste("enrichment not specified, using FLASE")
 }
 
+# -- Import the permulation number to start at ---
+if(!is.na(cmdArgImport('s'))){
+  startValue = cmdArgImport('s')
+  startValue = as.numeric(startValue)
+}else{
+  paste("Start value not specified, using 1")
+}
+
+# -- Import the instance number of the script --- 
+if(!is.na(cmdArgImport('i'))){
+  runInstanceValue = cmdArgImport('i')
+}else{
+  paste("This script does not have a run instance value")
+}
+
+# -- Import if this is being run to combine combinations -- 
+if(!is.na(cmdArgImport('c'))){
+  metacombineValue = cmdArgImport('c')
+  metacombineValue = as.logical(metacombineValue)
+  if(is.na(metacombineValue)){
+    metacombineValue = FALSE
+    paste("Metacombination value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }
+}else{
+  paste("Metacombination value not specified, using FLASE. If you aren't parrallelizing, don't worry about this.")
+}
 
 # -- Combine permulations data files ----
 
 #Do the first combination:
-basePermulationsFilename = paste(outputFolderName, filePrefix, "PermulationsData",  sep="")
+if(metacombineValue = F){
+  basePermulationsFilename = paste(outputFolderName, filePrefix, "PermulationsData",  sep="")
+}else{
+  basePermulationsFilename = paste(outputFolderName, filePrefix, "CombinedPermulationsData",  sep="")
+}
 
-firstPermulationsFilename = paste(basePermulationsFilename, 1, ".rds", sep="")
+firstPermulationsFilename = paste(basePermulationsFilename, startValue, ".rds", sep="")
 firstPermulationsData = readRDS(firstPermulationsFilename)
 firstPermulationsData = convertLogiToNumericList(firstPermulationsData)
 
-secondPermulationsFilename = paste(basePermulationsFilename, 2, ".rds", sep="")
+secondPermulationsFilename = paste(basePermulationsFilename, (startValue+1), ".rds", sep="")
 secondPermulationsData = readRDS(secondPermulationsFilename)
 secondPermulationsData = convertLogiToNumericList(secondPermulationsData)
 
@@ -105,7 +140,7 @@ rm(secondPermulationsData)
 
 
 #Do all subsequent combinations
-for(i in 3:permulationNumberValue){
+for(i in (startValue+2):permulationNumberValue){
   message(i)
   iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
   
@@ -121,8 +156,24 @@ for(i in 3:permulationNumberValue){
 }
 
 # save output as file
-combinedDataFileName = paste(outputFolderName, filePrefix, "combinedPermulationsData.rds")
+if(metacombineValue = F){
+  combinedDataFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsData", runInstanceValue, ".rds", sep="")
+}else{
+  combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombinedPermulationsData", runInstanceValue, ".rds", sep="")
+  
+}
 saveRDS(combinedPermulationsData, file = combinedDataFileName)
+
+
+
+
+
+
+
+
+
+
+
 
 # ---- Debug Code ----
 #testCombinedPermsData = combinePermData(firstPermulationsData, iteratingPermulationsData, enrich = enrichValue)
