@@ -24,7 +24,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 #Debug setup defaults
 #permulationNumberValue = 3
 #Testing args:
-#args = c('r=allInsectivory','n=4', 'e=F')
+#args = c('r=allInsectivory','n=5', 'e=F', 's=5')
 #------
 
 # --- Import prefix ----
@@ -140,7 +140,7 @@ rm(secondPermulationsData)
 
 
 #Do all subsequent combinations
-for(i in (startValue+2):permulationNumberValue){
+for(i in (startValue+2):(startValue+permulationNumberValue)){
   message(i)
   iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
   
