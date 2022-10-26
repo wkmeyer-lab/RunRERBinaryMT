@@ -4,6 +4,7 @@ library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
+source("Src/Reu/convertLogiToNumeric.R")
 
 
 #---- USAGE -----
@@ -91,9 +92,11 @@ basePermulationsFilename = paste(outputFolderName, filePrefix, "PermulationsData
 
 firstPermulationsFilename = paste(basePermulationsFilename, 1, ".rds", sep="")
 firstPermulationsData = readRDS(firstPermulationsFilename)
+firstPermulationsData = convertLogiToNumericList(firstPermulationsData)
 
 secondPermulationsFilename = paste(basePermulationsFilename, 2, ".rds", sep="")
 secondPermulationsData = readRDS(secondPermulationsFilename)
+secondPermulationsData = convertLogiToNumericList(secondPermulationsData)
 
 combinedPermulationsData = combinePermData(firstPermulationsData, secondPermulationsData, enrich = enrichValue)
 
@@ -108,6 +111,7 @@ for(i in 3:permulationNumberValue){
   
   if(file.exists(iteratingPermulationsFilename)){
     iteratingPermulationsData = readRDS(iteratingPermulationsFilename)
+    iteratingPermulationsData = convertLogiToNumericList(iteratingPermulationsData)
     combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData, enrich = enrichValue)
     rm(iteratingPermulationsData)
     message("Added file ", i, " to combination.")
@@ -126,13 +130,23 @@ saveRDS(combinedPermulationsData, file = combinedDataFileName)
 #i=3
 
 # --- Permulations cleaning code; for use elsewhere ----
-cleanedfirstPermulationsData = firstPermulationsData
-cleanedfirstPermulationsData$corP = Filter(function(x)!all(is.na(x)), firstPermulationsData$corP)
-cleanedfirstPermulationsData$corRho = Filter(function(x)!all(is.na(x)), firstPermulationsData$corRho)
-cleanedfirstPermulationsData$corStat = Filter(function(x)!all(is.na(x)), firstPermulationsData$corStat)
 
-firstPermulationsData$corP$X142
-numericTest = as.numeric(firstPermulationsData$corP$X23)
-numerifiedfirstPermulationsData = as.numeric(firstPermulationsData$corP)
+#filtering version
+#cleanedfirstPermulationsData = firstPermulationsData
+#cleanedfirstPermulationsData$corP = Filter(function(x)!all(is.na(x)), firstPermulationsData$corP)
+#cleanedfirstPermulationsData$corRho = Filter(function(x)!all(is.na(x)), firstPermulationsData$corRho)
+#cleanedfirstPermulationsData$corStat = Filter(function(x)!all(is.na(x)), firstPermulationsData$corStat)
 
 
+#converting version
+#convertLogiToNumericDataframe = function(inputDataframe){
+#  collumnsLogical = sapply(inputDataframe, is.logical)
+#  inputDataframe[,collumnsLogical] = lapply(inputDataframe[,collumnsLogical], as.numeric)
+#  return(inputDataframe)
+#}
+
+#convertLogiToNumericList = function(inputList){
+#  framesInList = sapply(inputList, is.data.frame)
+#  inputList[framesInList] = lapply(inputList[framesInList], convertLogiToNumericDataframe)
+#  return(inputList)
+#}
