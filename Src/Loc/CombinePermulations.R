@@ -5,6 +5,18 @@ library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
 
+
+#---- USAGE -----
+#used to combine permulations files made by RunPermulationsManual.R. 
+
+# ARUGMENTS: 
+#If an argument contains a '(' it is evaluated as code.
+# 'r="filePrefix"'              This is the prefix attached to all files a required argument. 
+# 'n=numberOfPermulations'      This is the number of permulation files the script will try to combine
+# 'e=F' OR 'e=T'                This is if the permulations being combined are enriched or not. Accepts 'T', 'F', 'TRUE', 'FALSE', '0', and '1'. 
+
+
+
 #-------
 #Debug setup defaults
 #permulationNumberValue = 3
@@ -76,24 +88,29 @@ if(!is.na(cmdArgImport('e'))){
 
 #Do the first combination:
 basePermulationsFilename = paste(outputFolderName, filePrefix, "PermulationsData",  sep="")
+
 firstPermulationsFilename = paste(basePermulationsFilename, 1, ".rds", sep="")
 firstPermulationsData = readRDS(firstPermulationsFilename)
 
 secondPermulationsFilename = paste(basePermulationsFilename, 2, ".rds", sep="")
 secondPermulationsData = readRDS(secondPermulationsFilename)
 
-combinedPermulationsData = combinePermData(firstPermulationsData, secondPermulationsData, enrich = F)
+combinedPermulationsData = combinePermData(firstPermulationsData, secondPermulationsData, enrich = enrichValue)
+
+
+
 
 #Do all subsequent combinations
 for(i in 3:permulationNumberValue){
-  iteratingPermulationFilename = paste(basePermulationFilename, i, ".rds", sep="")
+  message(i)
+  iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
   
   if(file.exists(iteratingPermulationsFilename)){
     iteratingPermulationsData = readRDS(iteratingPermulationsFilename)
-    combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData)
-    paste("Added file", i, "to combination.")
+    combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData, enrich = enrichValue)
+    message("Added file ", i, " to combination.")
   }else{
-    paste("Permulation file number", i, "does not exist. Combining other files.")
+    message("Permulation file number ", i, " does not exist. Combining other files.")
   }
 }
 
@@ -101,5 +118,10 @@ for(i in 3:permulationNumberValue){
 combinedDataFileName = paste(outputFolderName, filePrefix, "combinedPermulationsData.rds")
 saveRDS(combinedPermulationsData, file = combinedDataFileName)
 
+# ---- Debug Code ----
+#testCombinedPermsData = combinePermData(firstPermulationsData, iteratingPermulationsData, enrich = enrichValue)
+#testCombinedPermsDataTwo = combinePermData(testCombinedPermsData, secondPermulationsData, enrich = enrichValue)
+#i=3
 
-??permulations
+trialPermData = readRDS(firstPermulationsFilename)
+combinedPermulationsData = combinePermData(combinedPermulationsData, firstPermulationsData, enrich = enrichValue)
