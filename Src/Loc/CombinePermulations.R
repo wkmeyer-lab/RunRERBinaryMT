@@ -140,7 +140,7 @@ rm(secondPermulationsData)
 
 
 #Do all subsequent combinations
-for(i in (startValue+2):(startValue+permulationNumberValue)){
+for(i in (startValue+2):(startValue+permulationNumberValue-1)){
   message(i)
   iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
   
