@@ -114,7 +114,7 @@ for(i in 3:permulationNumberValue){
   }
 }
 
-#save output as file
+# save output as file
 combinedDataFileName = paste(outputFolderName, filePrefix, "combinedPermulationsData.rds")
 saveRDS(combinedPermulationsData, file = combinedDataFileName)
 
@@ -125,3 +125,7 @@ saveRDS(combinedPermulationsData, file = combinedDataFileName)
 
 trialPermData = readRDS(firstPermulationsFilename)
 combinedPermulationsData = combinePermData(combinedPermulationsData, firstPermulationsData, enrich = enrichValue)
+rm(firstPermulationsData)
+rm(secondPermulationsData)
+?getPermsBinary()
+
