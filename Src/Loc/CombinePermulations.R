@@ -119,7 +119,7 @@ if(!is.na(cmdArgImport('c'))){
 # -- Combine permulations data files ----
 
 #Do the first combination:
-if(metacombineValue = F){
+if(metacombineValue == F){
   basePermulationsFilename = paste(outputFolderName, filePrefix, "PermulationsData",  sep="")
 }else{
   basePermulationsFilename = paste(outputFolderName, filePrefix, "CombinedPermulationsData",  sep="")
@@ -156,7 +156,7 @@ for(i in (startValue+2):(startValue+permulationNumberValue)){
 }
 
 # save output as file
-if(metacombineValue = F){
+if(metacombineValue == F){
   combinedDataFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsData", runInstanceValue, ".rds", sep="")
 }else{
   combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombinedPermulationsData", runInstanceValue, ".rds", sep="")
