@@ -4,10 +4,13 @@ library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
+source("Src/Reu/convertLogiToNumeric.R")
 
 # --- USAGE ---
 #Used to run permulations on a given phenotype. Will use pre-exisitng RER values for it's prefix, if they exist. 
 #At the moment, the sisters-list must be generated manually. Changing this to automatic is a possible future feature.
+
+#Note that this script includes something which converts any logical vectors (values of entirely NA, typically) from the permulations to numeric vectors. 
 
 # ARUGMENTS: 
 #If an argument contains a '(' it is evaluated as code.
@@ -220,21 +223,27 @@ permulationNumber = permulationNumberValue
 #master tree
 masterTree = mainTrees$masterTree
 
-#set permulation output filename
-
-
+#Get the permulations
 permulationsCCVersion = getPermsBinary(permulationNumber, foregroundString, sistersList, rootSpecies, RERObject, mainTrees, mastertree =  masterTree, permmode = "cc")
+
+#Convert any logical vectors (all NA) to numeric vectors 
+permulationsCCVersion = convertLogiToNumericList(permulationsCCVersion)
 
 #save the permulations 
 permualationsDataFileName = paste(outputFolderName, filePrefix, "PermulationsData", runInstanceValue, ".rds", sep= "")
 saveRDS(permulationsCCVersion, file = permualationsDataFileName)
 
 
-permulationPValues = permpvalcor(cladesCorrelation, permulationsCCVersion)
+
+# ---- DISABLED: Calculate the permulation P values -----
+##Disabled to allow for pValue calculation on combined permutation datasets
+
+#Calculate the permulations P values
+#permulationPValues = permpvalcor(cladesCorrelation, permulationsCCVersion)
 
 #save the permaulations p values
-permulationPValueFileName = paste(outputFolderName, filePrefix, "PermulationsPValue.rds", sep= "")
-saveRDS(permulationPValues, file = permulationPValueFileName)
+#permulationPValueFileName = paste(outputFolderName, filePrefix, "PermulationsPValue.rds", sep= "")
+#saveRDS(permulationPValues, file = permulationPValueFileName)
 
 
 # ----- Permulations with enrichments -----
