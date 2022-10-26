@@ -21,7 +21,7 @@ source("Src/Reu/cmdArgImport.R")
 #Debug setup defaults
 #permulationNumberValue = 3
 #Testing args:
-#args = c('r=allInsectivory','n=3', 'e=F')
+#args = c('r=allInsectivory','n=4', 'e=F')
 #------
 
 # --- Import prefix ----
@@ -97,7 +97,8 @@ secondPermulationsData = readRDS(secondPermulationsFilename)
 
 combinedPermulationsData = combinePermData(firstPermulationsData, secondPermulationsData, enrich = enrichValue)
 
-
+rm(firstPermulationsData)
+rm(secondPermulationsData)
 
 
 #Do all subsequent combinations
@@ -108,6 +109,7 @@ for(i in 3:permulationNumberValue){
   if(file.exists(iteratingPermulationsFilename)){
     iteratingPermulationsData = readRDS(iteratingPermulationsFilename)
     combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData, enrich = enrichValue)
+    rm(iteratingPermulationsData)
     message("Added file ", i, " to combination.")
   }else{
     message("Permulation file number ", i, " does not exist. Combining other files.")
@@ -123,9 +125,8 @@ saveRDS(combinedPermulationsData, file = combinedDataFileName)
 #testCombinedPermsDataTwo = combinePermData(testCombinedPermsData, secondPermulationsData, enrich = enrichValue)
 #i=3
 
-trialPermData = readRDS(firstPermulationsFilename)
-combinedPermulationsData = combinePermData(combinedPermulationsData, firstPermulationsData, enrich = enrichValue)
-rm(firstPermulationsData)
-rm(secondPermulationsData)
-?getPermsBinary()
+
+
+
+
 
