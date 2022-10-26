@@ -125,8 +125,14 @@ saveRDS(combinedPermulationsData, file = combinedDataFileName)
 #testCombinedPermsDataTwo = combinePermData(testCombinedPermsData, secondPermulationsData, enrich = enrichValue)
 #i=3
 
+# --- Permulations cleaning code; for use elsewhere ----
+cleanedfirstPermulationsData = firstPermulationsData
+cleanedfirstPermulationsData$corP = Filter(function(x)!all(is.na(x)), firstPermulationsData$corP)
+cleanedfirstPermulationsData$corRho = Filter(function(x)!all(is.na(x)), firstPermulationsData$corRho)
+cleanedfirstPermulationsData$corStat = Filter(function(x)!all(is.na(x)), firstPermulationsData$corStat)
 
-
-
+firstPermulationsData$corP$X142
+numericTest = as.numeric(firstPermulationsData$corP$X23)
+numerifiedfirstPermulationsData = as.numeric(firstPermulationsData$corP)
 
 
