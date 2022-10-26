@@ -205,7 +205,7 @@ if(!file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
   write.csv(cladesCorrelation, file= paste(cladesCorellationFileName, ".csv", sep =""), row.names = T, quote = F)
   saveRDS(cladesCorrelation, file= paste(cladesCorellationFileName, ".rds", sep=""))
 }else{
-  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".csv", sep=""))
+  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
 }
 
 
