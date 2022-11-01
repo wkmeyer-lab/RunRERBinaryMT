@@ -162,6 +162,8 @@ if(metacombineValue == F){
   combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombinedPermulationsData", runInstanceValue, ".rds", sep="")
   
 }
+#TEMPORARY REDIRECT
+combinedDataFileName = paste("/home/mit221/wym219_123121/mit221/", filePrefix, "CombinedPermulationsData", runInstanceValue, ".rds", sep="")
 saveRDS(combinedPermulationsData, file = combinedDataFileName)
 
 
