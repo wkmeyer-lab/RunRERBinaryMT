@@ -15,8 +15,6 @@ toyTrees=readTrees(paste(rerpath,"/extdata/",toytreefile,sep=""), max.read = 200
 
 marineExtantForground = c("Walrus", "Seal", "Killer_whale", "Dolphin", "Manatee")
 
-
-
 #
 
 
@@ -44,22 +42,21 @@ tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
 inputTree= complexTree
 
-fgEdges = which(complexTree$edge.length==1)
+fgEdges = which(inputTree$edge.length==1)
 fgEdges
-fgEdgeObjects = complexTree$edge[fgEdges,]
+fgEdgeObjects = inputTree$edge[fgEdges,]
 fgEdgeObjects
 
-i=5
 
 
 #Loop startup code
-cladeNumber = 1
+cladNumber = 1
 compeltedStartNodes = NULL
 firstWrapperEdges = NULL
 metaWrapperEdges = NULL
 run =1 
-for(i in 1:10){cladeName = paste("clade",i,sep=""); rm(list=cladeName)}
-cladeList = NULL
+for(i in 1:10){cladName = paste("clade",i,sep=""); rm(list=cladName)}
+cladList = NULL
 
 #Loop code
 for(i in fgEdges){
@@ -74,8 +71,8 @@ for(i in fgEdges){
   endNodes = fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2]
   endNodes
   
-  currentCladeName = paste("clade", cladeNumber, sep = "")
-  currentCladeName
+  currentCladName = paste("clade", cladeNumber, sep = "")
+  currentCladName
   
   if(!(length(endNodes)==1 | length(endNodes)==2)){
     message(paste("Something has gone wrong; foreground branch ", i, "has incorrect number of child nodes."))
@@ -84,48 +81,48 @@ for(i in fgEdges){
   
   
   #classify each edge as either being a solo clade, starter clade or a wrapper clade
-  cladeType = NULL
+  cladType = NULL
   if(length(endNodes) == 1 & all(endNodes<length(inputTree$tip.label))){
-    cladeType = "solo"
+    cladType = "solo"
   }else if(all(endNodes < length(inputTree$tip.label))){
-    cladeType = "starter"
+    cladType = "starter"
   }else if(any(endNodes < length(inputTree$tip.label)) & any(endNodes > length(inputTree$tip.label))){
-    cladeType = "firstWrapper"
+    cladType = "firstWrapper"
   }else if(length(endNodes) == 1 & all(endNodes>length(inputTree$tip.label))){
-    cladeType= "internal"
+    cladType= "internal"
   }else if(all(endNodes > length(inputTree$tip.label))){
-    cladeType = "metaWrapper"
+    cladType = "metaWrapper"
   }
-  message(cladeType)
+  message(cladType)
   
   #Generate a clade vector based on clade type
-  if(cladeType == "internal"){
+  if(cladType == "internal"){
     #These clades are only produced via the terminal/all/ancestral setup, and thus don't need to be factored in.
     next
   }
   
-  if(cladeType == "solo"){
+  if(cladType == "solo"){
     speciesOne = inputTree$tip.label[endNodes[1]]
-    assign(currentCladeName, c(speciesOne))
+    assign(currentCladName, c(speciesOne))
   }
-  if(cladeType == "starter"){
+  if(cladType == "starter"){
     speciesOne = inputTree$tip.label[endNodes[1]]
     speciesTwo = inputTree$tip.label[endNodes[2]]
     assign(currentCladeName, c(speciesOne, speciesTwo))
-    cladeEntry = startNode
-    names(cladeEntry) = currentCladeName
-    message(cladeEntry)
-    cladeList = append(cladeList, cladeEntry)
+    cladEntry = startNode
+    names(cladEntry) = currentCladeName
+    message(cladEntry)
+    cladList = append(cladList, cladEntry)
   }
-  if(cladeType == "firstWrapper"){
+  if(cladType == "firstWrapper"){
     firstWrapperEdges = append(firstWrapperEdges,i)     #These have to be done after all of the starters, so the index is saved.
     next
   }
-  if(cladeType == "metaWrapper"){
+  if(cladType == "metaWrapper"){
     metaWrapperEdges = append(metaWrapperEdges,i)     #These have to be done after all of the firstwrappers, so the index is saved.
     next
   }
-  cladeNumber = cladeNumber+1
+  cladNumber = cladNumber+1
 }
 
 #loop for first wrappers
@@ -138,8 +135,8 @@ for(i in firstWrapperEdges){
   endNodes = fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2]
   endNodes
   
-  currentCladeName = paste("clade", cladeNumber, sep = "")
-  currentCladeName
+  currentCladName = paste("clade", cladNumber, sep = "")
+  currentCladName
   
   if(!(length(endNodes)==1 | length(endNodes)==2)){
     message(paste("Something has gone wrong; foreground branch ", i, "has incorrect number of child nodes."))
@@ -150,17 +147,17 @@ for(i in firstWrapperEdges){
   speciesNode
   speciesName = inputTree$tip.label[speciesNode]
   speciesName
-  cladeNode = endNodes[which(endNodes>length(inputTree$tip.label))]
-  message(cladeNode)
-  cladeName = names(which(cladeList == cladeNode))
-  assign(currentCladeName, c(cladeName, speciesName))
+  cladNode = endNodes[which(endNodes>length(inputTree$tip.label))]
+  message(claeNode)
+  cladName = names(which(cladList == cladNode))
+  assign(currentCladName, c(cladName, speciesName))
   
-  cladeEntry = startNode
-  names(cladeEntry) = currentCladeName
-  message(cladeEntry)
-  cladeList = append(cladeList, cladeEntry)
+  cladEntry = startNode
+  names(cladEntry) = currentCladName
+  message(cladEntry)
+  cladList = append(cladList, cladEntry)
   
-  cladeNumber = cladeNumber+1
+  cladNumber = cladNumber+1
 }
 
 #loop for metaWrappers
@@ -174,8 +171,8 @@ while(length(remainingMetaWrapperEdges >0)){
     startNode
     endNodes = fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2]
     endNodes
-    currentCladeName = paste("clade", cladeNumber, sep = "")
-    currentCladeName
+    currentCladName = paste("clade", cladNumber, sep = "")
+    currentCladName
     if(!(length(endNodes)==1 | length(endNodes)==2)){
       message(paste("Something has gone wrong; foreground branch ", i, "has incorrect number of child nodes."))
     }
@@ -183,111 +180,24 @@ while(length(remainingMetaWrapperEdges >0)){
     secondNode = endNodes[2]
     
     #if the two child nodes have not bee proccessed yet, skip this node for now
-    if(!(firstNode %in% cladeList & secondNode %in% cladeList)){next}
+    if(!(firstNode %in% cladList & secondNode %in% cladList)){next}
     
     #otherwise, remove this node from the to-do list, and continue
     remainingMetaWrapperEdges = metaWrapperEdges[!metaWrapperEdges %in% i]
     
-    firstCladeName = names(which(cladeList == firstNode))
-    secondCladeName = names(which(cladeList == secondNode))
+    firstCladName = names(which(cladList == firstNode))
+    secondCladName = names(which(cladList == secondNode))
     
-    assign(currentCladeName, c(firstCladeName, secondCladeName))
+    assign(currentCladName, c(firstCladName, secondCladName))
     
-    cladeEntry = startNode
-    names(cladeEntry) = currentCladeName
-    message(cladeEntry)
-    cladeList = append(cladeList, cladeEntry)
+    cladEntry = startNode
+    names(cladEntry) = currentCladName
+    message(cladEntry)
+    cladList = append(cladeList, cladEntry)
   }
 }
-
+cladObjectsList = ls(pattern = "clade")
+sistersListExport = list(clade1, clade2, clade3, clade4, clade5)
 #
  
 # 
-
- # 
-  
-  
-longEntry = c(1,2,3,4,5,60,70)
-trimmedEntry = longEntry[!longEntry %in% 60]
-
-  
-if(any(endNodes < 31)){
-  message("yes")
-}else{
-  message("no")
-}
-#
-
-
-#
-
-
-
-
-
-
-
-
-
-
-sisters_marine = list("clade1"=c("Killer_whale", "Dolphin"))
-
-marineFgTree = foreground2TreeClades(marineFg,sisters_marine,toyTrees,plotTree=F)
-
-marineFgTree$edge.length[45]=5
-
-marineFg = c("Killer_whale", "Dolphin", "Walrus", "Seal", "Manatee")
-marineplot1 = plotTreeHighlightBranches(marineFgTree,
-                                        hlspecies=which(marineFgTree$edge.length==5),
-                                        hlcols="blue", main="Marine mammals trait tree")
-#
-edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.7), col="blue")
-dev.new(height=1000, width=30)
-#
-viewableMarineAll = minBranchLength(marineAll, 0.2)
-plot(viewableMarineAll, edge.width = 2, label.offset = 0.1, type = "cladogram",)
-
-
-
-
-
-
-
-
-
-
-
-
-
-which(!marineFgTree$tip.label %in% marineAll$tip.label)
-
-
-which(marineAll$edge.length == 1 )
-marineAll$edge.length[19]
-marineAll$edge[19,]
-marineAll$tip.label[9]
-
-marineAll$edge.length[45]
-marineAll$edge[45,]
-marineAll$tip.label[9]
-
-names(marineAll$e)
-
-marineFgTree$edge[45]
-
-
-which(marineAll$edge[,1] >marineAll$edge[,2])
-which.max(marineAll$edge)
-which(marineAll$tip.label == "Bushbaby")
-which(marineAll$edge[,2] == 50)
-marineAll$edge[104, ]
-
-
-
-
-
-
-tree = read.tree(text = "(((A,B),(C,D)),E);")
-plot(tree, type = "cladogram", edge.width = 2)
-
-tree$edge
