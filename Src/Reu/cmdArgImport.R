@@ -1,8 +1,8 @@
 ## USAGE:
 # accepts plain text or code command line arguments, and returns the argument's result as a string. 
 #The argument should be in the format of: x=ARGVAL
-# "marker" is the letter used to indicate which argument is which. in the above example, the marker is <x>, in the blow example, it is <j>
-# "message" is the message sent if the arugment is missing
+# "marker" is the letter used to indicate which argument is which. in the above example, the marker is <x>, in the below example, it is <j>
+# "message" is the message sent if the argument is missing
 
 
 # example:
@@ -18,7 +18,7 @@ cmdArgImport = function(marker, message = ""){
     commandLineString = substring(commandLineValue, 3)             #make a string without the identifier
     if(grepl('(', commandLineValue, fixed = TRUE)){                # if the input is code -- has a '(' in it
       commandLineOutput = eval(str2lang(commandLineString))        #convert that string to code, then evaluate that code
-    }else{                                                         #convert that string to code, then evaluate that code
+    }else{                                                         #else
       commandLineOutput = commandLineString                        #use the string directly 
     }
     message(commandLineOutput)                                     #Report the result
