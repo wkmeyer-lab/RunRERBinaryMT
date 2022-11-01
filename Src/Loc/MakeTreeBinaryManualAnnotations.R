@@ -23,7 +23,7 @@ mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia
 
 #local computer debug version:
 # mainTreesLocation = "data/RemadeTreesAllZoonomiaSpecies.rds"
-#args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=Insectivory", "a=Ins_v_herbs", "t=bi", "c=terminal", "w=F")
+#args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=allInsectivory", "a=Ins_v_herbs", "t=bi", "c=all", "w=F")
 
 #Other defaults if not specified
 annotCollumn = "ERRORDEFAULT"
@@ -41,7 +41,7 @@ args = commandArgs(trailingOnly = TRUE)
 paste(args)
 message(args)
 
-write.csv(args, file = "Output/MakePathsArgs.csv")
+#write.csv(args, file = "Output/MakePathsArgs.csv")
 
 #Main Tree Location
 if(!is.na(cmdArgImport('m'))){
@@ -119,7 +119,7 @@ if(!dir.exists("Results")){
 
 # -- Import manual annotations CSv -- 
 
-manualAnnots = read.csv("Data/manualAnnotationsSheet1.csv")
+manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")
 
 # --- subset the manual annots to only those with data in the collumn
 relevantSpecies = manualAnnots[ manualAnnots[[annotCollumn]] %in% c(0,1),]
