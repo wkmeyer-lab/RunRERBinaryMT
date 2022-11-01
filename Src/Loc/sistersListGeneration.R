@@ -39,9 +39,13 @@ edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.7), col="blue")
 nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green")
 tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
+batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
+batplot2 = plotTreeHighlightBranches(batTree,
+                                         hlspecies=which(batTree$edge.length== 3),
+                                         hlcols="blue", main="Marine mammals trait tree")
 
-inputTree= complexTree
 
+inputTree= batTree
 fgEdges = which(inputTree$edge.length==1)
 fgEdges
 fgEdgeObjects = inputTree$edge[fgEdges,]
@@ -60,7 +64,7 @@ cladList = NULL
 
 #Loop code
 for(i in fgEdges){
-  #message(i)
+  message(i)
   message(run)
   run=run+1
   startNode = inputTree$edge[i,1]
@@ -71,7 +75,7 @@ for(i in fgEdges){
   endNodes = fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2]
   endNodes
   
-  currentCladName = paste("clade", cladeNumber, sep = "")
+  currentCladName = paste("clade", cladNumber, sep = "")
   currentCladName
   
   if(!(length(endNodes)==1 | length(endNodes)==2)){
@@ -84,9 +88,9 @@ for(i in fgEdges){
   cladType = NULL
   if(length(endNodes) == 1 & all(endNodes<length(inputTree$tip.label))){
     cladType = "solo"
-  }else if(all(endNodes < length(inputTree$tip.label))){
+  }else if(all(endNodes <= length(inputTree$tip.label))){
     cladType = "starter"
-  }else if(any(endNodes < length(inputTree$tip.label)) & any(endNodes > length(inputTree$tip.label))){
+  }else if(any(endNodes <= length(inputTree$tip.label)) & any(endNodes > length(inputTree$tip.label))){
     cladType = "firstWrapper"
   }else if(length(endNodes) == 1 & all(endNodes>length(inputTree$tip.label))){
     cladType= "internal"
@@ -108,9 +112,9 @@ for(i in fgEdges){
   if(cladType == "starter"){
     speciesOne = inputTree$tip.label[endNodes[1]]
     speciesTwo = inputTree$tip.label[endNodes[2]]
-    assign(currentCladeName, c(speciesOne, speciesTwo))
+    assign(currentCladName, c(speciesOne, speciesTwo))
     cladEntry = startNode
-    names(cladEntry) = currentCladeName
+    names(cladEntry) = currentCladName
     message(cladEntry)
     cladList = append(cladList, cladEntry)
   }
@@ -143,12 +147,12 @@ for(i in firstWrapperEdges){
   }
   
   #making new clade
-  speciesNode = endNodes[which(endNodes<length(inputTree$tip.label))]
+  speciesNode = endNodes[which(endNodes <= length(inputTree$tip.label))]
   speciesNode
   speciesName = inputTree$tip.label[speciesNode]
   speciesName
-  cladNode = endNodes[which(endNodes>length(inputTree$tip.label))]
-  message(claeNode)
+  cladNode = endNodes[which(endNodes > length(inputTree$tip.label))]
+  message(cladNode)
   cladName = names(which(cladList == cladNode))
   assign(currentCladName, c(cladName, speciesName))
   
@@ -162,8 +166,11 @@ for(i in firstWrapperEdges){
 
 #loop for metaWrappers
 remainingMetaWrapperEdges = metaWrapperEdges
+stuckCycles = 0 
 
-while(length(remainingMetaWrapperEdges >0)){
+if(length(remainingMetaWrapperEdges >0 & stuckCycles < 10)){
+  message(paste("Length of remaining Edge Wrappers = ", length(remainingMetaWrapperEdges)))
+  startRemainingEdges = remainingMetaWrapperEdges
   for(i in remainingMetaWrapperEdges){
     message(run)
     run=run+1
@@ -193,11 +200,18 @@ while(length(remainingMetaWrapperEdges >0)){
     cladEntry = startNode
     names(cladEntry) = currentCladName
     message(cladEntry)
-    cladList = append(cladeList, cladEntry)
+    cladList = append(cladList, cladEntry)
   }
+  endRemainingEdges = remainingMetaWrapperEdges
+  if(startRemainingEdges == endRemainingEdges){
+    stuckCycles = stuckCycles+1
+  }else{
+    stuckCycles = 0
+  }
+  
 }
-cladObjectsList = ls(pattern = "clade")
-sistersListExport = list(clade1, clade2, clade3, clade4, clade5)
+cladObjectSet = ls(pattern = "clade")
+sistersListExport = list(cladObjectsList)
 #
  
-# 
+# ?ls
