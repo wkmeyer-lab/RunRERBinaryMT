@@ -399,12 +399,12 @@ sistersListExport =  mget(cladObjectSet)
 saveRDS(sistersListExport, file = sisListFilename)
 
 #
-manualSistersList = list(clade1, clade2, clade3, clade4, clade5, clade6, clade7, clade8, clade9, clade10, clade11, clade12,clade13,clade14,clade15,clade16,clade17,clade18,clade19,clade20)
+#manualSistersList = list(clade1, clade2, clade3, clade4, clade5, clade6, clade7, clade8, clade9, clade10, clade11, clade12,clade13,clade14,clade15,clade16,clade17,clade18,clade19,clade20)
 
 
-foregroundString = foregroundSpecies
-sistersList = manualSistersList
+#foregroundString = foregroundSpecies
+#sistersList = manualSistersList
 
 
-sistersListExport[!sistersListExport %in% manualSistersList]
-setdiff(sistersListExport, manualSistersList)
+#sistersListExport[!sistersListExport %in% manualSistersList]
+#setdiff(sistersListExport, manualSistersList)
