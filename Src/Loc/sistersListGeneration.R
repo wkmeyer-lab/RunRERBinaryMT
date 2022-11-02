@@ -71,12 +71,15 @@ for(i in fgEdges){
   message("Edge name ", i)
   run=run+1
   startNode = inputTree$edge[i,1]
-  startNode
+  
+  
   if(startNode %in% compeltedStartNodes){message("repeat"); next}
   compeltedStartNodes = append(compeltedStartNodes, startNode)
   
+  message("Start node: ", startNode)
+  
   endNodes = fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2]
-  endNodes
+  message("End nodes:", endNodes[1], " ", endNodes[2])
   
   currentCladName = paste("clade", cladNumber, sep = "")
   currentCladName
@@ -210,7 +213,7 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
     cladEntry = startNode
     names(cladEntry) = currentCladName
     message("clade entry: ", cladEntry)
-    message("clade number: " cladNumber)
+    message("clade number: ", cladNumber)
     cladList = append(cladList, cladEntry)
     
     cladNumber = cladNumber+1
@@ -230,12 +233,142 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
       stuckCycles = 0
     }
   }
-
-  
 }
+stuckCycles = 0 
+
+#check for internal branches which are causing errors
+run = 1
+stuckCycles = 0 
+while(length(remainingWrapperEdges >0) & stuckCycles < 20){
+  for(i in remainingWrapperEdges){
+    message("-----")
+    message("Resolve Internals Run # ", run)
+    message("Edge name: ", i)
+    
+    startRemainingEdges = length(remainingWrapperEdges)
+    message(paste("Remaining Edges = ", remainingWrapperEdges))
+    message(paste("number of stuck cycles = ", stuckCycles))
+    
+    
+    
+    run=run+1
+    startNode = inputTree$edge[i,1]
+    message("startnode: ", startNode)
+    endNodes = fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2]
+    message("Endnodes: ", endNodes[1], " ", endNodes[2])
+    currentCladName = paste("clade", cladNumber, sep = "")
+    currentCladName
+    
+    if(!(length(endNodes)==1 | length(endNodes)==2)){
+      message(paste("Something has gone wrong; foreground branch ", i, "has incorrect number of child nodes."))
+    }
+    
+    message("")
+    firstNode = endNodes[1]
+    message("First Node: ", firstNode)
+    firstNodeChildren = inputTree$edge[which(inputTree$edge[,1] == firstNode),2]
+    message("First Node Children: ", firstNodeChildren[1], " ", firstNodeChildren[2])
+    
+    if(any(!(firstNodeChildren %in% fgEdgeObjects))){
+      if((!(firstNodeChildren[1] %in% fgEdgeObjects))){
+        message(firstNodeChildren[1], " is not foreground")
+        firstNode = firstNodeChildren[2]
+        fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][1] = firstNodeChildren[2]
+      }
+      if((!(firstNodeChildren[2] %in% fgEdgeObjects))){
+        message(firstNodeChildren[2], " is not foreground")
+        firstNode = firstNodeChildren[1]
+        fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][1] = firstNodeChildren[1]
+      }
+    }
+    
+    message("")
+    secondNode = endNodes[2]
+    message("Second Node: ", secondNode)
+    secondNodeChildren = inputTree$edge[which(inputTree$edge[,1] == secondNode),2]
+    message("Second Node Children: ", secondNodeChildren[1], " ", secondNodeChildren[2])
+    
+    if(any(!(secondNodeChildren %in% fgEdgeObjects))){
+      if((!(secondNodeChildren[1] %in% fgEdgeObjects))){
+        message(secondNodeChildren[1], " is not foreground")
+        secondNode = secondNodeChildren[2]
+        fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][2] = secondNodeChildren[2]
+        }
+      if((!(secondNodeChildren[2] %in% fgEdgeObjects))){
+        message(secondNodeChildren[2], " is not foreground")
+        secondNode = secondNodeChildren[1]
+        fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][2] = secondNodeChildren[1]
+        }
+    }
+    
+    firstNodeValid = (firstNode <= length(inputTree$tip.label) | firstNode %in% cladList )
+    message("first node valid: ", firstNodeValid)
+  
+    secondNodeValid = (secondNode <= length(inputTree$tip.label) | secondNode %in% cladList )
+    message("secondNodeValid: ", secondNodeValid)
+    
+    #if the two child nodes have not bee proccessed yet, skip this node for now
+    if((firstNodeValid & secondNodeValid)){
+      
+      #otherwise, remove this node from the to-do list, and continue
+      remainingWrapperEdges = remainingWrapperEdges[!remainingWrapperEdges %in% i]
+      remainingWrapperEdges
+      
+      #get the first node's name
+      if(firstNode <= length(inputTree$tip.label)){
+        firstNodeName = inputTree$tip.label[firstNode]
+      }else{
+        firstNodeName = names(which(cladList == firstNode))
+      }
+      message("firstNodeName: ", firstNodeName)
+      
+      #get the second node's name
+      if(secondNode <= length(inputTree$tip.label)){
+        secondNodeName = inputTree$tip.label[secondNode]
+      }else{
+        secondNodeName = names(which(cladList == secondNode))
+      }
+      message("secondNodeName: ", secondNodeName)
+      
+      #Make the clade object
+      assign(currentCladName, c(firstNodeName, secondNodeName))
+      
+      #Add the clade to the list
+      cladEntry = startNode
+      names(cladEntry) = currentCladName
+      message("clade entry: ", cladEntry)
+      message("clade number: ", cladNumber)
+      cladList = append(cladList, cladEntry)
+      
+      cladNumber = cladNumber+1
+      
+      
+    }else{
+      message("Node not valid, skipping branch")
+    }
+    
+    #check if it was stuck during this loop
+    endRemainingEdges = length(remainingWrapperEdges)
+    endRemainingEdges
+    if(startRemainingEdges == endRemainingEdges){
+      stuckCycles = stuckCycles+1
+      stuckCycles
+    }else{
+      stuckCycles = 0
+    }
+  }
+}
+
 cladObjectSet = ls(pattern = "clade")
 sistersListExport = list(cladObjectsList)
 #
+
+
+
+
+
+
+
 
 
 
