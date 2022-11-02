@@ -28,7 +28,8 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 
 #testing args 
-#args = c('r=allInsectivory','n=648360')
+#args = c('r=allInsectivory','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+
 
 #default values: 
 #maintree and phylo location:

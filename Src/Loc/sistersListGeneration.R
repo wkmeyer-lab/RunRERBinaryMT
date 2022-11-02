@@ -378,6 +378,15 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
   }
 }
 
+# ---- generate a foreground string ----
+foregroundNodes = which(1:1000 %in% as.vector(fgEdgeObjects))
+foregroundStartNodes = foregroundNodes[foregroundNodes <= length(inputTree$tip.label)]
+foregroundSpecies = inputTree$tip.label[foregroundStartNodes]
+
+foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "foregroundSpecies.rds", sep="")
+saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
+
+
 cladObjectSet = ls(pattern = "clade")
 sistersListExport = list(pattern = "clade")
 #
@@ -386,12 +395,9 @@ sistersListExport = list(pattern = "clade")
 sisListFilename = paste(outputFolderName, filePrefix, "sistersList.rds", sep="")
 saveRDS(sistersListExport, file = sisListFilename)
 
+#
+manualSistersList = list(clade1, clade2, clade3, clade4, clade5, clade6, clade7, clade8, clade9, clade10, clade11, clade12,clade13,clade14,clade15,clade16,clade17,clade18,clade19,clade20)
 
 
-
-
-
-
-
-
-
+foregroundString = foregroundSpecies
+sistersList = manualSistersList
