@@ -34,10 +34,10 @@ source("Src/Reu/convertLogiToNumeric.R")
 #default values: 
 #maintree and phylo location:
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
-mainTrees = readRDS(mainTreesLocation)
+#mainTrees = readRDS(mainTreesLocation)
 
 #file prefix: 
-filePrefix = "allInsectivory"
+filePrefix = NULL
 
 #species filter
 speciesFilter = NULL
@@ -173,6 +173,25 @@ sistersList = list("clade1" = c("vs_eptFus1", "vs_HLpipPip2"),
                    "clade19"= c("clade18", "vs_HLmunMug1")
                     )
 # ---------------------------- End Manual Portion ----------------------------
+
+# -- Attempt to import pre-made foreground and sisters lists ----
+foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "foregroundSpecies.rds", sep="")
+if(file.exists(foregroundSpeciesFilename)){
+  foregroundString = readRDS(foregroundSpeciesFilename)
+  paste("Pre-made foreground string found. Using pre-made string.")
+}else{
+  paste("No pre-made foreground found. Using manual foreground.")
+}
+
+sisListFilename = paste(outputFolderName, filePrefix, "sistersList.rds", sep="")
+if(file.exists(sisListFilename)){
+  sistersList = readRDS(sisListFilename)
+  paste("Pre-made sistersList found. Using pre-made sisterList.")
+}else{
+  paste("No pre-made sistersList found. Using manual sistersList.")
+}
+# ------------------------------
+
 
 # --- Print a copy of the foreground Clades tree
 fgCladeTreeFilename = paste(outputFolderName, filePrefix, "CladesForegroundTreeFile.pdf", sep= "")
