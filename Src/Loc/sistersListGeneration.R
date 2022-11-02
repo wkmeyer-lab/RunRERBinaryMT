@@ -34,7 +34,8 @@ edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue")
 nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green")
 tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
-#
+#testing args: 
+args = "r=allInsectivory"
 
 # ------ Command Line Imports:
 
@@ -388,7 +389,7 @@ saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
 
 
 cladObjectSet = ls(pattern = "clade")
-sistersListExport = list(pattern = "clade")
+sistersListExport = as.list(cladObjectSet)
 #
 
 # ---- save the list ----
