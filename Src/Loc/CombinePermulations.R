@@ -155,7 +155,24 @@ for(i in (startValue+2):(startValue+permulationNumberValue-1)){
   }
 }
 
-# save output as file
+# ---- Calculate the pValues -----
+
+# -- Get clades correlation --
+#This relies on a correlationFile produced by the runPermulations initial scripts. If that file doesn't exist, it skips the step and goes directly to saving the combined permulations.
+
+cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
+if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
+  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
+
+  # -- run pValue calculation --
+  permulationPValues = permpvalcor(cladesCorrelation, combinedPermulationsData)
+  
+  #save the permulations p values
+  permulationPValueFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsPValue", runInstanceValue, ".rds", sep= "")
+  saveRDS(permulationPValues, file = permulationPValueFileName)
+}
+
+# ---- Save Combined Permulations output as a file ---
 if(metacombineValue == F){
   combinedDataFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsData", runInstanceValue, ".rds", sep="")
 }else{
