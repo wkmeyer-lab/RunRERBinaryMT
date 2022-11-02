@@ -388,12 +388,14 @@ foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "foregroundSpeci
 saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
 
 
-cladObjectSet = ls(pattern = "clade")
-sistersListExport = as.list(cladObjectSet)
+
+
 #
 
 # ---- save the list ----
 sisListFilename = paste(outputFolderName, filePrefix, "sistersList.rds", sep="")
+cladObjectSet = ls(pattern = "clade")
+sistersListExport =  mget(cladObjectSet)
 saveRDS(sistersListExport, file = sisListFilename)
 
 #
@@ -402,3 +404,7 @@ manualSistersList = list(clade1, clade2, clade3, clade4, clade5, clade6, clade7,
 
 foregroundString = foregroundSpecies
 sistersList = manualSistersList
+
+
+sistersListExport[!sistersListExport %in% manualSistersList]
+setdiff(sistersListExport, manualSistersList)
