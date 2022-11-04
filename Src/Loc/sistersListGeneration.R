@@ -35,6 +35,7 @@ nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green")
 tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
 #testing args: 
+args = "r=allInsectivory"
 args = "r=carnvHerbs"
 
 # ------ Command Line Imports:

@@ -175,7 +175,7 @@ sistersList = list("clade1" = c("vs_eptFus1", "vs_HLpipPip2"),
 # ---------------------------- End Manual Portion ----------------------------
 
 # -- Attempt to import pre-made foreground and sisters lists ----
-foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "foregroundSpecies.rds", sep="")
+foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "ForegroundSpecies.rds", sep="")
 if(file.exists(foregroundSpeciesFilename)){
   foregroundString = readRDS(foregroundSpeciesFilename)
   paste("Pre-made foreground string found. Using pre-made string.")
@@ -183,7 +183,7 @@ if(file.exists(foregroundSpeciesFilename)){
   paste("No pre-made foreground found. Using manual foreground.")
 }
 
-sisListFilename = paste(outputFolderName, filePrefix, "sistersList.rds", sep="")
+sisListFilename = paste(outputFolderName, filePrefix, "SistersList.rds", sep="")
 if(file.exists(sisListFilename)){
   sistersList = readRDS(sisListFilename)
   paste("Pre-made sistersList found. Using pre-made sisterList.")
