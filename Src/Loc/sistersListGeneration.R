@@ -26,8 +26,8 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
 
-batplot2 = plotTreeHighlightBranches(batTree,
-                                     hlspecies=which(batTree$edge.length== 3),
+testplot2 = plotTreeHighlightBranches(inputTree,
+                                     hlspecies=which(inputTree$edge.length== 3),
                                      hlcols="blue", main="Marine mammals trait tree")
 
 edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue")
@@ -80,7 +80,7 @@ inputTreeFilename = paste(outputFolderName, filePrefix, "BinaryForegroundTree.rd
 inputTree= readRDS(inputTreeFilename) 
 
 # -- Foreground Edges --
-fgEdges = which(inputTree$edge.length==1)                                       #Make a list of the edges in the foreground
+fgEdges = which(inputTree$edge.length>=1)                                       #Make a list of the edges in the foreground
 fgEdgeObjects = inputTree$edge[fgEdges,]                                        #Make an object of the edges in the foreground. This is used as opposed to just referencing the tree directly to allow for "walking" in the final loop of the code
 
 
