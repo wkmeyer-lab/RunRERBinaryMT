@@ -402,7 +402,7 @@ foregroundNodes = which(1:1000 %in% as.vector(fgEdgeObjects))
 foregroundStartNodes = foregroundNodes[foregroundNodes <= length(inputTree$tip.label)]
 foregroundSpecies = inputTree$tip.label[foregroundStartNodes]
 
-foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "foregroundSpecies.rds", sep="")
+foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "ForegroundSpecies.rds", sep="")
 saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
 
 
@@ -411,7 +411,7 @@ saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
 #
 
 # ---- save the list ----
-sisListFilename = paste(outputFolderName, filePrefix, "sistersList.rds", sep="")
+sisListFilename = paste(outputFolderName, filePrefix, "SistersList.rds", sep="")
 cladObjectSet = ls(pattern = "clade")
 sistersListExport =  mget(cladObjectSet)
 saveRDS(sistersListExport, file = sisListFilename)
