@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -p hawkmem
+#SBATCH -p lts
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -t 10
