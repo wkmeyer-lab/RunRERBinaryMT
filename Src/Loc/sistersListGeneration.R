@@ -297,13 +297,13 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
     if(any(!(firstNodeChildren %in% fgEdgeObjects))){                           #If either of the grandchildren of the first end node are not in the foreground
       if((!(firstNodeChildren[1] %in% fgEdgeObjects))){                         #If it's the first one        
         message(firstNodeChildren[1], " is not foreground")                     #tell the user
-        message("Replacing ", firstNode, "with child ", firstNodeChildren[2])   #Tell the user how you are fixing the problem
+        message("Replacing ", firstNode, " with child ", firstNodeChildren[2])   #Tell the user how you are fixing the problem
         firstNode = firstNodeChildren[2]                                        #set the "first node" as the valid grandchild instead, effectively skipping the node which has a non-foreground child
         fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][1] = firstNodeChildren[2] #Do the same to the children list which is stable outside this instance of the loop. By doing this, it can progressively walk the node down the chain one step each time it is run through, to handle multiple background child nodes.
       }
       if((!(firstNodeChildren[2] %in% fgEdgeObjects))){                         #If it's the second
         message(firstNodeChildren[2], " is not foreground")                     #tell the user
-        message("Replacing ", firstNode, "with child ", firstNodeChildren[1])   #Tell the user how you are fixing the problem
+        message("Replacing ", firstNode, " with child ", firstNodeChildren[1])   #Tell the user how you are fixing the problem
         firstNode = firstNodeChildren[1]                                        #set the "first node" as the valid grandchild instead.
         fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][1] = firstNodeChildren[1] #Do the same to the children list which is stable outside this instance of the loop.
       }
@@ -320,19 +320,21 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
     if(any(!(secondNodeChildren %in% fgEdgeObjects))){                          #If either of the grandchildren of the second end node are not in the foreground
       if((!(secondNodeChildren[1] %in% fgEdgeObjects))){                        #If it's the first one
         message(secondNodeChildren[1], " is not foreground")                    #tell the user
-        message("Replacing ", secondNode, "with child ", secondNodeChildren[2]) #Tell the user how you are fixing the problem
+        message("Replacing ", secondNode, " with child ", secondNodeChildren[2]) #Tell the user how you are fixing the problem
         secondNode = secondNodeChildren[2]                                      #set the "second node" as the valid grandchild instead.
         fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][2] = secondNodeChildren #Do the same to the children list which is stable outside this instance of the loop.
         }
       if((!(secondNodeChildren[2] %in% fgEdgeObjects))){                        #if It's the second one
         message(secondNodeChildren[2], " is not foreground")                    #tell the user
-        message("Replacing ", secondNode, "with child ", secondNodeChildren[1]) #Tell the user how you are fixing the problem
+        message("Replacing ", secondNode, " with child ", secondNodeChildren[1]) #Tell the user how you are fixing the problem
         secondNode = secondNodeChildren[1]                                      #set the "second node" as the valid grandchild instead.
         fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][2] = secondNodeChildren[1] #Do the same to the children list which is stable outside this instance of the loop.
         }
     }
     
-    
+    message("-")
+    message("First Node: ", firstNode)
+    message("Second Node: ", secondNode)
     # ---- Above loop to evaluate wrapper nodes ---
     firstNodeValid = (firstNode <= length(inputTree$tip.label) | firstNode %in% cladList ) #Set the first node as valid if either it had a tip label, or it has been assigned a clade
     message("first node valid: ", firstNodeValid)                               #Report if the node is valid
@@ -369,7 +371,17 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
       cladNumber = cladNumber+1                                                 #update the clade number
       
       
-    }else{                                                                      #from before, for if one of the child nodes hasn't been processed yet
+    }else if ((!secondNodeValid | !firstNodeValid)){                            #Add a test for sitautions where an internal connection between foreground nodes is not itself foreground. Because this is such an odd edgecase, notify the user and do not attempt to resolve. 
+      if(!firstNode %in% cladList){                                             #If the endNode is not in the clade list (this almost always happens because it on has one foreground child edge)
+        if(all(firstNodeChildren %in% fgEdgeObjects)){                          #And both children are foreground
+          message("The foreground node ", firstNode, "had two child nodes ", firstNodeChildren[1], " and ", firstNodeChildren[2], "but one of the connections between them is not foreground. Manual inspection reqiured.")  #Notify user. 
+        }
+      }else if(!secondNode %in% cladList){                                      #If the endNode is not in the clade list (this almost always happens because it on has one foreground child edge)
+        if(all(secondNodeChildren %in% fgEdgeObjects)){                         #And both children are foreground
+          message("The foreground node ", secondNode, "had two child nodes ", secondNodeChildren[1], " and ", secondNodeChildren[2], " which are both foreground. However, one of the connections between them is not foreground. Manual inspection reqiured.") #Notify user. 
+        }
+      }
+    else{                                                                      #from before, for if one of the child nodes hasn't been processed yet
       message("Node not valid, skipping branch")                                #notify the user
     }
     
