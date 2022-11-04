@@ -381,8 +381,9 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
           message("The foreground node ", secondNode, "had two child nodes ", secondNodeChildren[1], " and ", secondNodeChildren[2], " which are both foreground. However, one of the connections between them is not foreground. Manual inspection reqiured.") #Notify user. 
         }
       }
-    else{                                                                      #from before, for if one of the child nodes hasn't been processed yet
+      else{                                                                      #from before, for if one of the child nodes hasn't been processed yet
       message("Node not valid, skipping branch")                                #notify the user
+      }
     }
     
     #check if it was stuck during this loop
