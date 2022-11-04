@@ -2,6 +2,7 @@
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library(tools)
+library(devtools)
 source(file = "Src/Reu/cmdArgImport.R")
 
 # ---- USAGE,README ----
@@ -23,7 +24,7 @@ mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia
 
 #local computer debug version:
 # mainTreesLocation = "data/RemadeTreesAllZoonomiaSpecies.rds"
-#args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=allInsectivory", "a=Ins_v_herbs", "t=bi", "c=all", "w=F")
+#args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=carnvHerbs", "a=CarnFish_Herbs", "t=bi", "c=all", "w=F")
 
 #Other defaults if not specified
 annotCollumn = "ERRORDEFAULT"
