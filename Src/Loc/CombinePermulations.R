@@ -12,7 +12,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 # ARUGMENTS: 
 #If an argument contains a '(' it is evaluated as code.
-# 'r="filePrefix"'              This is the prefix attached to all files a required argument. 
+# 'r="filePrefix"'              This is the prefix attached to all files; a required argument. 
 # 'n=numberOfPermulations'      This is the number of permulation files the script will try to combine
 # 'e=F' OR 'e=T'                This is if the permulations being combined are enriched or not. Accepts 'T', 'F', 'TRUE', 'FALSE', '0', and '1'. 
 # 's=<number>'                  This is the permulation number to start at. Used for parrallelization. 
