@@ -1,5 +1,5 @@
 #Library setup 
-#.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
@@ -8,22 +8,7 @@ source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/convertLogiToNumeric.R")
 
 
-# --- Walkthrough Toytrees Setup ---
-#rerpath = find.package('RERconverge')
-#toytreefile = "subsetMammalGeneTrees.txt" 
-#toyTrees=readTrees(paste(rerpath,"/extdata/",toytreefile,sep=""), max.read = 200)
-#marineExtantForground = c("Walrus", "Seal", "Killer_whale", "Dolphin", "Manatee")
-#marineAll = foreground2Tree(marineExtantForground, toyTrees, clade = "all", useSpecies = names(logAdultWeightcm))
-#marineplot2 = plotTreeHighlightBranches(marineAll,
-#                                        hlspecies=which(marineAll$edge.length== 3),
-#                                        hlcols="blue", main="Marine mammals trait tree")
-#complexFG = c("Golden_hamster","Chinese_hamster","Vole","Walrus", "Seal", "Killer_whale", "Dolphin", "Manatee", "Rat", "Mouse")
-#complexTree  = foreground2Tree(complexFG, toyTrees, clade = "all", useSpecies = names(logAdultWeightcm))
-#complexplot2 = plotTreeHighlightBranches(complexTree,
-#                                         hlspecies=which(complexTree$edge.length== 3),
-#                                         hlcols="blue", main="Marine mammals trait tree")
-
-
+# --- Debug settup---
 batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
 
 testplot2 = plotTreeHighlightBranches(inputTree,
@@ -37,6 +22,19 @@ tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 #testing args: 
 args = "r=allInsectivory"
 args = "r=carnvHerbs"
+
+
+# ----- USAGE -----
+#This is used to generate sistersList and foregroundStrings for permulations in RER converge. 
+#This expects:
+  # A binary foreground tree, generated using the makeTreeBinary script in this project. 
+  # An argument of a file prefix, for the folder to output to and find the binary tree. 
+#This produces: 
+  #A sistersList list, exported as an RDS. 
+  #A foreground string, exported as an RDS. 
+
+#ARGUMENTS: 
+# 'r="filePrefix"'              This is the prefix attached to all files; a required argument. 
 
 # ------ Command Line Imports:
 
