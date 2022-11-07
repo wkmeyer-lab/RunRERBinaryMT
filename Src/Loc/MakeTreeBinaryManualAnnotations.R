@@ -122,16 +122,23 @@ if(!dir.exists("Results")){
 
 manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")
 
-# --- subset the manual annots to only those with data in the collumn
-relevantSpecies = manualAnnots[ manualAnnots[[annotCollumn]] %in% c(0,1),]
-
-relevantSpeciesNames = relevantSpecies$FaName
-
-# -- output a species filter for this fileprefix 
-
+# ---- if a pre-defined species filter exists, use that. If not, create one. 
 speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="")
-saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
 
+
+if(!file.exists(speciesFilterFilename)){
+  # --- subset the manual annots to only those with data in the collumn
+  relevantSpecies = manualAnnots[ manualAnnots[[annotCollumn]] %in% c(0,1),]
+  
+  relevantSpeciesNames = relevantSpecies$FaName
+  
+  # -- output a species filter for this fileprefix 
+  
+  saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
+}else{
+  relevantSpecieslist = readRDS(speciesFilterFilename)
+  relevantSpecies = manualAnnots[ manualAnnots[["FaName"]] %in% relevantSpecieslist,]
+}
 # -- Setup foreground Species -- 
 
 foregroundSpeciesAnnot = relevantSpecies[ relevantSpecies[[annotCollumn]] %in% 1,]
