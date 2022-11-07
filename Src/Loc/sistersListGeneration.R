@@ -3,7 +3,7 @@
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
-library(paleotree)
+#library(paleotree)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/convertLogiToNumeric.R")
 
