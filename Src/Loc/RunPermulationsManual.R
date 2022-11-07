@@ -29,6 +29,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 #testing args 
 #args = c('r=allInsectivory','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+#args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 
 
 #default values: 
