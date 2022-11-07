@@ -9,15 +9,9 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 
 # --- Debug settup---
-batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
+#batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
 
-testplot2 = plotTreeHighlightBranches(inputTree,
-                                     hlspecies=which(inputTree$edge.length== 3),
-                                     hlcols="blue", main="Marine mammals trait tree")
-
-edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue")
-nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green")
-tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
+#testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
 #testing args: 
 args = "r=allInsectivory"
