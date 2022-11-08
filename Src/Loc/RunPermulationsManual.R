@@ -29,6 +29,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 #testing args 
 #args = c('r=allInsectivory','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+#args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 
 
 #default values: 
@@ -175,21 +176,22 @@ sistersList = list("clade1" = c("vs_eptFus1", "vs_HLpipPip2"),
 # ---------------------------- End Manual Portion ----------------------------
 
 # -- Attempt to import pre-made foreground and sisters lists ----
-foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "foregroundSpecies.rds", sep="")
-#if(file.exists(foregroundSpeciesFilename)){
-#  foregroundString = readRDS(foregroundSpeciesFilename)
-#  paste("Pre-made foreground string found. Using pre-made string.")
-#}else{
-#  paste("No pre-made foreground found. Using manual foreground.")
-#}
 
-#sisListFilename = paste(outputFolderName, filePrefix, "sistersList.rds", sep="")
-#if(file.exists(sisListFilename)){
-#  sistersList = readRDS(sisListFilename)
-#  paste("Pre-made sistersList found. Using pre-made sisterList.")
-#}else{
-#  paste("No pre-made sistersList found. Using manual sistersList.")
-#}
+foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "ForegroundSpecies.rds", sep="")
+if(file.exists(foregroundSpeciesFilename)){
+  foregroundString = readRDS(foregroundSpeciesFilename)
+  paste("Pre-made foreground string found. Using pre-made string.")
+}else{
+  paste("No pre-made foreground found. Using manual foreground.")
+}
+
+sisListFilename = paste(outputFolderName, filePrefix, "SistersList.rds", sep="")
+if(file.exists(sisListFilename)){
+  sistersList = readRDS(sisListFilename)
+  paste("Pre-made sistersList found. Using pre-made sisterList.")
+}else{
+  paste("No pre-made sistersList found. Using manual sistersList.")
+}
 # ------------------------------
 
 

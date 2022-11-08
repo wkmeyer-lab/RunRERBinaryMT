@@ -1,41 +1,34 @@
 #Library setup 
-#.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
-library(paleotree)
+#library(paleotree)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/convertLogiToNumeric.R")
 
 
-# --- Walkthrough Toytrees Setup ---
-#rerpath = find.package('RERconverge')
-#toytreefile = "subsetMammalGeneTrees.txt" 
-#toyTrees=readTrees(paste(rerpath,"/extdata/",toytreefile,sep=""), max.read = 200)
-#marineExtantForground = c("Walrus", "Seal", "Killer_whale", "Dolphin", "Manatee")
-#marineAll = foreground2Tree(marineExtantForground, toyTrees, clade = "all", useSpecies = names(logAdultWeightcm))
-#marineplot2 = plotTreeHighlightBranches(marineAll,
-#                                        hlspecies=which(marineAll$edge.length== 3),
-#                                        hlcols="blue", main="Marine mammals trait tree")
-#complexFG = c("Golden_hamster","Chinese_hamster","Vole","Walrus", "Seal", "Killer_whale", "Dolphin", "Manatee", "Rat", "Mouse")
-#complexTree  = foreground2Tree(complexFG, toyTrees, clade = "all", useSpecies = names(logAdultWeightcm))
-#complexplot2 = plotTreeHighlightBranches(complexTree,
-#                                         hlspecies=which(complexTree$edge.length== 3),
-#                                         hlcols="blue", main="Marine mammals trait tree")
+# --- Debug settup---
+#batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
 
-
-batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
-
-batplot2 = plotTreeHighlightBranches(batTree,
-                                     hlspecies=which(batTree$edge.length== 3),
-                                     hlcols="blue", main="Marine mammals trait tree")
-
-edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue")
-nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green")
-tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
+#testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
 #testing args: 
 args = "r=allInsectivory"
+args = "r=carnvHerbs"
+
+
+# ----- USAGE -----
+#This is used to generate sistersList and foregroundStrings for permulations in RER converge. 
+#This expects:
+  # A binary foreground tree, generated using the makeTreeBinary script in this project. 
+  # An argument of a file prefix, for the folder to output to and find the binary tree. 
+#This produces: 
+  #A sistersList list, exported as an RDS. 
+  #A foreground string, exported as an RDS. 
+
+#ARGUMENTS: 
+# 'r="filePrefix"'              This is the prefix attached to all files; a required argument. 
 
 # ------ Command Line Imports:
 
@@ -80,7 +73,7 @@ inputTreeFilename = paste(outputFolderName, filePrefix, "BinaryForegroundTree.rd
 inputTree= readRDS(inputTreeFilename) 
 
 # -- Foreground Edges --
-fgEdges = which(inputTree$edge.length==1)                                       #Make a list of the edges in the foreground
+fgEdges = which(inputTree$edge.length>=1)                                       #Make a list of the edges in the foreground
 fgEdgeObjects = inputTree$edge[fgEdges,]                                        #Make an object of the edges in the foreground. This is used as opposed to just referencing the tree directly to allow for "walking" in the final loop of the code
 
 
@@ -297,11 +290,13 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
     if(any(!(firstNodeChildren %in% fgEdgeObjects))){                           #If either of the grandchildren of the first end node are not in the foreground
       if((!(firstNodeChildren[1] %in% fgEdgeObjects))){                         #If it's the first one        
         message(firstNodeChildren[1], " is not foreground")                     #tell the user
+        message("Replacing ", firstNode, " with child ", firstNodeChildren[2])   #Tell the user how you are fixing the problem
         firstNode = firstNodeChildren[2]                                        #set the "first node" as the valid grandchild instead, effectively skipping the node which has a non-foreground child
         fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][1] = firstNodeChildren[2] #Do the same to the children list which is stable outside this instance of the loop. By doing this, it can progressively walk the node down the chain one step each time it is run through, to handle multiple background child nodes.
       }
       if((!(firstNodeChildren[2] %in% fgEdgeObjects))){                         #If it's the second
-        message(firstNodeChildren[2], " is not foreground")                     #tell the user 
+        message(firstNodeChildren[2], " is not foreground")                     #tell the user
+        message("Replacing ", firstNode, " with child ", firstNodeChildren[1])   #Tell the user how you are fixing the problem
         firstNode = firstNodeChildren[1]                                        #set the "first node" as the valid grandchild instead.
         fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][1] = firstNodeChildren[1] #Do the same to the children list which is stable outside this instance of the loop.
       }
@@ -318,17 +313,21 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
     if(any(!(secondNodeChildren %in% fgEdgeObjects))){                          #If either of the grandchildren of the second end node are not in the foreground
       if((!(secondNodeChildren[1] %in% fgEdgeObjects))){                        #If it's the first one
         message(secondNodeChildren[1], " is not foreground")                    #tell the user
+        message("Replacing ", secondNode, " with child ", secondNodeChildren[2]) #Tell the user how you are fixing the problem
         secondNode = secondNodeChildren[2]                                      #set the "second node" as the valid grandchild instead.
         fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][2] = secondNodeChildren #Do the same to the children list which is stable outside this instance of the loop.
         }
       if((!(secondNodeChildren[2] %in% fgEdgeObjects))){                        #if It's the second one
         message(secondNodeChildren[2], " is not foreground")                    #tell the user
+        message("Replacing ", secondNode, " with child ", secondNodeChildren[1]) #Tell the user how you are fixing the problem
         secondNode = secondNodeChildren[1]                                      #set the "second node" as the valid grandchild instead.
         fgEdgeObjects[which(fgEdgeObjects[,1] == startNode),2][2] = secondNodeChildren[1] #Do the same to the children list which is stable outside this instance of the loop.
         }
     }
     
-    
+    message("-")
+    message("First Node: ", firstNode)
+    message("Second Node: ", secondNode)
     # ---- Above loop to evaluate wrapper nodes ---
     firstNodeValid = (firstNode <= length(inputTree$tip.label) | firstNode %in% cladList ) #Set the first node as valid if either it had a tip label, or it has been assigned a clade
     message("first node valid: ", firstNodeValid)                               #Report if the node is valid
@@ -365,8 +364,19 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
       cladNumber = cladNumber+1                                                 #update the clade number
       
       
-    }else{                                                                      #from before, for if one of the child nodes hasn't been processed yet
+    }else if ((!secondNodeValid | !firstNodeValid)){                            #Add a test for sitautions where an internal connection between foreground nodes is not itself foreground. Because this is such an odd edgecase, notify the user and do not attempt to resolve. 
+      if(!firstNode %in% cladList){                                             #If the endNode is not in the clade list (this almost always happens because it on has one foreground child edge)
+        if(all(firstNodeChildren %in% fgEdgeObjects)){                          #And both children are foreground
+          message("The foreground node ", firstNode, "had two child nodes ", firstNodeChildren[1], " and ", firstNodeChildren[2], "but one of the connections between them is not foreground. Manual inspection reqiured.")  #Notify user. 
+        }
+      }else if(!secondNode %in% cladList){                                      #If the endNode is not in the clade list (this almost always happens because it on has one foreground child edge)
+        if(all(secondNodeChildren %in% fgEdgeObjects)){                         #And both children are foreground
+          message("The foreground node ", secondNode, "had two child nodes ", secondNodeChildren[1], " and ", secondNodeChildren[2], " which are both foreground. However, one of the connections between them is not foreground. Manual inspection reqiured.") #Notify user. 
+        }
+      }
+      else{                                                                      #from before, for if one of the child nodes hasn't been processed yet
       message("Node not valid, skipping branch")                                #notify the user
+      }
     }
     
     #check if it was stuck during this loop
@@ -384,7 +394,7 @@ foregroundNodes = which(1:1000 %in% as.vector(fgEdgeObjects))
 foregroundStartNodes = foregroundNodes[foregroundNodes <= length(inputTree$tip.label)]
 foregroundSpecies = inputTree$tip.label[foregroundStartNodes]
 
-foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "foregroundSpecies.rds", sep="")
+foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "ForegroundSpecies.rds", sep="")
 saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
 
 
@@ -393,7 +403,7 @@ saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
 #
 
 # ---- save the list ----
-sisListFilename = paste(outputFolderName, filePrefix, "sistersList.rds", sep="")
+sisListFilename = paste(outputFolderName, filePrefix, "SistersList.rds", sep="")
 cladObjectSet = ls(pattern = "clade")
 sistersListExport =  mget(cladObjectSet)
 saveRDS(sistersListExport, file = sisListFilename)
