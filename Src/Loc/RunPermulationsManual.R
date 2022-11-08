@@ -20,6 +20,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 # 't=rootSpeciesName'     This is the name of the root species, if not using REFERENCE(human)
 # 'n=numberOfPermulations' This is the number of permulations to run in the script 
 # 'i=runInstanceValue'    This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel. 
+# 'a=<T OR F>'            This stands for "automatic" and if FALSE forces the script to use the manual lists  
 
 
 
@@ -51,6 +52,9 @@ permulationNumberValue = 100
 
 #Run instance value 
 runInstanceValue = NULL
+
+#Use automatic lists 
+useAutomatic = T
 
 # --- Import prefix ----
 args = commandArgs(trailingOnly = TRUE)
@@ -127,6 +131,14 @@ if(!is.na(cmdArgImport('i'))){
 }
 print(permulationNumberValue)
 str(permulationNumberValue)
+
+#use automatic sisterlist 
+if(!is.na(cmdArgImport('a'))){
+  useAutomatic = cmdArgImport('a')
+  useAutomatic = as.logical(useAutomatic)
+}else{
+  paste("Manual list not being forced, using automatic if available")
+}
 # --------------------------------- MANUAL PORTION ---------------------
 #Setup foreground (manual)
 
@@ -178,7 +190,7 @@ sistersList = list("clade1" = c("vs_eptFus1", "vs_HLpipPip2"),
 # -- Attempt to import pre-made foreground and sisters lists ----
 
 foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "ForegroundSpecies.rds", sep="")
-if(file.exists(foregroundSpeciesFilename)){
+if(file.exists(foregroundSpeciesFilename) & useAutomatic){
   foregroundString = readRDS(foregroundSpeciesFilename)
   paste("Pre-made foreground string found. Using pre-made string.")
 }else{
@@ -186,7 +198,7 @@ if(file.exists(foregroundSpeciesFilename)){
 }
 
 sisListFilename = paste(outputFolderName, filePrefix, "SistersList.rds", sep="")
-if(file.exists(sisListFilename)){
+if(file.exists(sisListFilename) & useAutomatic){
   sistersList = readRDS(sisListFilename)
   paste("Pre-made sistersList found. Using pre-made sisterList.")
 }else{
