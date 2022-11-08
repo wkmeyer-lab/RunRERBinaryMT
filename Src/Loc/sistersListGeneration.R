@@ -14,8 +14,9 @@ source("Src/Reu/convertLogiToNumeric.R")
 #testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
 #testing args: 
-args = "r=allInsectivory"
 args = "r=carnvHerbs"
+args = "r=allInsectivory"
+
 
 
 # ----- USAGE -----
@@ -161,9 +162,12 @@ for(i in fgEdges){
   
   if(cladType == "solo"){                                                       #if this is a solo clade 
     speciesOne = inputTree$tip.label[endNodes[1]]                               #Set the species name as the end node's tip label
-    assign(currentCladName, c(speciesOne))                                      #assign that species name to the current clade name
-    cladList = addToCladList(startNode)                                         #Add this clade to the clade this
-    cladNumber = cladNumber+1                                                   #increase the clade number
+    #assign(currentCladName, c(speciesOne))                                      #assign that species name to the current clade name
+    soloEntry = startNode                                                       #Store the start node as CladEntry
+    names(soloEntry) = speciesOne                                               #Associate this node with he species name in the cladelist 
+    message("Solo node:", soloEntry)                                            #Message the node 
+    message("Species associated: ", speciesOne)                                 #Message the clade associated with that node
+    cladList = append(cladList, soloEntry)                                      #Add this clade to the clade list
   }
   else if(cladType == "starter"){                                               #If this is a start clade
     speciesOne = inputTree$tip.label[endNodes[1]]                               #Set the first species name to the tip label of the first node
