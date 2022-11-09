@@ -162,7 +162,11 @@ for(i in fgEdges){
   
   if(cladType == "solo"){                                                       #if this is a solo clade 
     speciesOne = inputTree$tip.label[endNodes[1]]                               #Set the species name as the end node's tip label
-    #assign(currentCladName, c(speciesOne))                                      #assign that species name to the current clade name
+      #---- old single-species clade Ver ----
+      #assign(currentCladName, c(speciesOne))                                      #assign that species name to the current clade name
+      #cladList = addToCladList(startNode)
+      #cladNumber = cladNumber+1                                                   #increase the clade number
+      #------
     soloEntry = startNode                                                       #Store the start node as CladEntry
     names(soloEntry) = speciesOne                                               #Associate this node with he species name in the cladelist 
     message("Solo node:", soloEntry)                                            #Message the node 
