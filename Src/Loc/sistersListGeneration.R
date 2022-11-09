@@ -433,7 +433,7 @@ saveRDS(sistersListExport, file = sisListFilename)
 #sistersListExport[!sistersListExport %in% manualSistersList]
 #setdiff(sistersListExport, manualSistersList)
 
-sisterslistReOrder = sistersListExport[1]
-sisterslistReOrder = append(sisterslistReOrder, sistersListExport[12:19])
-sisterslistReOrder = append(sisterslistReOrder, sistersListExport[2:11])
-sister
+#sisterslistReOrder = sistersListExport[1]
+#sisterslistReOrder = append(sisterslistReOrder, sistersListExport[12:19])
+#sisterslistReOrder = append(sisterslistReOrder, sistersListExport[2:11])
+#sister
