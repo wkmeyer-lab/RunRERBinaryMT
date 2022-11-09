@@ -418,7 +418,7 @@ sistersListExport =  mget(cladObjectSet)
 sisterslistReOrder = sistersListExport[1]
 sisterslistReOrder = append(sisterslistReOrder, sistersListExport[12:19])
 sisterslistReOrder = append(sisterslistReOrder, sistersListExport[2:11])
-sisterListExport = sisterslistReOrder
+sistersListExport = sisterslistReOrder
 # --- 
 saveRDS(sistersListExport, file = sisListFilename)
 
@@ -436,4 +436,6 @@ saveRDS(sistersListExport, file = sisListFilename)
 #sisterslistReOrder = sistersListExport[1]
 #sisterslistReOrder = append(sisterslistReOrder, sistersListExport[12:19])
 #sisterslistReOrder = append(sisterslistReOrder, sistersListExport[2:11])
+
+#sisterslistReOrder = append(sisterslistReOrder, sistersListExport[grep("clade2", names(sisterListExport))])
 #sister
