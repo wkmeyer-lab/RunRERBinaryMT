@@ -414,10 +414,13 @@ saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
 sisListFilename = paste(outputFolderName, filePrefix, "SistersList.rds", sep="")
 cladObjectSet = ls(pattern = "clade")
 sistersListExport =  mget(cladObjectSet)
-# -- trial re-ordering code -- 
+orderedCladNames = "clade1"
 sisterslistReOrder = sistersListExport[1]
-sisterslistReOrder = append(sisterslistReOrder, sistersListExport[12:19])
-sisterslistReOrder = append(sisterslistReOrder, sistersListExport[2:11])
+for(i in 2:length(sisterListExport)){
+  newCladNameObject = paste("clade", i, sep = '')
+  orderedCladNames = append(orderedCladNames, newCladNameObject)
+  sisterslistReOrder = append(sisterslistReOrder, sistersListExport[grep(orderedCladNames[i], names(sistersListExport))])
+}
 sistersListExport = sisterslistReOrder
 # --- 
 saveRDS(sistersListExport, file = sisListFilename)
@@ -436,6 +439,12 @@ saveRDS(sistersListExport, file = sisListFilename)
 #sisterslistReOrder = sistersListExport[1]
 #sisterslistReOrder = append(sisterslistReOrder, sistersListExport[12:19])
 #sisterslistReOrder = append(sisterslistReOrder, sistersListExport[2:11])
+#orderedCladNames = c("clade1", "clade2", "clade3", "clade4","clade5","clade6","clade7","clade8","clade9","clade10","clade11","clade12","clade13","clade14","clade15","clade16","clade17","clade18","clade19","clade20","clade21","clade22","clade23","clade24","clade25","clade26","clade27","clade28","clade29","clade30","clade31","clade32","clade33","clade34","clade35","clade36","clade37","clade38","clade39","clade40","clade41","clade42","clade43","clade44","clade45","clade46","clade47","clade48","clade49","clade50")
+#orderedCladNames = "clade1"
+#sisterslistReOrder = sistersListExport[1]
+#for(i in 2:length(sisterListExport)){
+#  newCladNameObject = paste("clade", i, sep = '')
+#  orderedCladNames = append(orderedCladNames, newCladNameObject)
+#  sisterslistReOrder = append(sisterslistReOrder, sistersListExport[grep(orderedCladNames[i], names(sistersListExport))])
+#}
 
-#sisterslistReOrder = append(sisterslistReOrder, sistersListExport[grep("clade2", names(sisterListExport))])
-#sister
