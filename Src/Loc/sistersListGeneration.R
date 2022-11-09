@@ -418,7 +418,7 @@ sistersListExport =  mget(cladObjectSet)
 # -- reorder the list to be in the "clade1, clade2" format --
 orderedCladNames = "clade1"
 sisterslistReOrder = sistersListExport[1]
-for(i in 2:length(sisterListExport)){
+for(i in 2:length(sistersListExport)){
   newCladNameObject = paste("clade", i, sep = '')
   orderedCladNames = append(orderedCladNames, newCladNameObject)
   sisterslistReOrder = append(sisterslistReOrder, sistersListExport[grep(orderedCladNames[i], names(sistersListExport))])
