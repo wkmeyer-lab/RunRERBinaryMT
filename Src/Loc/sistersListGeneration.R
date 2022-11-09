@@ -414,6 +414,12 @@ saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
 sisListFilename = paste(outputFolderName, filePrefix, "SistersList.rds", sep="")
 cladObjectSet = ls(pattern = "clade")
 sistersListExport =  mget(cladObjectSet)
+# -- trial re-ordering code -- 
+sisterslistReOrder = sistersListExport[1]
+sisterslistReOrder = append(sisterslistReOrder, sistersListExport[12:19])
+sisterslistReOrder = append(sisterslistReOrder, sistersListExport[2:11])
+sisterListExport = sisterslistReOrder
+# --- 
 saveRDS(sistersListExport, file = sisListFilename)
 
 #
@@ -426,3 +432,8 @@ saveRDS(sistersListExport, file = sisListFilename)
 
 #sistersListExport[!sistersListExport %in% manualSistersList]
 #setdiff(sistersListExport, manualSistersList)
+
+sisterslistReOrder = sistersListExport[1]
+sisterslistReOrder = append(sisterslistReOrder, sistersListExport[12:19])
+sisterslistReOrder = append(sisterslistReOrder, sistersListExport[2:11])
+sister
