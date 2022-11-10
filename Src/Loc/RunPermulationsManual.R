@@ -206,6 +206,9 @@ if(file.exists(sisListFilename) & useAutomatic){
 }
 # ------------------------------
 
+message("sistersList:")
+message(sistersList)
+
 
 # --- Print a copy of the foreground Clades tree
 fgCladeTreeFilename = paste(outputFolderName, filePrefix, "CladesForegroundTreeFile.pdf", sep= "")
