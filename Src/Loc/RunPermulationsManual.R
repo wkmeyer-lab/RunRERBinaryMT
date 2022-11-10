@@ -207,6 +207,7 @@ if(file.exists(sisListFilename) & useAutomatic){
 # ------------------------------
 
 message("sistersList:")
+message(names(sistersList))
 message(sistersList)
 
 
