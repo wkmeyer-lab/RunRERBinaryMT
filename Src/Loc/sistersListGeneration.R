@@ -397,10 +397,17 @@ while(length(remainingWrapperEdges >0) & stuckCycles < 20){
   }
 }
 
+
 # ---- generate a foreground string ----
 foregroundNodes = which(1:1000 %in% as.vector(fgEdgeObjects))
 foregroundStartNodes = foregroundNodes[foregroundNodes <= length(inputTree$tip.label)]
 foregroundSpecies = inputTree$tip.label[foregroundStartNodes]
+
+#TESTING CODE
+clade4[2] = "vs_mypDav1"
+clade6[2] = "ptePar1"
+foregroundSpecies[12] = "vs_mypDav1"
+foregroundSpecies[17] = "ptePar1"
 
 foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "ForegroundSpecies.rds", sep="")
 saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
