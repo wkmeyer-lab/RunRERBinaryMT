@@ -405,9 +405,9 @@ foregroundSpecies = inputTree$tip.label[foregroundStartNodes]
 
 #TESTING CODE
 clade3[2] = "vs_mypDav1"
-#clade6[2] = "ptePar1"
+clade6[2] = "prePar1"
 foregroundSpecies[12] = "vs_mypDav1"
-foregroundSpecies[17] = "ptePar1"
+foregroundSpecies[17] = "prePar1"
 
 foregroundSpeciesFilename = paste(outputFolderName, filePrefix, "ForegroundSpecies.rds", sep="")
 saveRDS(foregroundSpecies, file = foregroundSpeciesFilename)
