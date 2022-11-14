@@ -187,10 +187,10 @@ sistersList = list("clade1" = c("vs_eptFus1", "vs_HLpipPip2"),
                     )
 
 #Fix typos
-foregroundString[6] = vs_myoDav1
-foregroundString[12] = vs_ptePar1
-sistersList$clade4[1] = vs_myoDav1
-sistersList$clade11[1] = vs_ptePar1
+foregroundString[6] = "vs_myoDav1"
+foregroundString[12] = "vs_ptePar1"
+sistersList$clade4[1] = "vs_myoDav1"
+sistersList$clade11[1] = "vs_ptePar1"
 # ---------------------------- End Manual Portion ----------------------------
 
 
