@@ -185,7 +185,15 @@ sistersList = list("clade1" = c("vs_eptFus1", "vs_HLpipPip2"),
                    "clade18"= c("vs_HLmanPen2", "vs_HLmanJav2"),
                    "clade19"= c("clade18", "vs_HLmunMug1")
                     )
+
+#Fix typos
+foregroundString[6] = vs_myoDav1
+foregroundString[12] = vs_ptePar1
+sistersList$clade4[1] = vs_myoDav1
+sistersList$clade11[1] = vs_ptePar1
 # ---------------------------- End Manual Portion ----------------------------
+
+
 
 # -- Attempt to import pre-made foreground and sisters lists ----
 
