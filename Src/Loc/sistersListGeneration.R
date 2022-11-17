@@ -11,7 +11,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 # --- Debug settup---
 #batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
 
-#testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
+#dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
 #testing args: 
 args = "r=carnvHerbs"
@@ -433,6 +433,25 @@ for(i in 2:length(sistersListExport)){
 sistersListExport = sisterslistReOrder
 # --- save the list --
 saveRDS(sistersListExport, file = sisListFilename)
+
+
+#---- generate a number of internal nodes 
+internalNodes = foregroundNodes[foregroundNodes >= (length(inputTree$tip.label)+1)] #Get the number of internal nodes
+internalNodeNumber = length(internalNodes)
+message("internal node number: ", length(internalNodes))                        #message the number of internal nodes
+#Save the internal node number 
+internalNodeFilename = paste(outputFolderName, filePrefix, "internalNodeNumber.rds", sep="")
+saveRDS(internalNodeNumber, file = internalNodeFilename)
+
+#---- generate a phenotypeVector (named int of all tips with0/1 indicating foreground)-----
+phenotypeVector = c(0,0)
+length(phenotypeVector) = length(inputTree$tip.label)
+phenotypeVector[] = 0 
+names(phenotypeVector) = inputTree$tip.label
+phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
+#Save the phenotypeVector
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
+saveRDS(phenotypeVector, file = phenotypeVectorFilename)
 
 #
 #manualSistersList = list(clade1, clade2, clade3, clade4, clade5, clade6, clade7, clade8, clade9, clade10, clade11, clade12,clade13,clade14,clade15,clade16,clade17,clade18,clade19,clade20)
