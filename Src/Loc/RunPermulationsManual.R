@@ -32,6 +32,8 @@ source("Src/Reu/convertLogiToNumeric.R")
 #args = c('r=allInsectivory','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 #args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 
+#Get start time of the script 
+timeStart = Sys.time()
 
 #default values: 
 #maintree and phylo location:
@@ -269,17 +271,36 @@ permulationNumber = permulationNumberValue
 #master tree
 masterTree = mainTrees$masterTree
 
+#print the current runtime
+timeBefore = Sys.time()
+runTimeBefore = timeBefore - timeStart
+message("Runtime: ", runTimeBefore)
+
+
 #Get the permulations
 permulationsCCVersion = getPermsBinary(permulationNumber, foregroundString, sistersList, rootSpecies, RERObject, mainTrees, mastertree =  masterTree, permmode = "cc")
 
 #Convert any logical vectors (all NA) to numeric vectors 
 permulationsCCVersion = convertLogiToNumericList(permulationsCCVersion)
 
+#Get time spent on permuations
+timeAfter = Sys.time()
+runTimeAfter = timeAfter - timeStart
+runTimeOfPerms = timeAfter - timeBefore
+message("Total runtime: ", runTimeAfter)
+message("Permulation runtime: ", runTimeOfPerms)
+
+
 #save the permulations 
 permualationsDataFileName = paste(outputFolderName, filePrefix, "PermulationsData", runInstanceValue, ".rds", sep= "")
 saveRDS(permulationsCCVersion, file = permualationsDataFileName)
 
-
+#get time spent on saving the file 
+timePostSave = Sys.time()
+runTimeAfter = timePostSave - timeStart
+runTimeOfSaving = timePostSave - timeAfter
+message("Total runtime: ", runTimeAfter)
+message("Saving runtime: ", runTimeOfSaving)
 
 # ---- DISABLED: Calculate the permulation P values -----
 ##Disabled to allow for pValue calculation on combined permutation datasets
