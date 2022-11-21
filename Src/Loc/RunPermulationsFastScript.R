@@ -221,18 +221,40 @@ computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, m
 
 #run repeated permulations
 correlationList = list()
-for(i in 1:permulationNumber){
-  singlePermCorrelation = computeCorrelationOnePermulation(rootedMasterTree, phenotypeVector, mainTrees, RERObject)
-  correlationList = append(correlationList, list(singlePermCorrelation))
+for(i in 1:permulationNumber){                                                  #Repeat for the number of permulations
+  singlePermCorrelation = computeCorrelationOnePermulation(rootedMasterTree, phenotypeVector, mainTrees, RERObject) #run one permulation each time
+  correlationList = append(correlationList, list(singlePermCorrelation))        #add it to a growing list of the dataframes outputted from CorrelateWithBinaryPhenotype
+  message("Completed permulation: ", i)                                         #report completed the permulation
 }
 
+#Convert the fast output into the getPermsBinary output format
+convertPermulationFormat = function(permulationCorList, RERObject = RERObject, permulationNumber = permulationNumber){
+  permulationCorList
+  permPvals = data.frame(matrix(ncol = permulationNumber, nrow = nrow(RERObject)))
+  rownames(permPvals) = rownames(RERObject)
+  permRhovals = data.frame(matrix(ncol = permulationNumber, nrow = nrow(RERObject)))
+  rownames(permRhovals) = rownames(RERObject)
+  permStatvals = data.frame(matrix(ncol = permulationNumber, nrow = nrow(RERObject)))
+  rownames(permStatvals) = rownames(RERObject)
+  for (i in 1:length(permulationCorList)) {
+    permPvals[, i] = permulationCorList[[i]]$P
+    permRhovals[, i] = permulationCorList[[i]]$Rho
+    permStatvals[, i] = sign(permulationCorList[[i]]$Rho) * -log10(permulationCorList[[i]]$P)
+  }
+  output = vector("list", 3)
+  output[[1]] = permPvals
+  output[[2]] = permRhovals
+  output[[3]] = permStatvals
+  names(output) = c("corP", "corRho", "corStat")
+  output
+}
+convertedPermulations = convertPermulationFormat(correlationList)
 
-length(which(rootedMasterTree$tip.label %in% names(phenotypeVector)))
-length(phenotypeVector)
+
 # ----- end of using fast permulations ----
 
 
-#Get time spent on permuations
+#Get time spent on permulations
 timeAfter = Sys.time()
 runTimeAfter = timeAfter - timeStart
 runTimeOfPerms = timeAfter - timeBefore
@@ -252,10 +274,6 @@ message("Total runtime: ", runTimeAfter)
 message("Saving runtime: ", runTimeOfSaving)
 
 
-
-inputTree = masterTree
-inputTree = rootedMasterTree
-#dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
 
 
@@ -298,6 +316,14 @@ inputTree = rootedMasterTree
 #  correlationCutoff = append(correlationCutoff, 1, 0)
 #  names(correlationCutoff)[1] = masterTree
 #  correlationCutoff
+
+length(which(rootedMasterTree$tip.label %in% names(phenotypeVector)))
+length(phenotypeVector)
+
+inputTree = masterTree
+inputTree = rootedMasterTree
+#dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
+
 
 
 data(bird.orders)
