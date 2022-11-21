@@ -264,7 +264,7 @@ message("Permulation runtime: ", runTimeOfPerms)
 
 #save the permulations 
 permualationsDataFileName = paste(outputFolderName, filePrefix, "PermulationsData", runInstanceValue, ".rds", sep= "")
-saveRDS(permulationsCCVersion, file = permualationsDataFileName)
+saveRDS(convertedPermulations, file = permualationsDataFileName)
 
 #get time spent on saving the file 
 timePostSave = Sys.time()
