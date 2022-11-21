@@ -212,13 +212,20 @@ rootedMasterTree = multi2di(masterTree)
 plot(masterTree)
 plot(rootedMasterTree)
 #The function used for each permulation:
-computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber, corellationList = list()){
+computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber){
   permulatedForeground = fastSimBinPhenoVec(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
   permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound 
   permulatedPaths = tree2Paths(permulatedTree, mainTrees, binarize=T, useSpecies=speciesFilter)                                                    #generate a path from that tree
   permulatedCorrelations = correlateWithBinaryPhenotype(RERObject, permulatedPaths, min.sp=min.sp)                                                 #Use that path to get a coreelation of the null phenotype to genes (this is the outbut of a Get PermsBinary run)
-  correlationList = append(correlationList, list(permulatedCorrelations))
 }
+
+#run repeated permulations
+correlationList = list()
+for(i in 1:permulationNumber){
+  singlePermCorrelation = computeCorrelationOnePermulation(rootedMasterTree, phenotypeVector, mainTrees, RERObject)
+  correlationList = append(correlationList, list(singlePermCorrelation))
+}
+
 
 length(which(rootedMasterTree$tip.label %in% names(phenotypeVector)))
 length(phenotypeVector)
