@@ -80,7 +80,7 @@ args = commandArgs(trailingOnly = TRUE)
 paste(args)
 message(args)
 
-write.csv(args, file = "Output/args.csv")
+#write.csv(args, file = "Output/args.csv")
 
 #Main Tree Location
 mTreesCommandline = grep("^m=",args, value = TRUE) #get a string based on the identifier
