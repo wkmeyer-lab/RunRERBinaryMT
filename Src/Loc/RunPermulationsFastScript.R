@@ -22,7 +22,7 @@ source("Src/Reu/fast_bin_perm.r")
 # 'n=numberOfPermulations' This is the number of permulations to run in the script 
 # 'i=runInstanceValue'    This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel. 
 # 'a=<T OR F>'            This stands for "automatic" and if FALSE forces the script to use the manual lists 
-# 'e=<integer>'           This specifies the number of internal nodes, overrides an automatic one. 
+#  DEPRACATED 'e=<integer>'           This specifies the number of internal nodes, overrides an automatic one. 
 # 'p=<T or F>'            This specifies if the trees used for permulation should be pruned. This significantly speeds up the permulations but maybe affect results (unclear) 
 
 
@@ -151,12 +151,12 @@ if(!is.na(cmdArgImport('a'))){
 }
 
 #number of internal nodes 
-if(!is.na(cmdArgImport('e'))){
-  useManualInternalNumber = T
-  manualInternalNumber = cmdArgImport('e')
-}else{
-  paste("Manual internal number not specified, using automatic if available")
-}
+#if(!is.na(cmdArgImport('e'))){
+#  useManualInternalNumber = T
+#  manualInternalNumber = cmdArgImport('e')
+#}else{
+#  paste("Manual internal number not specified, using automatic if available")
+#}
 
 #Should the tree be pruned
 if(!is.na(cmdArgImport('p'))){
@@ -187,14 +187,14 @@ if(file.exists(phenotypeVectorFilename = paste(outputFolderName, filePrefix, "ph
 }
 
 # --- Number of internal nodes --- 
-internalNodeFilename = paste(outputFolderName, filePrefix, "internalNodeNumber.rds", sep="")
-if(useManualInternalNumber){
-  internalNumber = manualInternalNumber
-}else if(file.exists(internalNodeFilename)){
-  internalNumber = readRDS(internalNodeFilename)
-}else{
-  stop("THIS IS AN ISSUE MESSAGE: NO MANUAL INTERNAL NUMBER SPECIFIED, AND NO AUTOMATIC FOUND. EXITING.")
-}
+#internalNodeFilename = paste(outputFolderName, filePrefix, "internalNodeNumber.rds", sep="")
+#if(useManualInternalNumber){
+#  internalNumber = manualInternalNumber
+#}else if(file.exists(internalNodeFilename)){
+#  internalNumber = readRDS(internalNodeFilename)
+#}else{
+#  stop("THIS IS AN ISSUE MESSAGE: NO MANUAL INTERNAL NUMBER SPECIFIED, AND NO AUTOMATIC FOUND. EXITING.")
+#}
 
 
 # ----get Permulations  step ------
@@ -219,6 +219,7 @@ message("Runtime: ", runTimeBefore)
 
 #Make a rooted version of the master tree
 rootNode = which(masterTree$tip.label %in% rootSpeciesValue)
+initalRootedMasterTree = multi2di(masterTree)
 rootedMasterTree = multi2di(masterTree)
 plot(masterTree)
 plot(rootedMasterTree)
@@ -227,6 +228,10 @@ if(willPruneTree){
   rootedMasterTree = prunedMasterTree
   plot(rootedMasterTree)
 }
+# generate the number of internal nodes 
+bitMap = makeLeafMap(rootedMasterTree)
+internalNumber = countInternal(rootedMasterTree, bitMap,fg=names(phenotypeVector)[which(phenotypeVector==1)])
+internalNumber
 #The function used for each permulation:
 computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber){
   permulatedForeground = fastSimBinPhenoVecReport(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
