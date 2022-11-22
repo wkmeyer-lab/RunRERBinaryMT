@@ -436,12 +436,12 @@ saveRDS(sistersListExport, file = sisListFilename)
 
 
 #---- generate a number of internal nodes 
-internalNodes = foregroundNodes[foregroundNodes >= (length(inputTree$tip.label)+1)] #Get the number of internal nodes
-internalNodeNumber = length(internalNodes)
-message("internal node number: ", length(internalNodes))                        #message the number of internal nodes
+#internalNodes = foregroundNodes[foregroundNodes >= (length(inputTree$tip.label)+1)] #Get the number of internal nodes
+#internalNodeNumber = length(internalNodes)
+#message("internal node number: ", length(internalNodes))                        #message the number of internal nodes
 #Save the internal node number 
-internalNodeFilename = paste(outputFolderName, filePrefix, "internalNodeNumber.rds", sep="")
-saveRDS(internalNodeNumber, file = internalNodeFilename)
+#internalNodeFilename = paste(outputFolderName, filePrefix, "internalNodeNumber.rds", sep="")
+#saveRDS(internalNodeNumber, file = internalNodeFilename)
 
 #---- generate a phenotypeVector (named int of all tips with0/1 indicating foreground)-----
 phenotypeVector = c(0,0)
