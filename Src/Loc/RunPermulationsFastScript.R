@@ -32,7 +32,7 @@ source("Src/Reu/fast_bin_perm.r")
 
 #testing args 
 args = c('r=allInsectivory','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
-#args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 
 #Get start time of the script 
 timeStart = Sys.time()
@@ -225,6 +225,7 @@ plot(rootedMasterTree)
 if(willPruneTree){
   prunedMasterTree = pruneTree(rootedMasterTree, names(phenotypeVector))
   rootedMasterTree = prunedMasterTree
+  plot(rootedMasterTree)
 }
 #The function used for each permulation:
 computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber){
