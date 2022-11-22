@@ -18,7 +18,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 # 's=<number>'                  This is the permulation number to start at. Used for parrallelization. 
 # 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel.
 # 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
-
+# 't = <s OR f OR p>            This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
 
 #-------
 #Debug setup defaults
@@ -64,6 +64,8 @@ enrichValue = F
 startValue = 1
 runInstanceValue = NULL
 metacombineValue = FALSE
+fileType = 's'
+
 
 #-------
 
@@ -116,11 +118,27 @@ if(!is.na(cmdArgImport('c'))){
   paste("Metacombination value not specified, using FLASE. If you aren't parrallelizing, don't worry about this.")
 }
 
+# -- Import which filetype to use  --- 
+if(!is.na(cmdArgImport('t'))){
+  fileType = cmdArgImport('t')
+  fileType = as.character(fileType)
+}else{
+  paste("No fileType specified, defaulting to slow (PermulationsData)")
+}
+
 # -- Combine permulations data files ----
 
 #Do the first combination:
 if(metacombineValue == F){
-  basePermulationsFilename = paste(outputFolderName, filePrefix, "PermulationsData",  sep="")
+  if(fileType == 's'){
+    basePermulationsFilename = paste(outputFolderName, filePrefix, "PermulationsData",  sep="")
+  }else if(fileType == 'f'){
+    basePermulationsFilename = paste(outputFolderName, filePrefix, "UnprunedFastPermulationsData",  sep="")
+  }else if(fileType == 'p'){
+    basePermulationsFilename = paste(outputFolderName, filePrefix, "PrunedFastPermulationsData",  sep="")
+  }else{
+    stop( "THIS IS AN ISSUE MESSAGE, IMPROPER FILETYPE ARGUMENT")
+  }
 }else{
   basePermulationsFilename = paste(outputFolderName, filePrefix, "CombinedPermulationsData",  sep="")
 }
