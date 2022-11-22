@@ -31,8 +31,8 @@ source("Src/Reu/fast_bin_perm.r")
 
 
 #testing args 
-args = c('r=allInsectivory','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
-args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+args = c('r=allInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+#args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 
 #Get start time of the script 
 timeStart = Sys.time()
@@ -230,14 +230,20 @@ if(willPruneTree){
 }
 # generate the number of internal nodes 
 bitMap = makeLeafMap(rootedMasterTree)
-internalNumber = countInternal(rootedMasterTree, bitMap,fg=names(phenotypeVector)[which(phenotypeVector==1)])
-internalNumber
+internalNumberValue = countInternal(rootedMasterTree, bitMap,fg=names(phenotypeVector)[which(phenotypeVector==1)])
 #The function used for each permulation:
-computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber){
+computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber = internalNumberValue){
+  singlePermStartTime = Sys.time()
   permulatedForeground = fastSimBinPhenoVecReport(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
   permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound 
   permulatedPaths = tree2Paths(permulatedTree, mainTrees, binarize=T, useSpecies=speciesFilter)                                                    #generate a path from that tree
+  singlePermulationEndTime = Sys.time()
+  permulationDuration = singlePermulationEndTime - singlePermStartTime
+  message("Permulation time: ", permulationDuration)
   permulatedCorrelations = correlateWithBinaryPhenotype(RERObject, permulatedPaths, min.sp=min.sp)                                                 #Use that path to get a coreelation of the null phenotype to genes (this is the outbut of a Get PermsBinary run)
+  correlationEndTime = Sys.time()
+  correlationDuration = correlationEndTime - singlePermulationEndTime
+  message("Correlation Duration: ", correlationDuration)
 }
 
 #run repeated permulations
@@ -249,14 +255,14 @@ for(i in 1:permulationNumber){                                                  
 }
 
 #Convert the fast output into the getPermsBinary output format
-convertPermulationFormat = function(permulationCorList, RERObject = RERObject, permulationNumber = permulationNumber){
+convertPermulationFormat = function(permulationCorList, RERObj = RERObject, permulationNum = permulationNumber){
   permulationCorList
-  permPvals = data.frame(matrix(ncol = permulationNumber, nrow = nrow(RERObject)))
-  rownames(permPvals) = rownames(RERObject)
-  permRhovals = data.frame(matrix(ncol = permulationNumber, nrow = nrow(RERObject)))
-  rownames(permRhovals) = rownames(RERObject)
-  permStatvals = data.frame(matrix(ncol = permulationNumber, nrow = nrow(RERObject)))
-  rownames(permStatvals) = rownames(RERObject)
+  permPvals = data.frame(matrix(ncol = permulationNum, nrow = nrow(RERObj)))
+  rownames(permPvals) = rownames(RERObj)
+  permRhovals = data.frame(matrix(ncol = permulationNum, nrow = nrow(RERObj)))
+  rownames(permRhovals) = rownames(RERObj)
+  permStatvals = data.frame(matrix(ncol = permulationNum, nrow = nrow(RERObj)))
+  rownames(permStatvals) = rownames(RERObj)
   for (i in 1:length(permulationCorList)) {
     permPvals[, i] = permulationCorList[[i]]$P
     permRhovals[, i] = permulationCorList[[i]]$Rho

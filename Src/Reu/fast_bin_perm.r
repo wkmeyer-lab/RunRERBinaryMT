@@ -172,6 +172,45 @@ fastSimBinPhenoVec=function(tree, tips=0, internal, phenvec = NULL, rm=NULL, lea
   return(top)
 }
 
-
+fastSimBinPhenoVecReport=function(tree, tips=0, internal, phenvec = NULL, rm=NULL, leafBitMaps=NULL){
+  insum=0
+  top = character(0)
+  if (!is.null(phenvec)) {
+    tips = sum(phenvec)
+    if(is.null(rm)) {
+      rm = ratematrix(tree, phenvec)
+      message(rm)
+    }
+  } else if (is.null(rm)){
+    print("No rate matrix supplied & cannot compute one")
+    return()
+  }
+  
+  if(is.null(leafBitMaps)){
+    leafBitMaps = makeLeafMap(tree)
+  }
+  loop=0
+  insumList = vector()
+  repeat { #implements a do-while loop
+    t=tree 
+    #root.phylo(tree, root, resolve.root = T) #For now, let's use the ancestral root
+    sims=sim.char(t, rm, nsim = 1)
+    nam=rownames(sims)
+    s=as.data.frame(sims)
+    simulatedvec=s[,1]
+    names(simulatedvec)=nam
+    top=names(sort(simulatedvec, decreasing = TRUE))[1:tips]
+    insum=countInternal(tree, leafBitMaps, top)
+    loop = loop+1
+    message("loop: ", loop)
+    
+    message("insum: ",insum)
+    #insumList = append(insumList, insum)
+    
+    if (insum==internal) {break}
+  }
+  # plot(t)
+  return(top)
+}
 
 
