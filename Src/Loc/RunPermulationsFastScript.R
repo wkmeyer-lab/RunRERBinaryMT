@@ -23,7 +23,7 @@ source("Src/Reu/fast_bin_perm.r")
 # 'i=runInstanceValue'    This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel. 
 # 'a=<T OR F>'            This stands for "automatic" and if FALSE forces the script to use the manual lists 
 # 'e=<integer>'           This specifies the number of internal nodes, overrides an automatic one. 
-
+# 'p=<T or F>'            This specifies if the trees used for permulation should be pruned. This significantly speeds up the permulations but maybe affect results (unclear) 
 
 
 
@@ -31,7 +31,7 @@ source("Src/Reu/fast_bin_perm.r")
 
 
 #testing args 
-#args = c('r=allInsectivory','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+args = c('r=allInsectivory','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 #args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 
 #Get start time of the script 
@@ -62,6 +62,9 @@ useAutomatic = T
 
 #Manual internal number
 useManualInternalNumber = F
+
+#Tree Pruning 
+willPruneTree = T
 
 # --- Import prefix ----
 args = commandArgs(trailingOnly = TRUE)
@@ -154,6 +157,14 @@ if(!is.na(cmdArgImport('e'))){
 }else{
   paste("Manual internal number not specified, using automatic if available")
 }
+
+#Should the tree be pruned
+if(!is.na(cmdArgImport('p'))){
+  willPruneTree = cmdArgImport('p')
+  willPruneTree = as.logical(willPruneTree)
+}else{
+  paste("Tree pruning not specified, pruning tree.")
+}
 # --------------------------------- BEGIN SCRIPT ---------------------
 
 
@@ -211,9 +222,13 @@ rootNode = which(masterTree$tip.label %in% rootSpeciesValue)
 rootedMasterTree = multi2di(masterTree)
 plot(masterTree)
 plot(rootedMasterTree)
+if(willPruneTree){
+  prunedMasterTree = pruneTree(rootedMasterTree, names(phenotypeVector))
+  rootedMasterTree = prunedMasterTree
+}
 #The function used for each permulation:
 computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber){
-  permulatedForeground = fastSimBinPhenoVec(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
+  permulatedForeground = fastSimBinPhenoVecReport(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
   permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound 
   permulatedPaths = tree2Paths(permulatedTree, mainTrees, binarize=T, useSpecies=speciesFilter)                                                    #generate a path from that tree
   permulatedCorrelations = correlateWithBinaryPhenotype(RERObject, permulatedPaths, min.sp=min.sp)                                                 #Use that path to get a coreelation of the null phenotype to genes (this is the outbut of a Get PermsBinary run)
@@ -262,8 +277,13 @@ message("Total runtime: ", runTimeAfter)
 message("Permulation runtime: ", runTimeOfPerms)
 
 
-#save the permulations 
-permualationsDataFileName = paste(outputFolderName, filePrefix, "PermulationsData", runInstanceValue, ".rds", sep= "")
+#-save the permulations- 
+#Make different filenames based on if the tree is pruned or not
+if(willPruneTree){
+  permualationsDataFileName = paste(outputFolderName, filePrefix, "PrunedFastPermulationsData", runInstanceValue, ".rds", sep= "")
+}else{
+  permualationsDataFileName = paste(outputFolderName, filePrefix, "UnprunedFastPermulationsData", runInstanceValue, ".rds", sep= "")
+}
 saveRDS(convertedPermulations, file = permualationsDataFileName)
 
 #get time spent on saving the file 
