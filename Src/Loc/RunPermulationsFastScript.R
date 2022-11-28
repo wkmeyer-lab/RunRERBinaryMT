@@ -349,47 +349,5 @@ message("Saving runtime: ", runTimeOfSaving)
 #  names(correlationCutoff)[1] = masterTree
 #  correlationCutoff
 
-length(which(rootedMasterTree$tip.label %in% names(phenotypeVector)))
-length(phenotypeVector)
-
-inputTree = masterTree
-inputTree = rootedMasterTree
-#dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
-
-
-
-data(bird.orders)
-plot(bird.orders)
-plot(root(bird.orders, 1))
-plot(root(bird.orders, 1:5))
-
-tr <- root(bird.orders, 1)
-is.rooted(bird.orders) # yes
-is.rooted(tr)          # no
-
-is.rooted(multi2di(masterTree))
-is.rooted(root(bird.orders, 1, r = TRUE))
-
-plot(multi2di(tr))
-plot(root(bird.orders, 1, r = TRUE))
-plot(multi2di(masterTree))
-
-
-"vs_aotNan1" %in% names(phenotypeVector)
-missingNames = masterTree$tip.label[(!masterTree$tip.label %in% names(phenotypeVector))]
-missingNames
-expandedPhenotypeVector = phenotypeVector
-for(i in 1:length(missingNames)){
-  addSpecies = 0 
-  names(addSpecies) = missingNames[i]
-  expandedPhenotypeVector = append(expandedPhenotypeVector, addSpecies )
-}
-expandedPhenotypeVector
-masterTree$tip.label %in% names(expandedPhenotypeVector)
-permulatedForeground = fastSimBinPhenoVec(tree=rootedMasterTree, phenvec=expandedPhenotypeVector, internal=internalNumber) 
-
-timeBefore = Sys.time()
-permulatedForeground = fastSimBinPhenoVec(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
-timeAfter = Sys.time()
-runTimeOfPerms = timeAfter - timeBefore
-message("Permulation runtime: ", runTimeOfPerms)
+#length(which(rootedMasterTree$tip.label %in% names(phenotypeVector)))
+#length(phenotypeVector)
