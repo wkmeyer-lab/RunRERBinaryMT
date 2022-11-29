@@ -24,7 +24,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 #Debug setup defaults
 #permulationNumberValue = 3
 #Testing args:
-#args = c('r=allInsectivory','n=5', 'e=F', 's=5')
+#args = c('r=allInsectivory','n=5', 'e=F', 's=1', 't=p')
 #------
 
 # --- Import prefix ----
@@ -150,7 +150,7 @@ combinedPermulationsData = readRDS(combinedDataFileName)
   permulationPValues = permpvalcor(cladesCorrelation, combinedPermulationsData)
   
   #save the permulations p values
-  permulationPValueFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsPValue", runInstanceValue, ".rds", sep= "")
+  permulationPValueFileName = paste(outputFolderName, filePrefix, "Combined", fileTypeString, "PermulationsPValue", runInstanceValue, ".rds", sep= "")
   saveRDS(permulationPValues, file = permulationPValueFileName)
 
 
