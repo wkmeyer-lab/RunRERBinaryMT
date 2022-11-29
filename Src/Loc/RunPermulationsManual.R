@@ -29,7 +29,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 
 #testing args 
-#args = c('r=allInsectivory','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+#args = c('r=allInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds', i=test)
 #args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 
 #Get start time of the script 
