@@ -189,7 +189,7 @@ if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
   permulationPValueFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsPValue", runInstanceValue, ".rds", sep= "")
   saveRDS(permulationPValues, file = permulationPValueFileName)
 }else{
-  message("Clades Correlation file does not exist, p-values not calculated.")
+  message("Clades Correlation file does not exist, p-values not calculated. (RunPermulationsManual, RunPermulationsFastScript, or calcCombinePermulationsPValues")
 }
 
 # ---- Save Combined Permulations output as a file ---
