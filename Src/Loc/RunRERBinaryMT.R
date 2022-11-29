@@ -1,17 +1,5 @@
-#Tesing code
-#rerpath = find.package('RERconverge')
-#mainTrees = readTrees(paste(find.package('RERconverge'),"/extdata/","subsetMammalGeneTrees.txt",sep=""), max.read = 200)
-#marineb=read.tree(paste(rerpath,"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep=""))
-#binaryPhenotypeTree = marineb
-#data("logAdultWeightcm")
-#args = c("m=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/subsetMammalGeneTrees.txt","p=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/MarineTreeBinCommonNames_noCGM.txt", "r=Command", 'f=names(logAdultWeightcm)')
-#args = c("m=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/subsetMammalGeneTrees.txt","p=C:/Users/Michael/AppData/Local/R/win-library/4.2/RERconverge/extdata/MarineTreeBinCommonNames_noCGM.txt", 'f=names(logAdultWeightcm)')
-#testTreePath = paste(find.package('RERconverge'),"/extdata/","subsetMammalGeneTrees.txt",sep="")
-#args = c('m=paste(find.package("RERconverge"),"/extdata/","subsetMammalGeneTrees.txt",sep="")', 'p=paste(find.package("RERconverge"),"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep="")','r="Command"', 'f=names(logAdultWeightcm)')
 
-# sol args:  'm=paste(find.package("RERconverge"),"/extdata/","subsetMammalGeneTrees.txt",sep="")' 'p=paste(find.package("RERconverge"),"/extdata/MarineTreeBinCommonNames_noCGM.txt",sep="")' 'r="Command"' 'f=names(logAdultWeightcm)'
-
-# insectivory test args: args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=Insectivory')
+#Test args: args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=allInsectivory')
 
 #Library setup 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
@@ -32,6 +20,9 @@ source("Src/Reu/cmdArgImport.R")
 #Takes an inputed main trees multiphylo, binary phenotype tree, file prefix, and optional species filter list
 #Outputs a path, RER residuals, and correlation files. 
 
+#Test args: 
+#args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=demoInsectivory')
+
 
 # ---- Default values if no arguments
 
@@ -43,7 +34,6 @@ binaryPhenotypeTreeLocation = ""
 filePrefix = "test" 
 
 #Put a filter for species here. Default is NULL, which means useSpecies is not applied, and all species are used.
-#copy of default code: speciesFilter = NULL
 speciesFilter = NULL
 
 # --- Import prefix --- 

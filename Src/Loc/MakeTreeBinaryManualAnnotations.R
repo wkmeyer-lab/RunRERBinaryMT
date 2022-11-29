@@ -24,7 +24,7 @@ mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia
 
 #local computer debug version:
 # mainTreesLocation = "data/RemadeTreesAllZoonomiaSpecies.rds"
-#args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=carnvHerbs", "a=CarnFish_Herbs", "t=bi", "c=all", "w=F")
+#args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=demoInsectivory", "a=Ins_v_herbs", "t=bi", "c=all", "w=F")
 
 #Other defaults if not specified
 annotCollumn = "ERRORDEFAULT"
@@ -124,7 +124,6 @@ manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")
 
 # ---- if a pre-defined species filter exists, use that. If not, create one. 
 speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="")
-
 
 if(!file.exists(speciesFilterFilename)){
   # --- subset the manual annots to only those with data in the collumn

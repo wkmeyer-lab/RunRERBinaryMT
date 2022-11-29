@@ -22,7 +22,8 @@ source("Src/Reu/convertLogiToNumeric.R")
 #Debug setup defaults
 #permulationNumberValue = 3
 #Testing args:
-#args = c('r=allInsectivory', 'e=F', 's=1', 't=s')
+args = c('r=demoinsectivory', 'n=3', 'e=F', 't=p')
+args = c('r=allInsectivory', 'e=F', 's=1', 't=s')
 #------
 
 # --- Import prefix ----
