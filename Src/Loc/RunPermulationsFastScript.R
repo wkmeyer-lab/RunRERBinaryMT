@@ -27,12 +27,9 @@ source("Src/Reu/fast_bin_perm.r")
 
 
 
-
-
-
 #testing args 
 args = c('r=allInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
-#args = c('r=carnvHerbs','n=1','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+args = c('r=carnvHerbs','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 
 #Get start time of the script 
 timeStart = Sys.time()
@@ -209,8 +206,8 @@ permulationNumber = permulationNumberValue
 masterTree = mainTrees$masterTree
 
 #print the current runtime
-timeBefore = Sys.time()
-runTimeBefore = timeBefore - timeStart
+timeBeforePerms = Sys.time()
+runTimeBefore = timeBeforePerms - timeStart
 message("Runtime: ", runTimeBefore)
 
 
@@ -234,7 +231,7 @@ internalNumberValue = countInternal(rootedMasterTree, bitMap,fg=names(phenotypeV
 #The function used for each permulation:
 computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber = internalNumberValue){
   singlePermStartTime = Sys.time()
-  permulatedForeground = fastSimBinPhenoVecReport(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
+  permulatedForeground = fastSimBinPhenoVec(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
   permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound 
   permulatedPaths = tree2Paths(permulatedTree, mainTrees, binarize=T, useSpecies=speciesFilter)                                                    #generate a path from that tree
   singlePermulationEndTime = Sys.time()
@@ -244,6 +241,7 @@ computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, m
   correlationEndTime = Sys.time()
   correlationDuration = correlationEndTime - singlePermulationEndTime
   message("Correlation Duration: ", correlationDuration)
+  permulatedCorrelations
 }
 
 #run repeated permulations
@@ -282,9 +280,9 @@ convertedPermulations = convertPermulationFormat(correlationList)
 
 
 #Get time spent on permulations
-timeAfter = Sys.time()
-runTimeAfter = timeAfter - timeStart
-runTimeOfPerms = timeAfter - timeBefore
+timeAfterPerms = Sys.time()
+runTimeAfter = timeAfterPerms - timeStart
+runTimeOfPerms = timeAfterPerms - timeBeforePerms
 message("Total runtime: ", runTimeAfter)
 message("Permulation runtime: ", runTimeOfPerms)
 
@@ -301,7 +299,7 @@ saveRDS(convertedPermulations, file = permualationsDataFileName)
 #get time spent on saving the file 
 timePostSave = Sys.time()
 runTimeAfter = timePostSave - timeStart
-runTimeOfSaving = timePostSave - timeAfter
+runTimeOfSaving = timePostSave - timeAfterPerms
 message("Total runtime: ", runTimeAfter)
 message("Saving runtime: ", runTimeOfSaving)
 
