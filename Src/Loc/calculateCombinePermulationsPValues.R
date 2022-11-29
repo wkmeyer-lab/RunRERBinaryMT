@@ -16,6 +16,9 @@ source("Src/Reu/convertLogiToNumeric.R")
 # 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel.
 # 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # 'm=mainTreeFilename.txt or .rds' This is the location of the maintree file. Accepts .txt or .rds. 
+# 't = <s OR f OR p>            This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
+
+
 
 #-------
 #Debug setup defaults
@@ -100,6 +103,14 @@ if(!is.na(cmdArgImport('c'))){
   paste("Metacombination value not specified, using FLASE. If you aren't parrallelizing, don't worry about this.")
 }
 
+# -- Import which filetype to use  --- 
+if(!is.na(cmdArgImport('t'))){
+  fileType = cmdArgImport('t')
+  fileType = as.character(fileType)
+}else{
+  paste("No fileType specified, defaulting to slow (PermulationsData)")
+}
+
 
 # ----- Calculation of p-values
 
@@ -114,11 +125,21 @@ if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
 }
 
 # ---- Get Combined Permulations filename ---
-if(metacombineValue == F){
-  combinedDataFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsData", runInstanceValue, ".rds", sep="")
+#Do the first combination:
+if(fileType == 's'){
+  fileTypeString = ''
+}else if(fileType == 'f'){
+  fileTypeString = "UnprunedFast"
+}else if(fileType == 'p'){
+  fileTypeString = "PrunedFast"
 }else{
-  combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombinedPermulationsData", runInstanceValue, ".rds", sep="")
-  
+  stop( "THIS IS AN ISSUE MESSAGE, IMPROPER FILETYPE ARGUMENT")
+}
+
+if(metacombineValue == F){
+  combinedDataFileName = paste(outputFolderName, filePrefix, "Combined", fileTypeString,"PermulationsData", runInstanceValue, ".rds", sep="")
+}else{
+  combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", fileTypeString, "PermulationsData", runInstanceValue, ".rds", sep="")
 }
 combinedPermulationsData = readRDS(combinedDataFileName)
 
