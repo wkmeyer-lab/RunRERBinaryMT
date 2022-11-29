@@ -15,6 +15,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 # 'e=F' OR 'e=T'                This is if the permulations being combined are enriched or not. Accepts 'T', 'F', 'TRUE', 'FALSE', '0', and '1'. 
 # 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel.
 # 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
+# 'm=mainTreeFilename.txt or .rds' This is the location of the maintree file. Accepts .txt or .rds. 
 
 #-------
 #Debug setup defaults
@@ -100,9 +101,19 @@ if(!is.na(cmdArgImport('c'))){
 }
 
 
-# ---- Calculate the pValues -----
+# ----- Calculation of p-values
 
-# ---- Save Combined Permulations filename ---
+# -- Get clades correlation --
+
+cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
+if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
+  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
+}else{
+  message("Clades Correlation file does not exist, p-values not calculated. (RunPermulationsManual, RunPermulationsFastScript")
+  stop("Requires Clades Correlation file.")
+}
+
+# ---- Get Combined Permulations filename ---
 if(metacombineValue == F){
   combinedDataFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsData", runInstanceValue, ".rds", sep="")
 }else{
@@ -111,17 +122,14 @@ if(metacombineValue == F){
 }
 combinedPermulationsData = readRDS(combinedDataFileName)
 
-# -- Get clades correlation --
-#This relies on a correlationFile produced by the runPermulations initial scripts. If that file doesn't exist, it skips the step and goes directly to saving the combined permulations.
-
-cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
-if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
-  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
   
+
+
 # -- run pValue calculation --
   permulationPValues = permpvalcor(cladesCorrelation, combinedPermulationsData)
   
   #save the permulations p values
   permulationPValueFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsPValue", runInstanceValue, ".rds", sep= "")
   saveRDS(permulationPValues, file = permulationPValueFileName)
-}
+
+
