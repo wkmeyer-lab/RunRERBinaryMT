@@ -12,10 +12,8 @@ source("Src/Reu/convertLogiToNumeric.R")
 # ARUGMENTS: 
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"'              This is the prefix attached to all files; a required argument. 
-# 'e=F' OR 'e=T'                This is if the permulations being combined are enriched or not. Accepts 'T', 'F', 'TRUE', 'FALSE', '0', and '1'. 
 # 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel.
 # 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
-# 'm=mainTreeFilename.txt or .rds' This is the location of the maintree file. Accepts .txt or .rds. 
 # 't = <s OR f OR p>            This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
 
 
@@ -24,7 +22,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 #Debug setup defaults
 #permulationNumberValue = 3
 #Testing args:
-#args = c('r=allInsectivory','n=5', 'e=F', 's=1', 't=p')
+#args = c('r=allInsectivory', 'e=F', 's=1', 't=s')
 #------
 
 # --- Import prefix ----
@@ -59,7 +57,6 @@ outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 #----- Default values -------
 
-enrichValue = F
 runInstanceValue = NULL
 metacombineValue = FALSE
 
@@ -71,16 +68,6 @@ metacombineValue = FALSE
 
 
 # -- Import if enriched or not --
-if(!is.na(cmdArgImport('e'))){
-  enrichValue = cmdArgImport('e')
-  enrichValue = as.logical(enrichValue)
-  if(is.na(enrichValue)){
-    enrichValue = FALSE
-    paste("Enrichment value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
-  }
-}else{
-  paste("enrichment not specified, using FLASE")
-}
 
 
 
