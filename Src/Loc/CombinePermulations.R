@@ -24,7 +24,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 #Debug setup defaults
 #permulationNumberValue = 3
 #Testing args:
-#args = c('r=allInsectivory','n=2', 'e=F', 's=1')
+#args = c('r=allInsectivory','n=2', 'e=F', 's=1', 't=p')
 #------
 
 # --- Import prefix ----
@@ -129,18 +129,20 @@ if(!is.na(cmdArgImport('t'))){
 # -- Combine permulations data files ----
 
 #Do the first combination:
-if(metacombineValue == F){
-  if(fileType == 's'){
-    basePermulationsFilename = paste(outputFolderName, filePrefix, "PermulationsData",  sep="")
-  }else if(fileType == 'f'){
-    basePermulationsFilename = paste(outputFolderName, filePrefix, "UnprunedFastPermulationsData",  sep="")
-  }else if(fileType == 'p'){
-    basePermulationsFilename = paste(outputFolderName, filePrefix, "PrunedFastPermulationsData",  sep="")
-  }else{
-    stop( "THIS IS AN ISSUE MESSAGE, IMPROPER FILETYPE ARGUMENT")
-  }
+if(fileType == 's'){
+  fileTypeString = ''
+}else if(fileType == 'f'){
+  fileTypeString = "UnprunedFast"
+}else if(fileType == 'p'){
+  fileTypeString = "PrunedFast"
 }else{
-  basePermulationsFilename = paste(outputFolderName, filePrefix, "CombinedPermulationsData",  sep="")
+  stop( "THIS IS AN ISSUE MESSAGE, IMPROPER FILETYPE ARGUMENT")
+}
+
+if(metacombineValue == F){
+    basePermulationsFilename = paste(outputFolderName, filePrefix, fileTypeString, "PermulationsData",  sep="")
+}else{
+  basePermulationsFilename = paste(outputFolderName, filePrefix, fileTypeString, "CombinedPermulationsData",  sep="")
 }
 
 firstPermulationsFilename = paste(basePermulationsFilename, startValue, ".rds", sep="")
@@ -194,13 +196,10 @@ if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
 
 # ---- Save Combined Permulations output as a file ---
 if(metacombineValue == F){
-  combinedDataFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsData", runInstanceValue, ".rds", sep="")
+  combinedDataFileName = paste(outputFolderName, filePrefix, "Combined", fileTypeString,"PermulationsData", runInstanceValue, ".rds", sep="")
 }else{
-  combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombinedPermulationsData", runInstanceValue, ".rds", sep="")
-  
+  combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", fileTypeString, "PermulationsData", runInstanceValue, ".rds", sep="")
 }
-#TEMPORARY REDIRECT
-#combinedDataFileName = paste("/home/mit221/wym219_123121/mit221/", filePrefix, "CombinedPermulationsData", runInstanceValue, ".rds", sep="")
 saveRDS(combinedPermulationsData, file = combinedDataFileName)
 
 
