@@ -19,13 +19,13 @@ source("Src/Reu/convertLogiToNumeric.R")
 # 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel.
 # 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # 't = <s OR f OR p>            This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
-
+# 'p = <T or F>'                This value determines whether or not to calculate the pValues. 
 #-------
 #Debug setup defaults
 #permulationNumberValue = 3
 #Testing args:
 args = c('r=demoinsectivory', 'n=3', 'e=F', 't=p')
-args = c('r=allInsectivory','n=2', 'e=F', 's=1', 't=p')
+args = c('r=allInsectivory','n=3', 'e=F', 's=1', 't=p')
 #------
 timeStart = Sys.time()
 # --- Import prefix ----
@@ -66,6 +66,7 @@ startValue = 1
 runInstanceValue = NULL
 metacombineValue = FALSE
 fileType = 's'
+calulateValue = TRUE
 
 
 #-------
@@ -127,6 +128,18 @@ if(!is.na(cmdArgImport('t'))){
   paste("No fileType specified, defaulting to slow (PermulationsData)")
 }
 
+# -- Import if this is being run to combine combinations -- 
+if(!is.na(cmdArgImport('p'))){
+  calulateValue = cmdArgImport('p')
+  calulateValue = as.logical(calulateValue)
+  if(is.na(calulateValue)){
+    calulateValue = TRUE
+    paste("p-value calulation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }
+}else{
+  paste("p-value calulation value not specified, using TRUE. If you aren't parrallelizing, don't worry about this.")
+}
+
 # -- Combine permulations data files ----
 
 #Do the first combination:
@@ -151,8 +164,8 @@ firstPermulationsData = readRDS(firstPermulationsFilename)
 firstPermulationsData = convertLogiToNumericList(firstPermulationsData)
 
 fpTime = Sys.time()
-fpLoad = fpTime - fpTime
-message("First permulation load time: ", fpLoad)
+fpLoad = fpTime - timeStart
+message("First permulation load time: ", fpLoad, attr(fpLoad, "units"))
 
 secondPermulationsFilename = paste(basePermulationsFilename, (startValue+1), ".rds", sep="")
 secondPermulationsData = readRDS(secondPermulationsFilename)
@@ -160,13 +173,13 @@ secondPermulationsData = convertLogiToNumericList(secondPermulationsData)
 
 spTime = Sys.time()
 spLoad = spTime - fpTime
-message("Second permulation load time: ", spLoad)
+message("Second permulation load time: ", spLoad, attr(spLoad, "units"))
 
 combinedPermulationsData = combinePermData(firstPermulationsData, secondPermulationsData, enrich = enrichValue)
 
 fcTime = Sys.time()
 fcCombine = fcTime - spTime
-message("Initial permulation combination time: ", fcCombine)
+message("Initial permulation combination time: ", fcCombine, attr(fcCombine, "units"))
 
 rm(firstPermulationsData)
 rm(secondPermulationsData)
@@ -184,17 +197,17 @@ for(i in (startValue+2):(startValue+permulationNumberValue-1)){
     iteratingPermulationsData = convertLogiToNumericList(iteratingPermulationsData)
     ipLoadTime= Sys.time()
     ipLoad = ipLoadTime - ipStartTime
-    message("Iterating permulation load time: ", ipLoad)
+    message("Iterating permulation load time: ", ipLoad, attr(ipLoad, "units"))
     
     combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData, enrich = enrichValue)
     ipCombineTime = Sys.time()
     ipCombine = ipCombineTime - ipLoadTime
-    message("Iterating permulation combination time: ", ipCombine)
+    message("Iterating permulation combination time: ", ipCombine, attr(ipCombine, "units"))
     
     rm(iteratingPermulationsData)
     ipRemoveTime = Sys.time()
     ipRemove = ipRemoveTime - ipCombineTime
-    message("Iterating permulation removal time: ", ipRemove)
+    message("Iterating permulation removal time: ", ipRemove, attr(ipRemove, "units"))
     
     message("Added file ", i, " to combination.")
   }else{
@@ -202,24 +215,9 @@ for(i in (startValue+2):(startValue+permulationNumberValue-1)){
   }
 }
 
-# ---- Calculate the pValues -----
-
-# -- Get clades correlation --
-#This relies on a correlationFile produced by the runPermulations initial scripts. If that file doesn't exist, it skips the step and goes directly to saving the combined permulations.
-
-cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
-if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
-  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
-
-  # -- run pValue calculation --
-  permulationPValues = permpvalcor(cladesCorrelation, combinedPermulationsData)
-  
-  #save the permulations p values
-  permulationPValueFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsPValue", runInstanceValue, ".rds", sep= "")
-  saveRDS(permulationPValues, file = permulationPValueFileName)
-}else{
-  message("Clades Correlation file does not exist, p-values not calculated. (RunPermulationsManual, RunPermulationsFastScript")
-}
+permEndTime = Sys.time()
+totalPermTime = permEndTime - timeStart
+message(" Total Permulation Combination time: ", totalPermTime, attr(totalPermTime, "units"))
 
 # ---- Save Combined Permulations output as a file ---
 if(metacombineValue == F){
@@ -227,9 +225,44 @@ if(metacombineValue == F){
 }else{
   combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", fileTypeString, "PermulationsData", runInstanceValue, ".rds", sep="")
 }
+saveStartTime = sys.time()
 saveRDS(combinedPermulationsData, file = combinedDataFileName)
+saveEndTime = Sys.time()
+permSavingDuration = saveEndTime - saveStartTime
+message("Time to save combine permulations: ", permSavingDuration, attr(permSavingDuration, "units"))
 
 
+
+# ---- Calculate the pValues -----
+
+# -- Get clades correlation --
+#This relies on a correlationFile produced by the runPermulations initial scripts. If that file doesn't exist, it skips the step and goes directly to saving the combined permulations.
+
+cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
+if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))& calulateValue){
+  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
+
+  # -- run pValue calculation --
+  permulationPValues = permpvalcor(cladesCorrelation, combinedPermulationsData)
+  pvalTime = Sys.time()
+  pvalCalcDuration = pvalTime - saveEndTime
+  message("Time to calculate pValues: ", pvalCalcDuration, attr(pvalCalcDuration, "units"))
+  
+  
+  #save the permulations p values
+  permulationPValueFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsPValue", runInstanceValue, ".rds", sep= "")
+  saveRDS(permulationPValues, file = permulationPValueFileName)
+  pValSaveTime = sys.time()
+  pvalSaveDuration = pValSaveTime - pvalTime
+  message("Time to save pValues: ", pvalSaveDuration, attr(pvalSaveDuration, "units"))
+  
+}else{
+  message("Clades Correlation file does not exist, p-values not calculated. (RunPermulationsManual, RunPermulationsFastScript")
+}
+
+finalEndTime = Sys.time()
+grandTotalTime = finalEndTime - timeStart
+message(" Total time: ", grandTotalTime, attr(grandTotalTime, "units"))
 
 
 
