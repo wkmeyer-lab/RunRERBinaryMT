@@ -27,7 +27,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 args = c('r=demoinsectivory', 'n=3', 'e=F', 't=p')
 args = c('r=allInsectivory','n=2', 'e=F', 's=1', 't=p')
 #------
-
+timeStart = Sys.time()
 # --- Import prefix ----
 args = commandArgs(trailingOnly = TRUE)
 paste(args)
@@ -150,11 +150,23 @@ firstPermulationsFilename = paste(basePermulationsFilename, startValue, ".rds", 
 firstPermulationsData = readRDS(firstPermulationsFilename)
 firstPermulationsData = convertLogiToNumericList(firstPermulationsData)
 
+fpTime = Sys.time()
+fpLoad = fpTime - fpTime
+message("First permulation load time: ", fpLoad)
+
 secondPermulationsFilename = paste(basePermulationsFilename, (startValue+1), ".rds", sep="")
 secondPermulationsData = readRDS(secondPermulationsFilename)
 secondPermulationsData = convertLogiToNumericList(secondPermulationsData)
 
+spTime = Sys.time()
+spLoad = spTime - fpTime
+message("Second permulation load time: ", spLoad)
+
 combinedPermulationsData = combinePermData(firstPermulationsData, secondPermulationsData, enrich = enrichValue)
+
+fcTime = Sys.time()
+fcCombine = fcTime - spTime
+message("Initial permulation combination time: ", fcCombine)
 
 rm(firstPermulationsData)
 rm(secondPermulationsData)
@@ -166,10 +178,24 @@ for(i in (startValue+2):(startValue+permulationNumberValue-1)){
   iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
   
   if(file.exists(iteratingPermulationsFilename)){
+    ipStartTime = Sys.time()
+    
     iteratingPermulationsData = readRDS(iteratingPermulationsFilename)
     iteratingPermulationsData = convertLogiToNumericList(iteratingPermulationsData)
+    ipLoadTime= Sys.time()
+    ipLoad = ipLoadTime - ipStartTime
+    message("Iterating permulation load time: ", ipLoad)
+    
     combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData, enrich = enrichValue)
+    ipCombineTime = Sys.time()
+    ipCombine = ipCombineTime - ipLoadTime
+    message("Iterating permulation combination time: ", ipCombine)
+    
     rm(iteratingPermulationsData)
+    ipRemoveTime = Sys.time()
+    ipRemove = ipRemoveTime - ipCombineTime
+    message("Iterating permulation removal time: ", ipRemove)
+    
     message("Added file ", i, " to combination.")
   }else{
     message("Permulation file number ", i, " does not exist. Combining other files.")
