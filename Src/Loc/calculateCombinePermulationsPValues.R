@@ -7,7 +7,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 
 #---- USAGE -----
-#used to combine permulations files made by RunPermulationsManual.R. 
+#used to calculate p values on combined permulations files made by CombinePermualtions.R. 
 
 # ARUGMENTS: 
 #If an argument contains a '(' it is evaluated as code.
@@ -132,8 +132,8 @@ if(metacombineValue == F){
 combinedPermulationsData = readRDS(combinedDataFileName)
 
   
-
-
+#Explict order for garbage collection 
+gc() 
 # -- run pValue calculation --
   permulationPValues = permpvalcor(cladesCorrelation, combinedPermulationsData)
   
