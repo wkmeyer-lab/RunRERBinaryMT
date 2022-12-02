@@ -225,7 +225,7 @@ if(metacombineValue == F){
 }else{
   combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", fileTypeString, "PermulationsData", runInstanceValue, ".rds", sep="")
 }
-saveStartTime = sys.time()
+saveStartTime = Sys.time()
 saveRDS(combinedPermulationsData, file = combinedDataFileName)
 saveEndTime = Sys.time()
 permSavingDuration = saveEndTime - saveStartTime
