@@ -1,4 +1,5 @@
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+Sys.setenv('R_MAX_VSIZE'=20000000000)
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
@@ -25,6 +26,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 args = c('r=demoinsectivory', 'n=3', 'e=F', 't=p')
 args = c('r=allInsectivory', 'e=F', 's=1', 't=s')
 #------
+
 
 # --- Import prefix ----
 args = commandArgs(trailingOnly = TRUE)
