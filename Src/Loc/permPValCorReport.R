@@ -9,7 +9,7 @@ permPValCorReport = function (realcor, permvals) {
   message("Time to extract real values: ", timeStatExtractEnd - timePermExtractEnd, attr(timeStatExtractEnd - timePermExtractEnd, "units"))
   names(realstat) = rownames(realcor)                                           #Name the values after the row names 
   
-  permcor = permcor[fmatch(names(realstat), rownames(permcor)),]                 #trim the permulations' Rho values to only ones in the real data 
+  permcor = permcor[match(names(realstat), rownames(permcor)),]                 #trim the permulations' Rho values to only ones in the real data 
   timeMatchEnd = Sys.time()
   message("Time to match names: ", timeMatchEnd - timeStatExtractEnd, attr(timeMatchEnd - timeStatExtractEnd, "units"))
   
