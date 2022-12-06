@@ -131,8 +131,12 @@ if(metacombineValue == F){
 }else{
   combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", fileTypeString, "PermulationsData", runInstanceValue, ".rds", sep="")
 }
-combinedPermulationsData = readRDS(combinedDataFileName)
 
+timeBeforeReadIn = Sys.time()
+combinedPermulationsData = readRDS(combinedDataFileName)
+timeAferReadIn = Sys.time()
+readingTime = timeAferReadIn - timeBeforeReadIn
+message("File reading time: ", readingTime, attr(readingTime, "units"))
   
 #Explict order for garbage collection 
 gc() 
