@@ -5,7 +5,7 @@ library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/convertLogiToNumeric.R")
-
+source("Src/Loc/permPValCorReport.R")
 
 #---- USAGE -----
 #used to calculate p values on combined permulations files made by CombinePermualtions.R. 
@@ -137,7 +137,7 @@ combinedPermulationsData = readRDS(combinedDataFileName)
 #Explict order for garbage collection 
 gc() 
 # -- run pValue calculation --
-  permulationPValues = permpvalcor(cladesCorrelation, combinedPermulationsData)
+  permulationPValues = permPValCorReport(cladesCorrelation, combinedPermulationsData)
   
   #save the permulations p values
   permulationPValueFileName = paste(outputFolderName, filePrefix, "Combined", fileTypeString, "PermulationsPValue", runInstanceValue, ".rds", sep= "")
