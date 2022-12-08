@@ -1,5 +1,5 @@
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
-#Sys.setenv('R_MAX_VSIZE'=20000000000)
+Sys.setenv('R_MAX_VSIZE'=20000000000)
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
