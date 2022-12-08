@@ -27,23 +27,52 @@ permPValCorReport = function (realcor, permvals) {
       permpvals[count] = NA                                                     #Make the permulation value NA
       message("is NA")
     }
-    else {                                                                      #If not 
-      num = sum(abs(permcor[count, ]) > abs(realstat[count]),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
+    else if(count <= 10 | count >=(length(realstat)-10)) {                                    #If not, send detailed time messages for the last 10  
+      permRow = permcor[count, ]
+      permCol = t(permRow)
+      permColMakeTime = Sys.time()
+      message("Time to make permulation Col: ", permColMakeTime - timeLoopBegin, attr(permColMakeTime - timeLoopBegin, "units"))
+      
+      realRow = realstat[count]
+      realRowMakeTime = Sys.time()
+      message("Time to make real row: ", realRowMakeTime - permColMakeTime, attr(realRowMakeTime - permColMakeTime, "units"))
+      
+      num = sum(abs(permCol) > abs(realRow),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
                 na.rm = T)
       timeNumeratorCalc = Sys.time()
-      message("Numerator Calculate time: ", timeNumeratorCalc - timeLoopBegin, attr(timeNumeratorCalc - timeLoopBegin, "units"))
+      message("Numerator Calculate time: ", timeNumeratorCalc - realRowMakeTime, attr(timeNumeratorCalc - realRowMakeTime, "units"))
       
-      denom = sum(!is.na(permcor[count, ]))                                     #Make a denominator which is the sum of the non-NA permulation values
+      denom = sum(!is.na(permCol))                                     #Make a denominator which is the sum of the non-NA permulation values
       timeDenomSum = Sys.time()
       message("Denominator sum time: ", timeDenomSum - timeNumeratorCalc, attr(timeDenomSum - timeNumeratorCalc, "units"))
       permpvals[count] = num/denom                                              #p-value = numerator/denominator
     }
+    else{                                                                       #Stop sending detailed time messages
+      permRow = permcor[count, ]
+      permCol = t(permRow)
+      #permColMakeTime = Sys.time()
+      #message("Time to make permulation Col: ", permColMakeTime - timeLoopBegin, attr(permColMakeTime - timeLoopBegin, "units"))
+      
+      realRow = realstat[count]
+      #realRowMakeTime = Sys.time()
+      #message("Time to make real row: ", realRowMakeTime - permColMakeTime, attr(realRowMakeTime - permColMakeTime, "units"))
+      
+      num = sum(abs(permCol) > abs(realRow),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
+                na.rm = T)
+      #timeNumeratorCalc = Sys.time()
+      #message("Numerator Calculate time: ", timeNumeratorCalc - realRowMakeTime, attr(timeNumeratorCalc - realRowMakeTime, "units"))
+      
+      denom = sum(!is.na(permCol))                                     #Make a denominator which is the sum of the non-NA permulation values
+      #timeDenomSum = Sys.time()
+      #message("Denominator sum time: ", timeDenomSum - timeNumeratorCalc, attr(timeDenomSum - timeNumeratorCalc, "units"))
+      permpvals[count] = num/denom 
+    }
     timeLoopEnd = Sys.time()
     message("Total loop time: ", timeLoopEnd - timeLoopBegin, attr(timeLoopEnd - timeLoopBegin, "units"))
     count = count + 1                                                           #increase count by one
-  }
-  message("calculation compelte.")
-  timeEnd = Sys.time()
-  message("Total calculation time: ", timeEnd - timeStart, attr(timeEnd - timeStart, "units"))
+    }
+    message("calculation compelte.")
+    timeEnd = Sys.time()
+    message("Total calculation time: ", timeEnd - timeStart, attr(timeEnd - timeStart, "units"))
   permpvals                                                                     #Return the vector of pValues 
 }
