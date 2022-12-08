@@ -10,6 +10,10 @@ source("Src/Reu/convertLogiToNumeric.R")
 #---- USAGE -----
 #used to combine permulations files made by RunPermulationsManual.R. 
 
+#--IMPORTANT NOTE: This script takes exponentially longer the more files it is used to combine at once. 
+#    It is strongly recommended that you ONLY COMBINE UP TO 200 permulation files in a single instance of the script, then switch to meta-combining those files. 
+
+
 # ARUGMENTS: 
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"'              This is the prefix attached to all files; a required argument. 
