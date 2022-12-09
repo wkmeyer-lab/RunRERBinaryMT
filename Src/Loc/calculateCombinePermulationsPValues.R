@@ -13,7 +13,7 @@ source("Src/Loc/permPValCorReport.R")
 # ARUGMENTS: 
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"'              This is the prefix attached to all files; a required argument. 
-# 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel.
+# 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Used to target different combination files. 
 # 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # 't = <s OR f OR p>'           This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
 # 's = <integer>'               This sets the gene number to start at for parallelization,                 
