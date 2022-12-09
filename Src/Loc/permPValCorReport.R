@@ -1,4 +1,4 @@
-permPValCorReport = function (realcor, permvals) {
+permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA) {
   timeStart = Sys.time()
   permcor = permvals$corRho                                                     #Rho values from the permulations
   timePermExtractEnd = Sys.time()
@@ -15,19 +15,20 @@ permPValCorReport = function (realcor, permvals) {
   
   permpvals = vector(length = length(realstat))                                 #Make a vector to store the pValues of a length equal to the number of realstat genes
   names(permpvals) = names(realstat)                                            #Copy the names from the real Rho values onto that vector
-  count = 1                                                                     #Set a count equal to one 
+  count = startNumber                                                           #Set a count equal to the gene to start at  
   
   timeBeforeLoopStart = Sys.time()
   message("Total time before loop start: ", timeBeforeLoopStart - timeStart, attr(timeBeforeLoopStart - timeStart, "units"))
   
-  while (count <= length(realstat)) {                                           #While the count hasn't done all of the entries                                         
+  if(is.na(geneNumber)){endpoint = length(realstat)}else{endpoint = startNumber + geneNumber}  # set the endpoint to be all if gene number is not specified; or start value + number of genes to do if both specified. 
+  while (count <= endpoint) {                                                   #While the count hasn't done all of the entries                                         
     timeLoopBegin = Sys.time()
     message("Gene number: ", count)
     if (is.na(realstat[count])) {                                               #if the real correlation is NA
       permpvals[count] = NA                                                     #Make the permulation value NA
       message("is NA")
     }
-    else if(count <= 10 | count >=(length(realstat)-10)) {                                    #If not, send detailed time messages for the last 10  
+    else if(count <= 10 | count >= (endpoint-10)) {                                    #If not, send detailed time messages for the last 10  
       permRow = permcor[count, ]
       permCol = t(permRow)
       permColMakeTime = Sys.time()
@@ -74,5 +75,6 @@ permPValCorReport = function (realcor, permvals) {
     message("calculation compelte.")
     timeEnd = Sys.time()
     message("Total calculation time: ", timeEnd - timeStart, attr(timeEnd - timeStart, "units"))
+  permpvals = permpvals[startNumber:length(permpvals)]                          #remove any entires from the vector that are below the start value 
   permpvals                                                                     #Return the vector of pValues 
 }

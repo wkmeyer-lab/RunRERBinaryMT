@@ -15,9 +15,9 @@ source("Src/Loc/permPValCorReport.R")
 # 'r="filePrefix"'              This is the prefix attached to all files; a required argument. 
 # 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel.
 # 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
-# 't = <s OR f OR p>            This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
-
-
+# 't = <s OR f OR p>'           This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
+# 's = <integer>'               This sets the gene number to start at for parallelization,                 
+# 'n = <integer>                This is the number of genes to do, used to parallelization
 
 #-------
 #Debug setup defaults
@@ -62,7 +62,8 @@ outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 runInstanceValue = NULL
 metacombineValue = FALSE
-
+startValue = 1
+geneNumberValue = NA #This means that by defulat it does all of the genes
 
 #-------
 
@@ -101,6 +102,21 @@ if(!is.na(cmdArgImport('t'))){
   paste("No fileType specified, defaulting to slow (PermulationsData)")
 }
 
+# -- Import the permulation number to start at ---
+if(!is.na(cmdArgImport('s'))){
+  startValue = cmdArgImport('s')
+  startValue = as.numeric(startValue)
+}else{
+  paste("Start value not specified, using 1")
+}
+
+# -- Import the number of genes to do 
+if(!is.na(cmdArgImport('n'))){
+  geneNumberValue = cmdArgImport('n')
+  geneNumberValue = as.numeric(geneNumberValue)
+}else{
+  paste("Number ofgenes not specified, using all")
+}
 
 # ----- Calculation of p-values
 
@@ -141,10 +157,17 @@ message("File reading time: ", readingTime, attr(readingTime, "units"))
 #Explict order for garbage collection 
 gc() 
 # -- run pValue calculation --
-  permulationPValues = permPValCorReport(cladesCorrelation, combinedPermulationsData)
+  permulationPValues = permPValCorReport(cladesCorrelation, combinedPermulationsData, startNumber = startValue, geneNumber = geneNumberValue)
   
   #save the permulations p values
-  permulationPValueFileName = paste(outputFolderName, filePrefix, "Combined", fileTypeString, "PermulationsPValue", runInstanceValue, ".rds", sep= "")
+    #Make generate a marker saying which genes were calculated 
+  if(geneNumberValue = NA){
+    geneRange = "All"
+  }else{
+    geneRange = paste(startValue, "-", (startValue + geneNumberValue), sep = "" )
+  }
+  
+  permulationPValueFileName = paste(outputFolderName, filePrefix, "Combined", fileTypeString, geneRange, "PermulationsPValue", runInstanceValue, ".rds", sep= "")
   saveRDS(permulationPValues, file = permulationPValueFileName)
 
 
