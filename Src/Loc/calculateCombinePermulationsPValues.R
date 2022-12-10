@@ -161,7 +161,7 @@ gc()
   
   #save the permulations p values
     #Make generate a marker saying which genes were calculated 
-  if(geneNumberValue = NA){
+  if(geneNumberValue == NA){
     geneRange = "All"
   }else{
     geneRange = paste(startValue, "-", (startValue + geneNumberValue), sep = "" )
