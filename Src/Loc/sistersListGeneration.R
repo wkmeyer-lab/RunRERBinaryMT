@@ -429,7 +429,7 @@ sisterslistReOrder = sistersListExport[1]
 for(i in 2:length(sistersListExport)){
   newCladNameObject = paste("clade", i, sep = '')
   orderedCladNames = append(orderedCladNames, newCladNameObject)
-  sisterslistReOrder = append(sisterslistReOrder, sistersListExport[grep(orderedCladNames[i], names(sistersListExport))])
+  sisterslistReOrder = append(sisterslistReOrder, sistersListExport[grep(orderedCladNames[i], names(sistersListExport))[1]])
 }
 sistersListExport = sisterslistReOrder
 # --- save the list --
