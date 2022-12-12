@@ -15,7 +15,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 #testing args: 
 args - "r=demoInsectivory"
-args = "r=carnvHerbs, m=Data/RemadeTreesAllZoonomiaSpecies.rds"
+args = c("r=carnvHerbs", "m=Data/RemadeTreesAllZoonomiaSpecies.rds", "c=T")
 args = "r=allInsectivory"
 
 
@@ -470,7 +470,7 @@ forceCladeUpdate = FALSE
 #Import if update being forced with argument 
 if(!is.na(cmdArgImport('c'))){
   forceCladeUpdate = cmdArgImport('c')
-  forceCladeUpdate = as.logical(willPruneTree)
+  forceCladeUpdate = as.logical(forceCladeUpdate)
 }else{
   paste("Force clade Correlation update not specified, not forcing clade update")
 }
@@ -479,9 +479,7 @@ cladesPathsFileName = paste(outputFolderName, filePrefix, "CladesPathsFile.rds",
 cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
 
 if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellationFileName, ".rds", sep="")) | forceCladeUpdate){
-  
-  
-  
+
   # --Clades Paths --
   if(!file.exists(paste(cladesPathsFileName)) | forceCladeUpdate){
     #get the main tree
@@ -520,7 +518,7 @@ if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellati
   }
 }
 
-
+#
 
 
 
