@@ -184,18 +184,6 @@ if(file.exists(phenotypeVectorFilename = paste(outputFolderName, filePrefix, "ph
   stop("THIS IS AN ISSUE MESSAGE, GENERATE A PHENTOTYPEVECTOR (sistersListGeneration.R)")
 }
 
-# --- Clades Correlation ---
-#This correlation uses the Clades version of the path, and thus cannot be imported from the normal RER script. 
-
-cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
-if(!file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
-  cladesCorrelation = correlateWithBinaryPhenotype(RERObject, pathCladesObject, min.sp =35)
-  write.csv(cladesCorrelation, file= paste(cladesCorellationFileName, ".csv", sep =""), row.names = T, quote = F)
-  saveRDS(cladesCorrelation, file= paste(cladesCorellationFileName, ".rds", sep=""))
-}else{
-  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
-}
-
 
 # --- Number of internal nodes --- 
 #internalNodeFilename = paste(outputFolderName, filePrefix, "internalNodeNumber.rds", sep="")
