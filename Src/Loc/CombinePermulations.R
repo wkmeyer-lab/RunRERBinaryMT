@@ -5,6 +5,7 @@ library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/convertLogiToNumeric.R")
+source("Src/Loc/permPValCorReport.R")
 
 
 #---- USAGE -----
@@ -30,6 +31,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 #Testing args:
 args = c('r=demoinsectivory', 'n=3', 'e=F', 't=p')
 args = c('r=allInsectivory','n=3', 'e=F', 's=1', 't=p')
+args = c('r=carnvHerbs','n=3', 'e=F', 's=1', 't=p')
 #------
 timeStart = Sys.time()
 # --- Import prefix ----
@@ -121,7 +123,7 @@ if(!is.na(cmdArgImport('c'))){
     paste("Metacombination value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
   }
 }else{
-  paste("Metacombination value not specified, using FLASE. If you aren't parrallelizing, don't worry about this.")
+  paste("Metacombination value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
 }
 
 # -- Import which filetype to use  --- 
@@ -247,7 +249,7 @@ if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))& calulateValue)
   cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
 
   # -- run pValue calculation --
-  permulationPValues = permpvalcor(cladesCorrelation, combinedPermulationsData)
+  permulationPValues = permPValCorReport(cladesCorrelation, combinedPermulationsData)
   pvalTime = Sys.time()
   pvalCalcDuration = pvalTime - saveEndTime
   message("Time to calculate pValues: ", pvalCalcDuration, attr(pvalCalcDuration, "units"))
@@ -256,7 +258,7 @@ if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))& calulateValue)
   #save the permulations p values
   permulationPValueFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsPValue", runInstanceValue, ".rds", sep= "")
   saveRDS(permulationPValues, file = permulationPValueFileName)
-  pValSaveTime = sys.time()
+  pValSaveTime = Sys.time()
   pvalSaveDuration = pValSaveTime - pvalTime
   message("Time to save pValues: ", pvalSaveDuration, attr(pvalSaveDuration, "units"))
   
