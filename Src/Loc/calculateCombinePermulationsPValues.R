@@ -147,7 +147,7 @@ if(metacombineValue == F){
 }else{
   combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", fileTypeString, "PermulationsData", runInstanceValue, ".rds", sep="")
 }
-
+message(combinedDataFileName)
 timeBeforeReadIn = Sys.time()
 combinedPermulationsData = readRDS(combinedDataFileName)
 timeAferReadIn = Sys.time()
