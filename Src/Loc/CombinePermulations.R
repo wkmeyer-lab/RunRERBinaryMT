@@ -263,7 +263,7 @@ if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))& calulateValue)
   message("Time to save pValues: ", pvalSaveDuration, attr(pvalSaveDuration, "units"))
   
 }else{
-  message("Clades Correlation file does not exist, p-values not calculated. (RunPermulationsManual, RunPermulationsFastScript")
+  message("Clades Correlation file does not exist, p-values not calculated. (sisterListGeneration.R)")
 }
 
 finalEndTime = Sys.time()
