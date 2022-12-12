@@ -15,7 +15,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 #testing args: 
 args - "r=demoInsectivory"
-args = "r=carnvHerbs"
+args = "r=carnvHerbs, m=Data/RemadeTreesAllZoonomiaSpecies.rds"
 args = "r=allInsectivory"
 
 
@@ -30,7 +30,9 @@ args = "r=allInsectivory"
   #A foreground string, exported as an RDS. 
 
 #ARGUMENTS: 
-# 'r="filePrefix"'              This is the prefix attached to all files; a required argument. 
+# 'r="filePrefix"'                 This is the prefix attached to all files; a required argument.
+# 'm=mainTreeFilename.txt or .rds' This is the location of the maintree file. Accepts .txt or .rds. Only used for creation of clades correlation files. 
+#  c= <T OR F>                     This forces a clade correlation update if set to true
 
 # ------ Command Line Imports:
 
@@ -444,6 +446,8 @@ saveRDS(sistersListExport, file = sisListFilename)
 #internalNodeFilename = paste(outputFolderName, filePrefix, "internalNodeNumber.rds", sep="")
 #saveRDS(internalNodeNumber, file = internalNodeFilename)
 
+
+
 #---- generate a phenotypeVector (named int of all tips with0/1 indicating foreground)-----
 phenotypeVector = c(0,0)
 length(phenotypeVector) = length(inputTree$tip.label)
@@ -453,6 +457,89 @@ phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
 #Save the phenotypeVector
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
 saveRDS(phenotypeVector, file = phenotypeVectorFilename)
+
+
+
+
+# --- Clades Correlation ---
+#This correlation uses the Clades version of the path, and thus cannot be imported from the normal RER script.
+#This is used in pValue calculations, so it is generated here if it does not already exist.
+
+forceCladeUpdate = FALSE
+
+#Import if update being forced with argument 
+if(!is.na(cmdArgImport('c'))){
+  forceCladeUpdate = cmdArgImport('c')
+  forceCladeUpdate = as.logical(willPruneTree)
+}else{
+  paste("Force clade Correlation update not specified, not forcing clade update")
+}
+
+cladesPathsFileName = paste(outputFolderName, filePrefix, "CladesPathsFile.rds", sep= "")
+cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
+
+if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellationFileName, ".rds", sep="")) | forceCladeUpdate){
+  
+  
+  
+  # --Clades Paths --
+  if(!file.exists(paste(cladesPathsFileName)) | forceCladeUpdate){
+    #get the main tree
+    mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
+    if(!is.na(cmdArgImport('m'))){
+      mainTreesLocation = cmdArgImport('m')
+    }else{
+      paste("No maintrees arg, using default")                          #Report using default
+      message("No maintrees arg, using default")
+    }
+    mainTrees = readRDS(mainTreesLocation)
+    
+    #make a foreground tree
+    foregroundCladeTree = foreground2TreeClades(foregroundSpecies, sistersListExport, mainTrees, plotTree = T, )
+    
+    pathCladesObject = tree2PathsClades(foregroundCladeTree, mainTrees)
+    saveRDS(pathCladesObject, file = cladesPathsFileName)
+  }else{
+    pathCladesObject = readRDS(cladesPathsFileName)
+  }
+  
+  # -- Clades Correlations
+  if(!file.exists(paste(cladesCorellationFileName, ".rds", sep="")) | forceCladeUpdate){
+    
+    #Import RERs
+    RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")
+    if(file.exists(paste(RERFileName))){
+      RERObject = readRDS(RERFileName)
+    }else{
+      message("RERObject not found, generate an RER Object. (RunRERBinaryMT.R)")
+    }
+    
+    cladesCorrelation = correlateWithBinaryPhenotype(RERObject, pathCladesObject, min.sp =35)
+    write.csv(cladesCorrelation, file= paste(cladesCorellationFileName, ".csv", sep =""), row.names = T, quote = F)
+    saveRDS(cladesCorrelation, file= paste(cladesCorellationFileName, ".rds", sep=""))
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #
 #manualSistersList = list(clade1, clade2, clade3, clade4, clade5, clade6, clade7, clade8, clade9, clade10, clade11, clade12,clade13,clade14,clade15,clade16,clade17,clade18,clade19,clade20)
