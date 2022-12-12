@@ -136,8 +136,6 @@ if(file_ext(binaryPhenotypeTreeLocation) == "rds"){
 
 RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")
 
-
-
 if(!file.exists(paste(RERFileName))){
   RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F)
   saveRDS(RERObject, file = RERFileName)
@@ -147,10 +145,7 @@ if(!file.exists(paste(RERFileName))){
 
 # ---- PATHS ----
 
-
-
 pathsFileName = paste(outputFolderName, filePrefix, "PathsFile.rds", sep= "")
-
 
 if(!file.exists(paste(pathsFileName))){
   pathsObject = tree2Paths(binaryPhenotypeTree, mainTrees, binarize=T, useSpecies = speciesFilter)
