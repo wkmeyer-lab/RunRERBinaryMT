@@ -30,7 +30,7 @@ source("Src/Reu/fast_bin_perm.r")
 #testing args 
 args = c('r=demoInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=1')
 args = c('r=allInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
-args = c('r=carnvHerbs','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
+args = c('r=carnvHerbs','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=1')
 
 #Get start time of the script 
 timeStart = Sys.time()
@@ -291,11 +291,11 @@ message("Permulation runtime: ", runTimeOfPerms)
 #-save the permulations- 
 #Make different filenames based on if the tree is pruned or not
 if(willPruneTree){
-  permualationsDataFileName = paste(outputFolderName, filePrefix, "PrunedFastPermulationsData", runInstanceValue, ".rds", sep= "")
+  permulationsDataFileName = paste(outputFolderName, filePrefix, "PrunedFastPermulationsData", runInstanceValue, ".rds", sep= "")
 }else{
-  permualationsDataFileName = paste(outputFolderName, filePrefix, "UnprunedFastPermulationsData", runInstanceValue, ".rds", sep= "")
+  permulationsDataFileName = paste(outputFolderName, filePrefix, "UnprunedFastPermulationsData", runInstanceValue, ".rds", sep= "")
 }
-saveRDS(convertedPermulations, file = permualationsDataFileName)
+saveRDS(convertedPermulations, file = permulationsDataFileName)
 
 #get time spent on saving the file 
 timePostSave = Sys.time()
