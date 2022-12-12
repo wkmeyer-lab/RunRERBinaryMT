@@ -1,4 +1,4 @@
-permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA) {
+permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA, report = TRUE) {
   timeStart = Sys.time()
   permcor = permvals$corRho                                                     #Rho values from the permulations
   timePermExtractEnd = Sys.time()
@@ -23,12 +23,12 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA)
   if(is.na(geneNumber)){endpoint = length(realstat)}else{endpoint = startNumber + geneNumber}  # set the endpoint to be all if gene number is not specified; or start value + number of genes to do if both specified. 
   while (count <= endpoint) {                                                   #While the count hasn't done all of the entries                                         
     timeLoopBegin = Sys.time()
-    message("Gene number: ", count)
+    if(report){message("Gene number: ", count)}
     if (is.na(realstat[count])) {                                               #if the real correlation is NA
       permpvals[count] = NA                                                     #Make the permulation value NA
-      message("is NA")
+      if(report){message("is NA")}
     }
-    else if(count <= 10 | count >= (endpoint-10)) {                                    #If not, send detailed time messages for the last 10  
+    else if((count <= 10 | count >= (endpoint-10)) & report) {                                    #If not, send detailed time messages for the last 10  
       permRow = permcor[count, ]
       permCol = t(permRow)
       permColMakeTime = Sys.time()
@@ -69,7 +69,7 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA)
       permpvals[count] = num/denom 
     }
     timeLoopEnd = Sys.time()
-    message("Total loop time: ", timeLoopEnd - timeLoopBegin, attr(timeLoopEnd - timeLoopBegin, "units"))
+    if(report){message("Total loop time: ", timeLoopEnd - timeLoopBegin, attr(timeLoopEnd - timeLoopBegin, "units"))}
     count = count + 1                                                           #increase count by one
     }
     message("calculation compelte.")
