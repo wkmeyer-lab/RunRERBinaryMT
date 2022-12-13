@@ -165,7 +165,7 @@ gc()
   if(is.na(geneNumberValue)){
     geneRange = "All"
   }else{
-    geneRange = paste(startValue, "-", (startValue + geneNumberValue), sep = "" )
+    geneRange = paste(startValue, "-", (startValue + geneNumberValue -1), sep = "" )
   }
   
   permulationPValueFileName = paste(outputFolderName, filePrefix, "Combined", fileTypeString, geneRange, "PermulationsPValue", runInstanceValue, ".rds", sep= "")

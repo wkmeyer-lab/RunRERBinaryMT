@@ -20,7 +20,7 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
   timeBeforeLoopStart = Sys.time()
   message("Total time before loop start: ", timeBeforeLoopStart - timeStart, attr(timeBeforeLoopStart - timeStart, "units"))
   
-  if(is.na(geneNumber)){endpoint = length(realstat)}else{endpoint = startNumber + geneNumber}  # set the endpoint to be all if gene number is not specified; or start value + number of genes to do if both specified. 
+  if(is.na(geneNumber)){endpoint = length(realstat)}else{endpoint = startNumber + geneNumber -1}  # set the endpoint to be all if gene number is not specified; or start value + number of genes to do if both specified. 
   while (count <= endpoint) {                                                   #While the count hasn't done all of the entries                                         
     timeLoopBegin = Sys.time()
     if(report){message("Gene number: ", count)}
