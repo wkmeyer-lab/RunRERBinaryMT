@@ -101,8 +101,10 @@ fileSetStep2 = grep("PermulationsPValue", fileSetStep1, value = TRUE)
 paste(fileSetStep2)
 OtherAppendOutputFiles = grep("Appended", fileSetStep2)
 paste(OtherAppendOutputFiles)
-fileSetStep3 = fileSetStep2[-OtherAppendOutputFiles]
-message(fileSetStep3)
+if(is.integer(OtherAppendOutputFiles) & length(OtherAppendOutputFiles) != 0){ 
+  fileSetStep3 = fileSetStep2[-OtherAppendOutputFiles]
+}else{fileSetStep3 = fileSetStep2}
+paste(fileSetStep3)
 
 #import all of the files
 message("Appending files:")
