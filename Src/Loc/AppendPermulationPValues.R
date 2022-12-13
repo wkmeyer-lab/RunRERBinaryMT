@@ -115,7 +115,7 @@ for(i in 1:length(fileSetStep3)){
   paste(unproccessedGenes)
   trimmedCurrentFile = currentFile[-unproccessedGenes]
   message(paste(outputFolderName, fileSetStep3[i]))
-  appenedPermPValues = append(appenedPermPValues, currentFile)
+  appenedPermPValues = append(appenedPermPValues, trimmedCurrentFile)
 }
 
 appendedPerPValuesFilename = paste(outputFolderName, filePrefix, "Combined", fileTypeString, "Appended", "PermulationsPValue", runInstanceValue, ".rds", sep= "")
