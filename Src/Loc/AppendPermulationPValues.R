@@ -22,7 +22,7 @@ source("Src/Loc/permPValCorReport.R")
 #Testing args:
 args = c('r=demoinsectivory', 'n=3', 'e=F', 't=p')
 args = c('r=allInsectivory', 'e=F', 's=1', 't=s', 'i=1')
-args = c('r=carnvHerbs', 'e=F', 's=1', 't=s', 'i=1')
+args = c('r=carnvHerbs', "t=p")
 #------
 
 
@@ -59,7 +59,6 @@ outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 #----- Default values -------
 
 runInstanceValue = NULL
-metacombineValue = FALSE
 
 #-------
 
@@ -97,14 +96,16 @@ if(fileType == 's'){
 filesInFolder = list.files(outputFolderName)
 fileSetStep1 = grep(paste("Combined", fileTypeString, sep =""), filesInFolder, value = TRUE)
 fileSetStep2 = grep("PermulationsPValue", fileSetStep1, value = TRUE)
-message(fileSetStep2)
+OtherAppendOutputFiles = grep("Appended", fileSetStep2)
+fileSetStep3 = fileSetStep2[-OtherAppendOutputFiles]
+message(fileSetStep3)
 
 #import all of the files
-message("Combineing files:")
+message("Appending files:")
 appenedPermPValues = NULL
-for(i in 1:length(fileSetStep2)){
-  currentFile = readRDS(paste(outputFolderName, fileSetStep2[i], sep= ""))
-  message(currentFile)
+for(i in 1:length(fileSetStep3)){
+  currentFile = readRDS(paste(outputFolderName, fileSetStep3[i], sep= ""))
+  message(paste(outputFolderName, fileSetStep3[i]))
   appenedPermPValues = append(appenedPermPValues, currentFile)
 }
 
