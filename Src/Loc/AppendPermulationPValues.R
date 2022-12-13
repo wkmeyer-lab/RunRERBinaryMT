@@ -96,8 +96,11 @@ if(fileType == 's'){
 filesInFolder = list.files(outputFolderName)
 paste(filesInFolder)
 fileSetStep1 = grep(paste("Combined", fileTypeString, sep =""), filesInFolder, value = TRUE)
+paste(fileSetStep1)
 fileSetStep2 = grep("PermulationsPValue", fileSetStep1, value = TRUE)
+paste(fileSetStep2)
 OtherAppendOutputFiles = grep("Appended", fileSetStep2)
+paste(OtherAppendOutputFiles)
 fileSetStep3 = fileSetStep2[-OtherAppendOutputFiles]
 message(fileSetStep3)
 
