@@ -75,6 +75,6 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
     message("calculation compelte.")
     timeEnd = Sys.time()
     message("Total calculation time: ", timeEnd - timeStart, attr(timeEnd - timeStart, "units"))
-  permpvals = permpvals[startNumber:length(permpvals)]                          #remove any entires from the vector that are below the start value 
+  permpvals = permpvals[startNumber:endpoint]                          #remove any entires from the vector that are below the start value or above the end value 
   permpvals                                                                     #Return the vector of pValues 
 }
