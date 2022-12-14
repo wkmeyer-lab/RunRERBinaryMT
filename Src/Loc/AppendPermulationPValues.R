@@ -111,7 +111,7 @@ message("Appending files:")
 appenedPermPValues = NULL
 for(i in 1:length(fileSetStep3)){
   currentFile = readRDS(paste(outputFolderName, fileSetStep3[i], sep= ""))
-  message(paste(outputFolderName, fileSetStep3[i]))
+  message(paste(outputFolderName, fileSetStep3[i], sep= ""))
   appenedPermPValues = append(appenedPermPValues, currentFile)
 }
 
