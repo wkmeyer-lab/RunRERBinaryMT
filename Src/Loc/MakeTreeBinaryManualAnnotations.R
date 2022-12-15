@@ -144,6 +144,9 @@ foregroundSpeciesAnnot = relevantSpecies[ relevantSpecies[[annotCollumn]] %in% 1
 
 foregroundNames = foregroundSpeciesAnnot$FaName
 
+foregroundFilename = paste(outputFolderName, filePrefix, "BinaryTreeForegroundSpecies.rds", sep="")
+saveRDS(foregroundNames, file = foregroundFilename)
+
 
 # -- set arguments for foreground2Trees --
 f2tInputList = list(foregroundNames, mainTrees, useSpecies = relevantSpeciesNames)
