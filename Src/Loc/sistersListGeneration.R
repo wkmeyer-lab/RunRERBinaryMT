@@ -522,15 +522,15 @@ if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellati
 
 # -- Generate a readable tree pdf -- 
 
-dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
-testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree");
+#dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
+#testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree");
 
 
-testTreeDisplayable = inputTree
-replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==0, 0.5)
-replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==1, 4)
+#testTreeDisplayable = inputTree
+#replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==0, 0.5)
+#replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==1, 4)
 
-plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(inputTree$edge.length==1), hlcols="blue",main="PhenotypeVector input tree")
+#plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(inputTree$edge.length==1), hlcols="blue",main="PhenotypeVector input tree")
 
 
 
