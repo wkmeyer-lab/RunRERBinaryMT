@@ -70,7 +70,7 @@ if(!is.na(cmdArgImport('a'))){
 if(!is.na(cmdArgImport('t'))){
   transitionValue = cmdArgImport('t')
 }else{
-  message("Using default unidirectional transistion")
+  message("Using default bidirectional transistion")
 }
 
 #clade value
@@ -148,12 +148,12 @@ foregroundNames = foregroundSpeciesAnnot$FaName
 # -- set arguments for foreground2Trees --
 f2tInputList = list(foregroundNames, mainTrees, useSpecies = relevantSpeciesNames)
 #Transition
-if(transitionValue == "bi"){
-  f2tInputList[["transition"]]= "bidirectional"
-  message("Bidirectional transition")
-}else{
+if(transitionValue == "uni"){
   f2tInputList[["transition"]]= "unidirectional"
   message("Unidirectional transition")
+}else{
+  f2tInputList[["transition"]]= "bidirectional"
+  message("Bidirectional transition")
 }
 
 #clade
