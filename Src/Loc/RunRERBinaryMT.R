@@ -22,7 +22,7 @@ source("Src/Reu/cmdArgImport.R")
 
 #Test args: 
 #args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=demoInsectivory')
-
+#args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=carnvHerbs')
 
 # ---- Default values if no arguments
 
@@ -65,8 +65,6 @@ outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
 
 # ---- Command Line Imports ----
-
-args = commandArgs(trailingOnly = TRUE)
 paste(args)
 message(args)
 
