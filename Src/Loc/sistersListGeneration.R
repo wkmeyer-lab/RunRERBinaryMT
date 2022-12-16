@@ -32,7 +32,7 @@ args = "r=allInsectivory"
 #ARGUMENTS: 
 # 'r="filePrefix"'                 This is the prefix attached to all files; a required argument.
 # 'm=mainTreeFilename.txt or .rds' This is the location of the maintree file. Accepts .txt or .rds. Only used for creation of clades correlation files. 
-#  c= <T OR F>                     This forces a clade correlation update if set to true
+#  v = <T or F>                    This value forces the regeneration of output files which otherwise would not be (CladesPathsFile.rds; CladesCorrelationFile.rds; CladesCorrelationFile.csv). 
 
 # ------ Command Line Imports:
 
@@ -62,8 +62,20 @@ if(!dir.exists(outputFolderNameNoSlash)){
 }
 outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
+# ----- Import force update argument
+forceUpdate = FALSE
+
+#Import if update being forced with argument 
+if(!is.na(cmdArgImport('v'))){
+  forceUpdate = cmdArgImport('v')
+  forceUpdate = as.logical(forceUpdate)
+}else{
+  paste("Force update not specified, not forcing update")
+}
 
 # ---------------
+
+
 
 
 
@@ -465,23 +477,13 @@ saveRDS(phenotypeVector, file = phenotypeVectorFilename)
 #This correlation uses the Clades version of the path, and thus cannot be imported from the normal RER script.
 #This is used in pValue calculations, so it is generated here if it does not already exist.
 
-forceCladeUpdate = FALSE
-
-#Import if update being forced with argument 
-if(!is.na(cmdArgImport('c'))){
-  forceCladeUpdate = cmdArgImport('c')
-  forceCladeUpdate = as.logical(forceCladeUpdate)
-}else{
-  paste("Force clade Correlation update not specified, not forcing clade update")
-}
-
 cladesPathsFileName = paste(outputFolderName, filePrefix, "CladesPathsFile.rds", sep= "")
 cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
 
-if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellationFileName, ".rds", sep="")) | forceCladeUpdate){
+if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellationFileName, ".rds", sep="")) | forceUpdate){
 
   # --Clades Paths --
-  if(!file.exists(paste(cladesPathsFileName)) | forceCladeUpdate){
+  if(!file.exists(paste(cladesPathsFileName)) | forceUpdate){
     #get the main tree
     mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
     if(!is.na(cmdArgImport('m'))){
@@ -502,7 +504,7 @@ if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellati
   }
   
   # -- Clades Correlations
-  if(!file.exists(paste(cladesCorellationFileName, ".rds", sep="")) | forceCladeUpdate){
+  if(!file.exists(paste(cladesCorellationFileName, ".rds", sep="")) | forceUpdate){
     
     #Import RERs
     RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")

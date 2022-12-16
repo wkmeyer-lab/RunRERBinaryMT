@@ -16,11 +16,12 @@ source("Src/Reu/convertLogiToNumeric.R")
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"' This is the prefix attached to all files a required argument. 
 # 'm=mainTreeFilename.txt or .rds' This is the location of the maintree file. Accepts .txt or .rds. 
-# 'f=speciesFilterText'  This is the text of a species filter. Expects character string. Will use pre-made file, if one exists. 
-# 't=rootSpeciesName'     This is the name of the root species, if not using REFERENCE(human)
-# 'n=numberOfPermulations' This is the number of permulations to run in the script 
-# 'i=runInstanceValue'    This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel. 
-# 'a=<T OR F>'            This stands for "automatic" and if FALSE forces the script to use the manual lists  
+# 'f=speciesFilterText'            This is the text of a species filter. Expects character string. Will use pre-made file, if one exists. 
+# 't=rootSpeciesName'              This is the name of the root species, if not using REFERENCE(human)
+# 'n=numberOfPermulations'         This is the number of permulations to run in the script 
+# 'i=runInstanceValue'             This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel. 
+# 'a=<T OR F>'                     This stands for "automatic" and if FALSE forces the script to use the manual lists  
+#  v = <T or F>                    This value forces the regeneration of output files which would otherwise not be (RERFile.rds; CladesPathsFile.rds; CladesCorrelationFile.rds; CladesCorrelation.csv ). 
 
 
 
@@ -86,8 +87,20 @@ if(!dir.exists(outputFolderNameNoSlash)){
 }
 outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
-#------ Command args import ------
+# ----- load force update argument
+forceUpdate = FALSE
 
+#Import if update being forced with argument 
+if(!is.na(cmdArgImport('v'))){
+  forceUpdate = cmdArgImport('v')
+  forceUpdate = as.logical(forceUpdate)
+  message("NOTE: It is suggested that other scripts be used for force-updates using this script is inefficient (RunRERBinaryMT.R; sistersListGeneration.R")
+}else{
+  paste("Force update not specified, not forcing update")
+}
+
+#------ Command args import ------
+{
 #MainTree location
 if(!is.na(cmdArgImport('m'))){
   mainTreesLocation = cmdArgImport('m')
@@ -140,6 +153,7 @@ if(!is.na(cmdArgImport('a'))){
   useAutomatic = as.logical(useAutomatic)
 }else{
   paste("Manual list not being forced, using automatic if available")
+}
 }
 # --------------------------------- MANUAL PORTION ---------------------
 #Setup foreground (manual)
@@ -230,7 +244,7 @@ dev.off()
 
 # ------ Clades Paths -----
 cladesPathsFileName = paste(outputFolderName, filePrefix, "CladesPathsFile.rds", sep= "")
-if(!file.exists(paste(cladesPathsFileName))){
+if(!file.exists(paste(cladesPathsFileName)) | forceUpdate){
   pathCladesObject = tree2PathsClades(foregroundCladeTree, mainTrees)
   saveRDS(pathCladesObject, file = cladesPathsFileName)
 }else{
@@ -240,7 +254,7 @@ if(!file.exists(paste(cladesPathsFileName))){
 # ---- RERS -----
 #Also allows import of RERs from the non-permulations version of the script 
 RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")
-if(!file.exists(paste(RERFileName))){
+if(!file.exists(paste(RERFileName)) | forceUpdate){
   RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F)
   saveRDS(RERObject, file = RERFileName)
 }else{
@@ -251,7 +265,7 @@ if(!file.exists(paste(RERFileName))){
 #This correlation uses the Clades version of the path, and thus cannot be imported from the normal RER script. 
 
 cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
-if(!file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
+if(!file.exists(paste(cladesCorellationFileName, ".rds", sep="")) | forceUpdate){
   cladesCorrelation = correlateWithBinaryPhenotype(RERObject, pathCladesObject, min.sp =35)
   write.csv(cladesCorrelation, file= paste(cladesCorellationFileName, ".csv", sep =""), row.names = T, quote = F)
   saveRDS(cladesCorrelation, file= paste(cladesCorellationFileName, ".rds", sep=""))

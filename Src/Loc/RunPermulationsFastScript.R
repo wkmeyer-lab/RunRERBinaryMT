@@ -17,13 +17,14 @@ source("Src/Reu/fast_bin_perm.r")
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"' This is the prefix attached to all files a required argument. 
 # 'm=mainTreeFilename.txt or .rds' This is the location of the maintree file. Accepts .txt or .rds. 
-# 'f=speciesFilterText'  This is the text of a species filter. Expects character string. Will use pre-made file, if one exists. 
-# 't=rootSpeciesName'     This is the name of the root species, if not using REFERENCE(human)
-# 'n=numberOfPermulations' This is the number of permulations to run in the script 
-# 'i=runInstanceValue'    This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel. 
-# 'a=<T OR F>'            This stands for "automatic" and if FALSE forces the script to use the manual lists 
-#  DEPRACATED 'e=<integer>'           This specifies the number of internal nodes, overrides an automatic one. 
-# 'p=<T or F>'            This specifies if the trees used for permulation should be pruned. This significantly speeds up the permulations but maybe affect results (unclear) 
+# 'f=speciesFilterText'            This is the text of a species filter. Expects character string. Will use pre-made file, if one exists. 
+# 't=rootSpeciesName'              This is the name of the root species, if not using REFERENCE(human)
+# 'n=numberOfPermulations'         This is the number of permulations to run in the script 
+# 'i=runInstanceValue'             This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel. 
+# 'a=<T OR F>'                     This stands for "automatic" and if FALSE forces the script to use the manual lists 
+#  DEPRACATED 'e=<integer>'        This specifies the number of internal nodes, overrides an automatic one. 
+# 'p=<T or F>'                     This specifies if the trees used for permulation should be pruned. This significantly speeds up the permulations but maybe affect results (unclear) 
+#  v = <T or F>                    This value forces the regeneration of output files which would otherwise not be (RERFile.rds). 
 
 
 
@@ -92,8 +93,19 @@ if(!dir.exists(outputFolderNameNoSlash)){
 }
 outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
-#------ Command args import ------
+# ----- load force update argument
+forceUpdate = FALSE
 
+#Import if update being forced with argument 
+if(!is.na(cmdArgImport('v'))){
+  forceUpdate = cmdArgImport('v')
+  forceUpdate = as.logical(forceUpdate)
+}else{
+  paste("Force update not specified, not forcing update")
+}
+
+#------ Command args import ------
+{
 #MainTree location
 if(!is.na(cmdArgImport('m'))){
   mainTreesLocation = cmdArgImport('m')
@@ -163,13 +175,14 @@ if(!is.na(cmdArgImport('p'))){
 }else{
   paste("Tree pruning not specified, pruning tree.")
 }
+}
 # --------------------------------- BEGIN SCRIPT ---------------------
 
 
 # ---- RERS -----
 #Also allows import of RERs from the non-permulations version of the script 
 RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")
-if(!file.exists(paste(RERFileName))){
+if(!file.exists(paste(RERFileName)) | forceUpdate){
   RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F)
   saveRDS(RERObject, file = RERFileName)
 }else{

@@ -77,8 +77,8 @@ calulateValue = TRUE
 
 #-------
 
-
-
+# ---- Command args import ----
+{
 # -- Import number of permulations to combine ---
 if(!is.na(cmdArgImport('n'))){
   permulationNumberValue = cmdArgImport('n')
@@ -145,7 +145,7 @@ if(!is.na(cmdArgImport('p'))){
 }else{
   paste("p-value calulation value not specified, using TRUE. If you aren't parrallelizing, don't worry about this.")
 }
-
+}
 # -- Combine permulations data files ----
 
 #Do the first combination:

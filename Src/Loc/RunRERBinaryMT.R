@@ -16,6 +16,8 @@ source("Src/Reu/cmdArgImport.R")
 # 'p=phenotypeTreeFilename.txt or .rds'
 # 'r="filePrefix"'
 # 'f=speciesFilterText'
+#  v = <T or F>                         This value forces the regeneration of output files which would otherwise not be (RERFile.rds, PathsFile.rds). 
+
 
 #Takes an inputed main trees multiphylo, binary phenotype tree, file prefix, and optional species filter list
 #Outputs a path, RER residuals, and correlation files. 
@@ -62,9 +64,20 @@ if(!dir.exists(outputFolderNameNoSlash)){
 }
 outputFolderName = paste("Output/",filePrefix,"/", sep = "")
 
+# ----- load force update argument
+forceUpdate = FALSE
+
+#Import if update being forced with argument 
+if(!is.na(cmdArgImport('v'))){
+  forceUpdate = cmdArgImport('v')
+  forceUpdate = as.logical(forceUpdate)
+}else{
+  paste("Force update not specified, not forcing update")
+}
 
 
-# ---- Command Line Imports ----
+# ---- Command args import ----
+{
 paste(args)
 message(args)
 
@@ -108,7 +121,7 @@ if(!is.na(cmdArgImport('f'))){
 }else{                                                    
   paste("No speciesFilter arg, using NULL")                           #if not, use no filter
 }
-
+}
 
 # ---- MAIN ----
 
@@ -134,7 +147,7 @@ if(file_ext(binaryPhenotypeTreeLocation) == "rds"){
 
 RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")
 
-if(!file.exists(paste(RERFileName))){
+if(!file.exists(paste(RERFileName)) | forceUpdate){
   RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F)
   saveRDS(RERObject, file = RERFileName)
 }else{
@@ -145,7 +158,7 @@ if(!file.exists(paste(RERFileName))){
 
 pathsFileName = paste(outputFolderName, filePrefix, "PathsFile.rds", sep= "")
 
-if(!file.exists(paste(pathsFileName))){
+if(!file.exists(paste(pathsFileName)) | forceUpdate){
   pathsObject = tree2Paths(binaryPhenotypeTree, mainTrees, binarize=T, useSpecies = speciesFilter)
   saveRDS(pathsObject, file = pathsFileName)
 }else{

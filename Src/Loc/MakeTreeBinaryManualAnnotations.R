@@ -15,7 +15,7 @@ source(file = "Src/Reu/cmdArgImport.R")
 # 't=<"uni"/"bi>"                        Sets if transitions are unidirectional or bidirectional         
 # 'c=<"ancestral"/"all"/"terminal">'     Sets the clade type 
 # 'w=<T/F>"                              Sets if the foreground2tree is weighted or not 
-
+#  v = <T or F>                         #This value forces the regeneration of output files Which otherwise would not be (SpeciesFilter.rds). 
 
 # ---- Default Arguments ----
 #Default main tree file location
@@ -36,8 +36,8 @@ weightValue = FALSE
 
 
 
-# ---- Command Line Imports ----
-
+# ---- Command args import ----
+{
 args = commandArgs(trailingOnly = TRUE)
 paste(args)
 message(args)
@@ -86,7 +86,7 @@ if(!is.na(cmdArgImport('w'))){
 }else{
   message("Weight = false")
 }
-
+}
 
 #------ Make Output directory -----
 
@@ -101,6 +101,17 @@ if(!dir.exists(outputFolderNameNoSlash)){
   dir.create(outputFolderNameNoSlash)
 }
 outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+
+# ----- load force update argument
+forceUpdate = FALSE
+
+#Import if update being forced with argument 
+if(!is.na(cmdArgImport('v'))){
+  forceUpdate = cmdArgImport('v')
+  forceUpdate = as.logical(forceUpdate)
+}else{
+  paste("Force update not specified, not forcing update")
+}
 
 
 # -------- Make Paths Main Code ---------------
@@ -125,7 +136,7 @@ manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")
 # ---- if a pre-defined species filter exists, use that. If not, create one. 
 speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="")
 
-if(!file.exists(speciesFilterFilename)){
+if(!file.exists(speciesFilterFilename) | forceUpdate){
   # --- subset the manual annots to only those with data in the collumn
   relevantSpecies = manualAnnots[ manualAnnots[[annotCollumn]] %in% c(0,1),]
   
