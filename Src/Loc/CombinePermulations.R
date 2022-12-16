@@ -79,7 +79,7 @@ calulateValue = TRUE
 
 # ---- Command args import ----
 {
-# -- Import number of permulations to combine ---
+#Import number of permulations to combine
 if(!is.na(cmdArgImport('n'))){
   permulationNumberValue = cmdArgImport('n')
   permulationNumberValue = as.numeric(permulationNumberValue)
@@ -87,7 +87,7 @@ if(!is.na(cmdArgImport('n'))){
   paste("Number of permulations not specified, using 100")
 }
 
-# -- Import if enriched or not --
+#Import if enriched or not 
 if(!is.na(cmdArgImport('e'))){
   enrichValue = cmdArgImport('e')
   enrichValue = as.logical(enrichValue)
@@ -99,7 +99,7 @@ if(!is.na(cmdArgImport('e'))){
   paste("enrichment not specified, using FLASE")
 }
 
-# -- Import the permulation number to start at ---
+#Import the permulation number to start at
 if(!is.na(cmdArgImport('s'))){
   startValue = cmdArgImport('s')
   startValue = as.numeric(startValue)
@@ -107,14 +107,14 @@ if(!is.na(cmdArgImport('s'))){
   paste("Start value not specified, using 1")
 }
 
-# -- Import the instance number of the script --- 
+#Import the instance number of the script 
 if(!is.na(cmdArgImport('i'))){
   runInstanceValue = cmdArgImport('i')
 }else{
   paste("This script does not have a run instance value")
 }
 
-# -- Import if this is being run to combine combinations -- 
+#Import if this is being run to combine combinations 
 if(!is.na(cmdArgImport('c'))){
   metacombineValue = cmdArgImport('c')
   metacombineValue = as.logical(metacombineValue)
@@ -126,7 +126,7 @@ if(!is.na(cmdArgImport('c'))){
   paste("Metacombination value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
 }
 
-# -- Import which filetype to use  --- 
+#Import which filetype to use  
 if(!is.na(cmdArgImport('t'))){
   fileType = cmdArgImport('t')
   fileType = as.character(fileType)
@@ -134,7 +134,7 @@ if(!is.na(cmdArgImport('t'))){
   paste("No fileType specified, defaulting to slow (PermulationsData)")
 }
 
-# -- Import if this is being run to combine combinations -- 
+#Import if this is being run to combine combinations
 if(!is.na(cmdArgImport('p'))){
   calulateValue = cmdArgImport('p')
   calulateValue = as.logical(calulateValue)
