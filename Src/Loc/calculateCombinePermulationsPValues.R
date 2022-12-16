@@ -69,21 +69,17 @@ geneNumberValue = NA #This means that by defulat it does all of the genes
 #-------
 
 
+# ---- Command args import ----
 
-
-
-# -- Import if enriched or not --
-
-
-
-# -- Import the instance number of the script --- 
+{
+#instance number of the script
 if(!is.na(cmdArgImport('i'))){
   runInstanceValue = cmdArgImport('i')
 }else{
   paste("This script does not have a run instance value")
 }
 
-# -- Import if this is being run on combined correlations -- 
+#Import if this is being run on combined correlations 
 if(!is.na(cmdArgImport('c'))){
   metacombineValue = cmdArgImport('c')
   metacombineValue = as.logical(metacombineValue)
@@ -95,7 +91,7 @@ if(!is.na(cmdArgImport('c'))){
   paste("Metacombination value not specified, using FLASE. If you aren't parrallelizing, don't worry about this.")
 }
 
-# -- Import which filetype to use  --- 
+#Import which filetype to use 
 if(!is.na(cmdArgImport('t'))){
   fileType = cmdArgImport('t')
   fileType = as.character(fileType)
@@ -103,7 +99,7 @@ if(!is.na(cmdArgImport('t'))){
   paste("No fileType specified, defaulting to slow (PermulationsData)")
 }
 
-# -- Import the permulation number to start at ---
+#Import the permulation number to start at
 if(!is.na(cmdArgImport('s'))){
   startValue = cmdArgImport('s')
   startValue = as.numeric(startValue)
@@ -111,14 +107,14 @@ if(!is.na(cmdArgImport('s'))){
   paste("Start value not specified, using 1")
 }
 
-# -- Import the number of genes to do 
+#Import the number of genes to do 
 if(!is.na(cmdArgImport('n'))){
   geneNumberValue = cmdArgImport('n')
   geneNumberValue = as.numeric(geneNumberValue)
 }else{
   paste("Number ofgenes not specified, using all")
 }
-
+}
 # ----- Calculation of p-values
 
 # -- Get clades correlation --
