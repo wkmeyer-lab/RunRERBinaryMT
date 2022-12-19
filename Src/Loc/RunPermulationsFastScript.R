@@ -31,7 +31,7 @@ source("Src/Reu/fast_bin_perm.r")
 #testing args 
 args = c('r=demoInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=1')
 args = c('r=allInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
-args = c('r=carnvHerbs','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=1')
+args = c('r=carnvHerbs','n=3300','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=test')
 
 #Get start time of the script 
 timeStart = Sys.time()
