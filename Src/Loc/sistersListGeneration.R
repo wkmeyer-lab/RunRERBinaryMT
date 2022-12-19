@@ -15,7 +15,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 #testing args: 
 args = "r=demoInsectivory"
-args = c("r=carnvHerbs", "m=Data/RemadeTreesAllZoonomiaSpecies.rds", "c=T")
+args = c("r=carnvHerbs", "m=Data/RemadeTreesAllZoonomiaSpecies.rds", "v=T")
 args = "r=allInsectivory"
 
 
