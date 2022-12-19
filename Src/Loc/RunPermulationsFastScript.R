@@ -33,6 +33,8 @@ args = c('r=demoInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds', '
 args = c('r=allInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 args = c('r=carnvHerbs','n=3300','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=test')
 
+
+args = commandArgs(trailingOnly = TRUE)
 #Get start time of the script 
 timeStart = Sys.time()
 
@@ -66,7 +68,7 @@ useManualInternalNumber = F
 willPruneTree = T
 
 # --- Import prefix ----
-args = commandArgs(trailingOnly = TRUE)
+
 paste(args)
 message(args)
 
@@ -246,13 +248,20 @@ internalNumberValue = countInternal(rootedMasterTree, bitMap,fg=names(phenotypeV
 #The function used for each permulation:
 computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber = internalNumberValue){
   singlePermStartTime = Sys.time()
+  message("perm")
   permulatedForeground = fastSimBinPhenoVec(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
-  permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound 
+  
+  message("tree")
+  permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound
+  
+  message("paths")
   permulatedPaths = tree2Paths(permulatedTree, mainTrees, binarize=T, useSpecies=speciesFilter)                                                    #generate a path from that tree
+  
   singlePermulationEndTime = Sys.time()
   permulationDuration = singlePermulationEndTime - singlePermStartTime
   message("Permulation time: ", permulationDuration)
   permulatedCorrelations = correlateWithBinaryPhenotype(RERObject, permulatedPaths, min.sp=min.sp)                                                 #Use that path to get a coreelation of the null phenotype to genes (this is the outbut of a Get PermsBinary run)
+  
   correlationEndTime = Sys.time()
   correlationDuration = correlationEndTime - singlePermulationEndTime
   message("Correlation Duration: ", correlationDuration)
