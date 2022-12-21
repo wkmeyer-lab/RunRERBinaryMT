@@ -31,7 +31,7 @@ source("Src/Reu/fast_bin_perm.r")
 #testing args 
 args = c('r=demoInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=1')
 args = c('r=allInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
-args = c('r=carnvHerbs','n=3300','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=test')
+args = c('r=carnvHerbs','n=3300','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=test', 'p=F')
 
 
 args = commandArgs(trailingOnly = TRUE)
@@ -253,6 +253,7 @@ computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, m
   
   message("tree")
   permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound
+  #permulatedTree = debugTruncatedFG2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound
   
   message("paths")
   permulatedPaths = tree2Paths(permulatedTree, mainTrees, binarize=T, useSpecies=speciesFilter)                                                    #generate a path from that tree
