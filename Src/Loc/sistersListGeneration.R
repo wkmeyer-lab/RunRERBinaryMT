@@ -32,7 +32,9 @@ args = "r=allInsectivory"
 #ARGUMENTS: 
 # 'r="filePrefix"'                 This is the prefix attached to all files; a required argument.
 # 'm=mainTreeFilename.txt or .rds' This is the location of the maintree file. Accepts .txt or .rds. Only used for creation of clades correlation files. 
+#  t = <T or F>                    This value determines if the phenotype vector should be trimmed to the species filter
 #  v = <T or F>                    This value forces the regeneration of output files which otherwise would not be (CladesPathsFile.rds; CladesCorrelationFile.rds; CladesCorrelationFile.csv). 
+
 
 # ------ Command Line Imports:
 
@@ -75,10 +77,49 @@ if(!is.na(cmdArgImport('v'))){
 
 # ---------------
 
+# ----- Command Args Import -----
+speciesFilter = NULL
+trimPhenotypeVector = TRUE
 
+{
+#speciesFilter
+speciesFilterFileName = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
 
+if(!is.na(cmdArgImport('f'))){
+  speciesFilter = cmdArgImport('f')
+}else if (file.exists(paste(speciesFilterFileName))){                  #See if a pre-made filter for this prefix exists 
+  speciesFilter = readRDS(speciesFilterFileName)                       #if so, use it 
+  paste("Pre-made filter found, using pre-made filter.")
+}else{                                                    
+  paste("No speciesFilter arg, using NULL")                           #if not, use no filter
+}
 
+#Maintrees, with check to see if needed 
+{
+cladesPathsFileName = paste(outputFolderName, filePrefix, "CladesPathsFile.rds", sep= "")
+cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
+if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellationFileName, ".rds", sep="")) | forceUpdate){
+  if(!file.exists(paste(cladesPathsFileName)) | forceUpdate){
+    mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
+    if(!is.na(cmdArgImport('m'))){
+      mainTreesLocation = cmdArgImport('m')
+    }else{
+      paste("No maintrees arg, using default")                          #Report using default
+      message("No maintrees arg, using default")
+    }
+    mainTrees = readRDS(mainTreesLocation)
+  }
+}
+}
+}
 
+#Import if trim phenotype vector
+if(!is.na(cmdArgImport('f'))){
+  trimPhenotypeVector = cmdArgImport('f')
+  trimPhenotypeVector = as.logical(trimPhenotypeVector)
+}else{
+  paste("Trimming phenotype vector not specified, using TRUE")
+}
 
 
 
@@ -466,6 +507,9 @@ length(phenotypeVector) = length(inputTree$tip.label)
 phenotypeVector[] = 0 
 names(phenotypeVector) = inputTree$tip.label
 phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
+if(trimPhenotypeVector){
+  phenotypeVector = phenotypeVector[phenotypeVector %in% speciesFilter]
+}
 #Save the phenotypeVector
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
 saveRDS(phenotypeVector, file = phenotypeVectorFilename)
@@ -485,14 +529,6 @@ if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellati
   # --Clades Paths --
   if(!file.exists(paste(cladesPathsFileName)) | forceUpdate){
     #get the main tree
-    mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
-    if(!is.na(cmdArgImport('m'))){
-      mainTreesLocation = cmdArgImport('m')
-    }else{
-      paste("No maintrees arg, using default")                          #Report using default
-      message("No maintrees arg, using default")
-    }
-    mainTrees = readRDS(mainTreesLocation)
     
     #make a foreground tree
     foregroundCladeTree = foreground2TreeClades(foregroundSpecies, sistersListExport, mainTrees, plotTree = T, )
