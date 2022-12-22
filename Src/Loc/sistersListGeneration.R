@@ -511,7 +511,7 @@ phenotypeVector[] = 0
 names(phenotypeVector) = inputTree$tip.label
 phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
 if(trimPhenotypeVector){
-  phenotypeVector = phenotypeVector[phenotypeVector %in% speciesFilter]
+  phenotypeVector = phenotypeVector[names(phenotypeVector) %in% speciesFilter]
 }
 #Save the phenotypeVector
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
