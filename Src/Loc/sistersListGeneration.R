@@ -13,10 +13,8 @@ source("Src/Reu/convertLogiToNumeric.R")
 
 #dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
-#testing args: 
-args = "r=demoInsectivory"
-args = c("r=carnvHerbs", "m=Data/RemadeTreesAllZoonomiaSpecies.rds", "v=T")
-args = "r=allInsectivory"
+
+
 
 
 
@@ -37,6 +35,11 @@ args = "r=allInsectivory"
 
 
 # ------ Command Line Imports:
+
+#testing args: 
+args = "r=demoInsectivory"
+args = "r=allInsectivory"
+args = c("r=carnvHerbs", "m=Data/RemadeTreesAllZoonomiaSpecies.rds", "v=T")
 
 # --- Import prefix --- 
 
