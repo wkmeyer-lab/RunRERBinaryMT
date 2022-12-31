@@ -162,7 +162,7 @@ if(fileType == 's'){
 if(metacombineValue == F){
     basePermulationsFilename = paste(outputFolderName, filePrefix, fileTypeString, "PermulationsData",  sep="")
 }else{
-  basePermulationsFilename = paste(outputFolderName, filePrefix, fileTypeString, "CombinedPermulationsData",  sep="")
+  basePermulationsFilename = paste(outputFolderName, filePrefix, "Combined", fileTypeString, "PermulationsData",  sep="")
 }
 
 firstPermulationsFilename = paste(basePermulationsFilename, startValue, ".rds", sep="")
