@@ -18,6 +18,7 @@ source("Src/Loc/permPValCorReport.R")
 # 't = <s OR f OR p>'           This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
 # 's = <integer>'               This sets the gene number to start at for parallelization,                 
 # 'n = <integer>                This is the number of genes to do, used to parallelization
+# 'd = <T or F>                 This sets if the script should use a simple denominator (# perms + 1) or not (# of Non-NA perms +0). Default False (use complex denominator)
 
 #-------
 #Debug setup defaults
@@ -65,6 +66,7 @@ runInstanceValue = NULL
 metacombineValue = FALSE
 startValue = 1
 geneNumberValue = NA #This means that by defulat it does all of the genes
+simpleDenominat = FALSE
 
 #-------
 
@@ -114,6 +116,16 @@ if(!is.na(cmdArgImport('n'))){
 }else{
   paste("Number ofgenes not specified, using all")
 }
+if(!is.na(cmdArgImport('p'))){
+  simpleDenominat = cmdArgImport('p')
+  simpleDenominat = as.logical(simpleDenominat)
+  if(is.na(simpleDenominat)){
+    simpleDenominat = FALSE
+    paste("Simple denominator value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }
+}else{
+  paste("Simple denominator value not specified, using FLASE.")
+}
 }
 # ----- Calculation of p-values
 
@@ -154,7 +166,7 @@ message("File reading time: ", readingTime, attr(readingTime, "units"))
 #Explict order for garbage collection 
 gc() 
 # -- run pValue calculation --
-  permulationPValues = permPValCorReport(cladesCorrelation, combinedPermulationsData, startNumber = startValue, geneNumber = geneNumberValue)
+  permulationPValues = permPValCorReport(cladesCorrelation, combinedPermulationsData, startNumber = startValue, geneNumber = geneNumberValue, simpleDenominator = simpleDenominat)
   
   #save the permulations p values
     #Make generate a marker saying which genes were calculated 

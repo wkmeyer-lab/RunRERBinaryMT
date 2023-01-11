@@ -1,4 +1,4 @@
-permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA, report = TRUE) {
+permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA, report = TRUE, simpleDenominator = FALSE) {
   timeStart = Sys.time()
   permcor = permvals$corRho                                                     #Rho values from the permulations
   timePermExtractEnd = Sys.time()
@@ -42,8 +42,11 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
                 na.rm = T)
       timeNumeratorCalc = Sys.time()
       message("Numerator Calculate time: ", timeNumeratorCalc - realRowMakeTime, attr(timeNumeratorCalc - realRowMakeTime, "units"))
-      
-      denom = sum(!is.na(permCol))                                     #Make a denominator which is the sum of the non-NA permulation values
+      if(simpleDenominator){ #If using simple demoninator, set denominator = number of permulations +1 
+        denom = sum(permCol)+1
+      }else{
+        denom = sum(!is.na(permCol))                                     #Make a denominator which is the sum of the non-NA permulation values
+      }
       timeDenomSum = Sys.time()
       message("Denominator sum time: ", timeDenomSum - timeNumeratorCalc, attr(timeDenomSum - timeNumeratorCalc, "units"))
       permpvals[count] = num/denom                                              #p-value = numerator/denominator
@@ -63,7 +66,11 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
       #timeNumeratorCalc = Sys.time()
       #message("Numerator Calculate time: ", timeNumeratorCalc - realRowMakeTime, attr(timeNumeratorCalc - realRowMakeTime, "units"))
       
-      denom = sum(!is.na(permCol))                                     #Make a denominator which is the sum of the non-NA permulation values
+      if(simpleDenominator){ #If using simple demoninator, set denominator = number of permulations +1 
+        denom = sum(permCol)+1
+      }else{
+        denom = sum(!is.na(permCol))                                     #Make a denominator which is the sum of the non-NA permulation values
+      }
       #timeDenomSum = Sys.time()
       #message("Denominator sum time: ", timeDenomSum - timeNumeratorCalc, attr(timeDenomSum - timeNumeratorCalc, "units"))
       permpvals[count] = num/denom 
