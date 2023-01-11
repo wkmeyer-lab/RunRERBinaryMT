@@ -17,8 +17,10 @@ source("Src/Loc/permPValCorReport.R")
 # 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # 't = <s OR f OR p>'           This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
 # 's = <integer>'               This sets the gene number to start at for parallelization,                 
-# 'n = <integer>                This is the number of genes to do, used to parallelization
-# 'd = <T or F>                 This sets if the script should add one to the denominator or not 
+# 'n = <integer>'               This is the number of genes to do, used to parallelization
+# 'd = <T or F>'                This sets if the script should add one to the denominator or not 
+# 'g = <T or F>'                This sets if the script should use same-sign-only denominators or not
+# 'l = <T or F>'                This sets if the script should use clades-based correlation values, or non-clade-based correlation values 
 
 #-------
 #Debug setup defaults
@@ -67,7 +69,8 @@ metacombineValue = FALSE
 startValue = 1
 geneNumberValue = NA #This means that by defulat it does all of the genes
 plusOneValue = FALSE
-
+sameSignValue = FALSE
+useCladesValue = TRUE
 #-------
 
 
@@ -126,19 +129,52 @@ if(!is.na(cmdArgImport('d'))){
 }else{
   paste("Plus one denominator value not specified, using FLASE.")
 }
+if(!is.na(cmdArgImport('g'))){
+  sameSignValue = cmdArgImport('g')
+  sameSignValue = as.logical(sameSignValue)
+  if(is.na(sameSignValue)){
+    sameSignValue = FALSE
+    paste("Same sign denominator value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }
+}else{
+  paste("Same sign denominator value not specified, using FLASE.")
+}
+if(!is.na(cmdArgImport('l'))){
+  useCladesValue = cmdArgImport('l')
+  useCladesValue = as.logical(sameSignValue)
+  if(is.na(sameSignValue)){
+    useCladesValue = TRUE
+    paste("Plus one denominator value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
+  }
+}else{
+  paste("Use Clades value not specified, using TRUE.")
+}
 }
 # ----- Calculation of p-values
 
-# -- Get clades correlation --
-
-cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
-if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
-  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
-}else{
-  message("Clades Correlation file does not exist, p-values not calculated. (sisterListGeneration.R)")
-  stop("Requires Clades Correlation file.")
+# -- Get correlation file--
+#If using clades
+if(useCladesValue){
+  cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
+  if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
+    cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
+  }else{
+    message("Clades Correlation file does not exist, p-values not calculated. (sisterListGeneration.R)")
+    stop("Requires Clades Correlation file.")
+  }
+  correlationSet = cladesCorrelation
 }
-
+#If not using clades 
+else{
+  noncladesCorellationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "")
+  if(file.exists(paste(noncladesCorellationFileName, ".rds", sep=""))){
+    noncladesCorrelation = readRDS(paste(noncladesCorellationFileName, ".rds", sep=""))
+  }else{
+    message("Non-Clades Correlation file does not exist, p-values not calculated. (RunRERBinaryMT.R)")
+    stop("Requires Non-Clades Correlation file.")
+  }
+  correlationSet = noncladesCorrelation
+}
 # ---- Get Combined Permulations filename ---
 #Do the first combination:
 if(fileType == 's'){
@@ -166,7 +202,7 @@ message("File reading time: ", readingTime, attr(readingTime, "units"))
 #Explict order for garbage collection 
 gc() 
 # -- run pValue calculation --
-  permulationPValues = permPValCorReport(cladesCorrelation, combinedPermulationsData, startNumber = startValue, geneNumber = geneNumberValue, plusOne = plusOneValue)
+  permulationPValues = permPValCorReport(correlationSet, combinedPermulationsData, startNumber = startValue, geneNumber = geneNumberValue, plusOne = plusOneValue, signedDenominator = sameSignValue)
   
   #save the permulations p values
     #Make generate a marker saying which genes were calculated 
