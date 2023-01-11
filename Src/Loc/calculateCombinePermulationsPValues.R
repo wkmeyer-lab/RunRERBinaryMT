@@ -66,7 +66,7 @@ runInstanceValue = NULL
 metacombineValue = FALSE
 startValue = 1
 geneNumberValue = NA #This means that by defulat it does all of the genes
-simpleDenominat = FALSE
+plusOneValue = FALSE
 
 #-------
 
