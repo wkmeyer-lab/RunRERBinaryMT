@@ -1,4 +1,4 @@
-permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA, report = TRUE, simpleDenominator = FALSE) {
+permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA, report = TRUE, plusOne = FALSE) {
   timeStart = Sys.time()
   permcor = permvals$corRho                                                     #Rho values from the permulations
   timePermExtractEnd = Sys.time()
@@ -42,8 +42,8 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
                 na.rm = T)
       timeNumeratorCalc = Sys.time()
       message("Numerator Calculate time: ", timeNumeratorCalc - realRowMakeTime, attr(timeNumeratorCalc - realRowMakeTime, "units"))
-      if(simpleDenominator){ #If using simple demoninator, set denominator = number of permulations +1 
-        denom = sum(permCol)+1
+      if(plusOne){ #If using simple demoninator, set denominator = number of permulations +1 
+        denom = sum(!is.na(permCol))+1
       }else{
         denom = sum(!is.na(permCol))                                     #Make a denominator which is the sum of the non-NA permulation values
       }
@@ -66,8 +66,8 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
       #timeNumeratorCalc = Sys.time()
       #message("Numerator Calculate time: ", timeNumeratorCalc - realRowMakeTime, attr(timeNumeratorCalc - realRowMakeTime, "units"))
       
-      if(simpleDenominator){ #If using simple demoninator, set denominator = number of permulations +1 
-        denom = sum(permCol)+1
+      if(plusOne){ #If using simple demoninator, set denominator = number of permulations +1 
+        denom = sum(!is.na(permCol))+1
       }else{
         denom = sum(!is.na(permCol))                                     #Make a denominator which is the sum of the non-NA permulation values
       }
