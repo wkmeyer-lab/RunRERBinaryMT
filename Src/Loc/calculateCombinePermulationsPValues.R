@@ -21,7 +21,7 @@ source("Src/Loc/permPValCorReport.R")
 # 'd = <T or F>'                This sets if the script should add one to the denominator or not 
 # 'g = <T or F>'                This sets if the script should use same-sign-only denominators or not
 # 'l = <T or F>'                This sets if the script should use clades-based correlation values, or non-clade-based correlation values 
-
+# 'm = <Filename>               This is an override for the clades location target 
 #-------
 #Debug setup defaults
 #permulationNumberValue = 3
@@ -71,6 +71,7 @@ geneNumberValue = NA #This means that by defulat it does all of the genes
 plusOneValue = FALSE
 sameSignValue = FALSE
 useCladesValue = TRUE
+useCorrelationOverride = FALSE
 #-------
 
 
@@ -149,12 +150,27 @@ if(!is.na(cmdArgImport('l'))){
 }else{
   paste("Use Clades value not specified, using TRUE.")
 }
+if(!is.na(cmdArgImport('m'))){
+  useCorrelationOverride = TRUE
+  correlationOverride = cmdArgImport('m')
+}else{
+  paste("No correlation override")
+}  
+  
 }
 # ----- Calculation of p-values
 
 # -- Get correlation file--
-#If using clades
-if(useCladesValue){
+if(useCorrelationOverride){                                                     #If using an override
+  overrideCorellationFileName = paste(outputFolderName, filePrefix, correlationOverride, sep= "")
+  if(file.exists(paste(overrideCorellationFileName, ".rds", sep=""))){
+    overrideCladesCorrelation = readRDS(paste(overrideCorellationFileName, ".rds", sep=""))
+  }else{
+    message("Override Correlation file does not exist, p-values not calculated. (RunRERBinaryMT.R)")
+    stop("Requires Override Correlation file.")
+  }
+  correlationSet = overrideCladesCorrelation
+}else if(useCladesValue){                                                       #If using clades
   cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
   if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
     cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
@@ -163,9 +179,7 @@ if(useCladesValue){
     stop("Requires Clades Correlation file.")
   }
   correlationSet = cladesCorrelation
-}
-#If not using clades 
-else{
+}else{                                                                          #Otherwise
   noncladesCorellationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "")
   if(file.exists(paste(noncladesCorellationFileName, ".rds", sep=""))){
     noncladesCorrelation = readRDS(paste(noncladesCorellationFileName, ".rds", sep=""))
