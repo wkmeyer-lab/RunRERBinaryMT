@@ -135,7 +135,7 @@ cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelati
 if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))){
   cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
 }else{
-  message("Clades Correlation file does not exist, p-values not calculated. (RunPermulationsManual, RunPermulationsFastScript")
+  message("Clades Correlation file does not exist, p-values not calculated. (sisterListGeneration.R)")
   stop("Requires Clades Correlation file.")
 }
 
