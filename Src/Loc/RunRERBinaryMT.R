@@ -24,7 +24,7 @@ source("Src/Reu/cmdArgImport.R")
 
 #Test args: 
 #args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=demoInsectivory')
-args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=carnvHerbs', 'v=T')
+args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=carnvHerbs', 'v=F')
 
 # ---- Default values if no arguments
 
