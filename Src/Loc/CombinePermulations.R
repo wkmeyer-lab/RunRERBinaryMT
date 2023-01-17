@@ -24,7 +24,7 @@ source("Src/Loc/permPValCorReport.R")
 # 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Typically fed in by for loop used to run script in parallel.
 # 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # 't = <s OR f OR p>            This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
-# 'p = <T or F>'                This value determines whether or not to calculate the pValues. 
+# 'p = <T or F>'                This value determines whether or not to calculate the pValues. [DEPRECATED]
 #-------
 #Debug setup defaults
 #permulationNumberValue = 3
@@ -239,32 +239,38 @@ message("Time to save combine permulations: ", permSavingDuration, attr(permSavi
 
 
 
-# ---- Calculate the pValues -----
+# ---- Calculate the pValues (Deprecated)-----
 
+if(calulateValue){
+  message("P Value Calculation Functionality deprecated. Use calculateCombinePermulationsPValues.R")
+}
+{  #This bracket is to allow for the collapsing of the deprecated function
 # -- Get clades correlation --
 #This relies on a correlationFile produced by the runPermulations initial scripts. If that file doesn't exist, it skips the step and goes directly to saving the combined permulations.
 
-cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
-if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))& calulateValue){
-  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
-
-  # -- run pValue calculation --
-  permulationPValues = permPValCorReport(cladesCorrelation, combinedPermulationsData)
-  pvalTime = Sys.time()
-  pvalCalcDuration = pvalTime - saveEndTime
-  message("Time to calculate pValues: ", pvalCalcDuration, attr(pvalCalcDuration, "units"))
-  
-  
-  #save the permulations p values
-  permulationPValueFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsPValue", runInstanceValue, ".rds", sep= "")
-  saveRDS(permulationPValues, file = permulationPValueFileName)
-  pValSaveTime = Sys.time()
-  pvalSaveDuration = pValSaveTime - pvalTime
-  message("Time to save pValues: ", pvalSaveDuration, attr(pvalSaveDuration, "units"))
-  
-}else{
-  message("Clades Correlation file does not exist, p-values not calculated. (sisterListGeneration.R)")
+#cladesCorellationFileName = paste(outputFolderName, filePrefix, "CladesCorrelationFile", sep= "")
+#if(file.exists(paste(cladesCorellationFileName, ".rds", sep=""))& calulateValue){
+#  cladesCorrelation = readRDS(paste(cladesCorellationFileName, ".rds", sep=""))
+#
+#  # -- run pValue calculation --
+#  permulationPValues = permPValCorReport(cladesCorrelation, combinedPermulationsData)
+#  pvalTime = Sys.time()
+#  pvalCalcDuration = pvalTime - saveEndTime
+#  message("Time to calculate pValues: ", pvalCalcDuration, attr(pvalCalcDuration, "units"))
+#  
+#  
+#  #save the permulations p values
+#  permulationPValueFileName = paste(outputFolderName, filePrefix, "CombinedPermulationsPValue", runInstanceValue, ".rds", sep= "")
+#  saveRDS(permulationPValues, file = permulationPValueFileName)
+#  pValSaveTime = Sys.time()
+#  pvalSaveDuration = pValSaveTime - pvalTime
+#  message("Time to save pValues: ", pvalSaveDuration, attr(pvalSaveDuration, "units"))
+#  
+#}else{
+#  message("Clades Correlation file does not exist, p-values not calculated. (sisterListGeneration.R)")
+#}
 }
+
 
 finalEndTime = Sys.time()
 grandTotalTime = finalEndTime - timeStart
