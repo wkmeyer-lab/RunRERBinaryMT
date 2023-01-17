@@ -39,7 +39,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 #testing args: 
 args = "r=demoInsectivory"
 args = "r=allInsectivory"
-args = c("r=carnvHerbs", "m=Data/RemadeTreesAllZoonomiaSpecies.rds", "v=T")
+args = c("r=carnvHerbs", "m=Data/RemadeTreesAllZoonomiaSpecies.rds", "v=F")
 
 # --- Import prefix --- 
 
