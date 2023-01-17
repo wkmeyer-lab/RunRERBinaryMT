@@ -12,9 +12,9 @@ source("Src/Reu/convertLogiToNumeric.R")
 #batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
 
 
-debugPlotTree = function(debugTree){dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(debugTree,hlspecies=which(debugTree$edge.length== 3),hlcols="blue", main="Input tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")}
-debugPlotTree(inputTree)
-debugPlotTree(unprunedInputTree)
+#debugPlotTree = function(debugTree){dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(debugTree,hlspecies=which(debugTree$edge.length== 3),hlcols="blue", main="Input tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")}
+#debugPlotTree(inputTree)
+#debugPlotTree(unprunedInputTree)
 
 
 
