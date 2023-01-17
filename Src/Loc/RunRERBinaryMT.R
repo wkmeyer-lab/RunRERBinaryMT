@@ -75,7 +75,6 @@ if(!is.na(cmdArgImport('v'))){
   paste("Force update not specified, not forcing update")
 }
 
-
 # ---- Command args import ----
 {
 paste(args)
