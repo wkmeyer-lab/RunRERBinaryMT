@@ -70,7 +70,7 @@ startValue = 1
 geneNumberValue = NA #This means that by defulat it does all of the genes
 plusOneValue = FALSE
 sameSignValue = FALSE
-useCladesValue = TRUE
+useCladesValue = FALSE
 useCorrelationOverride = FALSE
 #-------
 
@@ -148,7 +148,7 @@ if(!is.na(cmdArgImport('l'))){
     paste("Plus one denominator value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
   }
 }else{
-  paste("Use Clades value not specified, using TRUE.")
+  paste("Use Clades value not specified, using FALSE.")
 }
 if(!is.na(cmdArgImport('m'))){
   useCorrelationOverride = TRUE
