@@ -11,8 +11,10 @@ source("Src/Reu/convertLogiToNumeric.R")
 # --- Debug settup---
 #batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
 
-#dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(inputTree,hlspecies=which(inputTree$edge.length== 3),hlcols="blue", main="Marine mammals trait tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")
 
+debugPlotTree = function(debugTree){dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(debugTree,hlspecies=which(debugTree$edge.length== 3),hlcols="blue", main="Input tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")}
+debugPlotTree(inputTree)
+debugPlotTree(unprunedInputTree)
 
 
 
@@ -131,6 +133,10 @@ if(!is.na(cmdArgImport('f'))){
 # ---- Main code ---- 
 inputTreeFilename = paste(outputFolderName, filePrefix, "BinaryForegroundTree.rds", sep="")
 inputTree= readRDS(inputTreeFilename) 
+if(trimPhenotypeVector){
+  unprunedInputTree = inputTree
+  inputTree = pruneTree(inputTree, speciesFilter)
+}
 
 # -- Foreground Edges --
 fgEdges = which(inputTree$edge.length>=1)                                       #Make a list of the edges in the foreground
