@@ -68,7 +68,7 @@ runInstanceValue = NULL
 metacombineValue = FALSE
 startValue = 1
 geneNumberValue = NA #This means that by defulat it does all of the genes
-plusOneValue = FALSE
+plusOneValue = TRUE
 sameSignValue = FALSE
 useCladesValue = FALSE
 useCorrelationOverride = FALSE
@@ -128,7 +128,7 @@ if(!is.na(cmdArgImport('d'))){
     paste("Plus one denominator value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
   }
 }else{
-  paste("Plus one denominator value not specified, using FLASE.")
+  paste("Plus one denominator value not specified, using TRUE.")
 }
 if(!is.na(cmdArgImport('g'))){
   sameSignValue = cmdArgImport('g')
