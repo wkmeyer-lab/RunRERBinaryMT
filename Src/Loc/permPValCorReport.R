@@ -56,10 +56,10 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
       if(signedDenominator){
         correctSign = sign(realstat[count])
         signFilteredPermCol = permCol[sign(permCol) == correctSign]
-        denom = sum(!is.na(signFilteredPermCol))
-        if(plusOne){denom = denom+1} #If using simple denominator, set denominator = number of permulations +1
+        denom = sum(!is.na(signFilteredPermCol)) #Make a denominator which is the sum of the non-NA permulation values
+        if(plusOne){denom = denom+1} #If using complex denominator, set denominator = number of permulations +1
       }else{
-        denom = sum(!is.na(permCol))
+        denom = sum(!is.na(permCol)) #Make a denominator which is the sum of the non-NA permulation values
         if(plusOne){denom = denom+1} #If using simple denominator, set denominator = number of permulations +1
       }
       timeDenomSum = Sys.time()
@@ -69,25 +69,21 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
     else{                                                                       #Stop sending detailed time messages
       permRow = permcor[count, ]
       permCol = t(permRow)
-      #permColMakeTime = Sys.time()
-      #message("Time to make permulation Col: ", permColMakeTime - timeLoopBegin, attr(permColMakeTime - timeLoopBegin, "units"))
-      
+     
       realRow = realstat[count]
-      #realRowMakeTime = Sys.time()
-      #message("Time to make real row: ", realRowMakeTime - permColMakeTime, attr(realRowMakeTime - permColMakeTime, "units"))
-      
+
       num = sum(abs(permCol) > abs(realRow),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
                 na.rm = T)
-      #timeNumeratorCalc = Sys.time()
-      #message("Numerator Calculate time: ", timeNumeratorCalc - realRowMakeTime, attr(timeNumeratorCalc - realRowMakeTime, "units"))
-      
-      if(plusOne){ #If using simple demoninator, set denominator = number of permulations +1 
-        denom = sum(!is.na(permCol))+1
+
+      if(signedDenominator){
+        correctSign = sign(realstat[count])
+        signFilteredPermCol = permCol[sign(permCol) == correctSign]
+        denom = sum(!is.na(signFilteredPermCol)) #Make a denominator which is the sum of the non-NA permulation values
+        if(plusOne){denom = denom+1} #If using complex denominator, set denominator = number of permulations +1
       }else{
-        denom = sum(!is.na(permCol))                                     #Make a denominator which is the sum of the non-NA permulation values
+        denom = sum(!is.na(permCol)) #Make a denominator which is the sum of the non-NA permulation values
+        if(plusOne){denom = denom+1} #If using simple denominator, set denominator = number of permulations +1
       }
-      #timeDenomSum = Sys.time()
-      #message("Denominator sum time: ", timeDenomSum - timeNumeratorCalc, attr(timeDenomSum - timeNumeratorCalc, "units"))
       permpvals[count] = num/denom 
     }
     timeLoopEnd = Sys.time()

@@ -77,7 +77,7 @@ useCorrelationOverride = FALSE
 
 # ---- Command args import ----
 
-{
+
 #instance number of the script
 if(!is.na(cmdArgImport('i'))){
   runInstanceValue = cmdArgImport('i')
@@ -143,7 +143,7 @@ if(!is.na(cmdArgImport('g'))){
 if(!is.na(cmdArgImport('l'))){
   useCladesValue = cmdArgImport('l')
   useCladesValue = as.logical(useCladesValue)
-  if(is.na(sameSignValue)){
+  if(is.na(useCladesValue)){
     useCladesValue = TRUE
     paste("Use Clades value not interpretable as logical. Did you remember to capitalize? Using FLASE.")
   }
@@ -157,7 +157,7 @@ if(!is.na(cmdArgImport('m'))){
   paste("No correlation override")
 }  
   
-}
+
 # ----- Calculation of p-values
 
 # -- Get correlation file--
