@@ -23,7 +23,7 @@ source("Src/Reu/cmdArgImport.R")
 #Outputs a path, RER residuals, and correlation files. 
 
 #Test args: 
-#args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=demoInsectivory')
+args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=demoInsectivory')
 args = c('m=Data/FishTree.rds', 'r=carnvHerbsOldRebuild', 'v=F')
 
 # ---- Default values if no arguments
