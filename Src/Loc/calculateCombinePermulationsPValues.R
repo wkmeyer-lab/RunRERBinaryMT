@@ -142,10 +142,10 @@ if(!is.na(cmdArgImport('g'))){
 }
 if(!is.na(cmdArgImport('l'))){
   useCladesValue = cmdArgImport('l')
-  useCladesValue = as.logical(sameSignValue)
+  useCladesValue = as.logical(useCladesValue)
   if(is.na(sameSignValue)){
     useCladesValue = TRUE
-    paste("Plus one denominator value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
+    paste("Use Clades value not interpretable as logical. Did you remember to capitalize? Using FLASE.")
   }
 }else{
   paste("Use Clades value not specified, using FALSE.")
