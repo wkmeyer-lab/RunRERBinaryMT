@@ -12,9 +12,10 @@ source("Src/Reu/convertLogiToNumeric.R")
 #batTree = readRDS("Output/allInsectivory/allInsectivoryBinaryForegroundTree.rds")
 
 
-#debugPlotTree = function(debugTree){dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(debugTree,hlspecies=which(debugTree$edge.length== 3),hlcols="blue", main="Input tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")}
+#debugPlotTree = function(debugTree){dev.off(); dev.new(); dev.new(); testplot2 = plotTreeHighlightBranches(debugTree,hlspecies=which(debugTree$edge.length== 1),hlcols="blue", main="Input tree"); edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue"); nodelabels(cex = 0.7, frame="none", font=2, adj=c(-0.2,0.3), col="dark green"); tiplabels(cex = 0.8, frame="none", font=2, adj=c(0.2,0), col="dark red")}
 #debugPlotTree(inputTree)
 #debugPlotTree(unprunedInputTree)
+#inputTree$edge.length[which(inputTree$edge.length >1)] = 1
 
 
 
@@ -41,7 +42,7 @@ source("Src/Reu/convertLogiToNumeric.R")
 #testing args: 
 args = "r=demoInsectivory"
 args = "r=allInsectivory"
-args = c("r=carnvHerbs", "m=Data/RemadeTreesAllZoonomiaSpecies.rds", "v=F")
+args = c("r=carnvHerbsOldRemake", "m=Data/RemadeTreesAllZoonomiaSpecies.rds", "v=F")
 
 # --- Import prefix --- 
 
@@ -577,22 +578,35 @@ if(!file.exists(paste(cladesPathsFileName)) | !file.exists(paste(cladesCorellati
 #replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==0, 0.5)
 #replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==1, 4)
 
-#plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(inputTree$edge.length==1), hlcols="blue",main="PhenotypeVector input tree")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(inputTree$edge.length==1), hlcols="blue",main="PhenotypeVector input tree")
+# 
+# 
+# 
+# 
+# 
+# plotTreeHighlightBranches(testTreeDisplayable, hlspecies= fgEdges, hlcols="blue",main="PhenotypeVector input tree")
+# plotTreeHighlightBranches(testTreeDisplayable, hlspecies= WrapperEdges, hlcols="blue",main="PhenotypeVector input tree")
+# 
+# debugPlotTree(inputTree)
+# 
+# foregroundSpecies
+# sistersListExport
+# testFGTree = foreground2TreeClades(foregroundSpecies, sistersListExport, mainTrees)
+# marineplot1 = plotTreeHighlightBranches(testFGTree,
+#                                         hlspecies=which(testFGTree$edge.length==1),
+#                                         hlcols="blue", main="Marine mammals trait tree")
+# if(trimPhenotypeVector){
+#   unprunedTestFGTree = testFGTree
+#   testFGTree = pruneTree(testFGTree, speciesFilter)
+# }
+# testFGDisplay = plotTreeHighlightBranches(testFGTree, hlspecies=which(testFGTree$edge.length==1),hlcols="blue")
+# edgelabels(cex = 0.7, frame="none", font=2, adj=c(0,-0.2), col="blue")
+# 
+# 
+# debugPlotTree(testFGTree)
+# 
+# slexport1 = sistersListExport
+# all.equal(slexport1, sistersListExport)
 
 #
 #manualSistersList = list(clade1, clade2, clade3, clade4, clade5, clade6, clade7, clade8, clade9, clade10, clade11, clade12,clade13,clade14,clade15,clade16,clade17,clade18,clade19,clade20)
