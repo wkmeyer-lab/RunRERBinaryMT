@@ -192,6 +192,7 @@ rm(secondPermulationsData)
 
 
 #Do all subsequent combinations
+if((startValue+2) < (startValue+permulationNumberValue-1)){
 for(i in (startValue+2):(startValue+permulationNumberValue-1)){
   message(i)
   iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
@@ -219,6 +220,7 @@ for(i in (startValue+2):(startValue+permulationNumberValue-1)){
   }else{
     message("Permulation file number ", i, " does not exist. Combining other files.")
   }
+}
 }
 
 permEndTime = Sys.time()
