@@ -24,7 +24,7 @@ mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia
 
 #local computer debug version:
 # mainTreesLocation = "data/RemadeTreesAllZoonomiaSpecies.rds"
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHRemake", "a=CarnFish_Herbs", "t=bi", "c=all", "w=F")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=Domestication", "a=DomesticationBinary", "t=bi", "c=all", "w=F")
 
 #Other defaults if not specified
 annotCollumn = "ERRORDEFAULT"
@@ -37,7 +37,7 @@ weightValue = FALSE
 
 
 # ---- Command args import ----
-{
+
 args = commandArgs(trailingOnly = TRUE)
 paste(args)
 message(args)
@@ -86,7 +86,7 @@ if(!is.na(cmdArgImport('w'))){
 }else{
   message("Weight = false")
 }
-}
+
 
 #------ Make Output directory -----
 
