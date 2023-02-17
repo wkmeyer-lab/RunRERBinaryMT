@@ -16,6 +16,7 @@ source(file = "Src/Reu/cmdArgImport.R")
 # 'c=<"ancestral"/"all"/"terminal">'     Sets the clade type 
 # 'w=<T/F>"                              Sets if the foreground2tree is weighted or not 
 #  v = <T or F>                         #This value forces the regeneration of output files Which otherwise would not be (SpeciesFilter.rds). 
+#  s = "screenCollumn"                   This is a collumn which must have a value of 1 for the species to be included. 
 
 # ---- Default Arguments ----
 #Default main tree file location
@@ -32,6 +33,8 @@ filePrefix = "ERRORDEFAULT"
 transisitionValue = "Default"
 cladeValue = "Default"
 weightValue = FALSE
+useScreen = F
+screenCollumn = NA
 
 
 
@@ -87,6 +90,14 @@ if(!is.na(cmdArgImport('w'))){
   message("Weight = false")
 }
 
+#Screen Collumn
+if(!is.na(cmdArgImport('s'))){
+  useScreen = T
+  screenCollumn = cmdArgImport('s')
+}else{
+  message("No screen collumn used.")
+}
+
 
 #------ Make Output directory -----
 
@@ -139,7 +150,9 @@ speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",
 if(!file.exists(speciesFilterFilename) | forceUpdate){
   # --- subset the manual annots to only those with data in the collumn
   relevantSpecies = manualAnnots[ manualAnnots[[annotCollumn]] %in% c(0,1),]
-  
+  if(useScreen){
+    relevantSpecies = relevantSpecies[ relevantSpecies[screenCollumn] %in% 1, ]
+  }
   relevantSpeciesNames = relevantSpecies$FaName
   
   # -- output a species filter for this fileprefix 
@@ -206,8 +219,8 @@ saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
 #Read back in the outputted tree as a test 
 readTest = readRDS(binaryTreeFilename)
 testTreeDisplayable = readTest
-replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==0, 0.5)
-replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==1, 4)
+testTreeDisplayable$edge.length = replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==0, 0.5)
+testTreeDisplayable$edge.length = replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==1, 4)
 
 binaryTreePdfname = paste(outputFolderName, filePrefix, "BinaryForegroundTree.pdf", sep="")
 pdf(binaryTreePdfname, width=8, height = 14)
