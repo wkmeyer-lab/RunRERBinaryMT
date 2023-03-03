@@ -49,16 +49,18 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
       realRowMakeTime = Sys.time()
       message("Time to make real row: ", realRowMakeTime - permColMakeTime, attr(realRowMakeTime - permColMakeTime, "units"))
       
-      num = sum(abs(permCol) > abs(realRow),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
-                na.rm = T)
       timeNumeratorCalc = Sys.time()
       message("Numerator Calculate time: ", timeNumeratorCalc - realRowMakeTime, attr(timeNumeratorCalc - realRowMakeTime, "units"))
       if(signedDenominator){
         correctSign = sign(realstat[count])
         signFilteredPermCol = permCol[sign(permCol) == correctSign]
+        num = sum(abs(signFilteredPermCol) >= abs(realRow),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
+                  na.rm = T)
         denom = sum(!is.na(signFilteredPermCol)) #Make a denominator which is the sum of the non-NA permulation values
         if(plusOne){denom = denom+1} #If using complex denominator, set denominator = number of permulations +1
       }else{
+        num = sum(abs(permCol) >= abs(realRow),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
+                  na.rm = T)
         denom = sum(!is.na(permCol)) #Make a denominator which is the sum of the non-NA permulation values
         if(plusOne){denom = denom+1} #If using simple denominator, set denominator = number of permulations +1
       }
@@ -72,15 +74,16 @@ permPValCorReport = function (realcor, permvals, startNumber=1, geneNumber = NA,
      
       realRow = realstat[count]
 
-      num = sum(abs(permCol) > abs(realRow),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
-                na.rm = T)
-
       if(signedDenominator){
         correctSign = sign(realstat[count])
         signFilteredPermCol = permCol[sign(permCol) == correctSign]
+        num = sum(abs(signFilteredPermCol) >= abs(realRow),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
+                  na.rm = T)
         denom = sum(!is.na(signFilteredPermCol)) #Make a denominator which is the sum of the non-NA permulation values
         if(plusOne){denom = denom+1} #If using complex denominator, set denominator = number of permulations +1
       }else{
+        num = sum(abs(permCol) >= abs(realRow),                   #Make a numerator which is the sum of the permulated values greater than the actual values; after removing NA entires. 
+                  na.rm = T)
         denom = sum(!is.na(permCol)) #Make a denominator which is the sum of the non-NA permulation values
         if(plusOne){denom = denom+1} #If using simple denominator, set denominator = number of permulations +1
       }
