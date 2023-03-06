@@ -1,0 +1,18 @@
+(
+	(
+		(
+			(
+				(
+					(
+						(
+							(
+								(
+									((vs_balAcu1:0,vs_HLbalBon1:0):0,vs_HLescRob1:0):0,
+									vs_HLeubJap1:0):0,
+									(
+										(
+											(
+												(
+													(
+													(vs_HLdelLeu2:0,vs_HLmonMon2:0):0,
+(vs_HLneoAsi1:0,vs_HLphoPho2:0):0):0,(vs_HLturTru4:0,vs_orcOrc1:0):0):0,vs_HLlniGeo1:0):0,(vs_HLmesBid1:0,vs_HLzipCav1:0):0):0,vs_HLkogBre1:0):0):0,((((((((vs_bisBis1:0,vs_HLbosMut2:1):1,(vs_bosTau9:1,vs_HLbosInd2:1):1):1,vs_HLbubBub2:1):1,((((vs_HLcapAeg1:0,vs_HLcapHir2:1):1,vs_HLoviAri5:1):1,vs_panHod1:0):0,vs_HLbeaHun1:0):0):0,vs_HLmosMos1:0):0,(vs_HLelaDav1:0,vs_HLodoVir3:0):0):0,(vs_HLantAme1:0,(vs_HLgirTip1:0,vs_HLokaJoh2:0):0):0):0,vs_HLtraJav1:0):0):0,(vs_HLcatWag1:0,vs_susScr11:1):0):0,(((vs_HLcamBac1:1,vs_HLcamFer3:0):1,vs_HLcamDro2:1):1,vs_vicPac2:1):1):0,((((((vs_canFam4:0,vs_HLlycPic3:0):0,vs_HLvulLag1:0):0,(((((((vs_enhLutNer1:0,vs_HLpteBra2:0):0,vs_HLmusFur2:1):0,vs_HLmelCap1:0):0,vs_HLailFul2:0):0,vs_HLspiGra1:0):0,(((vs_HLmirAng2:0,vs_lepWed1:0):0,vs_neoSch1:0):0,(vs_HLodoRos1:0,vs_HLzalCal1:0):0):0):0,(vs_HLailMel2:0,vs_ursMar1:0):0):0):0,((((vs_felCat9:1,vs_HLfelNig1:0):0,(vs_HLaciJub2:0,vs_HLpumCon1:0):0):0,((vs_HLpanOnc2:0,vs_HLpanPar1:0):0,vs_panTig1:0):0):0,(((vs_HLcryFer2:0,((vs_HLhelPar1:0,vs_HLmunMug1:0):0,vs_HLsurSur2:0):0):0,vs_HLhyaHya1:0):0,vs_HLparHer1:0):0):0):0,vs_HLmanJav2:0):0,(((((vs_cerSim1:0,vs_HLcerSimCot1:0):0,vs_HLdicBic1:0):0,vs_HLdicSum1:0):0,(vs_HLtapInd2:0,vs_HLtapTer1:0):0):0,((vs_equCab3:1,vs_equPrz1:0):1,vs_HLequAsiAsi2:1):1):0):0):0,(((((((vs_eptFus1:0,vs_HLpipPip2:0):0,vs_HLlasBor1:0):0,(vs_HLmurAurFea1:0,((vs_HLmyoLuc1:0,vs_myoBra1:0):0,(vs_HLmyoMyo6:0,vs_myoDav1:0):0):0):0):0,(vs_HLminNat1:0,vs_HLminSch1:0):0):0,vs_HLtadBra1:0):0,((((((vs_HLanoCau1:0,(vs_HLartJam2:0,vs_HLcarPer3:0):0):0,vs_HLtonSau1:0):0,vs_HLdesRot2:0):0,vs_HLmicHir1:0):0,(vs_HLmorBla1:0,vs_ptePar1:0):0):0,vs_HLnocLep1:0):0):0,(((vs_HLcraTho1:0,vs_HLmegLyr2:0):0,((vs_HLhipArm1:0,vs_HLhipGal1:0):0,vs_HLrhiSin1:0):0):0,(((vs_HLeidHel2:0,vs_HLrouAeg4:0):0,(vs_HLpteVam2:0,vs_pteAle1:0):0):0,vs_HLmacSob1:0):0):0):0):0,(((vs_conCri1:0,vs_HLscaAqu1:0):0,vs_HLuroGra1:0):0,(vs_sorAra2:0,vs_HLsolPar1:0):0):0):0);
