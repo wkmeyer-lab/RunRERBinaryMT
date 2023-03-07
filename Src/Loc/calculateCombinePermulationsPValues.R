@@ -72,6 +72,7 @@ plusOneValue = TRUE
 sameSignValue = FALSE
 useCladesValue = FALSE
 useCorrelationOverride = FALSE
+fileType ="p"
 #-------
 
 
@@ -102,7 +103,7 @@ if(!is.na(cmdArgImport('t'))){
   fileType = cmdArgImport('t')
   fileType = as.character(fileType)
 }else{
-  paste("No fileType specified, defaulting to slow (PermulationsData)")
+  paste("No fileType specified, defaulting to pruned-fast (fastPermulationsData)")
 }
 
 #Import the permulation number to start at
@@ -197,6 +198,7 @@ if(fileType == 's'){
   fileTypeString = "UnprunedFast"
 }else if(fileType == 'p'){
   fileTypeString = "PrunedFast"
+  message("The default permulation filetype is being used. IF CANNOT READ IN FILES, ensure the correct filetype is specified.")
 }else{
   stop( "THIS IS AN ISSUE MESSAGE, IMPROPER FILETYPE ARGUMENT")
 }
