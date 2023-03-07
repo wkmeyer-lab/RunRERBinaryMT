@@ -115,10 +115,23 @@ correlDataNegative = correlData[which(correlData$Rho < 0),]
 correlDataZero = correlData[which(correlData$Rho = 0),]
 
 
+# --- run Gene ontology Analysis ---
+if(performGeneOntolgy){
+  
+  
+  
+  
+}
+
+
 
 
 # --- Display the data ---
-outputPDFLocation = paste(outputFolderName, filePrefix, "Graphs-PvalQvalGo.pdf", sep= "")
+if(performGeneOntolgy){
+  outputPDFLocation = paste(outputFolderName, filePrefix, "Graphs-PvalQvalGo.pdf", sep= "")
+}else{
+  outputPDFLocation = paste(outputFolderName, filePrefix, "Graphs-PvalQvalOnly.pdf", sep= "")
+}
 
 #function to make text plots
 makeTextPlot = function(data, collumn){
