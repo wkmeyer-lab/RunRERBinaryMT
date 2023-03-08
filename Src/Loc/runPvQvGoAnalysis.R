@@ -17,8 +17,9 @@ library(stringr)
 # g = <T OR F>                              This sets if Gene Ontology analysis is run. Default TRUE. 
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
   #If using any permulation p-value file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
+# p = <T or F>                              This sets if the code should use permulated or unpermualted values, or displays both  
 #testing args: 
-args = c('r=CVHRemake')
+args = c('r=CVHRemake', 'g=F')
 {
   #---- Initial Setup -----
   #------------------------
@@ -63,12 +64,13 @@ args = c('r=CVHRemake')
   usePermulationPValOverride = FALSE
   permulationPValOverride = NULL 
   metacombineValue = FALSE
+  usePermulations = TRUE
   
   #--Import arguments-- 
   
   #Import if should perform gene ontology 
   if(!is.na(cmdArgImport('g'))){
-    performGeneOntolgy = cmdArgImport('d')
+    performGeneOntolgy = cmdArgImport('g')
     performGeneOntolgy = as.logical(performGeneOntolgy)
     if(is.na(performGeneOntolgy)){
       performGeneOntolgy = TRUE
@@ -87,6 +89,17 @@ args = c('r=CVHRemake')
     message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
   } 
   
+  #Import permulation use
+  if(!is.na(cmdArgImport('p'))){
+    usePermulations = cmdArgImport('p')
+    usePermulations = as.logical(usePermulations)
+    if(is.na(usePermulations)){
+      usePermulations = TRUE
+      message("Use Permualtions value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
+    }
+  }else{
+    message("Use Permulations value not specified, using TRUE.")
+  }
   #--
 }
 
@@ -103,16 +116,24 @@ if(usePermulationPValOverride){
 }
 
 correlData = readRDS(correlationFileLocation)                            #Import the correlation data (non-permulated)
-correlData$permPValue = readRDS(permulationFileLocation)                 #Add a collumn to the data with the permulation p Values
+if(usePermulations){
+  correlData$permPValue = readRDS(permulationFileLocation)                 #Add a collumn to the data with the permulation p Values
+}
+#set which p value is the p value to be used by later steps
+if(usePermulations){
+  correlData$targetColumn = correlData$permPValue
+} else{
+  correlData$targetColumn = correlData$p.adj
+}
 
 #Make Q values 
-qValueObject = qvalue(p = correlData$permPValue)
+qValueObject = qvalue(p = correlData$targetColumn)
 correlData$qValue = qValueObject$qvalues
 
 #Make separate objects for positive and negative Rho 
 correlDataPositive = correlData[which(correlData$Rho > 0),]
 correlDataNegative = correlData[which(correlData$Rho < 0),]
-correlDataZero = correlData[which(correlData$Rho = 0),]
+correlDataZero = correlData[which(correlData$Rho == 0),]
 
 
 # --- run Gene ontology Analysis ---
@@ -143,29 +164,45 @@ makeTextPlot = function(data, collumn){
 }
 
 
-#Plot the top genes
+#Make a pdf file
 if(performGeneOntolgy){
   pdf(file = outputPDFLocation, width = 15, height = 30)
 }else{
-  pdf(file = outputPDFLocation, width = 15, height = 15)
+  pdf(file = outputPDFLocation, width = 16, height = 15)
 }
 par(mfrow = c(2,2))
-pValueHead = makeTextPlot(correlData, correlData$permPValue)
-textplot(pValueHead, mar = c(0,0,2,0), cmar = 1.5)
-title(main = "Top genes by p-Value")
-qValueHead = makeTextPlot(correlData, correlData$qValue)
-textplot(qValueHead, mar = c(0,0,2,0), cmar = 1.5)
-title(main = "Top genes by q-Value")
 
-#plot p value histograms 
-hist(correlDataPositive$permPValue, breaks = 40, xaxp = c(0,1,20))
-hist(correlDataNegative$permPValue, breaks = 40, xaxp = c(0,1,20))
+if(usePermulations){
+  #plot the top genes
+  pValueHead = makeTextPlot(correlData, correlData$permPValue)
+  textplot(pValueHead, mar = c(0,0,2,0), cmar = 1.5)
+  title(main = "Top genes by permulation p-Value")
+  qValueHead = makeTextPlot(correlData, correlData$qValue)
+  textplot(qValueHead, mar = c(0,0,2,0), cmar = 1.5)
+  title(main = "Top genes by permulation q-Value")
+  
+  #plot p value histograms 
+  hist(correlDataPositive$permPValue, breaks = 40, xaxp = c(0,1,20))
+  hist(correlDataNegative$permPValue, breaks = 40, xaxp = c(0,1,20))
+  
+  
+}else{
+  pValueHead = makeTextPlot(correlData, correlData$p.adj)
+  textplot(pValueHead, mar = c(0,0,2,0), cmar = 1.5)
+  title(main = "Top genes by p.adj Value")
+  qValueHead = makeTextPlot(correlData, correlData$qValue)
+  textplot(qValueHead, mar = c(0,0,2,0), cmar = 1.5)
+  title(main = "Top genes by non-permulation q-Value")
+  
+  #plot p value histograms 
+  hist(correlDataPositive$p.adj, breaks = 40, xaxp = c(0,1,20))
+  hist(correlDataNegative$p.adj, breaks = 40, xaxp = c(0,1,20))
+  
+  
+}
 
 if(performGeneOntolgy){
   #Plot the GO Outputs now 
 }
 dev.off()
-
-
-
 
