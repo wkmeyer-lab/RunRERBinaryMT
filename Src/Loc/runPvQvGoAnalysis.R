@@ -20,6 +20,7 @@ library(stringr)
 # p = <T or F>                              This sets if the code should use permulated or unpermualted values, or displays both  
 #testing args: 
 args = c('r=CVHRemake', 'g=F')
+args = c('r=Domestication', 'g=F', 'p=F')
 {
   #---- Initial Setup -----
   #------------------------
@@ -80,15 +81,6 @@ args = c('r=CVHRemake', 'g=F')
     message("Perform gene ontology value not specified, using TRUE.")
   }
   
-  #Import permulation p-value Override 
-  if(!is.na(cmdArgImport('f'))){
-    usePermulationPValOverride = TRUE
-    permulationPValOverride = cmdArgImport('f')
-    message("Using Manually specified permulation p-value file. NOTE this setting ignores the meta-combination argument.")
-  }else{
-    message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
-  } 
-  
   #Import permulation use
   if(!is.na(cmdArgImport('p'))){
     usePermulations = cmdArgImport('p')
@@ -100,6 +92,18 @@ args = c('r=CVHRemake', 'g=F')
   }else{
     message("Use Permulations value not specified, using TRUE.")
   }
+  
+  if(usePermulations){
+    #Import permulation p-value Override 
+    if(!is.na(cmdArgImport('f'))){
+      usePermulationPValOverride = TRUE
+      permulationPValOverride = cmdArgImport('f')
+      message("Using Manually specified permulation p-value file. NOTE this setting ignores the meta-combination argument.")
+    }else{
+      message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
+    } 
+  }
+
   #--
 }
 
@@ -118,12 +122,6 @@ if(usePermulationPValOverride){
 correlData = readRDS(correlationFileLocation)                            #Import the correlation data (non-permulated)
 if(usePermulations){
   correlData$permPValue = readRDS(permulationFileLocation)                 #Add a collumn to the data with the permulation p Values
-}
-#set which p value is the p value to be used by later steps
-if(usePermulations){
-  correlData$targetColumn = correlData$permPValue
-} else{
-  correlData$targetColumn = correlData$p.adj
 }
 
 #Make Q values 
@@ -168,7 +166,7 @@ makeTextPlot = function(data, collumn){
 if(performGeneOntolgy){
   pdf(file = outputPDFLocation, width = 15, height = 30)
 }else{
-  pdf(file = outputPDFLocation, width = 16, height = 15)
+  pdf(file = outputPDFLocation, width = 15, height = 15)
 }
 par(mfrow = c(2,2))
 
