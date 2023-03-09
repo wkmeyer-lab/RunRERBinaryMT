@@ -6,6 +6,7 @@ library(qvalue)
 library(insight)
 library(stringr)
 
+
 #---- USAGE -----
 #Used to generate various plots for data analysis. 
 #Makes: 
@@ -124,8 +125,16 @@ if(usePermulations){
   correlData$permPValue = readRDS(permulationFileLocation)                 #Add a collumn to the data with the permulation p Values
 }
 
+if(usePermulations){
+  targetcolumn = "permPValue"
+}else{
+  targetcolumn = "p.adj"
+}
+correlData$permPValue
+correlData[[targetcolumn]]
+
 #Make Q values 
-qValueObject = qvalue(p = correlData$targetColumn)
+qValueObject = qvalue(p = correlData[[targetcolumn]])
 correlData$qValue = qValueObject$qvalues
 
 #Make separate objects for positive and negative Rho 
@@ -142,10 +151,10 @@ if(performGeneOntolgy){
   
 }
 
+(correlData[[targetcolumn]])
 
 
-
-# --- Display the data ---
+  # --- Display the data ---
 if(performGeneOntolgy){
   outputPDFLocation = paste(outputFolderName, filePrefix, "Graphs-PvalQvalGo.pdf", sep= "")
 }else{
@@ -170,34 +179,18 @@ if(performGeneOntolgy){
 }
 par(mfrow = c(2,2))
 
-if(usePermulations){
-  #plot the top genes
-  pValueHead = makeTextPlot(correlData, correlData$permPValue)
-  textplot(pValueHead, mar = c(0,0,2,0), cmar = 1.5)
-  title(main = "Top genes by permulation p-Value")
-  qValueHead = makeTextPlot(correlData, correlData$qValue)
-  textplot(qValueHead, mar = c(0,0,2,0), cmar = 1.5)
-  title(main = "Top genes by permulation q-Value")
-  
-  #plot p value histograms 
-  hist(correlDataPositive$permPValue, breaks = 40, xaxp = c(0,1,20))
-  hist(correlDataNegative$permPValue, breaks = 40, xaxp = c(0,1,20))
-  
-  
-}else{
-  pValueHead = makeTextPlot(correlData, correlData$p.adj)
-  textplot(pValueHead, mar = c(0,0,2,0), cmar = 1.5)
-  title(main = "Top genes by p.adj Value")
-  qValueHead = makeTextPlot(correlData, correlData$qValue)
-  textplot(qValueHead, mar = c(0,0,2,0), cmar = 1.5)
-  title(main = "Top genes by non-permulation q-Value")
-  
-  #plot p value histograms 
-  hist(correlDataPositive$p.adj, breaks = 40, xaxp = c(0,1,20))
-  hist(correlDataNegative$p.adj, breaks = 40, xaxp = c(0,1,20))
-  
-  
-}
+#plot the top genes
+pValueHead = makeTextPlot(correlData, correlData[[targetcolumn]])
+textplot(pValueHead, mar = c(0,0,2,0), cmar = 1.5)
+title(main = paste("Top genes by",  targetcolumn))
+qValueHead = makeTextPlot(correlData, correlData$qValue)
+textplot(qValueHead, mar = c(0,0,2,0), cmar = 1.5)
+title(main = paste("Top genes by", targetcolumn,  "q-Value"))
+
+#plot p value histograms 
+hist(correlDataPositive[[targetcolumn]], breaks = 40, xaxp = c(0,1,20), main = paste("Histogram of correlDataPositive",  targetcolumn))
+hist(correlDataNegative[[targetcolumn]], breaks = 40, xaxp = c(0,1,20), main = paste("Histogram of correlDataNegative",  targetcolumn))
+
 
 if(performGeneOntolgy){
   #Plot the GO Outputs now 
