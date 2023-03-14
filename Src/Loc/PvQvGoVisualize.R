@@ -17,8 +17,9 @@ library(stringr)
 # 'r="filePrefix"'                          This is the prefix attached to all files; a required argument. 
 # g = <T OR F>                              This sets if Gene Ontology analysis is run. Default TRUE. 
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
-  #If using any permulation p-value file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
+      #If using any permulation p-value file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 # p = <T or F>                              This sets if the code should use permulated or unpermualted values, or displays both  
+# 'a = <annotationListName>'                This is an override for the enrichment annotation list name
 #testing args: 
 args = c('r=CVHRemake', 'g=F')
 args = c('r=Domestication', 'g=F', 'p=F')
@@ -67,6 +68,7 @@ args = c('r=Domestication', 'g=F', 'p=F')
   permulationPValOverride = NULL 
   metacombineValue = FALSE
   usePermulations = TRUE
+  enrichmentAnnotationListName = "MSigDBPathways"
   
   #--Import arguments-- 
   
@@ -103,6 +105,14 @@ args = c('r=Domestication', 'g=F', 'p=F')
     }else{
       message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
     } 
+  }
+  
+  #Annotation List Name 
+  if(!is.na(cmdArgImport('a'))){
+    enrichmentAnnotationListName = cmdArgImport('a')
+  }else{
+    paste("No enrichment Annotation List Name argument, using 'MSigDBPathways'")                          #Report using default
+    message("No enrichment Annotation List Name argument, using 'MSigDBPathways'")
   }
 
   #--
@@ -200,7 +210,7 @@ if(performGeneOntolgy){
   nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
   if(file.exists(nonpermEnrichmentFileName)){
     enrichmentResult = readRDS(nonpermEnrichmentFileName)
-    enrichmentResult2 = enrichmentResult$MSigDBPathways
+    enrichmentResult2 = enrichmentResult$enrichmentAnnotationListName
     makeGOTable = function(data, collumn){
       ValueHead = head(data[order(collumn),], n=40)
       ValueHead$num.genes = as.character(ValueHead$num.genes)
