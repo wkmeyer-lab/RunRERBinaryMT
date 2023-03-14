@@ -93,7 +93,7 @@ saveRDS(enrichmentResult, enrichmentFileName)
 
 # --- Visualize the enrichment ----
 #This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
-#For a script version, use runPvQvGoAnalysis.R 
+#For a script version, use PvQvGoVisualize.R 
 visualize = F
 
 if(visualize){
