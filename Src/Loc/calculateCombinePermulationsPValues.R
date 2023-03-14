@@ -309,12 +309,16 @@ if(runPvalueCalculation){
 
 # -- run GO Analysis --
 if(runErichmentAnalysis){
-nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
-
+  nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
+  
   if(!file.exists(nonpermEnrichmentFileName)){
-    message("No Enchriment File found. Enrichment calculations not run. ")
+    message("No Enchriment File found. Enrichment calculations not run. (RunEnrichmentAnalysis.R)")
   }else{
     enrichmentResult = readRDS(nonpermEnrichmentFileName)
+    
+    annotations = read.gmt(gmtFileLocation)
+    annotationsList = list(annotations)
+    names(annotationsList) = enrichmentAnnotationListName
     
     
     
