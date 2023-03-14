@@ -14,18 +14,19 @@ source("Src/Loc/permPValCorReport.R")
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"'              This is the prefix attached to all files; a required argument. 
 # 'i=<number>'                  This is used to generate unique filenames for each instance of the script. Used to target different combination files. 
-# 'c=F' OR 'c=T'                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
+# 'c=F' OR 'c=T'                This is used to set if the script is being run on previously metacombined permutations. Used for parrallelization. 
 # 't = <s OR f OR p>'           This sets which permulation filetype to look for. s is for slow, f is for fast, and p is for pruned-fast
+
+# 'p = <T or F>'                This determines if the p value calculation should be run. Can be turned off to only run GO analysis
 # 's = <integer>'               This sets the gene number to start at for parallelization,                 
 # 'n = <integer>'               This is the number of genes to do, used to parallelization
 # 'd = <T or F>'                This sets if the script should add one to the denominator or not 
 # 'g = <T or F>'                This sets if the script should use same-sign-only denominators or not
 # 'l = <T or F>'                This sets if the script should use clades-based correlation values, or non-clade-based correlation values 
-# 'm = <Filename>'              This is an override for the clades location target 
+# 'm = <Filename>'              This is an override for the correlation file target 
 
-# 'p = <T or F>'                This determines if the p value calculation should be run. Can be turned off to only run GO analysis
 
-# 'e = <T or F>'                This determines if enrichment analysis should be run. Does not respect gene numers. 
+# 'e = <T or F>'                This determines if enrichment analysis should be run.
 # 'y = <Filename>'              This is an override for the gmt file location  
 # 'a = <annotationListName>'    This is an override for the enrichment annotation list name
 #-------
