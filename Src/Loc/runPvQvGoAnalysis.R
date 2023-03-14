@@ -164,9 +164,10 @@ if(performGeneOntolgy){
 #function to make text plots
 makeTextPlot = function(data, collumn){
   ValueHead = head(data[order(collumn),], n=40)
-  ValueHead = round(ValueHead, digits = 7) 
-  ValueHead = format_table(ValueHead, pretty_names = F, digits = 7)
-  ValueHead$N = str_sub(ValueHead$N, end = -9)
+  ValueHead$N = as.character(ValueHead$N)
+  ValueHead$Rho = round(ValueHead$Rho, digits = 5)
+  ValueHead$Rho = as.character(ValueHead$Rho)
+  ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
   ValueHead
 }
 
