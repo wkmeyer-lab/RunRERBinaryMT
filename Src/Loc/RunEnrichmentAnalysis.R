@@ -5,9 +5,7 @@ library("tools")
 source("Src/Reu/cmdArgImport.R")
 
 #---- USAGE -----
-#Used to generate various plots for data analysis. 
-#Makes: 
-#P value table; Q value table; Histograms of p-values for positive Rho entires, histogram of p-values for negative Rho entires. 
+#Used to generate GO Values from non-permulated RERs.  
 
 # ARUGMENTS: 
 #If an argument contains a '(' it is evaluated as code.
@@ -66,24 +64,9 @@ args = c('r=CVHRemake', 'g=F')
   if(!is.na(cmdArgImport('m'))){
     gmtFileLocation = cmdArgImport('m')
   }else{
-    paste("No arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
-    message("No maintrees arg, using Data/enrichmentGmtFile.gmt")
+    paste("No gmt location arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
+    message("No gmt location arugment, using Data/enrichmentGmtFile.gmt")
   }
-  
-  
-  #Import permulation use
-  if(!is.na(cmdArgImport('p'))){
-    usePermulations = cmdArgImport('p')
-    usePermulations = as.logical(usePermulations)
-    if(is.na(usePermulations)){
-      usePermulations = TRUE
-      message("Use Permualtions value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
-    }
-  }else{
-    message("Use Permulations value not specified, using TRUE.")
-  }
-
-  
   #--
 }
 
@@ -131,23 +114,4 @@ if(visualize){
   textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
   title(main = paste("Top pathways by non-permulation"))
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if (!require("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install(version = "3.16")
-BiocManager::install("pathview")
 
