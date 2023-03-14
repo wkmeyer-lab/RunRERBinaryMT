@@ -22,8 +22,10 @@ source("Src/Loc/permPValCorReport.R")
 # 'g = <T or F>'                This sets if the script should use same-sign-only denominators or not
 # 'l = <T or F>'                This sets if the script should use clades-based correlation values, or non-clade-based correlation values 
 # 'm = <Filename>'              This is an override for the clades location target 
+
 # 'p = <T or F>'                This determines if the p value calculation should be run. Can be turned off to only run GO analysis
-# 'e = <T or F>'                This determines if enrichment analysis should be run.
+
+# 'e = <T or F>'                This determines if enrichment analysis should be run. Does not respect gene numers. 
 # 'y = <Filename>'              This is an override for the gmt file location  
 # 'a = <annotationListName>'    This is an override for the enrichment annotation list name
 #-------
@@ -309,19 +311,37 @@ if(runPvalueCalculation){
 
 # -- run GO Analysis --
 if(runErichmentAnalysis){
-  nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
+  # Set up the annotations list
+  annotations = read.gmt(gmtFileLocation)
+  annotationsList = list(annotations)
+  names(annotationsList) = enrichmentAnnotationListName
   
+  #Get or make the enrichment file
+  nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
   if(!file.exists(nonpermEnrichmentFileName)){
-    message("No Enchriment File found. Enrichment calculations not run. (RunEnrichmentAnalysis.R)")
+    message("No Enchriment File found. Generating enrichment file.")
+    rerStats = getStat(correlationSet)
+    enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F)
+    #save the enrichment 
+    enrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
+    saveRDS(enrichmentResult, enrichmentFileName)
   }else{
     enrichmentResult = readRDS(nonpermEnrichmentFileName)
-    
-    annotations = read.gmt(gmtFileLocation)
-    annotationsList = list(annotations)
-    names(annotationsList) = enrichmentAnnotationListName
-    
-    
-    
-    
   }
+  
+  timeAtAddEnrichmentStart = Sys.time()
+  permulationsWithEnrichments = getEnrichPerms(combinedPermulationsData, enrichmentResult, annotationsList)
+  timeAtAddEnrichmentEnd = Sys.time()
+  timeForEnrichments = timeAtAddEnrichmentEnd - timeAtAddEnrichmentStart
+  message("Time to add enrichments to permulations: ", timeForEnrichments, attr(timeForEnrichments, "units"))
+  
+  enrichmentPermValues = permpvalenrich(enrichmentResult, permulationsWithEnrichments)
+  timeEnrichmentCalculationEnd = Sys.time()
+  timeForEnrichmentCalculation = timeEnrichmentCalculationEnd - timeAtAddEnrichmentEnd 
+  message("Time to calculate enrichments: ", timeForEnrichmentCalculation, attr(timeForEnrichmentCalculation, "units"))
+  
+  #save the output 
+  enrichmentPermulationFileName = paste(outputFolderName, filePrefix, "EnrichmentPermulationsValue.rds", sep= "")
+  saveRDS(enrichmentPermValues, file = enrichmentPermulationFileName)
+  
 }
