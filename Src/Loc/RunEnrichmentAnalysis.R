@@ -102,45 +102,36 @@ names(annotationsList) = "MSigDBPathways"
 
 enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F)
 
+#save the enrichment output
+enrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
+saveRDS(enrichmentResult, enrichmentFileName)
+
 
 
 # --- Visualize the enrichment ----
+#This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
+#For a script version, use runPvQvGoAnalysis.R 
+visualize = F
 
-enrichmentResult[1]
-enrichmentResult = enrichmentResult[order(enrichmentResult$MSigDBPathways$p.adj)]
-
-enrichmentResult2 = enrichmentResult$MSigDBPathways
-
-enrichmentResult2 = enrichmentResult2[order(enrichmentResult2$p.adj),]
-
-enrichmentResult2[,c(1,3,4)]
-
-library(stringr)
-library(insight)
-data = enrichmentResult2
-collumn = enrichmentResult2$p.adj
-makeTextPlot = function(data, collumn){
-  ValueHead = head(data[order(collumn),], n=40)
-  ValueHead$num.genes = as.character(ValueHead$num.genes)
-  ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
-  #ValueHead$N = str_sub(ValueHead$N, end = -9)
-  ValueHead
+if(visualize){
+  library(stringr)
+  library(insight)
+  enrichmentResult2 = enrichmentResult$MSigDBPathways
+  makeTextPlot = function(data, collumn){
+    ValueHead = head(data[order(collumn),], n=40)
+    ValueHead$num.genes = as.character(ValueHead$num.genes)
+    ValueHead$stat = round(ValueHead$stat, digits = 5)
+    ValueHead$stat = as.character(ValueHead$stat)
+    ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
+    #ValueHead$N = str_sub(ValueHead$N, end = -9)
+    ValueHead
+  }
+  
+  enrichHead = makeTextPlot(enrichmentResult2, enrichmentResult2$p.adj)
+  enrichHead
+  textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
+  title(main = paste("Top pathways by non-permulation"))
 }
-
-enrichHead = makeTextPlot(enrichmentResult2, enrichmentResult2$p.adj)
-textplot(pValueHead, mar = c(0,0,2,0), cmar = 1.5)
-title(main = paste("Top genes by",  targetcolumn))
-
-
-
-object.size(enrichmentResult)
-
-library(pathview)
-
-
-library(help=pathview)
-
-pathview(enrichmentResult)
 
 
 
