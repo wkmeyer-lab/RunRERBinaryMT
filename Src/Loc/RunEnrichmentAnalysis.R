@@ -117,17 +117,16 @@ if(visualize){
   library(stringr)
   library(insight)
   enrichmentResult2 = enrichmentResult$MSigDBPathways
-  makeTextPlot = function(data, collumn){
+  makeGOTable = function(data, collumn){
     ValueHead = head(data[order(collumn),], n=40)
     ValueHead$num.genes = as.character(ValueHead$num.genes)
     ValueHead$stat = round(ValueHead$stat, digits = 5)
     ValueHead$stat = as.character(ValueHead$stat)
     ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
-    #ValueHead$N = str_sub(ValueHead$N, end = -9)
     ValueHead
   }
   
-  enrichHead = makeTextPlot(enrichmentResult2, enrichmentResult2$p.adj)
+  enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$p.adj)
   enrichHead
   textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
   title(main = paste("Top pathways by non-permulation"))
