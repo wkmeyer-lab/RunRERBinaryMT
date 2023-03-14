@@ -13,7 +13,7 @@ source("Src/Reu/cmdArgImport.R")
 #  m = gmtFileLocation.gmt                  This is the location of the main gmt file
 # 'a = <annotationListName>'                This is an override for the enrichment annotation list name
 #testing args: 
-args = c('r=CVHRemake', 'g=F')
+args = c('r=CVHRemake')
 
 #---- Prefix Setup -----
 #------------------------
