@@ -10,16 +10,16 @@ source("Src/Reu/cmdArgImport.R")
 # ARUGMENTS: 
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"'                          This is the prefix attached to all files; a required argument. 
-#  m = gmtFileLocation.gmt                  This is the location of the main gmt file 
+#  m = gmtFileLocation.gmt                  This is the location of the main gmt file
+# 'a = <annotationListName>'                This is an override for the enrichment annotation list name
 #testing args: 
 args = c('r=CVHRemake', 'g=F')
 
-
+#---- Prefix Setup -----
+#------------------------
 {
-  #---- Prefix Setup -----
-  #------------------------
   
-  # --- Import prefix ----
+  #- Import prefix -
   args = commandArgs(trailingOnly = TRUE)
   paste(args)
   message(args)
@@ -30,10 +30,9 @@ args = c('r=CVHRemake', 'g=F')
   }else{
     stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
   }
-  
   #------------
   
-  #------ Make Output directory -----
+  #- Make Output directory -
   
   #Make output directory if it does not exist
   if(!dir.exists("Output")){
@@ -55,9 +54,8 @@ args = c('r=CVHRemake', 'g=F')
   #----------------
   
   #--Default Values-- 
-  usePermulations = TRUE
   gmtFileLocation = "Data/enrichmentGmtFile.gmt"
-  
+  enrichmentAnnotationListName = "MSigDBPathways"
   
   #--Import arguments--
   #import gmt file location
@@ -66,6 +64,14 @@ args = c('r=CVHRemake', 'g=F')
   }else{
     paste("No gmt location arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
     message("No gmt location arugment, using Data/enrichmentGmtFile.gmt")
+  }
+  
+  #Annotation List Name 
+  if(!is.na(cmdArgImport('a'))){
+    enrichmentAnnotationListName = cmdArgImport('a')
+  }else{
+    paste("No enrichment Annotation List Name argument, using 'MSigDBPathways'")                          #Report using default
+    message("No enrichment Annotation List Name argument, using 'MSigDBPathways'")
   }
   #--
 }
@@ -81,7 +87,7 @@ rerStats = getStat(correlationData)
 #Load the gmt annotations 
 gmtAnnotations = read.gmt(gmtFileLocation)
 annotationsList = list(gmtAnnotations)
-names(annotationsList) = "MSigDBPathways"
+names(annotationsList) = enrichmentAnnotationListName
 
 enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F)
 
