@@ -175,10 +175,12 @@ makeTextPlot = function(data, collumn){
 #Make a pdf file
 if(performGeneOntolgy){
   pdf(file = outputPDFLocation, width = 15, height = 30)
+  par(mfrow = c(4,2))
 }else{
   pdf(file = outputPDFLocation, width = 15, height = 15)
+  par(mfrow = c(2,2))
 }
-par(mfrow = c(2,2))
+
 
 #plot the top genes
 pValueHead = makeTextPlot(correlData, correlData[[targetcolumn]])
@@ -195,6 +197,21 @@ hist(correlDataNegative[[targetcolumn]], breaks = 40, xaxp = c(0,1,20), main = p
 
 if(performGeneOntolgy){
   #Plot the GO Outputs now 
+  nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
+  enrichmentResult = readRDS(nonpermEnrichmentFileName)
+  enrichmentResult2 = enrichmentResult$MSigDBPathways
+  makeGOTable = function(data, collumn){
+    ValueHead = head(data[order(collumn),], n=40)
+    ValueHead$num.genes = as.character(ValueHead$num.genes)
+    ValueHead$stat = round(ValueHead$stat, digits = 5)
+    ValueHead$stat = as.character(ValueHead$stat)
+    ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
+    #ValueHead$N = str_sub(ValueHead$N, end = -9)
+    ValueHead
+  }
+  enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$p.adj)
+  textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
+  title(main = paste("Top pathways by non-permulation"))
 }
 dev.off()
 
