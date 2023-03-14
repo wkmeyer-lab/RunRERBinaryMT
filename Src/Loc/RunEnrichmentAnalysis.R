@@ -98,26 +98,27 @@ saveRDS(enrichmentResult, enrichmentFileName)
 
 
 # --- Visualize the enrichment ----
-#This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
-#For a script version, use PvQvGoVisualize.R 
-visualize = F
-
-if(visualize){
-  library(stringr)
-  library(insight)
-  enrichmentResult2 = enrichmentResult$MSigDBPathways
-  makeGOTable = function(data, collumn){
-    ValueHead = head(data[order(collumn),], n=40)
-    ValueHead$num.genes = as.character(ValueHead$num.genes)
-    ValueHead$stat = round(ValueHead$stat, digits = 5)
-    ValueHead$stat = as.character(ValueHead$stat)
-    ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
-    ValueHead
-  }
+{
+  #This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
+  #For a script version, use PvQvGoVisualize.R 
+  visualize = F
   
-  enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$p.adj)
-  enrichHead
-  textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
-  title(main = paste("Top pathways by non-permulation"))
+  if(visualize){
+    library(stringr)
+    library(insight)
+    enrichmentResult2 = enrichmentResult$enrichmentAnnotationListName
+    makeGOTable = function(data, collumn){
+      ValueHead = head(data[order(collumn),], n=40)
+      ValueHead$num.genes = as.character(ValueHead$num.genes)
+      ValueHead$stat = round(ValueHead$stat, digits = 5)
+      ValueHead$stat = as.character(ValueHead$stat)
+      ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
+      ValueHead
+    }
+    
+    enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$p.adj)
+    enrichHead
+    textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
+    title(main = paste("Top pathways by non-permulation"))
+  }
 }
-
