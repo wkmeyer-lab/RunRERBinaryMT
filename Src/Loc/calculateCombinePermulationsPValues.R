@@ -21,7 +21,11 @@ source("Src/Loc/permPValCorReport.R")
 # 'd = <T or F>'                This sets if the script should add one to the denominator or not 
 # 'g = <T or F>'                This sets if the script should use same-sign-only denominators or not
 # 'l = <T or F>'                This sets if the script should use clades-based correlation values, or non-clade-based correlation values 
-# 'm = <Filename>               This is an override for the clades location target 
+# 'm = <Filename>'              This is an override for the clades location target 
+# 'p = <T or F>'                This determines if the p value calculation should be run. Can be turned off to only run GO analysis
+# 'e = <T or F>'                This determines if enrichment analysis should be run.
+# 'y = <Filename>'              This is an override for the gmt file location  
+# 'a = <annotationListName>'    This is an override for the enrichment annotation list name
 #-------
 #Debug setup defaults
 #permulationNumberValue = 3
@@ -32,134 +36,203 @@ args = c('r=carnvHerbs', 'e=F', 's=1', 't=s', 'i=1')
 #------
 
 
-# --- Import prefix ----
-args = commandArgs(trailingOnly = TRUE)
-paste(args)
-message(args)
-
-#File Prefix
-if(!is.na(cmdArgImport('r'))){
-  filePrefix = cmdArgImport('r')
-}else{
-  stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-}
-
-#------------
-
-#------ Make Output directory -----
-
-#Make output directory if it does not exist
-if(!dir.exists("Output")){
-  dir.create("Output")
-}
-#Make a specific subdirectory if it does not exist 
-outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
-#create that directory if it does not exist
-if(!dir.exists(outputFolderNameNoSlash)){
-  dir.create(outputFolderNameNoSlash)
-}
-outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-
-#----------
-
-#----- Default values -------
-
-runInstanceValue = NULL
-metacombineValue = FALSE
-startValue = 1
-geneNumberValue = NA #This means that by defulat it does all of the genes
-plusOneValue = TRUE
-sameSignValue = FALSE
-useCladesValue = FALSE
-useCorrelationOverride = FALSE
-fileType ="p"
-#-------
-
-
-# ---- Command args import ----
-
-
-#instance number of the script
-if(!is.na(cmdArgImport('i'))){
-  runInstanceValue = cmdArgImport('i')
-}else{
-  paste("This script does not have a run instance value")
-}
-
-#Import if this is being run on combined correlations 
-if(!is.na(cmdArgImport('c'))){
-  metacombineValue = cmdArgImport('c')
-  metacombineValue = as.logical(metacombineValue)
-  if(is.na(metacombineValue)){
-    metacombineValue = FALSE
-    paste("Metacombination value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
-  }
-}else{
-  paste("Metacombination value not specified, using FLASE. If you aren't parrallelizing, don't worry about this.")
-}
-
-#Import which filetype to use 
-if(!is.na(cmdArgImport('t'))){
-  fileType = cmdArgImport('t')
-  fileType = as.character(fileType)
-}else{
-  paste("No fileType specified, defaulting to pruned-fast (fastPermulationsData)")
-}
-
-#Import the permulation number to start at
-if(!is.na(cmdArgImport('s'))){
-  startValue = cmdArgImport('s')
-  startValue = as.numeric(startValue)
-}else{
-  paste("Start value not specified, using 1")
-}
-
-#Import the number of genes to do 
-if(!is.na(cmdArgImport('n'))){
-  geneNumberValue = cmdArgImport('n')
-  geneNumberValue = as.numeric(geneNumberValue)
-}else{
-  paste("Number ofgenes not specified, using all")
-}
-if(!is.na(cmdArgImport('d'))){
-  plusOneValue = cmdArgImport('d')
-  plusOneValue = as.logical(plusOneValue)
-  if(is.na(plusOneValue)){
-    plusOneValue = FALSE
-    paste("Plus one denominator value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
-  }
-}else{
-  paste("Plus one denominator value not specified, using TRUE.")
-}
-if(!is.na(cmdArgImport('g'))){
-  sameSignValue = cmdArgImport('g')
-  sameSignValue = as.logical(sameSignValue)
-  if(is.na(sameSignValue)){
-    sameSignValue = FALSE
-    paste("Same sign denominator value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
-  }
-}else{
-  paste("Same sign denominator value not specified, using FLASE.")
-}
-if(!is.na(cmdArgImport('l'))){
-  useCladesValue = cmdArgImport('l')
-  useCladesValue = as.logical(useCladesValue)
-  if(is.na(useCladesValue)){
-    useCladesValue = TRUE
-    paste("Use Clades value not interpretable as logical. Did you remember to capitalize? Using FLASE.")
-  }
-}else{
-  paste("Use Clades value not specified, using FALSE.")
-}
-if(!is.na(cmdArgImport('m'))){
-  useCorrelationOverride = TRUE
-  correlationOverride = cmdArgImport('m')
-}else{
-  paste("No correlation override")
-}  
+#---- Prefix Setup -----
+#------------------------
+{
+  # --- Import prefix ----
+  args = commandArgs(trailingOnly = TRUE)
+  paste(args)
+  message(args)
   
+  #File Prefix
+  if(!is.na(cmdArgImport('r'))){
+    filePrefix = cmdArgImport('r')
+  }else{
+    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
+  }
+  
+  #------------
+  
+  #- Make Output directory -
+  
+  #Make output directory if it does not exist
+  if(!dir.exists("Output")){
+    dir.create("Output")
+  }
+  #Make a specific subdirectory if it does not exist 
+  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "")
+  #create that directory if it does not exist
+  if(!dir.exists(outputFolderNameNoSlash)){
+    dir.create(outputFolderNameNoSlash)
+  }
+  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+  #----------
+}
 
-# ----- Calculation of p-values
+#----Startup----
+#----------------
+{
+  #-Default values -
+  
+  runInstanceValue = NULL
+  metacombineValue = FALSE
+  startValue = 1
+  geneNumberValue = NA #This means that by default it does all of the genes
+  plusOneValue = TRUE
+  sameSignValue = FALSE
+  useCladesValue = FALSE
+  useCorrelationOverride = FALSE
+  fileType ="p"
+  runPvalueCalculation = TRUE
+  runErichmentAnalysis = TRUE
+  gmtFileLocation = "Data/enrichmentGmtFile.gmt"
+  enrichmentAnnotationListName = "MSigDBPathways"
+  #-------
+  
+  #- Command args import -
+  
+  {
+    #General arguments 
+    {
+      #instance number of the script
+      if(!is.na(cmdArgImport('i'))){
+        runInstanceValue = cmdArgImport('i')
+      }else{
+        message("This script does not have a run instance value")
+      }
+      
+      #Import if this is being run on combined correlations 
+      if(!is.na(cmdArgImport('c'))){
+        metacombineValue = cmdArgImport('c')
+        metacombineValue = as.logical(metacombineValue)
+        if(is.na(metacombineValue)){
+          metacombineValue = FALSE
+          message("Metacombination value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+        }
+      }else{
+        message("Metacombination value not specified, using FLASE. If you aren't parrallelizing, don't worry about this.")
+      }
+      
+      #Import which filetype to use 
+      if(!is.na(cmdArgImport('t'))){
+        fileType = cmdArgImport('t')
+        fileType = as.character(fileType)
+      }else{
+        message("No fileType specified, defaulting to pruned-fast (fastPermulationsData)")
+      }
+      
+      #Import the permulation number to start at
+      if(!is.na(cmdArgImport('s'))){
+        startValue = cmdArgImport('s')
+        startValue = as.numeric(startValue)
+      }else{
+        message("Start value not specified, using 1")
+      }
+      
+      #Import the number of genes to do 
+      if(!is.na(cmdArgImport('n'))){
+        geneNumberValue = cmdArgImport('n')
+        geneNumberValue = as.numeric(geneNumberValue)
+      }else{
+        message("Number ofgenes not specified, using all")
+      }
+      
+      #Plus one denominator
+      if(!is.na(cmdArgImport('d'))){
+        plusOneValue = cmdArgImport('d')
+        plusOneValue = as.logical(plusOneValue)
+        if(is.na(plusOneValue)){
+          plusOneValue = FALSE
+          message("Plus one denominator value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+        }
+      }else{
+        message("Plus one denominator value not specified, using TRUE.")
+      }
+      
+      #same sign denominator
+      if(!is.na(cmdArgImport('g'))){
+        sameSignValue = cmdArgImport('g')
+        sameSignValue = as.logical(sameSignValue)
+        if(is.na(sameSignValue)){
+          sameSignValue = FALSE
+          message("Same sign denominator value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+        }
+      }else{
+        message("Same sign denominator value not specified, using FLASE.")
+      }
+      
+      #Use Clades
+      if(!is.na(cmdArgImport('l'))){
+        useCladesValue = cmdArgImport('l')
+        useCladesValue = as.logical(useCladesValue)
+        if(is.na(useCladesValue)){
+          useCladesValue = TRUE
+          message("Use Clades value not interpretable as logical. Did you remember to capitalize? Using FLASE.")
+        }
+      }else{
+        message("Use Clades value not specified, using FALSE.")
+      }
+      
+      #Correlation Override
+      if(!is.na(cmdArgImport('m'))){
+        useCorrelationOverride = TRUE
+        correlationOverride = cmdArgImport('m')
+      }else{
+        message("No correlation override")
+      }
+      
+      #Calculate p values
+      if(!is.na(cmdArgImport('p'))){
+        runPvalueCalculation = cmdArgImport('p')
+        runPvalueCalculation = as.logical(runPvalueCalculation)
+        if(is.na(runPvalueCalculation)){
+          runPvalueCalculation = TRUE
+          message("Run p-value Calculation not interpretable as logical. Did you remember to capitalize? Using TRUE.")
+        }
+      }else{
+        message("Run p-value Calculation not specified, using TRUE.")
+      }
+    }
+    
+    #Enrichment arguments
+    {
+      #Run Enrichment analysis
+      if(!is.na(cmdArgImport('e'))){
+        runErichmentAnalysis = cmdArgImport('e')
+        runErichmentAnalysis = as.logical(runErichmentAnalysis)
+        if(is.na(runErichmentAnalysis)){
+          runErichmentAnalysis = TRUE
+          message("Run Enrichment analysis not interpretable as logical. Did you remember to capitalize? Using TRUE.")
+        }
+      }else{
+        message("Run Enrichment analysis not specified, using TRUE.")
+      }
+      
+      #gmt file location
+      if(!is.na(cmdArgImport('y'))){
+        gmtFileLocation = cmdArgImport('y')
+      }else{
+        paste("No gmt location argument, using Data/enrichmentGmtFile.gmt")                          #Report using default
+        message("No gmt location argument, using Data/enrichmentGmtFile.gmt")
+      }
+      
+      #Annotation List Name 
+      if(!is.na(cmdArgImport('a'))){
+        enrichmentAnnotationListName = cmdArgImport('a')
+      }else{
+        paste("No enrichment Annotation List Name argument, using 'MSigDBPathways'")                          #Report using default
+        message("No enrichment Annotation List Name argument, using 'MSigDBPathways'")
+      }
+    }
+  }
+}
+
+
+#---- MAIN CODE ----
+#-------------------
+
+
+# --- Get input files ---
 
 # -- Get correlation file--
 if(useCorrelationOverride){                                                     #If using an override
@@ -217,7 +290,9 @@ message("File reading time: ", readingTime, attr(readingTime, "units"))
   
 #Explict order for garbage collection 
 gc() 
+
 # -- run pValue calculation --
+if(runPvalueCalculation){
   permulationPValues = permPValCorReport(correlationSet, combinedPermulationsData, startNumber = startValue, geneNumber = geneNumberValue, plusOne = plusOneValue, signedDenominator = sameSignValue)
   
   #save the permulations p values
@@ -230,5 +305,19 @@ gc()
   
   permulationPValueFileName = paste(outputFolderName, filePrefix, "Combined", fileTypeString, geneRange, "PermulationsPValue", runInstanceValue, ".rds", sep= "")
   saveRDS(permulationPValues, file = permulationPValueFileName)
+}
 
+# -- run GO Analysis --
+if(runErichmentAnalysis){
+nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
 
+  if(!file.exists(nonpermEnrichmentFileName)){
+    message("No Enchriment File found. Enrichment calculations not run. ")
+  }else{
+    enrichmentResult = readRDS(nonpermEnrichmentFileName)
+    
+    
+    
+    
+  }
+}
