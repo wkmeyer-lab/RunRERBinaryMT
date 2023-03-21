@@ -16,9 +16,9 @@ library(stringr)
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"'                          This is the prefix attached to all files; a required argument. 
 # g = <T OR F>                              This sets if Gene Ontology analysis is run. Default TRUE. 
+# p = <T or F>                              This sets if the code should use permulated or unpermualted values, or displays both 
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
       #If using any permulation p-value file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
-# p = <T or F>                              This sets if the code should use permulated or unpermualted values, or displays both  
 # 'a = <annotationListName>'                This is an override for the enrichment annotation list name
 #testing args: 
 args = c('r=CVHRemake', 'g=F')
