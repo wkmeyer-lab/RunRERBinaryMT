@@ -21,7 +21,7 @@ library(stringr)
       #If using any permulation p-value file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 # 'a = <annotationListName>'                This is an override for the enrichment annotation list name
 #testing args: 
-args = c('r=CVHRemake', 'g=F')
+args = c('r=CVHRemake', 'g=T')
 args = c('r=Domestication', 'g=F', 'p=F')
 {
   #---- Initial Setup -----
@@ -210,7 +210,7 @@ if(performGeneOntolgy){
   nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
   if(file.exists(nonpermEnrichmentFileName)){
     enrichmentResult = readRDS(nonpermEnrichmentFileName)
-    enrichmentResult2 = enrichmentResult$enrichmentAnnotationListName
+    enrichmentResult2 = enrichmentResult[[enrichmentAnnotationListName]]
     makeGOTable = function(data, collumn){
       ValueHead = head(data[order(collumn),], n=40)
       ValueHead$num.genes = as.character(ValueHead$num.genes)
@@ -221,7 +221,7 @@ if(performGeneOntolgy){
       ValueHead
     }
     enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$p.adj)
-    textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
+    textplot(enrichHead, mar = c(0,0,0,0), cmar = 1.5)
     title(main = paste("Top pathways by non-permulation"))
   }else{
     message("No GO file found. Did you remember to run RunEnrichmentAnalysis.R?")
