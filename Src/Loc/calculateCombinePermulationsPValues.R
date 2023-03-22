@@ -28,7 +28,6 @@ source("Src/Loc/permPValCorReport.R")
 
 # 'e = <T or F>'                This determines if enrichment analysis should be run.
 # 'y = <Filename>'              This is an override for the gmt file location  
-# 'a = <annotationListName>'    This is an override for the enrichment annotation list name
 #-------
 #Debug setup defaults
 #permulationNumberValue = 3
@@ -36,6 +35,7 @@ source("Src/Loc/permPValCorReport.R")
 args = c('r=demoinsectivory', 'n=3', 'e=F', 't=p')
 args = c('r=allInsectivory', 'e=F', 's=1', 't=s', 'i=1')
 args = c('r=carnvHerbs', 'e=F', 's=1', 't=s', 'i=1')
+args = c('r=CVHRemake', 'e=T', 'p=F')
 #------
 
 
@@ -218,14 +218,6 @@ args = c('r=carnvHerbs', 'e=F', 's=1', 't=s', 'i=1')
         paste("No gmt location argument, using Data/enrichmentGmtFile.gmt")                          #Report using default
         message("No gmt location argument, using Data/enrichmentGmtFile.gmt")
       }
-      
-      #Annotation List Name 
-      if(!is.na(cmdArgImport('a'))){
-        enrichmentAnnotationListName = cmdArgImport('a')
-      }else{
-        paste("No enrichment Annotation List Name argument, using 'MSigDBPathways'")                          #Report using default
-        message("No enrichment Annotation List Name argument, using 'MSigDBPathways'")
-      }
     }
   }
 }
@@ -313,9 +305,10 @@ if(runPvalueCalculation){
 # -- run GO Analysis --
 if(runErichmentAnalysis){
   # Set up the annotations list
-  annotations = read.gmt(gmtFileLocation)
-  annotationsList = list(annotations)
-  names(annotationsList) = enrichmentAnnotationListName
+  gmtAnnotations = read.gmt(gmtFileLocation)
+  annotationsList = list(gmtAnnotations)
+  enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4))
+  names(annotationsList) = enrichmentListName
   
   #Get or make the enrichment file
   nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
@@ -327,7 +320,30 @@ if(runErichmentAnalysis){
     enrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
     saveRDS(enrichmentResult, enrichmentFileName)
   }else{
-    enrichmentResult = readRDS(nonpermEnrichmentFileName)
+    enrichmentResultReadIn = readRDS(nonpermEnrichmentFileName)
+    generateEnrichment = F
+  }
+  
+  
+  if(file.exists(nonpermEnrichmentFileName)){
+    enrichmentResultReadIn = readRDS(nonpermEnrichmentFileName)
+      if(names(enrichmentResultReadIn) == enrichmentListName) {# check to make sure that the enrichment file is using the same gmt file
+        enrichmentResult = enrichmentResultReadIn
+      }else{
+        message("Existing enrichment file using different gmt file. Replacing enrichment file.")
+        generateEnrichment = T
+      }
+  }else{
+    message("No Enchriment File found. Generating enrichment file.")
+    generateEnrichment = T
+  }
+    
+  if(generateEnrichment){
+    rerStats = getStat(correlationSet)
+    enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F)
+    #save the enrichment 
+    enrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
+    saveRDS(enrichmentResult, enrichmentFileName)
   }
   
   timeAtAddEnrichmentStart = Sys.time()
