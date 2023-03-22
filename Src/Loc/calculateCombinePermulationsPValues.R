@@ -321,7 +321,7 @@ if(runErichmentAnalysis){
     saveRDS(enrichmentResult, enrichmentFileName)
   }else{
     enrichmentResultReadIn = readRDS(nonpermEnrichmentFileName)
-    
+    generateEnrichment = F
   }
   
   
