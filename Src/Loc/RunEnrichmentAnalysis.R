@@ -11,9 +11,9 @@ source("Src/Reu/cmdArgImport.R")
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"'                          This is the prefix attached to all files; a required argument. 
 #  m = gmtFileLocation.gmt                  This is the location of the main gmt file
-# 'a = <annotationListName>'                This is an override for the enrichment annotation list name
 #testing args: 
 args = c('r=CVHRemake')
+args = c('r=CVHRemake', 'm=Data/EnrichmentHsSymbolsFile.gmt')
 
 #---- Prefix Setup -----
 #------------------------
@@ -65,14 +65,6 @@ args = c('r=CVHRemake')
     paste("No gmt location arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
     message("No gmt location arugment, using Data/enrichmentGmtFile.gmt")
   }
-  
-  #Annotation List Name 
-  if(!is.na(cmdArgImport('a'))){
-    enrichmentAnnotationListName = cmdArgImport('a')
-  }else{
-    paste("No enrichment Annotation List Name argument, using 'MSigDBPathways'")                          #Report using default
-    message("No enrichment Annotation List Name argument, using 'MSigDBPathways'")
-  }
   #--
 }
 
@@ -87,7 +79,8 @@ rerStats = getStat(correlationData)
 #Load the gmt annotations 
 gmtAnnotations = read.gmt(gmtFileLocation)
 annotationsList = list(gmtAnnotations)
-names(annotationsList) = enrichmentAnnotationListName
+enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4))
+names(annotationsList) = enrichmentListName
 
 enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F)
 
@@ -106,7 +99,7 @@ saveRDS(enrichmentResult, enrichmentFileName)
   if(visualize){
     library(stringr)
     library(insight)
-    enrichmentResult2 = enrichmentResult$enrichmentAnnotationListName
+    enrichmentResult2 = enrichmentResult[[1]]
     makeGOTable = function(data, collumn){
       ValueHead = head(data[order(collumn),], n=40)
       ValueHead$num.genes = as.character(ValueHead$num.genes)
@@ -122,3 +115,4 @@ saveRDS(enrichmentResult, enrichmentFileName)
     title(main = paste("Top pathways by non-permulation"))
   }
 }
+

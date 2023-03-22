@@ -28,7 +28,6 @@ source("Src/Loc/permPValCorReport.R")
 
 # 'e = <T or F>'                This determines if enrichment analysis should be run.
 # 'y = <Filename>'              This is an override for the gmt file location  
-# 'a = <annotationListName>'    This is an override for the enrichment annotation list name
 #-------
 #Debug setup defaults
 #permulationNumberValue = 3
@@ -219,14 +218,6 @@ args = c('r=CVHRemake', 'e=T', 'p=F')
         paste("No gmt location argument, using Data/enrichmentGmtFile.gmt")                          #Report using default
         message("No gmt location argument, using Data/enrichmentGmtFile.gmt")
       }
-      
-      #Annotation List Name 
-      if(!is.na(cmdArgImport('a'))){
-        enrichmentAnnotationListName = cmdArgImport('a')
-      }else{
-        paste("No enrichment Annotation List Name argument, using 'MSigDBPathways'")                          #Report using default
-        message("No enrichment Annotation List Name argument, using 'MSigDBPathways'")
-      }
     }
   }
 }
@@ -314,9 +305,10 @@ if(runPvalueCalculation){
 # -- run GO Analysis --
 if(runErichmentAnalysis){
   # Set up the annotations list
-  annotations = read.gmt(gmtFileLocation)
-  annotationsList = list(annotations)
-  names(annotationsList) = enrichmentAnnotationListName
+  gmtAnnotations = read.gmt(gmtFileLocation)
+  annotationsList = list(gmtAnnotations)
+  enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4))
+  names(annotationsList) = enrichmentListName
   
   #Get or make the enrichment file
   nonpermEnrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
