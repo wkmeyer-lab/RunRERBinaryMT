@@ -97,7 +97,9 @@ fastwilcoxGMTall
 {
   #This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
   #For a script version, use PvQvGoVisualize.R 
+  visualize = T
   visualize = F
+  
   
   if(visualize){
     library(stringr)
@@ -112,7 +114,7 @@ fastwilcoxGMTall
       ValueHead
     }
     
-    enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$p.adj)
+    enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$stat)
     enrichHead
     textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
     title(main = paste("Top pathways by non-permulation"))
