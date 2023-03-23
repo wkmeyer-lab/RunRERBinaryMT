@@ -11,7 +11,7 @@ showRERPlots = function(RERFile, PathsFile, CorrelationFile, usePerm = F, start 
   }
   
   for(i in start:100){
-    plotRers(domesticationRERs, genesRankedPermP[i], domesticationPaths)
+    plotRers(RERFile, genesRankedPermP[i], PathsFile)
     message(i)
     Sys.sleep(4)
   }
