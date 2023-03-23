@@ -16,12 +16,6 @@ Also attached is an image of the colored selection used to create the pre-made t
 
 
 
-
-
-
-
-
-
 As a fully separate issue, this code produces this error if I try to provide it with a tree that has tree categories. Advice on this would also be apreciated. 
 > plotRers(CNRers,"KIAA0825", functionPaths, sortrers = T)
 Error in `f()`:
