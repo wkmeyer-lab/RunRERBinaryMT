@@ -82,13 +82,16 @@ annotationsList = list(gmtAnnotations)
 enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4))
 names(annotationsList) = enrichmentListName
 
-enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F)
+enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F, num.g =4)
 
 #save the enrichment output
 enrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
 saveRDS(enrichmentResult, enrichmentFileName)
 
-
+?getStat
+?fastwilcoxGMTall
+?enrichmentResult
+fastwilcoxGMTall
 
 # --- Visualize the enrichment ----
 {
