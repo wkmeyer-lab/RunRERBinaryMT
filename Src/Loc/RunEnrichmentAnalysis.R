@@ -11,6 +11,9 @@ source("Src/Reu/cmdArgImport.R")
 #If an argument contains a '(' it is evaluated as code.
 # 'r="filePrefix"'                          This is the prefix attached to all files; a required argument. 
 #  m = gmtFileLocation.gmt                  This is the location of the main gmt file
+# p = <T or F>                              This sets if the code should use permulated or unpermualted values
+# f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
+  #If using any permulation p-value file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #testing args: 
 args = c('r=CVHRemake')
 args = c('r=CVHRemake', 'm=Data/EnrichmentHsSymbolsFile.gmt')
@@ -55,7 +58,9 @@ args = c('r=CVHRemake', 'm=Data/EnrichmentHsSymbolsFile.gmt')
   
   #--Default Values-- 
   gmtFileLocation = "Data/enrichmentGmtFile.gmt"
-  enrichmentAnnotationListName = "MSigDBPathways"
+  usePermulations = TRUE
+  usePermulationPValOverride = FALSE
+  permulationPValOverride = NULL 
   
   #--Import arguments--
   #import gmt file location
@@ -64,6 +69,29 @@ args = c('r=CVHRemake', 'm=Data/EnrichmentHsSymbolsFile.gmt')
   }else{
     paste("No gmt location arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
     message("No gmt location arugment, using Data/enrichmentGmtFile.gmt")
+  }
+  
+  #Import permulation use
+  if(!is.na(cmdArgImport('p'))){
+    usePermulations = cmdArgImport('p')
+    usePermulations = as.logical(usePermulations)
+    if(is.na(usePermulations)){
+      usePermulations = TRUE
+      message("Use Permualtions value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
+    }
+  }else{
+    message("Use Permulations value not specified, using TRUE.")
+  }
+  
+  if(usePermulations){
+    #Import permulation p-value Override 
+    if(!is.na(cmdArgImport('f'))){
+      usePermulationPValOverride = TRUE
+      permulationPValOverride = cmdArgImport('f')
+      message("Using Manually specified permulation p-value file. NOTE this setting ignores the meta-combination argument.")
+    }else{
+      message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
+    }
   }
   #--
 }
@@ -74,6 +102,18 @@ args = c('r=CVHRemake', 'm=Data/EnrichmentHsSymbolsFile.gmt')
 #Load correlation file
 correlationFileLocation = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "")
 correlationData = readRDS(correlationFileLocation)                            #Import the correlation data (non-permulated)
+rerStats = getStat(correlationData)
+
+if(usePermulations){
+  if(usePermulationPValOverride){
+    permulationFileLocation = permulationPValOverride
+  }else{
+    permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "")
+  }
+  permulationValues = readRDS(permulationFileLocation)
+  correlationData$P = permulationValues
+}
+
 rerStats = getStat(correlationData)
 
 #Load the gmt annotations 
@@ -88,17 +128,13 @@ enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = 
 enrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
 saveRDS(enrichmentResult, enrichmentFileName)
 
-?getStat
-?fastwilcoxGMTall
-?enrichmentResult
-fastwilcoxGMTall
 
 # --- Visualize the enrichment ----
+visualize = T
+visualize = F
 {
   #This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
   #For a script version, use PvQvGoVisualize.R 
-  visualize = T
-  visualize = F
   
   
   if(visualize){
@@ -117,7 +153,11 @@ fastwilcoxGMTall
     enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$stat)
     enrichHead
     textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
+    If(usePermulations){
+      title(main = paste("Top pathways by permulation"))
+    }else{
     title(main = paste("Top pathways by non-permulation"))
+    }
   }
 }
 
