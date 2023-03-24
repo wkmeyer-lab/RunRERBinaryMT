@@ -340,7 +340,7 @@ if(runErichmentAnalysis){
     
   if(generateEnrichment){
     rerStats = getStat(correlationSet)
-    enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F)
+    enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F, , num.g =4)
     #save the enrichment 
     enrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
     saveRDS(enrichmentResult, enrichmentFileName)
