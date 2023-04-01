@@ -15,15 +15,16 @@ source("Src/Reu/cmdArgImport.R")
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
   #If using any permulation p-value file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #testing args: 
-args = c('r=CVHRemake')
+args = c('r=CVHRemake', 'p=F')
 args = c('r=CVHRemake', 'm=Data/EnrichmentHsSymbolsFile.gmt')
 
 #---- Prefix Setup -----
 #------------------------
+args = commandArgs(trailingOnly = TRUE)
 {
   
   #- Import prefix -
-  args = commandArgs(trailingOnly = TRUE)
+
   paste(args)
   message(args)
   
@@ -142,7 +143,7 @@ visualize = F
     library(insight)
     enrichmentResult2 = enrichmentResult[[1]]
     makeGOTable = function(data, collumn){
-      ValueHead = head(data[order(collumn),], n=40)
+      ValueHead = head(data[order(collumn, decreasing = T),], n=40)
       ValueHead$num.genes = as.character(ValueHead$num.genes)
       ValueHead$stat = round(ValueHead$stat, digits = 5)
       ValueHead$stat = as.character(ValueHead$stat)
@@ -150,10 +151,10 @@ visualize = F
       ValueHead
     }
     
-    enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$stat)
+    enrichHead = makeGOTable(enrichmentResult2, abs(enrichmentResult2$stat))
     enrichHead
     textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
-    If(usePermulations){
+    if(usePermulations){
       title(main = paste("Top pathways by permulation"))
     }else{
     title(main = paste("Top pathways by non-permulation"))
