@@ -36,7 +36,7 @@ returnRersAsTreeFiltered = function (treesObj, rermat, index, phenv = NULL, filt
       rerStore$rerRank[which(is.na(rerStore$rerval))] = NA
       rerStore = rerStore[order(rerStore$originalOrder),]
       
-      edgelabels(rerStore$rerRank, bg = NULL, adj = c(-2, -0.2), col = "blue", 
+      edgelabels(rerStore$rerRank, bg = NULL, adj = c(-0.5, -0.2), col = "blue", 
                  frame = "none", cex = rer.cex, font = 2)
       title(paste("max rank", max(rerStore$rerRank, na.rm = T)))
     }
