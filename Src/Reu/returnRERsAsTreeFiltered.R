@@ -1,5 +1,5 @@
-returnRersAsTreeFiltered = function (treesObj, rermat, index, phenv = NULL, rer.cex = 0.7, 
-                                     tip.cex = 0.7, nalab = "NA", plot = T, filter = NULL) 
+returnRersAsTreeFiltered = function (treesObj, rermat, index, phenv = NULL, filter = NULL, rank = T, rer.cex = 0.7, 
+                                     tip.cex = 0.7, nalab = "NA", plot = T) 
 {
   trgene <- treesObj$trees[[index]]
   if(!is.null(filter)){
@@ -28,6 +28,18 @@ returnRersAsTreeFiltered = function (treesObj, rermat, index, phenv = NULL, rer.
     rerlab[is.na(rerlab)] <- nalab
     edgelabels(rerlab, bg = NULL, adj = c(0.5, 0.9), col = edgcols, 
                frame = "none", cex = rer.cex, font = 2)
+    if(rank){
+      rerStore = data.frame(name = names(rerlab), rerval = as.numeric(rerlab))
+      rerStore$originalOrder = 1:length(rerlab)
+      rerStore = rerStore[order(rerStore$rerval),]
+      rerStore$rerRank = 1:length(rerlab)
+      rerStore$rerRank[which(is.na(rerStore$rerval))] = NA
+      rerStore = rerStore[order(rerStore$originalOrder),]
+      
+      edgelabels(rerStore$rerRank, bg = NULL, adj = c(-2, -0.2), col = "blue", 
+                 frame = "none", cex = rer.cex, font = 2)
+      title(paste("max rank", max(rerStore$rerRank, na.rm = T)))
+    }
   }
   trgene$edge.length <- rertree
   return(trgene)
