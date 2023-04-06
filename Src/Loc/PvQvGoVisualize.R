@@ -203,7 +203,7 @@ if(performGeneOntolgy){
     enrichmentResult = readRDS(nonpermEnrichmentFileName)
     enrichmentResult2 = enrichmentResult[[1]]
     makeGOTable = function(data, collumn){
-      ValueHead = head(data[order(collumn),], n=40)
+      ValueHead = head(data[order(abs(collumn)),], n=40)
       ValueHead$num.genes = as.character(ValueHead$num.genes)
       ValueHead$stat = round(ValueHead$stat, digits = 5)
       ValueHead$stat = as.character(ValueHead$stat)
@@ -211,7 +211,7 @@ if(performGeneOntolgy){
       #ValueHead$N = str_sub(ValueHead$N, end = -9)
       ValueHead
     }
-    enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$p.adj)
+    enrichHead = makeGOTable(enrichmentResult2, enrichmentResult2$stat)
     textplot(enrichHead, mar = c(0,0,0,0), cmar = 1.5)
     title(main = paste("Top pathways by non-permulation"))
   }else{
