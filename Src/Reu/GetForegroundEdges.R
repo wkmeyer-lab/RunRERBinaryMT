@@ -23,4 +23,5 @@ getForegroundEdges = function(inputTree, foregroundVector, plot = F){
   if(plot){
     plotTreeHighlightBranches(inputTree, hlspecies = foregroundEdges, hlcols = "blue")
   }
+  return(foregroundEdges)
 }
