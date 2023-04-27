@@ -16,7 +16,7 @@ getForegroundEdges = function(inputTree, foregroundVector, plot = F){
       }else{
         unsureTips = append(unsureTips, i)
       }
-      message(endNodes)
+      #message(endNodes)
     }
   }
   foregroundEdges = which(edges[,2] %in% foregroundTips)
