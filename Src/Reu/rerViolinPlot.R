@@ -1,4 +1,4 @@
-rerViolinPlot = function(mainTrees, RERObject, phenotypeTree, foregroundSpecies, geneOfInterest, foregroundName = "Foreground", BackgroundName = "Background"){
+rerViolinPlot = function(mainTrees, RERObject, phenotypeTree, foregroundSpecies, geneOfInterest, foregroundName = "Foreground", BackgroundName = "Background", correlationFile = NULL){
   source("Src/Reu/RERConvergeFunctions.R")
   rerTree = returnRersAsTree(mainTrees, RERObject, geneOfInterest, foregroundSpecies, plot = F)
   relativeRate = rerTree$edge.length
@@ -28,5 +28,14 @@ rerViolinPlot = function(mainTrees, RERObject, phenotypeTree, foregroundSpecies,
     theme(text = element_text(size = 20))+
     ggtitle(geneOfInterest)
   
+  if(!is.null(correlationFile)){
+    rownNumber = grep(geneOfInterest, rownames(correlationFile))
+    if("permPValue" %in% colnames(correlationFile)){
+      plot = plot + ggtitle(geneNames[i], subtitle = paste("p.adj = ", signif(sortedCorrelations$p.adj[i], 4), "    Permulated P = ", signif(sortedCorrelations$permPValue[i],4))) 
+    }else{
+      plot = plot + ggtitle(geneNames[i], subtitle = paste("p.adj = ", signif(sortedCorrelations$p.adj[i], 4))) 
+    }
+  }
+  plot
   return(plot)
 }
