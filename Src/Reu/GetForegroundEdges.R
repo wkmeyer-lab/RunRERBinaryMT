@@ -1,6 +1,8 @@
 # this script outputs the foreground edges for an "all" clades foreground given a tree and a foreground species vector. 
 
 getForegroundEdges = function(inputTree, foregroundVector, plot = F){
+  startnodes = min(inputTree$edge[,1]):max(inputTree$edge[,1])
+  edges = inputTree$edge
   foregroundTips = which(inputTree$tip.label %in% foregroundVector)
   backgroundTips = which(!1:length(inputTree$tip.label) %in% foregroundTips)
   unsureNodes = startnodes
@@ -14,7 +16,7 @@ getForegroundEdges = function(inputTree, foregroundVector, plot = F){
         backgroundTips = append(backgroundTips, i)
         unsureNodes = unsureNodes[unsureNodes != i]
       }else{
-        unsureTips = append(unsureTips, i)
+        unsureNodes = append(unsureNodes, i)
       }
       #message(endNodes)
     }
