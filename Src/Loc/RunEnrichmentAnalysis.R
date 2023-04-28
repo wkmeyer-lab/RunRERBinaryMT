@@ -123,7 +123,7 @@ annotationsList = list(gmtAnnotations)
 enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4))
 names(annotationsList) = enrichmentListName
 
-enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =4)
+enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =10)
 
 #save the enrichment output
 enrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
@@ -133,6 +133,8 @@ saveRDS(enrichmentResult, enrichmentFileName)
 # --- Visualize the enrichment ----
 visualize = T
 visualize = F
+clean = T
+clean = F
 #enrichmentResult = readRDS(enrichmentFileName)
 {
   #This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
@@ -151,15 +153,27 @@ visualize = F
       ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
       ValueHead
     }
-    
     enrichHead = makeGOTable(enrichmentResult2, abs(enrichmentResult2$stat))
     enrichHead
-    textplot(enrichHead, mar = c(0,0,2,0), cmar = 1.5)
+    textplot(enrichHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
     if(usePermulations){
       title(main = paste("Top pathways by permulation"))
     }else{
     title(main = paste("Top pathways by non-permulation"))
     }
+  
+    if(clean){
+      # ---- enrichment cleaning ----
+      pathwaysToRemove = grep("CANCER", rownames(enrichHead))
+      rowsToKeep = (!1:nrow(enrichHead) %in% pathwaysToRemove)
+      cleanedHead = enrichHead[rowsToKeep,]
+      textplot(cleanedHead, mar = c(0,0,2,0), cmar = 1.5)
+      if(usePermulations){
+        title(main = paste("Top pathways by permulation"))
+      }else{
+        title(main = paste("Top pathways by non-permulation"))
+      }
+    }
   }
-}
+}  
 
