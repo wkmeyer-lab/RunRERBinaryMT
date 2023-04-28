@@ -1,4 +1,4 @@
-makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foregroundVector){
+makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foregroundVector, colors = "blue"){
   source("Src/Reu/ZonomNameConvertVector.R")
   source("Src/Reu/ZoonomTreeNameToCommon.R")
   source("Src/Reu/GetForegroundEdges.R")
@@ -21,6 +21,6 @@ makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foreg
   plotTreeHighlightBranches(commonMaster, hlspecies = masterFGEdges, main = "Overall Genome", hlcols = "blue")
   
   geneFGEdges = getForegroundEdges(commonGene, foregroundVector)
-  plotTreeHighlightBranches(commonGene, main = geneInQuestion, hlspecies = geneFGEdges, hlcols = "blue")
+  plotTreeHighlightBranches(commonGene, main = geneInQuestion, hlspecies = geneFGEdges, hlcols = colors)
   
 }
