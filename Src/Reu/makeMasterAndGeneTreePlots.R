@@ -18,7 +18,7 @@ makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foreg
   
   par(mfrow = c(1,2))
   masterFGEdges = getForegroundEdges(commonMaster, foregroundVector)
-  plotTreeHighlightBranches(commonMaster, hlspecies = masterFGEdges, main = "Overall Genome", hlcols = "blue")
+  plotTreeHighlightBranches(commonMaster, hlspecies = masterFGEdges, main = "Overall Genome", hlcols = colors)
   
   geneFGEdges = getForegroundEdges(commonGene, foregroundVector)
   plotTreeHighlightBranches(commonGene, main = geneInQuestion, hlspecies = geneFGEdges, hlcols = colors)
