@@ -29,7 +29,7 @@ rerViolinPlot = function(mainTrees, RERObject, phenotypeTree, foregroundSpecies,
     ggtitle(geneOfInterest)
   
   if(!is.null(correlationFile)){
-    rowNumber = grep(paste("\\<",geneOfInterest,"\\>",sep="") rownames(correlationFile))
+    rowNumber = grep(paste("\\<",geneOfInterest,"\\>", sep=""), rownames(correlationFile))
     if("permPValue" %in% colnames(correlationFile)){
       plot = plot + ggtitle(geneOfInterest, subtitle = paste("p.adj = ", signif(correlationFile$p.adj[rowNumber], 4), "    Permulated P = ", signif(correlationFile$permPValue[rowNumber],4))) 
     }else{
