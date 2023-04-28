@@ -167,12 +167,14 @@ clean = F
       pathwaysToRemove = grep("CANCER", rownames(enrichHead))
       rowsToKeep = (!1:nrow(enrichHead) %in% pathwaysToRemove)
       cleanedHead = enrichHead[rowsToKeep,]
-      textplot(cleanedHead, mar = c(0,0,2,0), cmar = 1.5)
+      textplot(cleanedHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
       if(usePermulations){
         title(main = paste("Top pathways by permulation"))
       }else{
         title(main = paste("Top pathways by non-permulation"))
       }
+      CleanheadFileName = paste(outputFolderName, filePrefix, "CleanedEnrichmentHead.csv", sep= "")
+      write.csv(cleanedHead, CleanheadFileName)
     }
   }
 }  
