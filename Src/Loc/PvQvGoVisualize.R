@@ -20,7 +20,7 @@ library(stringr)
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
       #If using any permulation p-value file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #testing args: 
-args = c('r=CVHRemake', 'g=T')
+args = c('r=CVHRemake', 'g=F')
 args = c('r=Domestication', 'g=F', 'p=F')
 {
   #---- Initial Setup -----
