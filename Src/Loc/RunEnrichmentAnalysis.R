@@ -123,7 +123,7 @@ annotationsList = list(gmtAnnotations)
 enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4))
 names(annotationsList) = enrichmentListName
 
-enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = F, num.g =4)
+enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =4)
 
 #save the enrichment output
 enrichmentFileName = paste(outputFolderName, filePrefix, "EnrichmentFile.rds", sep= "")
@@ -133,6 +133,7 @@ saveRDS(enrichmentResult, enrichmentFileName)
 # --- Visualize the enrichment ----
 visualize = T
 visualize = F
+#enrichmentResult = readRDS(enrichmentFileName)
 {
   #This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
   #For a script version, use PvQvGoVisualize.R 
