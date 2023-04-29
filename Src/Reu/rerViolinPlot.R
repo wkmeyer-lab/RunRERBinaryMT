@@ -1,4 +1,4 @@
-rerViolinPlot = function(mainTrees, RERObject, phenotypeTree, foregroundSpecies, geneOfInterest, foregroundName = "Foreground", BackgroundName = "Background", correlationFile = NULL){
+rerViolinPlot = function(mainTrees, RERObject, phenotypeTree, foregroundSpecies, geneOfInterest, foregroundName = "Foreground", backgroundName = "Background", foregroundColor = "lightsalmon", backgroundColor= "darkgreen", correlationFile = NULL){
   source("Src/Reu/RERConvergeFunctions.R")
   rerTree = returnRersAsTree(mainTrees, RERObject, geneOfInterest, foregroundSpecies, plot = F)
   relativeRate = rerTree$edge.length
@@ -24,7 +24,7 @@ rerViolinPlot = function(mainTrees, RERObject, phenotypeTree, foregroundSpecies,
     geom_violin(adjust=1/3) +
     geom_jitter(position=position_jitter(0.2)) +
     theme_classic() +
-    scale_color_manual(values=c("lightsalmon","darkgreen")) +
+    scale_color_manual(values=c(foregroundColor,backgroundColor)) +
     theme(text = element_text(size = 20))+
     ggtitle(geneOfInterest)
   
