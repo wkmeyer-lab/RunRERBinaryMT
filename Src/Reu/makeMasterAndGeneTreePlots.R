@@ -13,8 +13,8 @@ makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foreg
   geneTree = mainTrees$trees[[geneInQuestion]]
   prunedGeneTree = drop.tip(geneTree, which(!geneTree$tip.label %in% namesToKeep))
   
-  commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot =F)
-  commonGene = ZoonomTreeNameToCommon(prunedGeneTree, plot =F)
+  commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot = F)
+  commonGene = ZoonomTreeNameToCommon(prunedGeneTree, plot = F)
   
   par(mfrow = c(1,2), mai = c(0.5, 0.1, 0.2, 0.1))
   masterFGEdges = getForegroundEdges(commonMaster, foregroundVector)
@@ -26,7 +26,7 @@ makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foreg
   if(correlationPlot){
     if(all.equal(masterFGEdges, geneFGEdges)){ #Only run this code if the trees are the same shape
       
-      edgeGround = rep(NA, nrow(edgeCorrealtions))
+      edgeGround = rep(NA, length(commonMaster$edge.length))
       edgeGround[masterFGEdges] = 1
       edgeGround[!1:length(edgeGround) %in% masterFGEdges] = 0
       
@@ -36,9 +36,7 @@ makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foreg
       edgeCorrealtions = data.frame(commonMaster$edge.length, commonGene$edge.length, as.factor(edgeGround), edgeNames)
       names(edgeCorrealtions) = c("Master", "Gene", "Ground", "Names")
       
-      
-      
-      g <- ggplot(edgeCorrealtions, 
+      correlPlot <- ggplot(edgeCorrealtions, 
                   aes(x = Master, 
                       y = Gene, 
                       col = Ground, 
@@ -66,6 +64,7 @@ makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foreg
                   theme(axis.line = element_line(colour = "black", size = 0.2))  
                   #theme(axis.line.y = element_blank())
       
+      print(correlPlot)
     }
   }
   
