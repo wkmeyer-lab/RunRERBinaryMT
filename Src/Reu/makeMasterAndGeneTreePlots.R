@@ -13,8 +13,8 @@ makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foreg
   geneTree = mainTrees$trees[[geneInQuestion]]
   prunedGeneTree = drop.tip(geneTree, which(!geneTree$tip.label %in% namesToKeep))
   
-  commonMaster = ZoonomTreeNameToCommon(prunedMaster)
-  commonGene = ZoonomTreeNameToCommon(prunedGeneTree)
+  commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot =F)
+  commonGene = ZoonomTreeNameToCommon(prunedGeneTree, plot =F)
   
   par(mfrow = c(1,2), mai = c(0.5, 0.1, 0.2, 0.1))
   masterFGEdges = getForegroundEdges(commonMaster, foregroundVector)
