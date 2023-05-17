@@ -16,7 +16,7 @@ source("Src/Reu/cmdArgImport.R")
 # s = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the type of phenotype being supplied
 
 #----------------
-args = args = c('r=CategoricalDiet', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 's=g')
+args = c('r=CategoricalDiet', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 's=g') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -67,7 +67,7 @@ phenotypeStyle = "continuous"
   #Phenotype Style
   if(!is.na(cmdArgImport('s'))){
     phenotypeStyle = cmdArgImport('s')
-    #Convert the various input options 
+    #Convert the various input options; so that the style can be specified with several names 
     if(phenotypeStyle == "b" | phenotypeStyle == "B" | phenotypeStyle == "binary"){phenotypeStyle = "Binary"}
     if(phenotypeStyle == "c" | phenotypeStyle == "C" | phenotypeStyle == "continuous"){phenotypeStyle = "Continuous"}
     if(phenotypeStyle == "g" | phenotypeStyle == "G" | phenotypeStyle == "categorical"){phenotypeStyle = "Categorical"}
@@ -78,9 +78,9 @@ phenotypeStyle = "continuous"
   #phenotype tree location
   if(!is.na(cmdArgImport('p'))){
     phenotypeTreeLocation = cmdArgImport('p')
-  }else{ #See if a pre-made tree for this prefix and style exists 
+  }else{                                                                        #See if a pre-made tree for this prefix and style exists 
     phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "Tree.rds", sep="")
-    if(file.exists(paste(phenotypeTreeFilename))){   #if so, use it                
+    if(file.exists(paste(phenotypeTreeFilename))){                              #if so, use it                
       phenotypeTreeLocation = phenotypeTreeFilename                     
       paste("Pre-made Phenotype tree found, using pre-made tree.")
     }else{
@@ -109,77 +109,77 @@ phenotypeStyle = "continuous"
 
 # -- Read in the trees --
 #MainTrees
-if(file_ext(mainTreesLocation) == "rds"){
-  mainTrees = readRDS(mainTreesLocation)
-}else{
-  mainTrees = readTrees(mainTreesLocation) 
+if(file_ext(mainTreesLocation) == "rds"){                                       #if the tree is an RDS file
+  mainTrees = readRDS(mainTreesLocation)                                        #Read as RDS
+}else{                                                                          #Otherwise
+  mainTrees = readTrees(mainTreesLocation)                                      #read as text
 }
 #Phenotype tree
-if(file_ext(phenotypeTreeLocation) == "rds"){
-  phenotypeTree = readRDS(phenotypeTreeLocation)
-}else{
-  phenotypeTree = readTrees(phenotypeTreeLocation) 
+if(file_ext(phenotypeTreeLocation) == "rds"){                                   #if the tree is an RDS file
+  phenotypeTree = readRDS(phenotypeTreeLocation)                                #Read as RDS
+}else{                                                                          #Otherwise
+  phenotypeTree = readTrees(phenotypeTreeLocation)                              #read as text
 }
 
 # --- RERs ---
 
-RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")
+RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")       #Set a filename for the RERs based on the prefix
 
-if(!file.exists(paste(RERFileName)) | forceUpdate){
-  RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F)
-  saveRDS(RERObject, file = RERFileName)
-}else{
-  RERObject = readRDS(RERFileName)
+if(!file.exists(paste(RERFileName)) | forceUpdate){                             #if it does not exist, or update is forced 
+  RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F)  #Calculate the RERs
+  saveRDS(RERObject, file = RERFileName)                                        #Save them
+}else{                                                                          #Otherwise
+  RERObject = readRDS(RERFileName)                                              #Use the existing ones
 }
 
 # --- PATHS ---
 
-pathsFileName = paste(outputFolderName, filePrefix, phenotypeStyle, "PathsFile.rds", sep= "")
-if(!file.exists(paste(pathsFileName)) | forceUpdate){
-  if(phenotypeStyle == "Binary"){
-    pathsObject = tree2Paths(phenotypeTree, mainTrees, binarize=T, useSpecies = speciesFilter)
-  }else if(phenotypeStyle == "Continous"){
+pathsFileName = paste(outputFolderName, filePrefix, phenotypeStyle, "PathsFile.rds", sep= "") #Set a filename for the pathss based on the prefix and style
+if(!file.exists(paste(pathsFileName)) | forceUpdate){                           #if it does not exist, or update is forced 
+  if(phenotypeStyle == "Binary"){                                               #If binary 
+    pathsObject = tree2Paths(phenotypeTree, mainTrees, binarize=T, useSpecies = speciesFilter)  #make path with binary function
+  }else if(phenotypeStyle == "Continous"){                                      #If continous
     stop("This function hasn't been completed")
-  } else if(phenotypeStyle == "Categorical"){ 
-      pathsObject = tree2Paths(phenotypeTree, mainTrees, useSpecies = speciesFilter)
+  } else if(phenotypeStyle == "Categorical"){                                   #if categorical
+      pathsObject = tree2Paths(phenotypeTree, mainTrees, useSpecies = speciesFilter) #do not binarize; the categorical data is already contained in the phenotype tree.
   }
-  saveRDS(pathsObject, file = pathsFileName)
+  saveRDS(pathsObject, file = pathsFileName)                                    #Save the paths
 }else{
-  pathsObject = readRDS(pathsFileName)
+  pathsObject = readRDS(pathsFileName)                                          #If the file already exists, use the existing one.
 }
 
 
 # --- CORRELATION ---
-correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "")
+correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "") #Make a correlation filename based on the prefix
 
-if(phenotypeStyle == "Binary"){
-  correlation = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =10)
-}else if(phenotypeStyle == "Continous"){
-  stop("This function hasn't been completed")
-} else if(phenotypeStyle == "Categorical"){ 
-  categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = 10, min.pos = 2, )
-  overalCategorical = categoricalCorrelation[[1]]
-  correlation = overalCategorical
+if(phenotypeStyle == "Binary"){                                                 #If binary
+  correlation = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =10)#Correlate with binary phenotype
+}else if(phenotypeStyle == "Continous"){                                        #if continous
+  stop("This function hasn't been completed")                                   
+} else if(phenotypeStyle == "Categorical"){                                     #if categorical
+  categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = 10, min.pos = 2) #Calculate with categorical, min 2 species per category 
+  overalCategorical = categoricalCorrelation[[1]]                               #select the results relating to overall difference between all categories
+  correlation = overalCategorical                                               # and classify it as the main correlation file
   
   #process the pairwise outputs
-  pairwiseCategorical = categoricalCorrelation[[2]]
+  pairwiseCategorical = categoricalCorrelation[[2]]                             #select the group of pairwise comparisons
   
-  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="")
-  phenotypeVector = readRDS(phenotypeVectorFilename)
-  categories = map_to_state_space(phenotypeVector)
-  categoryNames = categories$name2index
+  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #select the phenotype vector based on prefix
+  phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
+  categories = map_to_state_space(phenotypeVector)                              #and use it to connect branch lengths to phenotype name
+  categoryNames = categories$name2index                                         #store the length-phenotype connection
   
-  pairwiseTableNames = names(pairwiseCategorical)
-  for(i in 1:length(categoryNames)){
-    gsub(i, names(categoryNames)[i], pairwiseTableNames)
+  pairwiseTableNames = names(pairwiseCategorical)                               #Prepare to repalce the number-number titles with phenotype-phenotype titles
+  for(i in 1:length(categoryNames)){                                            #for each phenotype
+    gsub(i, names(categoryNames)[i], pairwiseTableNames)                        #replace the number with the phenotype name  
   }
-  names(pairwiseCategorical) = pairwiseTableNames
+  names(pairwiseCategorical) = pairwiseTableNames                               #update the dataframe titles
   
-  pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile", sep= "")
-  write.csv(pairwiseCategorical, file= paste(pairwiseCorrelationFileName, ".csv", sep=""), row.names = T, quote = F)
-  saveRDS(pairwiseCategorical, paste(pairwiseCorrelationFileName, ".rds", sep=""))
+  pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile", sep= "") #make a name for the pairwise comparisons based on prefix
+  write.csv(pairwiseCategorical, file= paste(pairwiseCorrelationFileName, ".csv", sep=""), row.names = T, quote = F) #save the correlations as a csv
+  saveRDS(pairwiseCategorical, paste(pairwiseCorrelationFileName, ".rds", sep="")) #and as an rds 
 }
 
-write.csv(correl, file= paste(outputFileName, ".csv", sep=""), row.names = T, quote = F)
-saveRDS(correl, paste(outputFileName, ".rds", sep=""))
+write.csv(correl, file= paste(outputFileName, ".csv", sep=""), row.names = T, quote = F) #Save correlations as csv
+saveRDS(correl, paste(outputFileName, ".rds", sep=""))                          #and as an rds 
 
