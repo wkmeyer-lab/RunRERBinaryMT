@@ -16,6 +16,8 @@ source("Src/Reu/cmdArgImport.R")
 # s = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the type of phenotype being supplied
 
 #----------------
+args = args = c('r=CategoricalDiet', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 's=g')
+
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -63,12 +65,12 @@ phenotypeStyle = "continuous"
   }
   
   #Phenotype Style
-  if(!is.na(cmdArgImport('t'))){
-    phenotypeStyle = cmdArgImport('t')
+  if(!is.na(cmdArgImport('s'))){
+    phenotypeStyle = cmdArgImport('s')
     #Convert the various input options 
-    if(phenotypeStyle == "b" | phenotypeStyle == "B" | phenotypeStyle = "binary"){phenotypeStyle = "Binary"}
-    if(phenotypeStyle == "c" | phenotypeStyle == "C" | phenotypeStyle = "continuous"){phenotypeStyle = "Continuous"}
-    if(phenotypeStyle == "g" | phenotypeStyle == "G" | phenotypeStyle = "categorical"){phenotypeStyle = "Categorical"}
+    if(phenotypeStyle == "b" | phenotypeStyle == "B" | phenotypeStyle == "binary"){phenotypeStyle = "Binary"}
+    if(phenotypeStyle == "c" | phenotypeStyle == "C" | phenotypeStyle == "continuous"){phenotypeStyle = "Continuous"}
+    if(phenotypeStyle == "g" | phenotypeStyle == "G" | phenotypeStyle == "categorical"){phenotypeStyle = "Categorical"}
   }else{
     message("PhenotypeStyle not specified, using continuous")
   }
