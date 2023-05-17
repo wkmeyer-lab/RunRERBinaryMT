@@ -7,12 +7,13 @@ source("Src/Reu/cmdArgImport.R")
 # This text describes the purpose of the script 
 
 # -- Command arguments list
+# 'r= filePrefix'    This is a prefix used to oragnize and separate files by analysis run. Always required. 
+
 
 #----------------
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
-  source("Src/Reu/cmdArgImport.R")
   #File Prefix
   if(!is.na(cmdArgImport('r'))){
     filePrefix = cmdArgImport('r')
