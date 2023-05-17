@@ -15,9 +15,9 @@ source("Src/Reu/cmdArgImport.R")
 # c = <c("nameOfCategory1,"nameOfCategory2")>   This is the list of category names 
 # s = "screenCollumn"                           This is a collumn which must have a value of 1 for the species to be included. 
 # t = <ER or SYM or ARD>                        This sets the model type used to estimate ancestral branches 
-# a = "ancestralTrait"                          This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
+# n = "ancestralTrait"                          This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 #----------------
-args = c('r=categoryTest', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Generalist","Herbivore","Insectivore","Omnivore","Piscivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
+args = c('r=CategoricalDiet', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Generalist","Herbivore","Insectivore","Omnivore","Piscivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -102,8 +102,8 @@ ancestralTrait = NULL
   }
   
   #Ancestral Trait
-  if(!is.na(cmdArgImport('a'))){
-    ancestralTrait = cmdArgImport('a')
+  if(!is.na(cmdArgImport('n'))){
+    ancestralTrait = cmdArgImport('n')
   }else{
     message("No ancestral trait specified, using NULL")
   }
@@ -146,7 +146,7 @@ saveRDS(phenotypeVector, file = phenotypeVectorFilename)
 # - Categorical Tree - 
 treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="")
 pdf(treeImageFilename, height = length(phenotypeVector)/18)
-categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
+  categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
 dev.off()
 
 categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="")
@@ -155,4 +155,4 @@ saveRDS(categoricalTree, categoricalTreeFilename)
 # - Paths - 
 pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "")
 paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait)
-saveRDS(pathsObject, file = pathsFileName)
+saveRDS(paths, file = pathsFilename)
