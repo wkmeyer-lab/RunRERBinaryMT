@@ -127,7 +127,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){ #if no existing filter or
   relevantSpecies = relevantSpecies[!relevantSpecies$FaName %in% "", ]
   speciesFilter = relevantSpecies$FaName
   
-  saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
+  saveRDS(speciesFilter, file = speciesFilterFilename)
 }else{ #if not, use the existing one 
   relevantSpecieslist = readRDS(speciesFilterFilename)
   relevantSpecies = manualAnnots[ manualAnnots[["FaName"]] %in% relevantSpecieslist,]
