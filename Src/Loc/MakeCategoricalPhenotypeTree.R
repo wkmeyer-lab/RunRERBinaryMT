@@ -143,7 +143,7 @@ names(phenotypeVector) = speciesNames
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="")
 saveRDS(phenotypeVector, file = phenotypeVectorFilename)
 
-# - Categorical Tree- 
+# - Categorical Tree - 
 treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="")
 pdf(treeImageFilename, height = length(phenotypeVector)/18)
 categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
@@ -152,3 +152,7 @@ dev.off()
 categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="")
 saveRDS(categoricalTree, categoricalTreeFilename)
 
+# - Paths - 
+pathsFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "PathsFile.rds", sep= "")
+paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait)
+saveRDS(pathsObject, file = pathsFileName)
