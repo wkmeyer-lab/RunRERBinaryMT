@@ -8,14 +8,14 @@ source("Src/Reu/cmdArgImport.R")
 # This text describes the purpose of the script 
 
 # -- Command arguments list
-# 'r = filePrefix'                            This is a prefix used to organize and separate files by analysis run. Always required. 
-# 'v = <T or F>'                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# 'm = mainTreeFilename.txt or .rds'          This sets the location of the maintrees file
-# 'a = "annotCollumn"'                        This is the column in the manual annotations spreadsheet to use
-# 'c = <c("nameOfCategory1,"nameOfCategory2")>   This is the list of category names 
-# 's = "screenCollumn" '                         This is a collumn which must have a value of 1 for the species to be included. 
-# 't = <ER or SYM or ARD>                        This sets the model type used to estimate ancestral branches 
-# 'a = "ancestralTrait"                          This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
+# r = filePrefix                                This is a prefix used to organize and separate files by analysis run. Always required. 
+# v = <T or F>                                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# m = mainTreeFilename.txt or .rds              This sets the location of the maintrees file
+# a = "annotCollumn"                            This is the column in the manual annotations spreadsheet to use
+# c = <c("nameOfCategory1,"nameOfCategory2")>   This is the list of category names 
+# s = "screenCollumn"                           This is a collumn which must have a value of 1 for the species to be included. 
+# t = <ER or SYM or ARD>                        This sets the model type used to estimate ancestral branches 
+# a = "ancestralTrait"                          This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 #----------------
 args = c('r=categoryTest', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Generalist","Herbivore","Insectivore","Omnivore","Piscivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
 # --- Standard start-up code ---
