@@ -16,7 +16,7 @@ source("Src/Reu/cmdArgImport.R")
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
   #File Prefix
-  if(!is.na(cmdArgImport('r'))){
+  if(!is.na(cmdArgImport('r'))){                                                #This cmdArgImport script is a way to import arguments from the command line. 
     filePrefix = cmdArgImport('r')
   }else{
     stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
