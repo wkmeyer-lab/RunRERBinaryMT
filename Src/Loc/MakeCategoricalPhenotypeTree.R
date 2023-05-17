@@ -153,6 +153,6 @@ categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.r
 saveRDS(categoricalTree, categoricalTreeFilename)
 
 # - Paths - 
-pathsFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "PathsFile.rds", sep= "")
+pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "")
 paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait)
 saveRDS(pathsObject, file = pathsFileName)
