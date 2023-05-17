@@ -1,6 +1,3 @@
-
-#Test args: args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', 'r=allInsectivory')
-
 #Library setup 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge) #load RERconverge package
