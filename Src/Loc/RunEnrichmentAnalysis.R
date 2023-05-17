@@ -9,8 +9,8 @@ source("Src/Reu/cmdArgImport.R")
 
 # ARUGMENTS: 
 #If an argument contains a '(' it is evaluated as code.
-# 'r="filePrefix"'                          This is the prefix attached to all files; a required argument. 
-#  m = gmtFileLocation.gmt                  This is the location of the main gmt file
+# r="filePrefix"                          This is the prefix attached to all files; a required argument. 
+# m = gmtFileLocation.gmt                  This is the location of the main gmt file
 # p = <T or F>                              This sets if the code should use permulated or unpermualted values
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
   #If using any permulation p-value file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
