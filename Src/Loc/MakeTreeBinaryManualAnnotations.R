@@ -215,6 +215,8 @@ binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 #Save that output 
 binaryTreeFilename = paste(outputFolderName, filePrefix, "BinaryForegroundTree.rds", sep="")
 saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
+binaryTreeFilename = paste(outputFolderName, filePrefix, "BinaryTree.rds", sep="")
+saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
 
 #Read back in the outputted tree as a test 
 readTest = readRDS(binaryTreeFilename)
