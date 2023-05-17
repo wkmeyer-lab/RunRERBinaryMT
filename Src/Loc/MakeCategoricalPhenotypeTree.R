@@ -110,7 +110,7 @@ ancestralTrait = NULL
 }
 
 
-# -- Code Body --- 
+#                   ------- Code Body --------  
 
 manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")
 
