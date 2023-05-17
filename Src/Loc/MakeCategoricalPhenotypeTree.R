@@ -14,8 +14,10 @@ source("Src/Reu/cmdArgImport.R")
 # 'a = "annotCollumn"'                        This is the column in the manual annotations spreadsheet to use
 # 'c = <c("nameOfCategory1,"nameOfCategory2")>   This is the list of category names 
 # 's = "screenCollumn" '                         This is a collumn which must have a value of 1 for the species to be included. 
+# 't = <ER or SYM or ARD>                        This sets the model type used to estimate ancestral branches 
+# 'a = "ancestralTrait"                          This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 #----------------
-args = c('r=categoryTest', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Generalist","Herbivore","Insectivore","Omnivore","Piscivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T')
+args = c('r=categoryTest', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Generalist","Herbivore","Insectivore","Omnivore","Piscivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -53,6 +55,8 @@ annotColumn = NULL
 categoryList = NULL
 useScreen = F
 screenColumn = NULL
+modelType = "ER"
+ancestralTrait = NULL
 
 { # Bracket used for collapsing purposes
   #MainTrees Location
@@ -89,6 +93,20 @@ screenColumn = NULL
   }else{
     message("No screen column used.")
   }
+  
+  #Model Type
+  if(!is.na(cmdArgImport('t'))){
+    modelType = cmdArgImport('t')
+  }else{
+    message("No model specified, using ER.")
+  }
+  
+  #Ancestral Trait
+  if(!is.na(cmdArgImport('a'))){
+    ancestralTrait = cmdArgImport('a')
+  }else{
+    message("No ancestral trait specified, using NULL")
+  }
 }
 
 
@@ -107,7 +125,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){ #if no existing filter or
     relevantSpecies = relevantSpecies[ relevantSpecies[screenColumn] %in% 1, ]
   }
   relevantSpecies = relevantSpecies[!relevantSpecies$FaName %in% "", ]
-  relevantSpeciesNames = relevantSpecies$FaName
+  speciesFilter = relevantSpecies$FaName
   
   saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
 }else{ #if not, use the existing one 
@@ -124,3 +142,13 @@ names(phenotypeVector) = speciesNames
 
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="")
 saveRDS(phenotypeVector, file = phenotypeVectorFilename)
+
+# - Categorical Tree- 
+treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="")
+pdf(treeImageFilename, height = length(phenotypeVector)/18)
+categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
+dev.off()
+
+categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="")
+saveRDS(categoricalTree, categoricalTreeFilename)
+
