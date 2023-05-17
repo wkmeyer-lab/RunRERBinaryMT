@@ -99,35 +99,35 @@ correlationOverride = NULL
 #                   ------- Code Body -------- 
 
 #Load correlation file
-if(useCorrelationOverride){
-  correlationFileLocation = correlationOverride
+correlationFileLocation = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #get the correlation file location based on prefix 
+if(useCorrelationOverride){                                                     #if a correlation override was specified, replace it with that
+  correlationFileLocation = correlationOverride                                      
 }
-correlationFileLocation = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "")
-correlationData = readRDS(correlationFileLocation)                            #Import the correlation data (non-permulated)
+correlationData = readRDS(correlationFileLocation)                              #Import the correlation data (non-permulated)
 
-if(usePermulations){
-  if(usePermulationPValOverride){
-    permulationFileLocation = permulationPValOverride
-  }else{
-    permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "")
+if(usePermulations){                                                            #If permualtions are being used   
+  if(usePermulationPValOverride){                                               #check for a location override
+    permulationFileLocation = permulationPValOverride                           #if so, use it 
+  }else{                                                                        #if not, use the default 
+    permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "") #get the default location based on prefix 
   }
-  permulationValues = readRDS(permulationFileLocation)
-  correlationData$P = permulationValues
+  permulationValues = readRDS(permulationFileLocation)                          #read the permulation file
+  correlationData$P = permulationValues                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
 }
 
-rerStats = getStat(correlationData)
+rerStats = getStat(correlationData)                                             #FIGURE OUT EXACTLY WHAT THIS DOES -- gets the RER data into the format desired by the next function, but not exactly sure how. 
 
 #Load the gmt annotations 
-gmtAnnotations = read.gmt(gmtFileLocation)
-annotationsList = list(gmtAnnotations)
-enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4)) #determine geneset name from filename 
-names(annotationsList) = enrichmentListName
+gmtAnnotations = read.gmt(gmtFileLocation)                                      #read the gmt file
+annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
+enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4)) #make a geneset name based on the filename 
+names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
 
-enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =10)
+enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =10) #run enrichment analysis 
 
 #save the enrichment output
-enrichmentFileName = paste(outputFolderName, filePrefix, "Enrichment-", enrichmentListName, ".rds", sep= "")
-saveRDS(enrichmentResult, enrichmentFileName)
+enrichmentFileName = paste(outputFolderName, filePrefix, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
 
 
 
