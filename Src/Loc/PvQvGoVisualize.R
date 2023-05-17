@@ -22,6 +22,7 @@ library(stringr)
 #testing args: 
 args = c('r=CVHRemake', 'g=F')
 args = c('r=Domestication', 'g=F', 'p=F')
+args = c('r=CategoricalDiet', 'g=F', 'p=F')
 {
   #---- Initial Setup -----
   #------------------------
@@ -77,10 +78,10 @@ args = c('r=Domestication', 'g=F', 'p=F')
     performGeneOntolgy = as.logical(performGeneOntolgy)
     if(is.na(performGeneOntolgy)){
       performGeneOntolgy = TRUE
-      message("Perform gene ontology value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
+      message("Include geneset enrichment value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
     }
   }else{
-    message("Perform gene ontology value not specified, using TRUE.")
+    message("Include geneset enrichment value not specified, using TRUE.")
   }
   
   #Import permulation use
