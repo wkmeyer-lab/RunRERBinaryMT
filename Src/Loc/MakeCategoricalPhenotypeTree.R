@@ -112,47 +112,47 @@ ancestralTrait = NULL
 
 #                   ------- Code Body --------  
 
-manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")
+manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")                      #load the manual annotations file holding the phenotype data
 
 
 # - Species Filter - 
-speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="")
+speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
 
-if(!file.exists(speciesFilterFilename) | forceUpdate){ #if no existing filter or force update, make a filter
+if(!file.exists(speciesFilterFilename) | forceUpdate){                          #if no filter exists or update is forced, make a filter 
   # --- subset the manual annots to only those with data in the categories used, and optionally by the screen column
-  relevantSpecies = manualAnnots[manualAnnots[[annotColumn]] %in% categoryList,]
-  if(useScreen){
-    relevantSpecies = relevantSpecies[ relevantSpecies[screenColumn] %in% 1, ]
+  relevantSpecies = manualAnnots[manualAnnots[[annotColumn]] %in% categoryList,]#remove all species which are not part of the specified categories
+  if(useScreen){                                                                #if using a screening collumn 
+    relevantSpecies = relevantSpecies[ relevantSpecies[screenColumn] %in% 1, ]  #remove all species not positive for that collumn 
   }
-  relevantSpecies = relevantSpecies[!relevantSpecies$FaName %in% "", ]
-  speciesFilter = relevantSpecies$FaName
+  relevantSpecies = relevantSpecies[!relevantSpecies$FaName %in% "", ]          #remove any species without an FA name (not on the master tree)
+  speciesFilter = relevantSpecies$FaName                                        #make a list of the master tree tip labels of the included species
   
-  saveRDS(speciesFilter, file = speciesFilterFilename)
+  saveRDS(speciesFilter, file = speciesFilterFilename)                          #save that as the species filter
 }else{ #if not, use the existing one 
-  relevantSpecieslist = readRDS(speciesFilterFilename)
-  relevantSpecies = manualAnnots[ manualAnnots[["FaName"]] %in% relevantSpecieslist,]
+  relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
+  relevantSpecies = manualAnnots[ manualAnnots[["FaName"]] %in% relevantSpecieslist,] #and select the manual annotations entries in that list (useful if the list is more restrictive than it would be by default) 
 }
 
 # - Phenotype Vector - 
-speciesNames = relevantSpecies$FaName
-speciesCategories = relevantSpecies[[annotColumn]]
+speciesNames = relevantSpecies$FaName                                           #Exract the tip name of each species
+speciesCategories = relevantSpecies[[annotColumn]]                              #extract the category of each species (in same order)
 
-phenotypeVector = speciesCategories
-names(phenotypeVector) = speciesNames
+phenotypeVector = speciesCategories                                             #combine those into⌄
+names(phenotypeVector) = speciesNames                                           #the format the functions expect
 
-phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="")
-saveRDS(phenotypeVector, file = phenotypeVectorFilename)
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
+saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        #save the phenotype vector
 
 # - Categorical Tree - 
-treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="")
-pdf(treeImageFilename, height = length(phenotypeVector)/18)
-  categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
-dev.off()
-
-categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="")
-saveRDS(categoricalTree, categoricalTreeFilename)
+treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
+pdf(treeImageFilename, height = length(phenotypeVector)/18)                     #make a pdf to store the plot, sized based on tree size
+  categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
+dev.off()                                                                       #save the plot to the pdf
+ 
+categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+saveRDS(categoricalTree, categoricalTreeFilename)                               #save the tree
 
 # - Paths - 
-pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "")
-paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait)
-saveRDS(paths, file = pathsFilename)
+pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
+paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
+saveRDS(paths, file = pathsFilename)                                            #save the path 
