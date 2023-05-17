@@ -47,7 +47,7 @@ args = commandArgs(trailingOnly = TRUE)
 argument1Holder = TRUE
 
 { # Bracket used for collapsing purposes
-  #Import first argument
+  #First argument
   if(!is.na(cmdArgImport('X'))){
     argument1Holder = cmdArgImport('X')
     argumentHolder = as.logical(argument1Holder)
