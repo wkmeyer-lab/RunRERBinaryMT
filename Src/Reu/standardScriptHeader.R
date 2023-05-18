@@ -7,8 +7,8 @@ source("Src/Reu/cmdArgImport.R")
 # This text describes the purpose of the script 
 
 # -- Command arguments list
-# 'r = filePrefix'    This is a prefix used to organize and separate files by analysis run. Always required. 
-# 'v = <T or F>'      This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# r = filePrefix    This is a prefix used to organize and separate files by analysis run. Always required. 
+# v = <T or F>      This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 
 
 #----------------
