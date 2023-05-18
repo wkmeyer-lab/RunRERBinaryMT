@@ -24,3 +24,4 @@ Output/Domestication/IgnoreGit
 scratchSpace.R
 Output/categoryTest
 Output/CategoricalSpeedTest
+Results/CategoricalPermulationsTimingTrees.rds
