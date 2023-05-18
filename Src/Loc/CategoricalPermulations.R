@@ -1,9 +1,9 @@
 # -- Libraries 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge)
+library(tools)
 source("Src/Reu/cmdArgImport.R")
-library(devtools)
-install_github("nclark-lab/RERconverge", ref = "master")
+
 
 # -- Usage:
 # This text describes the purpose of the script 
@@ -19,6 +19,8 @@ install_github("nclark-lab/RERconverge", ref = "master")
 
 
 #----------------
+args = c('r=CategoricalDiet', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 't=ER', 'n=2', 'i=test') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -117,7 +119,7 @@ pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", 
 pathsObject = readRDS(pathsFilename)                                            #Load the paths
 
 #Correlations
-correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "") #Make a correlation filename based on the prefix
+correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
 correlationsObject = readRDS(correlationFileName)                               #Load the correlations
 
 # -- Run Permulations --
