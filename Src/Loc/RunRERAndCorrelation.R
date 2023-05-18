@@ -180,6 +180,6 @@ if(phenotypeStyle == "Binary"){                                                 
   saveRDS(pairwiseCategorical, paste(pairwiseCorrelationFileName, ".rds", sep="")) #and as an rds 
 }
 
-write.csv(correl, file= paste(outputFileName, ".csv", sep=""), row.names = T, quote = F) #Save correlations as csv
-saveRDS(correl, paste(outputFileName, ".rds", sep=""))                          #and as an rds 
+write.csv(correlation, file= paste(correlationFileName, ".csv", sep=""), row.names = T, quote = F) #Save correlations as csv
+saveRDS(correlation, paste(correlationFileName, ".rds", sep=""))                          #and as an rds 
 
