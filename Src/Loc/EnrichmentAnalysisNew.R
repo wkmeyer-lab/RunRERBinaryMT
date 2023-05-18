@@ -16,6 +16,8 @@ source("Src/Reu/cmdArgImport.R")
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
     #If using any file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #----------------
+args = c('r=CategoricalDiet', 'm=enrichmentGmtFile.gmt', 'v=F', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -115,7 +117,7 @@ if(usePermulations){                                                            
   correlationData$P = permulationValues                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
 }
 
-rerStats = getStat(correlationData)                                             #FIGURE OUT EXACTLY WHAT THIS DOES -- gets the RER data into the format desired by the next function, but not exactly sure how. 
+rerStats = getStat(correlationData)                                             #processes the RERs somewhat into stat values. only uses the P column, and the sign of the Rho column. 
 
 #Load the gmt annotations 
 gmtAnnotations = read.gmt(gmtFileLocation)                                      #read the gmt file
@@ -146,14 +148,14 @@ saveRDS(enrichmentResult, enrichmentFileName)                                   
     library(insight)
     enrichmentResult2 = enrichmentResult[[1]]
     makeGOTable = function(data, collumn){
-      ValueHead = head(data[order(collumn, decreasing = T),], n=40)
+      ValueHead = head(data[order(collumn, decreasing = F),], n=40)
       ValueHead$num.genes = as.character(ValueHead$num.genes)
       ValueHead$stat = round(ValueHead$stat, digits = 5)
       ValueHead$stat = as.character(ValueHead$stat)
       ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
       ValueHead
     }
-    enrichHead = makeGOTable(enrichmentResult2, abs(enrichmentResult2$stat))
+    enrichHead = makeGOTable(enrichmentResult2, abs(enrichmentResult2$p.adj))
     enrichHead
     textplot(enrichHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
     if(usePermulations){
