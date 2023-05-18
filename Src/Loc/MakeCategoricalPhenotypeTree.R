@@ -18,7 +18,7 @@ source("Src/Reu/cmdArgImport.R")
 # t = <ER or SYM or ARD>                        This sets the model type used to estimate ancestral branches 
 # n = "ancestralTrait"                          This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 #----------------
-args = c('r=CategoricalDiet', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Generalist","Herbivore","Insectivore","Omnivore","Piscivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
+args = c('r=CategoricalDiet', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Herbivore", "Omnivore", "Generalist", "Piscivore", "Insectivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -157,3 +157,4 @@ saveRDS(categoricalTree, categoricalTreeFilename)                               
 pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
 paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
 saveRDS(paths, file = pathsFilename)                                            #save the path 
+
