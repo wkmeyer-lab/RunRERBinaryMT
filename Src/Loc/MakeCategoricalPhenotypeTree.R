@@ -5,7 +5,8 @@ library(tools)
 source("Src/Reu/cmdArgImport.R")
 
 # -- Usage:
-# This text describes the purpose of the script 
+# This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
+# In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is named "FaName". 
 
 # -- Command arguments list
 # r = filePrefix                                This is a prefix used to organize and separate files by analysis run. Always required. 
