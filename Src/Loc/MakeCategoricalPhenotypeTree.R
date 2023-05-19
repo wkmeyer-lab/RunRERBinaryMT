@@ -18,7 +18,7 @@ source("Src/Reu/cmdArgImport.R")
 # t = <ER or SYM or ARD>                        This sets the model type used to estimate ancestral branches 
 # n = "ancestralTrait"                          This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 #----------------
-args = c('r=CategoricalDiet', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Herbivore", "Omnivore", "Generalist", "Piscivore", "Insectivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
+args = c('r=CategoricalSpeedTest', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Herbivore", "Omnivore", "Generalist", "Piscivore", "Insectivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
