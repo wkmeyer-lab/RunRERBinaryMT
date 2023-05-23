@@ -9,16 +9,17 @@ source("Src/Reu/cmdArgImport.R")
 # In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is named "FaName". 
 
 # -- Command arguments list
-# r = filePrefix                                This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# m = mainTreeFilename.txt or .rds              This sets the location of the maintrees file
-# a = "annotCollumn"                            This is the column in the manual annotations spreadsheet to use
-# c = <c("nameOfCategory1,"nameOfCategory2")>   This is the list of category names 
-# s = "screenCollumn"                           This is a collumn which must have a value of 1 for the species to be included. 
-# t = <ER or SYM or ARD>                        This sets the model type used to estimate ancestral branches 
-# n = "ancestralTrait"                          This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
+# r = filePrefix                                         This is a prefix used to organize and separate files by analysis run. Always required. 
+# v = <T or F>                                           This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# m = mainTreeFilename.txt or .rds                       This sets the location of the maintrees file
+# a = "annotCollumn"                                     This is the column in the manual annotations spreadsheet to use
+# c = <c("nameOfCategory1,"nameOfCategory2")>            This is the list of category names 
+# u = list(c("replace1", "with1"),c("replace2, with2"))
+# s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
+# t = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
+# n = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 #----------------
-args = c('r=CategoricalSpeedTest', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Herbivore", "Omnivore", "Generalist", "Piscivore", "Insectivore")', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
+args = c('r=CategoricalDiet3Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore","Herbivore", "Omnivore", "Generalist", "Piscivore")', 'u=list(c("Piscivore","Carnivore"),c("Generalist","Omnivore"),c("Omnivore","_Omnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -58,6 +59,7 @@ useScreen = F
 screenColumn = NULL
 modelType = "ER"
 ancestralTrait = NULL
+substitutions = NULL
 
 { # Bracket used for collapsing purposes
   #MainTrees Location
@@ -108,6 +110,13 @@ ancestralTrait = NULL
   }else{
     message("No ancestral trait specified, using NULL")
   }
+  
+  #Category list 
+  if(!is.null(cmdArgImport('u'))){
+    substitutions = cmdArgImport('u')
+  }else{
+    message("No substitutions provided")
+  }
 }
 
 
@@ -140,6 +149,13 @@ speciesCategories = relevantSpecies[[annotColumn]]                              
 
 phenotypeVector = speciesCategories                                             #combine those into⌄
 names(phenotypeVector) = speciesNames                                           #the format the functions expect
+if(!is.null(substitutions)){
+  for( i in 1:length(substitutions)){
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
+    phenotypeVector = gsub(substitutePhenotypes[1], substitutePhenotypes[2], phenotypeVector)
+  }
+}
 
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
 saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        #save the phenotype vector
