@@ -49,13 +49,6 @@ args = commandArgs(trailingOnly = TRUE)
   }else{
     paste("Force update not specified, not forcing update")
   }
-  
-  #Run instance value
-  if(!is.na(cmdArgImport('i'))){
-    runInstanceValue = cmdArgImport('i')
-  }else{
-    paste("This script does not have a run instance value")
-  }
 }
 
 # --- Argument Imports ---
@@ -92,6 +85,12 @@ runInstanceValue = NULL
     permulationAmount = as.numeric(permulationAmount)
   }else{
     paste("Number of permulations not specified, using 100")
+  }
+  #Run instance value
+  if(!is.na(cmdArgImport('i'))){
+    runInstanceValue = cmdArgImport('i')
+  }else{
+    paste("This script does not have a run instance value")
   }
 }
 
