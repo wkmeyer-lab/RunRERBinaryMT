@@ -5,9 +5,11 @@ library(tools)
 source("Src/Reu/cmdArgImport.R")
 
   library(devtools)
-  install_github("nclark-lab/RERconverge", ref = "New_Functions_For_Categorical_Traits")
+  install_github("nclark-lab/RERconverge", ref = "New_Functions_For_Categorical_Traits", dependancies = FALSE, upgrade = FALSE)
   # ref refers to the branch of RERconverge being installed
 
+  ?install_github
+  
 library(RERconverge)
 
 # -- Usage:
