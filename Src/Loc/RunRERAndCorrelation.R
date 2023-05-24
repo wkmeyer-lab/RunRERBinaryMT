@@ -4,6 +4,13 @@ library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
 
+if (!require("RERconverge", character.only = T, quietly = T)) {
+  require(devtools)
+  install_github("nclark-lab/RERconverge", ref = "New_Functions_For_Categorical_Traits")
+  # ref refers to the branch of RERconverge being installed
+}
+library(RERconverge)
+
 # -- Usage:
 # This script can be used to run RER calculations and phenotype correlations with Binary, continuous, or categorical phenotypes.
 # It inputs a phenotype tree made by the appropriate script for the style, and outputs an RER file, a Paths file, and a Correlation file. 
