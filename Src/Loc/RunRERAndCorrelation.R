@@ -1,14 +1,13 @@
 # -- Libraries 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
-library(RERconverge)
+#library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
 
-if (!require("RERconverge", character.only = T, quietly = T)) {
-  require(devtools)
+  library(devtools)
   install_github("nclark-lab/RERconverge", ref = "New_Functions_For_Categorical_Traits")
   # ref refers to the branch of RERconverge being installed
-}
+
 library(RERconverge)
 
 # -- Usage:
