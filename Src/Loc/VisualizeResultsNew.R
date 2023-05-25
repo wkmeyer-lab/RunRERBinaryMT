@@ -333,5 +333,10 @@ if(useGeneEnrichment){
   plot_grid(headlineGenes, histograms, signedGenes, ncol = 1, nrow = 3)
 }
 dev.off()
-?plot_grid
+
+
+#improvements for this script: 
+  #Update output title to be more dynamic
+  #fix justification of figure titles
+  #Change row length to match length of content (shorten the signed row) 
 
