@@ -16,7 +16,7 @@ source("Src/Reu/cmdArgImport.R")
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
     #If using any file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #----------------
-args = c('r=CategoricalDiet', 'm=enrichmentGmtFile.gmt', 'v=F', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet', 'm=Data/enrichmentGmtFile.gmt', 'v=F', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -125,7 +125,7 @@ annotationsList = list(gmtAnnotations)                                          
 enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4)) #make a geneset name based on the filename 
 names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
 
-enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =10) #run enrichment analysis 
+enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =5) #run enrichment analysis 
 
 #save the enrichment output
 enrichmentFileName = paste(outputFolderName, filePrefix, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
