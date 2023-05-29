@@ -56,6 +56,7 @@ startValue = 1
 permulationPrefix = NULL
 metacombineValue = FALSE
 calulateValue = TRUE
+enrich
 
 { # Bracket used for collapsing purposes
 
@@ -174,7 +175,7 @@ if((startValue+2) < (startValue+permulationNumberValue-1)){                     
       iteratingPermulationLoadTime = iteratingPermulationLoadEnd - iteratingPermulationStart
       message("Iterating permulation load time: ", iteratingPermulationLoadTime, attr(iteratingPermulationLoadTime, "units"))
       
-      combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData, enrich = enrichValue)
+      combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData)
       iteratingPermulationCombineEnd = Sys.time()
       iteratingPermulationCombineTime = iteratingPermulationCombineEnd - iteratingPermulationLoadEnd
       message("Iterating permulation combination time: ", iteratingPermulationCombineTime, attr(iteratingPermulationCombineTime, "units"))
