@@ -182,7 +182,7 @@ if((startValue+2) < (startValue+permulationNumberValue-1)){                     
       rm(iteratingPermulationsData)
       iteratingPermulationRemoveEnd = Sys.time()
       iteratingPermulationRemoveTime = iteratingPermulationRemoveEnd - iteratingPermulationCombineEnd
-      message("Iterating permulation removal time: ", ipRemove, attr(ipRemove, "units"))
+      message("Iterating permulation removal time: ", iteratingPermulationRemoveTime, attr(iteratingPermulationRemoveTime, "units"))
       
       message("Added file ", i, " to combination.")
     }else{
