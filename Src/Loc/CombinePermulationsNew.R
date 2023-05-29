@@ -174,7 +174,7 @@ if((startValue+2) < (startValue+permulationNumberValue-1)){                     
       iteratingPermulationLoadTime = iteratingPermulationLoadEnd - iteratingPermulationStart
       message("Iterating permulation load time: ", iteratingPermulationLoadTime, attr(iteratingPermulationLoadTime, "units"))
       
-      combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData)
+      combinedPermulationsData = combinePermData(combinedPermulationsData, iteratingPermulationsData, enrich = F)
       iteratingPermulationCombineEnd = Sys.time()
       iteratingPermulationCombineTime = iteratingPermulationCombineEnd - iteratingPermulationLoadEnd
       message("Iterating permulation combination time: ", iteratingPermulationCombineTime, attr(iteratingPermulationCombineTime, "units"))
