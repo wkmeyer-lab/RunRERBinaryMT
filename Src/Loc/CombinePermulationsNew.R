@@ -56,7 +56,6 @@ startValue = 1
 permulationPrefix = NULL
 metacombineValue = FALSE
 calulateValue = TRUE
-enrich
 
 { # Bracket used for collapsing purposes
 
