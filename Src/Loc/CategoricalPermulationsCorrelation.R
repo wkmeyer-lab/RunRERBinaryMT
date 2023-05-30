@@ -97,7 +97,7 @@ pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", 
 pathsObject = readRDS(pathsFilename)                                            #Load the paths
 
 #Correlations
-correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
+correlationFileName = paste(outputFolderName, filePrefix, "CombinedCategoricalCorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
 correlationsObject = readRDS(correlationFileName) 
 
 #Permulations Trees
