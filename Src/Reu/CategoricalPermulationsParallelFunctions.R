@@ -8,15 +8,17 @@ CategoricalPermulationGetCor =  function (realCors, nullPhens, phenvals, treesOb
   if (is.rooted(tree)) {
     tree = unroot(tree)
   }
+  if(report){pathStartTime = Sys.time()}
   message("Generating null paths")
   nullPaths = lapply(nullPhens, function(x) {
-    if(report){message("one")}
+    if(report){message("One path complete")}
     tr = tree
     tr$edge.length = c(x$tips, x$nodes)[tr$edge[,2]]
     tree2Paths(tr, treesObj, categorical = TRUE, useSpecies = names(phenvals))
   })
-  message("Calculating correlation statistics")
+  if(report){pathsEndTime = Sys.time(); pathsDuration = pathsEndTime - pathStartTime; message(paste("Completed paths;","Duration", pathsDuration, attr(pathsDuration, "units")))}
   
+  message("Calculating correlation statistics")
   corsMatPvals = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
   corsMatEffSize = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
   if(report){message("Matrixes")}
@@ -26,39 +28,48 @@ CategoricalPermulationGetCor =  function (realCors, nullPhens, phenvals, treesOb
   names(Peffsize) = names(realCors[[2]])
   if(report){message("pVals")}
   for (i in 1:length(nullPaths)) {
-    if(report){message(paste("start Cor", i)); corStartTime = Sys.time()}
+    if(report){corStartTime = Sys.time()}
     cors = getAllCor(RERmat, nullPaths[[i]], method = method, 
                      min.sp = min.sp, min.pos = min.pos, winsorizeRER = winsorizeRER, 
                      winsorizetrait = winsorizetrait, weighted = weighted)
-    if(report){corEndTime = Sys.time(); corDuration = corEndTime - corStartTime; message(paste("end Cor", i, "Duration", corDuration, attr(corDuration, "units")))}
+    if(report){corEndTime = Sys.time(); corDuration = corEndTime - corStartTime; message(paste("Completed Correlation", i, "Duration", corDuration, attr(corDuration, "units")))}
     corsMatPvals[, i] = cors[[1]]$P
     corsMatEffSize[, i] = cors[[1]]$Rho
     for (j in 1:length(cors[[2]])) {
       Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
       Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
     }
-    if(report){message(paste("compelted", i))}
+    #if(report){message(paste("compelted", i))}
   }
   output = list(corsMatEffSize, Peffsize, corsMatPvals, Ppvals)
   names(output) = c("corsMatEffSize", "Peffsize", "corsMatPvals", "Ppvals")
+  return(output)
 }
 
 
-CategoricalCalculatePermulationPValues = function(realCors, intermediateList){
+CategoricalCalculatePermulationPValues = function(realCors, intermediateList, start=1, end=NULL, report=F){
+  {totalStart = Sys.time()}
   corsMatEffSize = intermediateList[[1]]
   Peffsize = intermediateList[[2]]
   corsMatPvals = intermediateList[[3]]
   Ppvals = intermediateList[[4]]
   message("Obtaining permulations p-values")
-  #Make a collum for permP values in all of the dataframes 
-  N = nrow(realCors[[1]]) 
-  realCors[[1]]$permP = rep(NA, N)
-  for (j in 1:length(realCors[[2]])) {
-    realCors[[2]][[j]]$permP = rep(NA, N)
-  }
+  N = nrow(realCors[[1]]) #
+  #if(start = 1){ #Only do this if start = 1, because otherwise it's already made and you'll overwrite the old script's results 
+    realCors[[1]]$permP = rep(NA, N) #Make a column for permP values in all of the dataframes 
+    for (j in 1:length(realCors[[2]])) {
+      realCors[[2]][[j]]$permP = rep(NA, N) #Make a column for permP values in all of the dataframes 
+    }
+  #}
   
   #Start updating the correlations
-  for (gene in 1:N) {
+  if(is.null(end)){ #if no end specified
+    stop = N
+  }else{
+    stop = end
+  }
+  for (gene in start:stop) {
+    if(report){geneStart = Sys.time()}
     if (is.na(realCors[[1]]$Rho[gene])) {
       p = NA
     }
@@ -75,191 +86,12 @@ CategoricalCalculatePermulationPValues = function(realCors, intermediateList){
       }
       realCors[[2]][[j]]$permP[gene] = p
     }
+    if(report){geneEnd = Sys.time(); geneDuration = geneEnd - geneStart;message(paste("Completed Gene", gene, "Duration", geneDuration, attr(geneDuration, "units")))}
   }
   message("Done")
+  {totalEnd = Sys.time(); totalDuration = totalEnd - totalStart;message(paste("Completed p-Values; Duration", totalDuration, attr(totalDuration, "units")))}
   return(list(res = realCors, pvals = list(corsMatPvals, Ppvals), effsize = list(corsMatEffSize, Peffsize)))
   
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function (realCors, nullPhens, phenvals, treesObj, RERmat, method = "kw", 
-          min.sp = 10, min.pos = 2, winsorizeRER = NULL, winsorizetrait = NULL, 
-          weighted = F, extantOnly = FALSE) 
-{
-  tree = treesObj$masterTree
-  keep = intersect(names(phenvals), tree$tip.label)
-  tree = pruneTree(tree, keep)
-  if (is.rooted(tree)) {
-    tree = unroot(tree)
-  }
-  if (!extantOnly) {
-    message("Generating null paths")
-    nullPaths = lapply(nullPhens, function(x) {
-      tr = tree
-      tr$edge.length = c(x$tips, x$nodes)[tr$edge[, 
-                                                  2]]
-      tree2Paths(tr, treesObj, categorical = TRUE, 
-                 useSpecies = names(phenvals))
-    })
-  }
-  message("Calculating correlation statistics")
-  if (!extantOnly) {
-    corsMatPvals = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), 
-                          dimnames = list(rownames(RERmat), NULL))
-    corsMatEffSize = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), 
-                            dimnames = list(rownames(RERmat), NULL))
-  }
-  else {
-    corsMatPvals = matrix(nrow = nrow(RERmat), ncol = nrow(nullPhens), 
-                          dimnames = list(rownames(RERmat), NULL))
-    corsMatEffSize = matrix(nrow = nrow(RERmat), ncol = nrow(nullPhens), 
-                            dimnames = list(rownames(RERmat), NULL))
-  }
-  if (!binary) {
-    Ppvals = lapply(1:length(realCors[[2]]), matrix, data = NA, 
-                    nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), 
-                                                                                   NULL))
-    names(Ppvals) = names(realCors[[2]])
-    Peffsize = lapply(1:length(realCors[[2]]), matrix, data = NA, 
-                      nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), 
-                                                                                     NULL))
-    names(Peffsize) = names(realCors[[2]])
-  }
-  if (extantOnly) {
-    if (!binary) {
-      for (i in 1:nrow(nullPhens)) {
-        cors = getAllCorExtantOnly(RERmat, nullPhens[i, 
-        ], method = method, min.sp = min.sp, min.pos = min.pos, 
-        winsorizeRER = winsorizeRER, winsorizetrait = winsorizetrait)
-        corsMatPvals[, i] = cors[[1]]$P
-        corsMatEffSize[, i] = cors[[1]]$Rho
-        for (j in 1:length(cors[[2]])) {
-          Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
-          Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
-        }
-      }
-    }
-    else {
-      for (i in 1:nrow(nullPhens)) {
-        print(i)
-        cors = getAllCorExtantOnly(RERmat, nullPhens[i, 
-        ], method = method, min.sp = min.sp, min.pos = min.pos, 
-        winsorizeRER = winsorizeRER, winsorizetrait = winsorizetrait)
-        corsMatPvals[, i] = cors$P
-        corsMatEffSize[, i] = cors$Rho
-      }
-    }
-  }
-  else {
-    if (!binary) {
-      for (i in 1:length(nullPaths)) {
-        cors = getAllCor(RERmat, nullPaths[[i]], method = method, 
-                         min.sp = min.sp, min.pos = min.pos, winsorizeRER = winsorizeRER, 
-                         winsorizetrait = winsorizetrait, weighted = weighted)
-        corsMatPvals[, i] = cors[[1]]$P
-        corsMatEffSize[, i] = cors[[1]]$Rho
-        for (j in 1:length(cors[[2]])) {
-          Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
-          Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
-        }
-      }
-    }
-    else {
-      for (i in 1:length(nullPaths)) {
-        cors = getAllCor(RERmat, nullPaths[[i]], method = method, 
-                         min.sp = min.sp, min.pos = min.pos, winsorizeRER = winsorizeRER, 
-                         winsorizetrait = winsorizetrait, weighted = weighted)
-        corsMatPvals[, i] = cors$P
-        corsMatEffSize[, i] = cors$Rho
-      }
-    }
-  }
-  
-  
-  
-  message("Obtaining permulations p-values")
-  if (!binary) {
-    N = nrow(realCors[[1]])
-    realCors[[1]]$permP = rep(NA, N)
-    for (j in 1:length(realCors[[2]])) {
-      realCors[[2]][[j]]$permP = rep(NA, N)
-    }
-    for (gene in 1:N) {
-      if (is.na(realCors[[1]]$Rho[gene])) {
-        p = NA
-      }
-      else {
-        p = sum(corsMatEffSize[gene, ] > realCors[[1]]$Rho[gene], 
-                na.rm = TRUE)/sum(!is.na(corsMatEffSize[gene, 
-                ]))
-      }
-      realCors[[1]]$permP[gene] = p
-      for (j in 1:length(realCors[[2]])) {
-        if (is.na(realCors[[2]][[j]]$Rho[gene])) {
-          p = NA
-        }
-        else {
-          p = sum(abs(Peffsize[[names(realCors[[2]][j])]][gene, 
-          ]) > abs(realCors[[2]][[j]]$Rho[gene]), na.rm = TRUE)/sum(!is.na(Peffsize[[names(realCors[[2]][j])]][gene, 
-          ]))
-        }
-        realCors[[2]][[j]]$permP[gene] = p
-      }
-    }
-  }
-  else {
-    N = nrow(realCors)
-    realCors$permP = rep(NA, N)
-    for (gene in 1:N) {
-      if (is.na(realCors$Rho[gene])) {
-        p = NA
-      }
-      else {
-        p = sum(abs(corsMatEffSize[gene, ]) > abs(realCors$Rho[gene]), 
-                na.rm = TRUE)/sum(!is.na(corsMatEffSize[gene, 
-                ]))
-      }
-      realCors$permP[gene] = p
-    }
-  }
-  message("Done")
-  if (!binary) {
-    return(list(res = realCors, pvals = list(corsMatPvals, 
-                                             Ppvals), effsize = list(corsMatEffSize, Peffsize)))
-  }
-  else {
-    return(list(res = realCors, pvals = corsMatPvals, effsize = corsMatEffSize))
-  }
-}
+#
