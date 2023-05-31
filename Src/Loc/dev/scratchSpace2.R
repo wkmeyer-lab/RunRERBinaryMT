@@ -7,6 +7,10 @@ permdtaaTrim = permdata
 permdtaaTrim[[2]] = permdtaaTrim[[2]][1:3]
 permdtaaTrim[[3]] = permdtaaTrim[[3]][1:3]
 
+permDataTrim2 = permdata
+permDataTrim2[[2]] = permDataTrim2[[2]][4:6]
+permDataTrim2[[3]] = permDataTrim2[[3]][4:6]
+
 
 saveRDS(permdtaaTrim, "Output/CategoricalDiet3Phen/CategoricalDiet3PhenPermulationsDataDev.rds")
 rm(permdata)
@@ -18,7 +22,55 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 permCorrelations = getPermPvalsCategorical3(correlationsObject, permulationsData$trees, phenotypeVector, mainTrees, RERObject)
 permCorrelations = getPermPvalsCategorical2(correlationsObject, permulationsData$trees, phenotypeVector, mainTrees, RERObject)
 
-permCorrelations = CategoricalPermulationGetCor(correlationsObject, permulationsData$trees, phenotypeVector, mainTrees, RERObject, report=T)
+permulationsDataSaving = permulationsData
+
+permulationsData = permulationsDataSaving
+permCorrelationsNew = CategoricalPermulationGetCor(correlationsObject, permulationsData$trees, phenotypeVector, mainTrees, RERObject, report=T)
+
+
+permCorrelationsNew2 = CategoricalPermulationGetCor(correlationsObject, permDataTrim2$trees, phenotypeVector, mainTrees, RERObject, report=T)
+permCorrelationsCombine = permCorrelationsNew
+
+
+intermediate1 = permCorrelationsNew
+intermediate2 = permCorrelationsNew2
+i=1
+
+combineCategoricalPermulationIntermediates = function(intermediate1, intermediate2){
+  intermediatesCombined = intermediate1
+  intermediatesCombined[[1]] = cbind(intermediatesCombined[[1]], intermediate2[[1]])
+  for(i in 1:length(intermediatesCombined[[2]])){
+    intermediatesCombined[[2]][[i]] = cbind(intermediatesCombined[[2]][[i]], intermediate2[[2]][[i]])
+  }
+  intermediatesCombined[[3]] = cbind(intermediatesCombined[[3]], intermediate2[[3]])
+  for(i in 1:length(intermediatesCombined[[4]])){
+    intermediatesCombined[[4]][[i]] = cbind(intermediatesCombined[[4]][[i]], intermediate2[[4]][[i]])
+  }
+  return(intermediatesCombined)
+}
+
+
+combinedPerms = combineCategoricalPermulationIntermediates(intermediate1, intermediate2)
+
+
+
+ist1 = permCorrelationsNew
+list2 = permCorrelationsNew2
+listIndex = 1
+matrix1 = list1[[listIndex]]
+matrix2 = list2[[listIndex]]
+
+matrixCombine = cbind(matrix1, matrix2)
+matrix1Length = ncol(matrix1)
+matrix2Length = ncol(matrix2)
+
+matrixCombine[,4] = matrix2[,1]
+
+
+permCorrelationsCombine[[1]][,matrix1Length+1:matrix1Length+matrix2Length] = permCorrelationsNew2[[1]][,1:matrix2Length]
+
+permCorrelationsCombine[[1]][,matrix1Length+1:matrix1Length+matrix2Length]
+
 
 time1 = Sys.time()
 time2 = Sys.time()
@@ -27,7 +79,10 @@ str(timeDif)
 attr(timeDif, "units")
 
 
-permPval = CategoricalCalculatePermulationPValues(correlationsObject, permCorrelations)
+permPval = CategoricalCalculatePermulationPValues(correlationsObject, permCorrelationsNew, report=F)
+permPval = CategoricalCalculatePermulationPValues(correlationsObject, combinedPerms, report=F)
+
+
 
 ?correlateWithCategoricalPhenotype
 
@@ -37,3 +92,10 @@ modelType ="ER"
 #categoricalCorrelationOld = categoricalCorrelation
 
 all.equal(categoricalCorrelation[[2]][1], categoricalCorrelationOld[[2]][1])
+
+
+pairwiseTableNames = names(correlationsObject[[2]])                               #Prepare to repalce the number-number titles with phenotype-phenotype titles
+for(i in 1:length(categoryNames)){                                            #for each phenotype
+  pairwiseTableNames= gsub(i, names(categoryNames)[i], pairwiseTableNames)                        #replace the number with the phenotype name  
+}
+names(correlationsObject[[2]]) = pairwiseTableNames                               #update the dataframe titles

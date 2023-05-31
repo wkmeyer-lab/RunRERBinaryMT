@@ -213,7 +213,7 @@ getPermPvalsCategorical3 = function (realCors, nullPhens, phenvals, treesObj, RE
                           dimnames = list(rownames(RERmat), NULL))
     corsMatEffSize = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), 
                             dimnames = list(rownames(RERmat), NULL))
-    message{"Matrixes"}
+    message("Matrixes")
   }
   else {
     corsMatPvals = matrix(nrow = nrow(RERmat), ncol = nrow(nullPhens), 
@@ -239,9 +239,11 @@ getPermPvalsCategorical3 = function (realCors, nullPhens, phenvals, treesObj, RE
         winsorizeRER = winsorizeRER, winsorizetrait = winsorizetrait)
         corsMatPvals[, i] = cors[[1]]$P
         corsMatEffSize[, i] = cors[[1]]$Rho
+        message("One top")
         for (j in 1:length(cors[[2]])) {
           Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
           Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
+          message("one bottom")
         }
       }
     }
