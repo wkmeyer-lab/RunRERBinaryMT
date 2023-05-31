@@ -10,32 +10,34 @@ CategoricalPermulationGetCor =  function (realCors, nullPhens, phenvals, treesOb
   }
   message("Generating null paths")
   nullPaths = lapply(nullPhens, function(x) {
+    if(report){message("one")}
     tr = tree
     tr$edge.length = c(x$tips, x$nodes)[tr$edge[,2]]
     tree2Paths(tr, treesObj, categorical = TRUE, useSpecies = names(phenvals))
-    if(report){message("one")}
   })
   message("Calculating correlation statistics")
   
   corsMatPvals = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
   corsMatEffSize = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
+  if(report){message("Matrixes")}
   Ppvals = lapply(1:length(realCors[[2]]), matrix, data = NA, nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
   names(Ppvals) = names(realCors[[2]])
   Peffsize = lapply(1:length(realCors[[2]]), matrix, data = NA, nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
   names(Peffsize) = names(realCors[[2]])
-  
+  if(report){message("pVals")}
   for (i in 1:length(nullPaths)) {
+    if(report){message(paste("start Cor", i)); corStartTime = Sys.time()}
     cors = getAllCor(RERmat, nullPaths[[i]], method = method, 
                      min.sp = min.sp, min.pos = min.pos, winsorizeRER = winsorizeRER, 
                      winsorizetrait = winsorizetrait, weighted = weighted)
+    if(report){corEndTime = Sys.time(); corDuration = corEndTime - corStartTime; message(paste("end Cor", i, "Duration", corDuration, attr(corDuration, "units")))}
     corsMatPvals[, i] = cors[[1]]$P
     corsMatEffSize[, i] = cors[[1]]$Rho
-    if(report){message("one top")}
     for (j in 1:length(cors[[2]])) {
       Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
       Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
-      if(report){message("one sub")}
     }
+    if(report){message(paste("compelted", i))}
   }
   output = list(corsMatEffSize, Peffsize, corsMatPvals, Ppvals)
   names(output) = c("corsMatEffSize", "Peffsize", "corsMatPvals", "Ppvals")
