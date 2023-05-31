@@ -3,21 +3,20 @@
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
-
+source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 # -- Usage:
 # This text describes the purpose of the script 
 
 # -- Command arguments list
-# r = filePrefix    This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>      This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# r = filePrefix                      This is a prefix used to organize and separate files by analysis run. Always required. 
+# v = <T or F>                        This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # m = mainTreeFilename.txt or .rds    This sets the location of the maintrees file
 # c = <T or F>                        This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. 
-
-
+# i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization.
+# t = targetFileInstance              This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
 #----------------
-args = c('r=CategoricalDiet', 'm=data/RemadeTreesAllZoonomiaSpecies.rds') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
-permulationsDataDemo = readRDS("Output/CategoricalDiet3Phen/CategoricalDiet3PhenPermulationsData1.rds")
-permulationsDataDemoToy = permulationsDataDemo[1:30]
+args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', "i=DEv") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -52,6 +51,9 @@ args = commandArgs(trailingOnly = TRUE)
 # Defaults
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
 metacombineValue = FALSE
+runInstanceValue = NULL
+targetFileInstance = NULL
+
 { # Bracket used for collapsing purposes
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -69,6 +71,19 @@ metacombineValue = FALSE
     }
   }else{
     message("Metacombination value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
+  }
+  #Run instance value
+  if(!is.na(cmdArgImport('i'))){
+    runInstanceValue = cmdArgImport('i')
+  }else{
+    paste("This script does not have a run instance value")
+  }
+  #target File Instance
+  if(!is.na(cmdArgImport('t'))){
+    targetFileInstance = cmdArgImport('t')
+  }else{
+    targetFileInstance = runInstanceValue
+    paste("No target file Instance specified, defaulting to this scripts run instance.")
   }
   
 }
@@ -101,17 +116,13 @@ correlationFileName = paste(outputFolderName, filePrefix, "CombinedCategoricalCo
 correlationsObject = readRDS(correlationFileName) 
 
 #Permulations Trees
-if(metacombineValue == F){
-  combinedDataFileName = paste(outputFolderName, filePrefix, "Combined", permulationPrefix,"PermulationsData", runInstanceValue, ".rds", sep="")
-}else{
-  combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", permulationPrefix, "PermulationsData", runInstanceValue, ".rds", sep="")
-}
-permulationsData = readRDS(combinedDataFileName)
+permulationsDataFileName = paste(outputFolderName, filePrefix, "PermulationsData", targetFileInstance, ".rds", sep= "")
+permulationsData = readRDS(permulationsDataFileName)
 
 
 # -- calculate p values -- 
 
-pValues = getPermPvalsCategoricalReport(correlationsObject, permulationsData$trees[1:30], phenotypeVector, mainTrees, RERObject)
+permCorrelations = CategoricalPermulationGetCor(correlationsObject, permulationsData$trees, phenotypeVector, mainTrees, RERObject, report=T)
 
 permulationOutputFilename = correlationFileName = paste(outputFolderName, filePrefix, "CategroicalPermulationPValuesFile.rds", sep= "")
 saveRDS(pValues, permulationOutputFilename)
