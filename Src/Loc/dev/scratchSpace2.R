@@ -9,3 +9,5 @@ permdtaaTrim[[3]] = permdtaaTrim[[3]][1:10]
 
 
 saveRDS(permdtaaTrim, "Output/CategoricalDiet3Phen/CategoricalDiet3PhenPermulationsDataDev.rds")
+rm(permdata)
+rm(permdtaaTrim)
