@@ -1,6 +1,6 @@
 CategoricalPermulationGetCor =  function (realCors, nullPhens, phenvals, treesObj, RERmat, method = "kw", 
           min.sp = 10, min.pos = 2, winsorizeRER = NULL, winsorizetrait = NULL, 
-          weighted = F, extantOnly = FALSE, report=F) 
+          weighted = F, extantOnly = FALSE) 
 {
   tree = treesObj$masterTree
   keep = intersect(names(phenvals), tree$tip.label)
@@ -13,7 +13,6 @@ CategoricalPermulationGetCor =  function (realCors, nullPhens, phenvals, treesOb
     tr = tree
     tr$edge.length = c(x$tips, x$nodes)[tr$edge[,2]]
     tree2Paths(tr, treesObj, categorical = TRUE, useSpecies = names(phenvals))
-    if(report){message("one")}
   })
   message("Calculating correlation statistics")
 
@@ -30,11 +29,9 @@ CategoricalPermulationGetCor =  function (realCors, nullPhens, phenvals, treesOb
                      winsorizetrait = winsorizetrait, weighted = weighted)
     corsMatPvals[, i] = cors[[1]]$P
     corsMatEffSize[, i] = cors[[1]]$Rho
-    if(report){message("one top")}
     for (j in 1:length(cors[[2]])) {
       Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
       Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
-      if(report){message("one sub")}
     }
   }
   output = list(corsMatEffSize, Peffsize, corsMatPvals, Ppvals)
