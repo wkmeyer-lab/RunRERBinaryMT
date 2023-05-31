@@ -142,7 +142,7 @@ if(!file.exists(paste(pathsFileName)) | forceUpdate){                           
   }else if(phenotypeStyle == "Continous"){                                      #If continous
     stop("This function hasn't been completed")
   } else if(phenotypeStyle == "Categorical"){                                   #if categorical
-      pathsObject = tree2Paths(phenotypeTree, mainTrees, useSpecies = speciesFilter) #do not binarize; the categorical data is already contained in the phenotype tree.
+      pathsObject = tree2Paths(phenotypeTree, mainTrees, useSpecies = speciesFilter, categorical = TRUE) #do not binarize; the categorical data is already contained in the phenotype tree.
   }
   saveRDS(pathsObject, file = pathsFileName)                                    #Save the paths
 }else{
@@ -159,6 +159,7 @@ if(phenotypeStyle == "Binary"){                                                 
   stop("This function hasn't been completed")                                   
 } else if(phenotypeStyle == "Categorical"){                                     #if categorical
   categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = 10, min.pos = 2) #Calculate with categorical, min 2 species per category 
+  #categoricalCorrelation[[2]] = categoricalCorrelation[[2]][]
   overalCategorical = categoricalCorrelation[[1]]                               #select the results relating to overall difference between all categories
   correlation = overalCategorical                                               # and classify it as the main correlation file
   
