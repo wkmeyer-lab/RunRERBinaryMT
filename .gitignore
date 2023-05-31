@@ -21,7 +21,6 @@ Output/Domestication/IgnoreGit
 *PathsFile*
 *RERFile*
 *graphs*
-scratchSpace.R
 Output/categoryTest
 Output/CategoricalSpeedTest
 Results/CategoricalPermulationsTimingTrees.rds
