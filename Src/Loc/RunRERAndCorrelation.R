@@ -1,10 +1,8 @@
 # -- Libraries 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
-#library(RERconverge)
+library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
-  
-library(RERconverge)
 
 # -- Usage:
 # This script can be used to run RER calculations and phenotype correlations with Binary, continuous, or categorical phenotypes.
@@ -19,7 +17,7 @@ library(RERconverge)
 # s = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the type of phenotype being supplied
 
 #----------------
-args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 's=g') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=g') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
