@@ -124,5 +124,5 @@ permulationsData = readRDS(permulationsDataFileName)
 
 permCorrelations = CategoricalPermulationGetCor(correlationsObject, permulationsData$trees, phenotypeVector, mainTrees, RERObject, report=T)
 
-permulationOutputFilename = correlationFileName = paste(outputFolderName, filePrefix, "CategroicalPermulationPValuesFile.rds", sep= "")
-saveRDS(pValues, permulationOutputFilename)
+permulationIntermediateFilename =  paste(outputFolderName, filePrefix, "CategoricalPermulationsIntermediates", runInstanceValue, ".rds", sep= "")
+saveRDS(permCorrelations, permulationIntermediateFilename)
