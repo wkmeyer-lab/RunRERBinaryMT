@@ -173,7 +173,7 @@ if(phenotypeStyle == "Binary"){                                                 
   
   pairwiseTableNames = names(pairwiseCategorical)                               #Prepare to repalce the number-number titles with phenotype-phenotype titles
   for(i in 1:length(categoryNames)){                                            #for each phenotype
-    gsub(i, names(categoryNames)[i], pairwiseTableNames)                        #replace the number with the phenotype name  
+    pairwiseTableNames= gsub(i, names(categoryNames)[i], pairwiseTableNames)                        #replace the number with the phenotype name  
   }
   names(pairwiseCategorical) = pairwiseTableNames                               #update the dataframe titles
   
