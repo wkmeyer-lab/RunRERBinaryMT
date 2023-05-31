@@ -107,12 +107,7 @@ if(!is.na(cmdArgImport('s'))){
   paste("Start value not specified, using 1")
 }
 
-#Import the instance number of the script 
-if(!is.na(cmdArgImport('i'))){
-  runInstanceValue = cmdArgImport('i')
-}else{
-  paste("This script does not have a run instance value")
-}
+
 
 #Import if this is being run to combine combinations 
 if(!is.na(cmdArgImport('c'))){
