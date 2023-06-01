@@ -15,7 +15,7 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 # i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization.
 # t = targetFileInstance              This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
 #----------------
-args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', "i=DEv") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', "i=Dev") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
