@@ -3,6 +3,7 @@
 library(RERconverge)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/combineCategoricalPermulationsIntermediates.R")
+library(data.table)
 
 # -- Usage:
 # Script is used to combine permulations into a single file. 
