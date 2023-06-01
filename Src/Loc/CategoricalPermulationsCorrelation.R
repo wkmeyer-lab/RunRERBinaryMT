@@ -4,6 +4,7 @@ library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
+library(data.table)
 # -- Usage:
 # This text describes the purpose of the script 
 
