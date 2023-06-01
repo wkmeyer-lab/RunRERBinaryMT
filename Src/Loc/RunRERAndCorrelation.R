@@ -3,6 +3,7 @@
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
+library(data.table)
 
 # -- Usage:
 # This script can be used to run RER calculations and phenotype correlations with Binary, continuous, or categorical phenotypes.
