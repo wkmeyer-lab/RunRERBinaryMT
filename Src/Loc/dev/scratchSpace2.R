@@ -11,6 +11,13 @@ permDataTrim2 = permdata
 permDataTrim2[[2]] = permDataTrim2[[2]][4:6]
 permDataTrim2[[3]] = permDataTrim2[[3]][4:6]
 
+permDataTrim3 = permdata
+permDataTrim3[[2]] = permDataTrim3[[2]][7:9]
+permDataTrim3[[3]] = permDataTrim3[[3]][7:9]
+
+permDataTrim4 = permdata
+permDataTrim4[[2]] = permDataTrim4[[2]][10:12]
+permDataTrim4[[3]] = permDataTrim4[[3]][10:12]
 
 saveRDS(permdtaaTrim, "Output/CategoricalDiet3Phen/CategoricalDiet3PhenPermulationsDataDev.rds")
 rm(permdata)
@@ -48,6 +55,17 @@ combineCategoricalPermulationIntermediates = function(intermediate1, intermediat
   }
   return(intermediatesCombined)
 }
+
+paste(basePermulationsFilename, 1, ".rds", sep= "")
+
+permCorrelationsNew3 = CategoricalPermulationGetCor(correlationsObject, permDataTrim3$trees, phenotypeVector, mainTrees, RERObject, report=T)
+permCorrelationsNew4 = CategoricalPermulationGetCor(correlationsObject, permDataTrim4$trees, phenotypeVector, mainTrees, RERObject, report=T)
+
+
+saveRDS(permCorrelationsNew, paste(basePermulationsFilename, 1, ".rds", sep= ""))
+saveRDS(permCorrelationsNew2, paste(basePermulationsFilename, 2, ".rds", sep= ""))
+saveRDS(permCorrelationsNew3, paste(basePermulationsFilename, 3, ".rds", sep= ""))
+saveRDS(permCorrelationsNew4, paste(basePermulationsFilename, 4, ".rds", sep= ""))
 
 
 combinedPerms = combineCategoricalPermulationIntermediates(intermediate1, intermediate2)
