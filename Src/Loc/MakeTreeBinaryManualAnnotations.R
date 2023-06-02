@@ -160,6 +160,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){
   saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
 }else{
   relevantSpecieslist = readRDS(speciesFilterFilename)
+  relevantSpeciesNames = relevantSpecieslist
   relevantSpecies = manualAnnots[ manualAnnots[["FaName"]] %in% relevantSpecieslist,]
 }
 # -- Setup foreground Species -- 
