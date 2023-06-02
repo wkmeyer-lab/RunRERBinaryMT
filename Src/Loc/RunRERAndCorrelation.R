@@ -18,7 +18,7 @@ library(data.table)
 # s = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the type of phenotype being supplied
 
 #----------------
-args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=g') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CVO', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=b') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
