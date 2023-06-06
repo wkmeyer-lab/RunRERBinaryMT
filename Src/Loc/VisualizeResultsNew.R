@@ -150,9 +150,9 @@ if(useGeneEnrichment){
     useGeneEnrichment = FALSE
     message("No enrichment files found. Deactivating enrichment analysis processing.")
   }else{
-    enrichmentRange = 1:length(enrichmentFileNames)
+    enrichmentRange = length(enrichmentFileNames)
     enrichmentResultSets = NULL
-    for(i in enrichmentRange){
+    for(i in 1:enrichmentRange){
       EnrichmentSetNumber = paste("enrichment", i, sep="")
       EnrichmentData = readRDS(paste(outputFolderName, enrichmentFileNames[i], sep=""))
       enrichmentResultSets[i] = EnrichmentData
@@ -210,7 +210,6 @@ makePvListPlot = function(data, column, length, titleVal){
              label = dataMain)+
     labs(title = titleVal)+
     theme(plot.title = element_text(size=18, hjust = 0.5, vjust=0))
-    ?element_text
 }
 
 topGenesPadj = makePvListPlot(correlData, "p.adj", 25, "Top genes non-permulated")
@@ -234,9 +233,13 @@ if(usePermulations){
 # - Gene Enrichment Plots - 
 if(useGeneEnrichment){
   enrichmentPlotSet = list()
-  makeGeListPlot = function(data, column, length, titleVal){
+  makeGeListPlot = function(data, column, length, titleVal, decreasing){
     setData = data[[1]]
-    setData = setData[order(setData[[column]]),]
+    if(decreasing){
+    setData = setData[order(abs(setData[[column]]), decreasing = T),]
+    }else{
+      setData = setData[order(abs(setData[[column]])),]
+    }
     dataHead = setData[1:length,]
     dataHead$gene.vals= strsplit(dataHead$gene.vals, ",")
     for(i in 1:length){
@@ -247,7 +250,7 @@ if(useGeneEnrichment){
     dataFront = dataHead[,c(1,4)]
     dataBack = dataHead[,c(2,3,5)]
     dataBack = format_table(dataBack, pretty_names = T, digits = "scientific3")
-    dataMain = data.frame(rownames(dataHead))
+    dataMain = data.frame(substring(rownames(dataHead), 1, 40))
     dataMain = append(dataMain, dataFront)
     names(dataMain)[1] = "Geneset"
     dataMain = append(dataMain, dataBack)
@@ -258,15 +261,15 @@ if(useGeneEnrichment){
                x=1,
                y=1,
                label = dataMain)+
-      labs(title = titleVal)+
+      labs(title = paste(names(data), titleVal))+
       theme(plot.title = element_text(size=18, hjust = 0.5, vjust=1))
   }
   for(i in 1:enrichmentRange){
     genesetPlotName = paste("genesetPlot", i, sep="")
     if(usePermulations){
-      genesetPlot = makeGeListPlot(enrichmentResultSets[i], "p.adj", 40, "Top pathways by permulation")
+      genesetPlot = makeGeListPlot(enrichmentResultSets[i], "stat", 40, "Top pathways by permulation", T)
     }else{
-      genesetPlot = makeGeListPlot(enrichmentResultSets[i], "p.adj", 40, "Top pathways by non-permulation")
+      genesetPlot = makeGeListPlot(enrichmentResultSets[i], "stat", 40, "Top pathways by non-permulation", T)
     }
     enrichmentPlotSet[i] = list(genesetPlot)
     assign(genesetPlotName, genesetPlot)
@@ -315,8 +318,11 @@ if(useBoth){
 # - plot enrichments - 
 enrichmentRows = 0 
 if(useGeneEnrichment){
-  enrichmentPlots = plot_grid(enrichmentPlotSet[[1:enrichmentRange]], ncol = 1, nrow = enrichmentRange)
-  enrichmentRows = enrichmentRange
+  enrichmentPlots = enrichmentPlotSet[1][1]
+  for(i in 2:enrichmentRange){
+    enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
+  }
+  enrichmentRows = length(enrichmentRange)
 }
 
 # ------ Output to pdf ------ 
@@ -327,16 +333,19 @@ pdfLength = pdfRows*pdfLengthPerRow
 outputPDFLocation = paste(outputFolderName, filePrefix, "VisualizeOutput.pdf", sep= "") # this could be improved to be more dynamic
 pdf(file = outputPDFLocation, width = 15, height = pdfLength)
 
+plot_grid(headlineGenes, histograms, signedGenes, ncol = 1, nrow = 3)
+
 if(useGeneEnrichment){
-  plot_grid(headlineGenes, histograms, signedGenes, enrichmentPlots, ncol = 1, nrow = 4)
-}else{
-  plot_grid(headlineGenes, histograms, signedGenes, ncol = 1, nrow = 3)
+  enrichmentPlots
 }
 dev.off()
 
-
+obj = paste("genesetPlot", i, sep="")
+eval(parse(text = obj))
 #improvements for this script: 
   #Update output title to be more dynamic
   #fix justification of figure titles
   #Change row length to match length of content (shorten the signed row) 
-
+pdf(file = outputPDFLocation, width = 12, height = 12)
+genesetPlot5
+dev.off()
