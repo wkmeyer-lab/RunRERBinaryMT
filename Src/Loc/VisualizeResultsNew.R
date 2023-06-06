@@ -271,7 +271,7 @@ if(useGeneEnrichment){
     }else{
       genesetPlot = makeGeListPlot(enrichmentResultSets[i], "stat", 40, "Top pathways by non-permulation", T)
     }
-    enrichmentPlotSet[i] = list(genesetPlot)
+    enrichmentPlotSet[[i]] = genesetPlot
     assign(genesetPlotName, genesetPlot)
     
   }
@@ -318,10 +318,11 @@ if(useBoth){
 # - plot enrichments - 
 enrichmentRows = 0 
 if(useGeneEnrichment){
-  enrichmentPlots = enrichmentPlotSet[1][1]
-  for(i in 2:enrichmentRange){
-    enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
-  }
+  #enrichmentPlots = enrichmentPlotSet[1][1]
+  #for(i in 2:enrichmentRange){
+  #  enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
+  #}
+  enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, ncol = 1, nrow = 2)
   enrichmentRows = length(enrichmentRange)
 }
 
@@ -340,12 +341,16 @@ if(useGeneEnrichment){
 }
 dev.off()
 
-obj = paste("genesetPlot", i, sep="")
-eval(parse(text = obj))
+if(useGeneEnrichment){
+  for(i in 1:2){
+    enrichmentPDFLocation = paste(outputFolderName, filePrefix, "Geneset", names(enrichmentResultSets[i]), ".pdf", sep= "")
+    ggsave(file = enrichmentPDFLocation, enrichmentPlotSet[[i]], width = 12, height = 10)
+  }
+}
+
+
 #improvements for this script: 
   #Update output title to be more dynamic
   #fix justification of figure titles
   #Change row length to match length of content (shorten the signed row) 
-pdf(file = outputPDFLocation, width = 12, height = 12)
-genesetPlot5
-dev.off()
+
