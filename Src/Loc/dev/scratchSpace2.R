@@ -117,3 +117,5 @@ for(i in 1:length(categoryNames)){                                            #f
   pairwiseTableNames= gsub(i, names(categoryNames)[i], pairwiseTableNames)                        #replace the number with the phenotype name  
 }
 names(correlationsObject[[2]]) = pairwiseTableNames                               #update the dataframe titles
+
+?install.packages()
