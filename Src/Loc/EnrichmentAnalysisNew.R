@@ -16,7 +16,7 @@ source("Src/Reu/cmdArgImport.R")
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
     #If using any file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #----------------
-args = c('r=CVHRemake', 'm=Data/OriginalAnalaysisgmtset.gmt', 'v=T', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CVHRemake', 'm=Data/tissue_specific.gmt', 'v=T', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -148,14 +148,14 @@ saveRDS(enrichmentResult, enrichmentFileName)                                   
     library(insight)
     enrichmentResult2 = enrichmentResult[[1]]
     makeGOTable = function(data, collumn){
-      ValueHead = head(data[order(collumn, decreasing = F),], n=40)
+      ValueHead = head(data[order(collumn, decreasing = T),], n=20)
       ValueHead$num.genes = as.character(ValueHead$num.genes)
       ValueHead$stat = round(ValueHead$stat, digits = 5)
       ValueHead$stat = as.character(ValueHead$stat)
       ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
       ValueHead
     }
-    enrichHead = makeGOTable(enrichmentResult2, abs(enrichmentResult2$p.adj))
+    enrichHead = makeGOTable(enrichmentResult2, abs(enrichmentResult2$stat))
     enrichHead
     textplot(enrichHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
     if(usePermulations){
