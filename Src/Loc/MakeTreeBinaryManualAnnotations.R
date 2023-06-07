@@ -26,6 +26,7 @@ mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia
 #local computer debug version:
 # mainTreesLocation = "data/RemadeTreesAllZoonomiaSpecies.rds"
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=Domestication", "a=DomesticationBinary", "t=bi", "c=terminal", "w=F", "v=T")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHRemake", "a=CarnFish_Herbs", "s=Laurasiatheria", "t=bi", "c=terminal", "w=F", "v=T")
 
 #Other defaults if not specified
 annotCollumn = "ERRORDEFAULT"
