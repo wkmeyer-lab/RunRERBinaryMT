@@ -34,7 +34,7 @@ ZoonomTreeNameToCommon = function(tree, plot = T, isForegroundTree = T, manualAn
     if(isForegroundTree){
       readableTree = inputTree
       readableTree$edge.length[readableTree$edge.length == 0] = 1
-      plotTreeHighlightBranches(readableTree, hlspecies = which(inputTree$edge.length == 1), hlcols = "red")
+      plotTreeHighlightBranches(readableTree, hlspecies = which(inputTree$edge.length == 1), hlcols = "blue")
     }else{
       plotTree(inputTree)
     }
