@@ -1,4 +1,4 @@
-plotRersNew = function (rermat = NULL, index = NULL, phenv = NULL, rers = NULL, method = "k", xlims = NULL, plot = 1, xextend = 0.2, sortrers = F) {
+plotRersNew = function (rermat = NULL, index = NULL, phenv = NULL, rers = NULL, method = "k", xlims = NULL, plot = 1, xextend = 0.2, sortrers = F, bgcols = "black", fgcols = "blue", hadjust = 1, vadjust = 0.5, sizeVal = 4.5) {
   {
     if (!is.null(phenv) && length(unique(phenv[!is.na(phenv)])) > 
         2) {
@@ -101,9 +101,9 @@ plotRersNew = function (rermat = NULL, index = NULL, phenv = NULL, rers = NULL, 
     ) + 
       scale_size_manual(values = c(1, 1, 1, 1)) + 
       geom_point(aes(size = mole)) + 
-      scale_color_manual(values = c("black", "blue")) + 
+      scale_color_manual(values = c(bgcols, fgcols)) + 
       scale_x_continuous(limits = ll) + 
-      geom_text(hjust = 1, size = 4.5) + 
+      geom_text(hjust = hadjust,  vjust = vadjust, size = sizeVal) + 
       ylab("Branches") + 
       xlab("relative rate") + 
       ggtitle(plottitle) + 
