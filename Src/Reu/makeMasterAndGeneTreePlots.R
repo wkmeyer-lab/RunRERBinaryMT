@@ -5,7 +5,7 @@
 #This script will by default convert names from zoonomia names to common names. This requires "Data/manualAnnotationsSheet.csv". This can be toggled off using convertNames = F=
 #This script can also make a plot of overall genome length vs gene length by toggling correlationPlot = T.
 
-makeMasterVsGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL, convertNames = T){
+makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL, convertNames = T){
   masterTree = mainTrees$masterTree
   geneTree = mainTrees$trees[[geneInQuestion]]
   
