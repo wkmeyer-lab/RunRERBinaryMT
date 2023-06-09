@@ -1,16 +1,23 @@
-makeMasterVsGeneTreePlots = function(mainTrees, RERObject, geneInQuestion, foregroundVector, colors = "blue", correlationPlot = F){
+makeMasterVsGeneTreePlots = function(mainTrees, geneInQuestion, RERObject, foregroundVector, colors = "blue", correlationPlot = F){
   source("Src/Reu/ZonomNameConvertVector.R")
   source("Src/Reu/ZoonomTreeNameToCommon.R")
   source("Src/Reu/GetForegroundEdges.R")
   foregroundVector = ZonomNameConvertVectorCommon(foregroundVector)
   RERObject[geneInQuestion,]
   
+  masterTree = mainTrees$masterTree
+  geneTree = mainTrees$trees[[geneInQuestion]]
+  
+  if(!is.null(RERObject)){
   namesToKeep = names(RERObject[geneInQuestion,][!is.na(RERObject[geneInQuestion,])])
   namesToKeep = namesToKeep[!is.na(namesToKeep)]
+  }else{
+    namesToKeep = geneTree$tip.label
+  }
   
   masterTree = mainTrees$masterTree
   prunedMaster = drop.tip(masterTree, which(!masterTree$tip.label %in% namesToKeep))
-  geneTree = mainTrees$trees[[geneInQuestion]]
+  
   prunedGeneTree = drop.tip(geneTree, which(!geneTree$tip.label %in% namesToKeep))
   
   commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot = F)
