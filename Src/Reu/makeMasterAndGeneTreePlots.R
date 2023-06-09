@@ -1,11 +1,11 @@
+#This script takes an input multiphylo and gene name, and outputs 1) a tree based on the master-tree branch lengths with the gene tree topology and 2) the gene tree. 
+  #If an RER object is provided, it will instead trim to only tips which have RER values. 
+  #If provided a foreground vector, it can color the foreground and background different colors. 
+    #This functionality is dependent on RER Converge
+#This script will by default convert names from zoonomia names to common names. This requires "Data/manualAnnotationsSheet.csv". This can be toggled off using convertNames = F=
+#This script can also make a plot of overall genome length vs gene length by toggling correlationPlot = T.
 
-
-makeMasterVsGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL){
-  source("Src/Reu/ZonomNameConvertVector.R")
-  source("Src/Reu/ZoonomTreeNameToCommon.R")
-  source("Src/Reu/GetForegroundEdges.R")
-  
-  
+makeMasterVsGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL, convertNames = T){
   masterTree = mainTrees$masterTree
   geneTree = mainTrees$trees[[geneInQuestion]]
   
@@ -19,13 +19,23 @@ makeMasterVsGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL
   prunedMaster = drop.tip(masterTree, which(!masterTree$tip.label %in% namesToKeep))
   prunedGeneTree = drop.tip(geneTree, which(!geneTree$tip.label %in% namesToKeep))
   
-  commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot = F)
-  commonGene = ZoonomTreeNameToCommon(prunedGeneTree, plot = F)
+  if(convertNames){
+    source("Src/Reu/ZonomNameConvertVector.R")
+    source("Src/Reu/ZoonomTreeNameToCommon.R")
+    commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot = F)
+    commonGene = ZoonomTreeNameToCommon(prunedGeneTree, plot = F)
+    plotMaster = commonMaster
+    plotGene = commonGene
+  }else{
+    plotMaster = prunedMaster
+    plotGene = prunedGeneTree
+  }
   
   if(!is.null(foregroundVector)){
-    foregroundVector = ZonomNameConvertVectorCommon(foregroundVector)
-    masterFGEdges = getForegroundEdges(commonMaster, foregroundVector)
-    geneFGEdges = getForegroundEdges(commonGene, foregroundVector)
+    source("Src/Reu/GetForegroundEdges.R")
+    if(convertNames){foregroundVector = ZonomNameConvertVectorCommon(foregroundVector)}
+    masterFGEdges = getForegroundEdges(plotMaster, foregroundVector)
+    geneFGEdges = getForegroundEdges(plotGene, foregroundVector)
   }else{
     masterFGEdges = ""
     geneFGEdges = ""
@@ -33,8 +43,8 @@ makeMasterVsGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL
   
   par(mfrow = c(1,2), mai = c(0.5, 0.1, 0.2, 0.1))
   
-  plotTreeHighlightBranches2(commonMaster, hlspecies = masterFGEdges, main = "Overall Genome Average", hlcols = fgcols, bgcol = bgcolor)
-  plotTreeHighlightBranches2(commonGene, main = paste("Gene:", geneInQuestion), hlspecies = geneFGEdges, hlcols = fgcols, bgcol = bgcolor)
+  plotTreeHighlightBranches2(plotMaster, hlspecies = masterFGEdges, main = "Overall Genome Average", hlcols = fgcols, bgcol = bgcolor)
+  plotTreeHighlightBranches2(plotGene, main = paste("Gene:", geneInQuestion), hlspecies = geneFGEdges, hlcols = fgcols, bgcol = bgcolor)
   
   if(correlationPlot & !is.null(foregroundVector)){
     if(all.equal(masterFGEdges, geneFGEdges)){ #Only run this code if the trees are the same shape
