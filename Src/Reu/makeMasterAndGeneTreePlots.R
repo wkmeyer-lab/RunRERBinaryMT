@@ -1,13 +1,10 @@
 
 
-
-
 makeMasterVsGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL){
   source("Src/Reu/ZonomNameConvertVector.R")
   source("Src/Reu/ZoonomTreeNameToCommon.R")
   source("Src/Reu/GetForegroundEdges.R")
-  foregroundVector = ZonomNameConvertVectorCommon(foregroundVector)
-  RERObject[geneInQuestion,]
+  
   
   masterTree = mainTrees$masterTree
   geneTree = mainTrees$trees[[geneInQuestion]]
@@ -19,22 +16,27 @@ makeMasterVsGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL
     namesToKeep = geneTree$tip.label
   }
   
-  masterTree = mainTrees$masterTree
   prunedMaster = drop.tip(masterTree, which(!masterTree$tip.label %in% namesToKeep))
-  
   prunedGeneTree = drop.tip(geneTree, which(!geneTree$tip.label %in% namesToKeep))
   
   commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot = F)
   commonGene = ZoonomTreeNameToCommon(prunedGeneTree, plot = F)
   
-  par(mfrow = c(1,2), mai = c(0.5, 0.1, 0.2, 0.1))
-  masterFGEdges = getForegroundEdges(commonMaster, foregroundVector)
-  plotTreeHighlightBranches2(commonMaster, hlspecies = masterFGEdges, main = "Overall Genome Average", hlcols = fgcols, bgcol = bgcolor)
+  if(!is.null(foregroundVector)){
+    foregroundVector = ZonomNameConvertVectorCommon(foregroundVector)
+    masterFGEdges = getForegroundEdges(commonMaster, foregroundVector)
+    geneFGEdges = getForegroundEdges(commonGene, foregroundVector)
+  }else{
+    masterFGEdges = ""
+    geneFGEdges = ""
+  }
   
-  geneFGEdges = getForegroundEdges(commonGene, foregroundVector)
+  par(mfrow = c(1,2), mai = c(0.5, 0.1, 0.2, 0.1))
+  
+  plotTreeHighlightBranches2(commonMaster, hlspecies = masterFGEdges, main = "Overall Genome Average", hlcols = fgcols, bgcol = bgcolor)
   plotTreeHighlightBranches2(commonGene, main = paste("Gene:", geneInQuestion), hlspecies = geneFGEdges, hlcols = fgcols, bgcol = bgcolor)
   
-  if(correlationPlot){
+  if(correlationPlot & !is.null(foregroundVector)){
     if(all.equal(masterFGEdges, geneFGEdges)){ #Only run this code if the trees are the same shape
       
       if(!is.null(rmlabels)){
