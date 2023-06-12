@@ -1,7 +1,7 @@
 #This script takes an input multiphylo and gene name, and outputs 1) a tree based on the master-tree branch lengths with the gene tree topology and 2) the gene tree. 
   #If an RER object is provided, it will instead trim to only tips which have RER values. 
   #If provided a foreground vector, it can color the foreground and background different colors. 
-    #This functionality is dependent on RER Converge
+    #This script is no longer dependent on RERConverge
 #This script will by default convert names from zoonomia names to common names. This requires "Data/manualAnnotationsSheet.csv". This can be toggled off using convertNames = F=
 #This script can also make a plot of overall genome length vs gene length by toggling correlationPlot = T.
 

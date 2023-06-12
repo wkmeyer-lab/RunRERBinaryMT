@@ -11,7 +11,6 @@
 #inputTree = readRDS(treeToConvertLocation)
 
 ZoonomTreeNameToCommon = function(tree, plot = T, isForegroundTree = T, manualAnnotLocation = "Data/manualAnnotationsSheet.csv", hlcol = "blue", bgcol = "black"){
-  library(RERconverge)
   
   manualAnnot = read.csv(manualAnnotLocation) 
   inputTree = tree
