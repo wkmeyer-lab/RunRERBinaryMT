@@ -5,7 +5,7 @@
 #This script will by default convert names from zoonomia names to common names. This requires "Data/manualAnnotationsSheet.csv". This can be toggled off using convertNames = F=
 #This script can also make a plot of overall genome length vs gene length by toggling correlationPlot = T.
 
-makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL, convertNames = T){
+makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL, convertNames = T, twoInOne = T){
   masterTree = mainTrees$masterTree
   geneTree = mainTrees$trees[[geneInQuestion]]
   
@@ -41,8 +41,9 @@ makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NUL
     geneFGEdges = ""
   }
   
-  par(mfrow = c(1,2), mai = c(0.5, 0.1, 0.2, 0.1))
-  
+  if(twoInOne){
+    par(mfrow = c(1,2), mai = c(0.5, 0.1, 0.2, 0.1))
+  }
   plotTreeHighlightBranches2(plotMaster, hlspecies = masterFGEdges, main = "Overall Genome Average", hlcols = fgcols, bgcol = bgcolor)
   plotTreeHighlightBranches2(plotGene, main = paste("Gene:", geneInQuestion), hlspecies = geneFGEdges, hlcols = fgcols, bgcol = bgcolor)
   
