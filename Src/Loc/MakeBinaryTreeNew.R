@@ -1,6 +1,7 @@
 # -- Libraries 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge)
+library(tools)
 source("Src/Reu/cmdArgImport.R")
 
 # -- Usage:
@@ -214,3 +215,4 @@ binaryTreePdfname = paste(outputFolderName, filePrefix, "BinaryForegroundTree.pd
 pdf(binaryTreePdfname, width=8, height = 14)
 plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(readTest$edge.length==1), hlcols="blue",)
 dev.off()
+
