@@ -11,7 +11,7 @@ rerViolinPlot = function(mainTrees, RERObject, phenotypeTree, foregroundSpecies,
   
   phenotypeVector = c(rep(NA, length(relativeRate)))
   phenotypeVector[relevantPath == 1] = foregroundName
-  phenotypeVector[relevantPath == 0] = BackgroundName
+  phenotypeVector[relevantPath == 0] = backgroundName
   
   #Adding Variables with different caps for better Aesthetics 
   Phenotype = phenotypeVector
