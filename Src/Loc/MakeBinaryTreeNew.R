@@ -25,7 +25,8 @@ source("Src/Reu/cmdArgImport.R")
 
 
 #----------------
-args = c("DebugArgsSet")
+args = c("r=echolocation", )
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=Echolocation", "p=Echolocation", "t=bi", "c=all", "w=F", "v=T")
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -61,7 +62,6 @@ args = commandArgs(trailingOnly = TRUE)
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
 annotationsLocation = "Data/manualAnnotationsSheet.csv"
 phenotypeColumn = "ERRORDEFAULT"
-filePrefix = "ERRORDEFAULT"
 transitionValue = "Default"
 cladeValue = "Default"
 weightValue = FALSE
