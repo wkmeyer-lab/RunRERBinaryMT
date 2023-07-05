@@ -27,7 +27,7 @@ source("Src/Reu/cmdArgImport.R")
 
 #----------------
 args = c("r=echolocation", )
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=Echolocation", "p=Echolocation", "t=bi", "c=all", "w=F", "v=T")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=Echolocation", "p=Echolocation", "t=bi", "c=all", "w=F", "v=T", "s=b")
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes

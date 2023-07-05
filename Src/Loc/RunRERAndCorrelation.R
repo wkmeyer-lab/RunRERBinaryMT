@@ -19,6 +19,8 @@ library(data.table)
 
 #----------------
 args = c('r=CVO', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=b') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c("r=Echolocation", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "s=b")
+
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
