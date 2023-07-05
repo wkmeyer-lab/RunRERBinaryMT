@@ -119,3 +119,18 @@ for(i in 1:length(categoryNames)){                                            #f
 names(correlationsObject[[2]]) = pairwiseTableNames                               #update the dataframe titles
 
 ?install.packages()
+
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+source("Src/Reu/ZonomNameConvertVector.R")
+masterTree = mainTrees$masterTree
+
+pdf(height = 25)
+ZoonomTreeNameToCommon(masterTree)
+
+dev.off()
+
+mainTips = masterTree$tip.label
+commonTips = ZonomNameConvertVectorCommon(mainTips)
+scietificTips = ZonomNameConvertVectorCommon(mainTips, common = F)
+bothTips = append(scietificTips, commonTips)
+write.csv(bothTips, file="Results/SpeciesNames.csv")
