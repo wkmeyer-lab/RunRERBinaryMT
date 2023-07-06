@@ -16,7 +16,7 @@ source("Src/Reu/cmdArgImport.R")
 # f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
     #If using any file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #----------------
-args = c('r=CVHRemake', 'm=Data/tissue_specific.gmt', 'v=T', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=Echolocation', 'm=Data/tissue_specific.gmt', 'v=T', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)

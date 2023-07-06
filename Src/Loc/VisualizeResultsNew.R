@@ -24,7 +24,7 @@ source("Src/Reu/cmdArgImport.R")
 
 
 #----------------
-args = c('r=CVHRemake', 'p=B') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=Echolocation', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -212,22 +212,22 @@ makePvListPlot = function(data, column, length, titleVal){
     theme(plot.title = element_text(size=18, hjust = 0.5, vjust=0))
 }
 
-topGenesPadj = makePvListPlot(correlData, "p.adj", 25, "Top genes non-permulated")
-topPositiveGenesPadj = makePvListPlot(correlDataPositive, "p.adj", 10,"Top Positive genes non-permulated")
-topNegativeGenesPadj = makePvListPlot(correlDataNegative, "p.adj", 10, "Top Negative genes non-permulated")
+topGenesPadj = makePvListPlot(correlData, "p.adj", 25, "Top genes by P-value non-permulated")
+topPositiveGenesPadj = makePvListPlot(correlDataPositive, "p.adj", 10,"Top Positive genes by P-value non-permulated")
+topNegativeGenesPadj = makePvListPlot(correlDataNegative, "p.adj", 10, "Top Negative genes by P-value non-permulated")
 
-topGenesNPQ = makePvListPlot(correlData, "qValueNoperm", 25, "Top genes Q-Value non-permulated")
-topPositiveGenesNPQ = makePvListPlot(correlDataPositive,  "qValueNoperm",10, "Top Positive genes Q-Value non-permulated")
-topNegativeGenesNPQ = makePvListPlot(correlDataNegative,  "qValueNoperm", 10,"Top Negative genes Q-Value non-permulated")
+topGenesNPQ = makePvListPlot(correlData, "qValueNoperm", 25, "Top genes by Q-Value non-permulated")
+topPositiveGenesNPQ = makePvListPlot(correlDataPositive,  "qValueNoperm",10, "Top Positive genes by Q-Value non-permulated")
+topNegativeGenesNPQ = makePvListPlot(correlDataNegative,  "qValueNoperm", 10,"Top Negative genes by Q-Value non-permulated")
 
 if(usePermulations){
-  topGenesPerm = makePvListPlot(correlData, "permPValue", 25, "Top genes Permulated")
-  topPositiveGenesPerm = makePvListPlot(correlDataPositive,  "permPValue", 10,"Top Positive genes Permulated")
-  topNegativeGenesPerm = makePvListPlot(correlDataNegative,  "permPValue", 10,"Top Negative genes Permulated")
+  topGenesPerm = makePvListPlot(correlData, "permPValue", 25, "Top genes by P-value Permulated")
+  topPositiveGenesPerm = makePvListPlot(correlDataPositive,  "permPValue", 10,"Top Positive genes by P-value Permulated")
+  topNegativeGenesPerm = makePvListPlot(correlDataNegative,  "permPValue", 10,"Top Negative genes by P-value Permulated")
   
-  topGenesPermQ = makePvListPlot(correlData, "qValueNoperm", 25, "Top genes Q-Value Permulated")
-  topPositiveGenesPermQ = makePvListPlot(correlDataPositive,  "qValueNoperm",10, "Top Positive genes Q-Value Permulated")
-  topNegativeGenesPermQ = makePvListPlot(correlDataNegative,  "qValueNoperm",10, "Top Negative genes Q-Value Permulated")
+  topGenesPermQ = makePvListPlot(correlData, "qValueNoperm", 25, "Top genes by Q-Value Permulated")
+  topPositiveGenesPermQ = makePvListPlot(correlDataPositive,  "qValueNoperm",10, "Top Positive genes by Q-Value Permulated")
+  topNegativeGenesPermQ = makePvListPlot(correlDataNegative,  "qValueNoperm",10, "Top Negative genes by Q-Value Permulated")
 }
 
 # - Gene Enrichment Plots - 
@@ -322,7 +322,7 @@ if(useGeneEnrichment){
   #for(i in 2:enrichmentRange){
   #  enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
   #}
-  enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, ncol = 1, nrow = 2)
+  enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, ncol = 1, nrow = 3)
   enrichmentRows = length(enrichmentRange)
 }
 
