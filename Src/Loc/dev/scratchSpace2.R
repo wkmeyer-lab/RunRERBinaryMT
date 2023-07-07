@@ -164,3 +164,8 @@ dev.off()
 
 source("Src/Reu/RERConvergeFunctions.R")
 
+realCors = correlationsObject
+intermediateList = permCorrelations
+gene = 1
+testOut = list(res = realCors, pvals = list(corsMatPvals, Ppvals), effsize = list(corsMatEffSize, Peffsize))
+testOutTrim = testOut$res
