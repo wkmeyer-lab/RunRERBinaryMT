@@ -239,7 +239,7 @@ if(calulateValue){
   }
   permulationsPValues = CategoricalCalculatePermulationPValues(correlationsObject, combinedPermulationsData)
   permulationsPValuesFilename = paste(outputFolderName, filePrefix, "PermulationsPValueCorrelations.rds", sep= "")
-  saveRDS(permulationsPValues, permulationsPValuesFilename)
+  saveRDS(permulationsPValues$res, permulationsPValuesFilename)
   
 }
 
