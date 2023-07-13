@@ -119,3 +119,53 @@ for(i in 1:length(categoryNames)){                                            #f
 names(correlationsObject[[2]]) = pairwiseTableNames                               #update the dataframe titles
 
 ?install.packages()
+
+
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+source("Src/Reu/ZonomNameConvertVector.R")
+masterTree = mainTrees$masterTree
+
+pdf(height = 25)
+ZoonomTreeNameToCommon(masterTree)
+
+dev.off()
+
+mainTips = masterTree$tip.label
+commonTips = ZonomNameConvertVectorCommon(mainTips)
+scietificTips = ZonomNameConvertVectorCommon(mainTips, common = F)
+bothTips = append(scietificTips, commonTips)
+write.csv(bothTips, file="Results/SpeciesNames.csv")
+
+
+CVHRERs = readRDS("Output/CVHRemake/CVHRemakeRERFile.rds")
+CVHCorrelation = readRDS("Output/CVHRemake/CVHRemakeCorrelationFile.rds")
+CVHCorrelation[order(abs(CVHCorrelation$Rho), decreasing = F),]
+source("Src/Reu/RERViolinPlot.R")
+mainTrees = readRDS("Data/RemadeTreesAllZoonomiaSpecies.rds")
+phenotypeTree = readRDS("Output/CVHRemake/CVHRemakeBinaryForegroundTRee.rds")
+fgSpecies = readRDS("Output/CVHRemake/CVHRemakeBinaryTreeForegroundSpecies.rds")
+rerViolinPlot()
+quickViolin = function(gene){
+  rerViolinPlot(mainTrees = mainTrees, CVHRERs, phenotypeTree = phenotypeTree, foregroundSpecies = foregroundSpecies, geneOfInterest = gene, foregroundName = "Carnivore", backgroundName = "Herbivore", backgroundColor = "darkgreen")
+}
+quickViolin("SLC47A1")
+quickViolin("SPEGNB")
+quickViolin("SPECC1L")
+quickViolin("CRB1")
+
+
+quickViolin("PROM2")
+
+
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+pdf(height = 25)
+ZoonomTreeNameToCommon(binaryForegroundTreeOutput)
+dev.off()
+
+source("Src/Reu/RERConvergeFunctions.R")
+
+realCors = correlationsObject
+intermediateList = permCorrelations
+gene = 1
+testOut = list(res = realCors, pvals = list(corsMatPvals, Ppvals), effsize = list(corsMatEffSize, Peffsize))
+testOutTrim = testOut$res

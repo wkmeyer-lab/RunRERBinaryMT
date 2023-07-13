@@ -1,0 +1,441 @@
+,x
+1,Ochotona princeps
+2,Lepus americanus
+3,Oryctolagus cuniculus
+4,Castor canadensis
+5,Perognathus longimembris
+6,Dipodomys stephensi
+7,Dipodomys ordii
+8,Zapus hudsonius
+9,Allactaga bullata
+10,Jaculus jaculus
+11,Nannospalax galili
+12,Cricetomys gambianus
+13,Rattus norvegicus
+14,Mus pahari
+15,Mus caroli
+16,Mus musculus
+17,Mus spretus
+18,Acomys cahirinus
+19,Psammomys obesus
+20,Meriones unguiculatus
+21,Cricetulus griseus
+22,Mesocricetus auratus
+23,Ondatra zibethicus
+24,Microtus ochrogaster
+25,Ellobius talpinus
+26,Ellobius lutescens
+27,Sigmodon hispidus
+28,Peromyscus maniculatus
+29,Onychomys torridus
+30,Ctenodactylus gundi
+31,Hystrix cristata
+32,Thryonomys swinderianus
+33,Petromus typicus
+34,Fukomys damarensis
+35,Heterocephalus glaber
+36,Dinomys branickii
+37,Chinchilla lanigera
+38,Myocastor coypus
+39,Ctenomys sociabilis
+40,Octodon degus
+41,Dasyprocta punctata
+42,Cavia aperea
+43,Cavia tschudii
+44,Cavia porcellus
+45,Hydrochoerus hydrochaeris
+46,Dolichotis patagonum
+47,Aplodontia rufa
+48,Xerus inauris
+49,Marmota marmota
+50,Ictidomys tridecemlineatus
+51,Spermophilus dauricus
+52,Glis glis
+53,Graphiurus murinus
+54,Muscardinus avellanarius
+55,Tupaia chinensis
+56,Tupaia tana
+57,Callicebus donacophilus
+58,Pithecia pithecia
+59,Alouatta palliata
+60,Ateles geoffroyi
+61,Saimiri boliviensis
+62,Cebus capucinus
+63,Cebus albifrons
+64,Aotus nancymaae
+65,Callithrix jacchus
+66,Saguinus imperator
+67,Nomascus leucogenys
+68,Pongo abelii
+69,Gorilla gorilla
+70,Homo sapiens
+71,Pan paniscus
+72,Pan troglodytes
+73,Colobus angolensis
+74,Piliocolobus tephrosceles
+75,Semnopithecus entellus
+76,Rhinopithecus roxellana
+77,Rhinopithecus bieti
+78,Pygathrix nemaeus
+79,Nasalis larvatus
+80,Macaca nemestrina
+81,Macaca fascicularis
+82,Macaca mulatta
+83,Papio anubis
+84,Cercocebus atys
+85,Mandrillus leucophaeus
+86,Cercopithecus neglectus
+87,Chlorocebus sabaeus
+88,Erythrocebus patas
+89,Nycticebus coucang
+90,Otolemur garnettii
+91,Daubentonia madagascariensis
+92,Lemur catta
+93,Eulemur flavifrons
+94,Eulemur fulvus
+95,Cheirogaleus medius
+96,Microcebus murinus
+97,Mirza coquereli
+98,Propithecus coquereli
+99,Indri indri
+100,Uropsilus gracilis
+101,Scalopus aquaticus
+102,Condylura cristata
+103,Solenodon paradoxus
+104,Erinaceus europaeus
+105,Sorex araneus
+106,Macroglossus sobrinus
+107,Pteropus alecto
+108,Pteropus vampyrus
+109,Rousettus aegyptiacus
+110,Eidolon helvum
+111,Megaderma lyra
+112,Craseonycteris thonglongyai
+113,Rhinolophus sinicus
+114,Hipposideros galeritus
+115,Hipposideros armiger
+116,Tadarida brasiliensis
+117,Miniopterus schreibersii
+118,Miniopterus natalensis
+119,Lasiurus borealis
+120,Eptesicus fuscus
+121,Pipistrellus pipistrellus
+122,Murina feae
+123,Myotis davidii
+124,Myotis myotis
+125,Myotis brandtii
+126,Myotis lucifugus
+127,Noctilio leporinus
+128,Micronycteris hirsuta
+129,Desmodus rotundus
+130,Tonatia saurophila
+131,Anoura caudifer
+132,Artibeus jamaicensis
+133,Carollia perspicillata
+134,Pteronotus parnellii
+135,Mormoops blainvillei
+136,Vicugna pacos
+137,Camelus dromedarius
+138,Camelus ferus
+139,Camelus bactrianus
+140,Catagonus wagneri
+141,Sus scrofa
+142,Eubalaena japonica
+143,Eschrichtius robustus
+144,Balaenoptera bonaerensis
+145,Balaenoptera acutorostrata
+146,Kogia breviceps
+147,Platanista gangetica
+148,Ziphius cavirostris
+149,Mesoplodon bidens
+150,Orcinus orca
+151,Tursiops truncatus
+152,Phocoena phocoena
+153,Neophocaena asiaeorientalis
+154,Monodon monoceros
+155,Delphinapterus leucas
+156,Inia geoffrensis
+157,Lipotes vexillifer
+158,Tragulus javanicus
+159,Antilocapra americana
+160,Giraffa tippelskirchi
+161,Okapia johnstoni
+162,Elaphurus davidianus
+163,Rangifer tarandus
+164,Odocoileus virginianus
+165,Moschus moschiferus
+166,Saiga tatarica
+167,Beatragus hunteri
+168,Pantholops hodgsonii
+169,Hemitragus hylocrius
+170,Ovis canadensis
+171,Ovis aries
+172,Ammotragus lervia
+173,Capra hircus
+174,Capra aegagrus
+175,Bubalus bubalis
+176,Bos taurus
+177,Bos indicus
+178,Bison bison
+179,Bos mutus
+180,Equus asinus
+181,Equus przewalskii
+182,Equus caballus
+183,Dicerorhinus sumatrensis
+184,Diceros bicornis
+185,Ceratotherium simum cottoni
+186,Ceratotherium simum
+187,Tapirus terrestris
+188,Tapirus indicus
+189,Panthera tigris
+190,Panthera pardus
+191,Panthera onca
+192,Felis nigripes
+193,Felis catus
+194,Puma concolor
+195,Acinonyx jubatus
+196,Paradoxurus hermaphroditus
+197,Hyaena hyaena
+198,Cryptoprocta ferox
+199,Suricata suricatta
+200,Helogale parvula
+201,Mungos mungo
+202,Vulpes lagopus
+203,Lycaon pictus
+204,Canis lupus familiaris
+205,Ailuropoda melanoleuca
+206,Ursus maritimus
+207,Neomonachus schauinslandi
+208,Leptonychotes weddellii
+209,Mirounga angustirostris
+210,Odobenus rosmarus
+211,Zalophus californianus
+212,Spilogale gracilis
+213,Ailurus fulgens
+214,Mellivora capensis
+215,Mustela putorius
+216,Pteronura brasiliensis
+217,Enhydra lutris
+218,Manis pentadactyla
+219,Manis javanica
+---,
+---,
+220,Pika
+221,Hare
+222,Rabbit
+223,Beaver
+224,Silky Pocket Mouse
+225,Stephens Kangaroo Rat
+226,Ord Kangaroo Rat
+227,Jumping Mouse
+228,Gobi jerboa
+229,Lesser Egyptian jerboa
+230,Mediterranean Blind Mole-rats
+231,African Giant Pouched Rats
+232,Rat
+233,Gairdner's shrewmouse
+234,Ryukyu mouse
+235,Common mouse
+236,Algerian mouse
+237,Spiny mouse
+238,Fat sand rat
+239,Jird
+240,Chinese hamster
+241,Golden hamster
+242,Muskrat
+243,Prairie vole
+244,Northern Mole Vole
+245,Transcaucasian mole vole
+246,Cotton Rat
+247,Deer mouse
+248,Southern grasshopper mouse
+249,Gundi
+250,Porcupine
+251,Cane rat
+252,Dassie rat
+253,Damara mole rat
+254,Naked mole-rat
+255,Pacarana
+256,Chinchilla
+257,Nutria
+258,Tuco tuco
+259,Brush-tailed rat
+260,Agouti
+261,Brazilian guinea pig
+262,Montane guinea pig
+263,Domestic guinea pig
+264,Capybara
+265,Patagonian cavy
+266,Sewellel 
+267,African Ground Squirrel
+268,Marmot
+269,Ground Squirrel 
+270,Mongolian Ground Squirrel 
+271,Fat dormouse
+272,African dormouse
+273,Common dormouse
+274,Chinese tree shrew
+275,Sumatran tree shrew
+276,Titi Monkey
+277,Saki
+278,Howler Monkey
+279,Spider Monkeys
+280,Squirrel monkey
+281,Ring-tailed Monkey
+282,Ring-tailed Monkey
+283,Night Monkey
+284,Marmoset
+285,Long-tusked Tamarins
+286,Gibbon
+287,Orangutan
+288,Gorilla
+289,Human
+290,Bonobo
+291,Chimp
+292,Black-and-white Colobus Monkey
+293,Red Colobus Monkey
+294,Hanuman Langur
+295,Snub-nosed Langur 
+296,Snub-nosed Langur 
+297,Douc Langur
+298,Proboscis Monkey
+299,Southern Pig-tailed Macaca
+300,Crab-eating macaque
+301,Rhesus Macaca
+302,Olive Baboon
+303,Sooty Mangabey
+304,Drill
+305,Guenon
+306,Green monkey
+307,Red Guenon
+308,Slow Loris
+309,Bushbaby
+310,Aye-ayes
+311,Ring-tailed Lemur
+312,Lemur
+313,Lemur
+314,Dwarf Lemur
+315,Mouse Lemur
+316,Coquerel's Dwarf Lemur
+317,Sifakas
+318,Indri
+319,Asiatic Shrew Mole (Sichuan and Yunnan)
+320,Eastern American Mole
+321,Star-nosed mole
+322,Solenodons
+323,Hedgehog
+324,Shrew
+325,Long-tongued Fruit Bats
+326,Black flying-fox
+327,Megabat
+328,Rousette Fruit Bats
+329,Straw-colored Fruit Bats
+330,Asian False Vampire Bats
+331,Kitti's Hog-nosed Bat
+332,Horseshoe Bats
+333,Old World Leaf-nosed Bats
+334,Old World Leaf-nosed Bats
+335,Free-tailed Bats
+336,Long-winged bats
+337,Long-winged bats
+338,Hairy-taled Bats
+339,Big brown bat
+340,Pipistrelles
+341,Tube-nosed Insectivorous Bats
+342,David's myotis bat
+343,Greater mouse-eared bat
+344,Brandt's bat
+345,Microbat
+346,Fisherman Bats
+347,Little Big-eared Bats
+348,Common Vampire Bat
+349,Round-eared Bats
+350,Geoffroy's Long-nosed Bats
+351,Neotropical Fruit Bats
+352,Short-tailed Leaf-nosed Bats
+353,Mustache Bat
+354,Leaf-chinned Bats
+355,Alpaca
+356,One-hump Camel
+357,Ferus Camel
+358,Bactrian Camel
+359,Chacoan Peccary
+360,Pig
+361,North Atlantic Right Whale
+362,Gray Whale
+363,Antartic Minke Whale
+364,Minke Whale
+365,Dwarf Sperm Whales
+366,Ganges Dolphin
+367,Goose-beaked Whale
+368,Beaked Whale
+369,Killer whale
+370,Bottle-nose Dolphin
+371,Common Porpoise
+372,Finless Porpoise
+373,Narwal
+374,Beluga Whale
+375,Amazon Dolphin
+376,Chinese River Dolphin
+377,Asiatic Mouse Deer
+378,Pronghorn
+379,Giraffe
+380,Okapia
+381,Pere David's Deer
+382,Reindeer
+383,White-tailed Deer
+384,Musk Deer
+385,Saiga
+386,Sassabie
+387,Tibetan antelope
+388,Tahr
+389,Bighorn sheep
+390,Domestic sheep
+391,Aoudad
+392,Domestic goat
+393,Wild goat
+394,Asian Water Buffalo
+395,Cow
+396,Zebu
+397,American Bison
+398,Yak
+399,Wild Donkey
+400,Przewalskii Horse
+401,Horse
+402,Sumatran Rhinoceros
+403,Black Rhinoceros
+404,White rhinoceros (Chad)
+405,White rhinoceros
+406,South American Tapir
+407,Malayan Tapir
+408,Tiger
+409,Leopard
+410,Jaguar
+411,Black-footed cat
+412,Cat
+413,Puma
+414,Cheetah
+415,Palm Civet
+416,Striped hyaena
+417,Fossa
+418,Slender-tailed Meerkat
+419,Dwarf Mongoose
+420,Banded mongoose
+421,Arctic Fox
+422,African Hunting Dog 
+423,Dog
+424,Panda
+425,Polar Bear
+426,Hawaiian Monk Seal
+427,Weddell seal
+428,Elephant Seal
+429,Pacific walrus
+430,California Sea Lion
+431,Spotted Skunk
+432,Red Panda 
+433,Honey Badger
+434,Ferret
+435,Giant Otter
+436,Sea Otter
+437,Chinese pangolin
+438,Sunda pangolin

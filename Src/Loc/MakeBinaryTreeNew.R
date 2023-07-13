@@ -1,6 +1,7 @@
 # -- Libraries 
 .libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
 library(RERconverge)
+library(tools)
 source("Src/Reu/cmdArgImport.R")
 
 # -- Usage:
@@ -25,7 +26,8 @@ source("Src/Reu/cmdArgImport.R")
 
 
 #----------------
-args = c("DebugArgsSet")
+args = c("r=echolocation", )
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=Echolocation", "p=Echolocation", "t=bi", "c=all", "w=F", "v=T", "s=b")
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -61,7 +63,6 @@ args = commandArgs(trailingOnly = TRUE)
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
 annotationsLocation = "Data/manualAnnotationsSheet.csv"
 phenotypeColumn = "ERRORDEFAULT"
-filePrefix = "ERRORDEFAULT"
 transitionValue = "Default"
 cladeValue = "Default"
 weightValue = FALSE
@@ -214,3 +215,4 @@ binaryTreePdfname = paste(outputFolderName, filePrefix, "BinaryForegroundTree.pd
 pdf(binaryTreePdfname, width=8, height = 14)
 plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(readTest$edge.length==1), hlcols="blue",)
 dev.off()
+

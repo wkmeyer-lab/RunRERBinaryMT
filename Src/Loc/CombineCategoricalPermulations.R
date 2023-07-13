@@ -17,6 +17,7 @@ library(data.table)
 # t = <PermulationPrefix>             This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
 # c = <T or F>                        This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # p = <T or F>                        This value determines whether or not to calculate the pValues.
+# o = <T or F>                        This value is used to run only the p value calculation, and not the combination. 
 
 #----------------
 args = (c('r=CategoricalDiet3Phen', "n=2", "t=Dev"))
@@ -58,6 +59,7 @@ startValue = 1
 permulationPrefix = NULL
 metacombineValue = FALSE
 calulateValue = TRUE
+onlyCalulateValue = FALSE
 
 { # Bracket used for collapsing purposes
   
@@ -109,10 +111,22 @@ calulateValue = TRUE
     calulateValue = as.logical(calulateValue)
     if(is.na(calulateValue)){
       calulateValue = FALSE
-      message("p-value calulation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+      message("p-value calculation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
     }
   }else{
-    message("p-value calulation value not specified, using TRUE. If you aren't parrallelizing, don't worry about this.")
+    message("p-value calculation value not specified, using TRUE. If you aren't parrallelizing, don't worry about this.")
+  }
+  
+  #Only Calculate P Value
+  if(!is.na(cmdArgImport('o'))){
+    onlyCalulateValue = cmdArgImport('o')
+    onlyCalulateValue = as.logical(calulateValue)
+    if(is.na(calulateValue)){
+      onlyCalulateValue = FALSE
+      message("Only p-value calculation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+    }
+  }else{
+    message("Only p-value calculation value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
   }
   
 }
@@ -128,83 +142,83 @@ if(metacombineValue == F){
   basePermulationsFilename = paste(outputFolderName, filePrefix, "Combined", permulationPrefix, "CategoricalPermulationsIntermediates",  sep="")
 }
 
-
-# -- Do initial combination (before loop) --
-combinationSectionStart = Sys.time()
-# - First permulation file
-firstPermLoadStart = Sys.time()
-firstPermulationsFilename = paste(basePermulationsFilename, startValue, ".rds", sep="")
-firstPermulationsData = readRDS(firstPermulationsFilename)
-
-firstPermLoadEnd = Sys.time()
-firstPermLoadTime = firstPermLoadEnd - firstPermLoadStart
-message("First permulation load time: ", firstPermLoadTime, attr(firstPermLoadTime, "units"))
-
-
-# - Second permulation file - 
-secondPermLoadStart = Sys.time()
-secondPermulationsFilename = paste(basePermulationsFilename, (startValue+1), ".rds", sep="")
-secondPermulationsData = readRDS(secondPermulationsFilename)
-
-secondPermLoadEnd = Sys.time()
-secondPermLoadTime = secondPermLoadEnd - secondPermLoadStart
-message("Second permulation load time: ", secondPermLoadTime, attr(secondPermLoadTime, "units"))
-
-# - Initial combination (makes the CombinedPermulationsData object) - 
-
-firstCombinationStart = Sys.time()
-combinedPermulationsData = combineCategoricalPermulationIntermediates(firstPermulationsData, secondPermulationsData)
-firstCombinationEnd = Sys.time()
-firstCombinationTime = firstCombinationEnd - firstCombinationStart
-message("Initial permulation combination time: ", firstCombinationTime, attr(firstCombinationTime, "units"))
-
-# -- Do all subsequent combinations (loop) --
-
-if((startValue+2) < (startValue+permulationNumberValue-1)){                     #Sanity check that there are additional combinations to loop through
-  for(i in (startValue+2):(startValue+permulationNumberValue-1)){
-    message(i)
-    iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
-    
-    if(file.exists(iteratingPermulationsFilename)){                             #This check allows it to function even if the start+numberOfPermulations is larger than the actual number of permulation files, or a file is missing.
-      iteratingPermulationStart = Sys.time()
+if(!onlyCalulateValue){
+  # -- Do initial combination (before loop) --
+  combinationSectionStart = Sys.time()
+  # - First permulation file
+  firstPermLoadStart = Sys.time()
+  firstPermulationsFilename = paste(basePermulationsFilename, startValue, ".rds", sep="")
+  firstPermulationsData = readRDS(firstPermulationsFilename)
+  
+  firstPermLoadEnd = Sys.time()
+  firstPermLoadTime = firstPermLoadEnd - firstPermLoadStart
+  message("First permulation load time: ", firstPermLoadTime, attr(firstPermLoadTime, "units"))
+  
+  
+  # - Second permulation file - 
+  secondPermLoadStart = Sys.time()
+  secondPermulationsFilename = paste(basePermulationsFilename, (startValue+1), ".rds", sep="")
+  secondPermulationsData = readRDS(secondPermulationsFilename)
+  
+  secondPermLoadEnd = Sys.time()
+  secondPermLoadTime = secondPermLoadEnd - secondPermLoadStart
+  message("Second permulation load time: ", secondPermLoadTime, attr(secondPermLoadTime, "units"))
+  
+  # - Initial combination (makes the CombinedPermulationsData object) - 
+  
+  firstCombinationStart = Sys.time()
+  combinedPermulationsData = combineCategoricalPermulationIntermediates(firstPermulationsData, secondPermulationsData)
+  firstCombinationEnd = Sys.time()
+  firstCombinationTime = firstCombinationEnd - firstCombinationStart
+  message("Initial permulation combination time: ", firstCombinationTime, attr(firstCombinationTime, "units"))
+  
+  # -- Do all subsequent combinations (loop) --
+  
+  if((startValue+2) < (startValue+permulationNumberValue-1)){                     #Sanity check that there are additional combinations to loop through
+    for(i in (startValue+2):(startValue+permulationNumberValue-1)){
+      message(i)
+      iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
       
-      iteratingPermulationsData = readRDS(iteratingPermulationsFilename)
-      iteratingPermulationLoadEnd= Sys.time()
-      iteratingPermulationLoadTime = iteratingPermulationLoadEnd - iteratingPermulationStart
-      message("Iterating permulation load time: ", iteratingPermulationLoadTime, attr(iteratingPermulationLoadTime, "units"))
-      
-      combinedPermulationsData = combineCategoricalPermulationIntermediates(combinedPermulationsData, iteratingPermulationsData)
-      iteratingPermulationCombineEnd = Sys.time()
-      iteratingPermulationCombineTime = iteratingPermulationCombineEnd - iteratingPermulationLoadEnd
-      message("Iterating permulation combination time: ", iteratingPermulationCombineTime, attr(iteratingPermulationCombineTime, "units"))
-      
-      rm(iteratingPermulationsData)
-      iteratingPermulationRemoveEnd = Sys.time()
-      iteratingPermulationRemoveTime = iteratingPermulationRemoveEnd - iteratingPermulationCombineEnd
-      message("Iterating permulation removal time: ", iteratingPermulationRemoveTime, attr(iteratingPermulationRemoveTime, "units"))
-      
-      message("Added file ", i, " to combination.")
-    }else{
-      message("Permulation file number ", i, " does not exist. Combining other files.")
+      if(file.exists(iteratingPermulationsFilename)){                             #This check allows it to function even if the start+numberOfPermulations is larger than the actual number of permulation files, or a file is missing.
+        iteratingPermulationStart = Sys.time()
+        
+        iteratingPermulationsData = readRDS(iteratingPermulationsFilename)
+        iteratingPermulationLoadEnd= Sys.time()
+        iteratingPermulationLoadTime = iteratingPermulationLoadEnd - iteratingPermulationStart
+        message("Iterating permulation load time: ", iteratingPermulationLoadTime, attr(iteratingPermulationLoadTime, "units"))
+        
+        combinedPermulationsData = combineCategoricalPermulationIntermediates(combinedPermulationsData, iteratingPermulationsData)
+        iteratingPermulationCombineEnd = Sys.time()
+        iteratingPermulationCombineTime = iteratingPermulationCombineEnd - iteratingPermulationLoadEnd
+        message("Iterating permulation combination time: ", iteratingPermulationCombineTime, attr(iteratingPermulationCombineTime, "units"))
+        
+        rm(iteratingPermulationsData)
+        iteratingPermulationRemoveEnd = Sys.time()
+        iteratingPermulationRemoveTime = iteratingPermulationRemoveEnd - iteratingPermulationCombineEnd
+        message("Iterating permulation removal time: ", iteratingPermulationRemoveTime, attr(iteratingPermulationRemoveTime, "units"))
+        
+        message("Added file ", i, " to combination.")
+      }else{
+        message("Permulation file number ", i, " does not exist. Combining other files.")
+      }
     }
   }
+  combinationSectionEnd = Sys.time()
+  totalCombinationTime = combinationSectionEnd- combinationSectionStart
+  message(" Total Permulation Combination time: ", totalCombinationTime, attr(totalCombinationTime, "units"))
+  
+  # -- Save combined permulations file -- 
+  if(metacombineValue == F){
+    combinedDataFileName = paste(outputFolderName, filePrefix, "Combined", permulationPrefix,"PermulationsIntermediates", runInstanceValue, ".rds", sep="")
+  }else{
+    combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", permulationPrefix, "PermulationsIntermediates", runInstanceValue, ".rds", sep="")
+  }
+  fileSavingStart = Sys.time()
+  saveRDS(combinedPermulationsData, file = combinedDataFileName)
+  fileSavingEnd = Sys.time()
+  fileSavingTime = fileSavingEnd - fileSavingStart
+  message("Time to save combine permulations: ", fileSavingTime, attr(fileSavingTime, "units"))
 }
-combinationSectionEnd = Sys.time()
-totalCombinationTime = combinationSectionEnd- combinationSectionStart
-message(" Total Permulation Combination time: ", totalCombinationTime, attr(totalCombinationTime, "units"))
-
-# -- Save combined permulations file -- 
-if(metacombineValue == F){
-  combinedDataFileName = paste(outputFolderName, filePrefix, "Combined", permulationPrefix,"PermulationsIntermediates", runInstanceValue, ".rds", sep="")
-}else{
-  combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", permulationPrefix, "PermulationsIntermediates", runInstanceValue, ".rds", sep="")
-}
-fileSavingStart = Sys.time()
-saveRDS(combinedPermulationsData, file = combinedDataFileName)
-fileSavingEnd = Sys.time()
-fileSavingTime = fileSavingEnd - fileSavingStart
-message("Time to save combine permulations: ", fileSavingTime, attr(fileSavingTime, "units"))
-
 
 # -- Calculate p values -- 
 
@@ -215,9 +229,17 @@ if(calulateValue){
   correlationFileName = paste(outputFolderName, filePrefix, "CombinedCategoricalCorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
   correlationsObject = readRDS(correlationFileName) 
   
+  if(onlyCalulateValue){
+    if(metacombineValue == F){
+      combinedDataFileName = paste(outputFolderName, filePrefix, "Combined", permulationPrefix,"PermulationsIntermediates", runInstanceValue, ".rds", sep="")
+    }else{
+      combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", permulationPrefix, "PermulationsIntermediates", runInstanceValue, ".rds", sep="")
+    }
+    combinedPermulationsData = readRDS(combinedDataFileName)
+  }
   permulationsPValues = CategoricalCalculatePermulationPValues(correlationsObject, combinedPermulationsData)
   permulationsPValuesFilename = paste(outputFolderName, filePrefix, "PermulationsPValueCorrelations.rds", sep= "")
-  saveRDS(permulationsPValues, permulationsPValuesFilename)
+  saveRDS(permulationsPValues$res, permulationsPValuesFilename)
   
 }
 

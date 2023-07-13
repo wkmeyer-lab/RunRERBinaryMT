@@ -74,7 +74,10 @@ CategoricalCalculatePermulationPValues = function(realCors, intermediateList, st
       p = NA
     }
     else {
-      p = sum(corsMatEffSize[gene, ] > realCors[[1]]$Rho[gene], na.rm = TRUE)/sum(!is.na(corsMatEffSize[gene, ]))
+      signVal = sign(realCors[[1]]$Rho[gene])
+      MatEffSizes = corsMatEffSize[gene, ]
+      signedMatEffSizes = MatEffSizes[which(sign(MatEffSizes) == signVal)]
+      p = sum(abs(signedMatEffSizes) > abs(realCors[[1]]$Rho[gene]), na.rm = TRUE)/(sum(!is.na(signedMatEffSizes))+1)
     }
     realCors[[1]]$permP[gene] = p
     for (j in 1:length(realCors[[2]])) {
@@ -82,7 +85,11 @@ CategoricalCalculatePermulationPValues = function(realCors, intermediateList, st
         p = NA
       }
       else {
-        p = sum(abs(Peffsize[[names(realCors[[2]][j])]][gene, ]) > abs(realCors[[2]][[j]]$Rho[gene]), na.rm = TRUE)/sum(!is.na(Peffsize[[names(realCors[[2]][j])]][gene, ]))
+        realValue = realCors[[2]][[j]]$Rho[gene]
+        signValue = sign(realValue)
+        peffValues = Peffsize[[names(realCors[[2]][j])]][gene, ]
+        signedPeffValues = peffValues[which( sign(peffValues) == signValue)]
+        p = sum(abs(signedPeffValues) > abs(realValue), na.rm = TRUE)/ (sum(!is.na(signedPeffValues))+1)
       }
       realCors[[2]][[j]]$permP[gene] = p
     }
