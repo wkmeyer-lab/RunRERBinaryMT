@@ -17,9 +17,9 @@ Data/Testing
 *FishTree*
 Output/Test
 Output/Domestication/IgnoreGit
-Correlationfile
-PathsFile
-RERFile
+*Correlationfile*
+*PathsFile*
+*RERFile*
 *graphs*
 Output/categoryTest
 Output/CategoricalSpeedTest
