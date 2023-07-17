@@ -238,8 +238,24 @@ if(calulateValue){
     combinedPermulationsData = readRDS(combinedDataFileName)
   }
   permulationsPValues = CategoricalCalculatePermulationPValues(correlationsObject, combinedPermulationsData)
+  permulationsPValuesOutput = permulationsPValues$res
+  
+  #process the pairwise outputs
+  pairwiseCategorical = permulationsPValuesOutput[[2]]                             #select the group of pairwise comparisons
+  
+  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #select the phenotype vector based on prefix
+  phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
+  categories = map_to_state_space(phenotypeVector)                              #and use it to connect branch lengths to phenotype name
+  categoryNames = categories$name2index                                         #store the length-phenotype connection
+  
+  pairwiseTableNames = names(pairwiseCategorical)                               #Prepare to replace the number-number titles with phenotype-phenotype titles
+  for(i in 1:length(categoryNames)){                                            #for each phenotype
+    pairwiseTableNames= gsub(i, names(categoryNames)[i], pairwiseTableNames)    #replace the number with the phenotype name  
+  }
+  names(permulationsPValuesOutput[[2]]) = pairwiseTableNames                               #update the dataframe titles
+  
   permulationsPValuesFilename = paste(outputFolderName, filePrefix, "PermulationsPValueCorrelations.rds", sep= "")
-  saveRDS(permulationsPValues$res, permulationsPValuesFilename)
+  saveRDS(permulationsPValuesOutput, permulationsPValuesFilename)
   
 }
 
