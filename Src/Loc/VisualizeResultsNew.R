@@ -252,9 +252,9 @@ if(usePermulations){
   topPositiveGenesPerm = makePvListPlot(correlDataPositive,  "permPValue", 10,"Top Positive genes by P-value Permulated")
   topNegativeGenesPerm = makePvListPlot(correlDataNegative,  "permPValue", 10,"Top Negative genes by P-value Permulated")
   
-  topGenesPermQ = makePvListPlot(correlData, "qValueNoperm", 25, "Top genes by Q-Value Permulated")
-  topPositiveGenesPermQ = makePvListPlot(correlDataPositive,  "qValueNoperm",10, "Top Positive genes by Q-Value Permulated")
-  topNegativeGenesPermQ = makePvListPlot(correlDataNegative,  "qValueNoperm",10, "Top Negative genes by Q-Value Permulated")
+  topGenesPermQ = makePvListPlot(correlData, "qValuePerm", 25, "Top genes by Q-Value Permulated")
+  topPositiveGenesPermQ = makePvListPlot(correlDataPositive,  "qValuePerm",10, "Top Positive genes by Q-Value Permulated")
+  topNegativeGenesPermQ = makePvListPlot(correlDataNegative,  "qValuePerm",10, "Top Negative genes by Q-Value Permulated")
 }
 
 # - Gene Enrichment Plots - 
