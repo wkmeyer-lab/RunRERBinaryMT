@@ -12,8 +12,8 @@ source("Src/Reu/cmdArgImport.R")
 # v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # m = gmtFileLocation.gmt                   This is the location of the main gmt file
 # p = <T or F>                              This sets if the code should use permulated or unpermualted values
-# c = "correlationFileOverride.rds"         This can be used to manually set the correlation file. Used primarily to target pairwise comparisons of categroical phenotypes.
-# f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. 
+# c = "correlationFileOverride.rds"         This can be used to manually set the correlation file. Used primarily to target pairwise comparisons of categorical phenotypes.
+# f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. If set to "Categorical", will use in-built categorical values.
     #If using any file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #----------------
 args = c('r=Echolocation', 'm=Data/tissue_specific.gmt', 'v=T', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
@@ -108,13 +108,17 @@ if(useCorrelationOverride){                                                     
 correlationData = readRDS(correlationFileLocation)                              #Import the correlation data (non-permulated)
 
 if(usePermulations){                                                            #If permualtions are being used   
-  if(usePermulationPValOverride){                                               #check for a location override
-    permulationFileLocation = permulationPValOverride                           #if so, use it 
-  }else{                                                                        #if not, use the default 
-    permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "") #get the default location based on prefix 
+  if(permulationPValOverride %in% c("Categorical", "categorical")){
+    correlationData$P = correlationData$permP
+  }else{
+    if(usePermulationPValOverride){                                               #check for a location override
+      permulationFileLocation = permulationPValOverride                           #if so, use it 
+    }else{                                                                        #if not, use the default 
+      permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "") #get the default location based on prefix 
+    }
+    permulationValues = readRDS(permulationFileLocation)                          #read the permulation file
+    correlationData$P = permulationValues                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
   }
-  permulationValues = readRDS(permulationFileLocation)                          #read the permulation file
-  correlationData$P = permulationValues                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
 }
 
 rerStats = getStat(correlationData)                                             #processes the RERs somewhat into stat values. only uses the P column, and the sign of the Rho column. 
