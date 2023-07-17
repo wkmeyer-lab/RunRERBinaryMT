@@ -274,7 +274,7 @@ if(calulateValue){
     outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
     
     permulationsPValuesPairFilename = paste(outputSubdirectory, filePrefix, pairwiseTableNames[i], "PermulationsCorrelationFile",".rds", sep= "")
-    saveRDS(permulationsPValuesOutput[[2]][i], permulationsPValuesPairFilename)
+    saveRDS(permulationsPValuesOutput[[2]][[i]], permulationsPValuesPairFilename)
   }
 }
 
