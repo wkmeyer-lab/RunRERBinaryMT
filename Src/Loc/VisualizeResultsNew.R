@@ -8,6 +8,7 @@ library(qvalue)
 library(insight)
 source("Src/Reu/cmdArgImport.R")
 
+
 # -- Usage:
 # This script generates several visualizations of the RER outputs, and then organizes them into a single PDF file. 
 
@@ -16,15 +17,16 @@ source("Src/Reu/cmdArgImport.R")
 # v = <T or F>                                       This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # g = <T OR F>                                       This sets if Gene Enrichment analysis is included. Default TRUE. 
 # l = <"enrichmentListName" OR c("name1","name2")>   This defines the enrichment list(s) used in the GO analysis the script should display
+# s = "subdirectoryName"                            This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
 
-# p = <T or F or B or C>                             This sets if the code should use permulated or unpermualted values, or both. "C" indicates categroical permulations, which are stored in the main file. 
+# p = <T or F or B or C>                             This sets if the code should use permulated or unpermualted values, or both. "C" indicates categorical permulations, which are stored in the main file. 
 # f = "permulationPvalueFileLocation.rds"            This is a manual override to specify the script use a specific Permulation p-value file. 
       #If using any permulation p-value file other than "MainCombined" with no run instance number, it must be specified manually.
               
 
 
 #----------------
-args = c('r=Echolocation', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet3Phen', 'p=C', "s=Overall") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -66,6 +68,8 @@ permulationPValOverride = NULL
 useGeneEnrichment = TRUE
 useBoth = FALSE
 useCategoricalPerms = FALSE
+useSubdirectory = FALSE
+subdirectoryValue = NULL
 
 { # Bracket used for collapsing purposes
   
@@ -111,13 +115,29 @@ useCategoricalPerms = FALSE
   }else{
     message("Include geneset enrichment value not specified, using TRUE.")
   }
+  
+  #Import subdirectory
+  if(!is.na(cmdArgImport('s'))){
+    useSubdirectory = TRUE
+    subdirectoryValue = cmdArgImport('s')
+    message(paste("Using subdirectory", subdirectoryValue, "."))
+    
+    outputFolderName = paste(outputFolderName, subdirectoryValue, "/", sep="")
+    
+  }else{
+    message("No subdirectory specified.")
+  }
 }
 
 #                   ------- Code Body -------- 
 
 
 # ------ Import the Data ------ 
-correlationFileLocation = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "")
+if(useCategoricalPerms){
+  correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile.rds", sep= "")
+}else{
+  correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "CorrelationFile.rds", sep= "")
+}
 correlData = readRDS(correlationFileLocation)                            #Import the correlation data (non-permulated)
 
 # - Permulations - 
@@ -338,7 +358,7 @@ pdfRows = headlineRows+histogramRows+signedRows+enrichmentRows
 pdfLengthPerRow = 6.5
 pdfLength = pdfRows*pdfLengthPerRow
 
-outputPDFLocation = paste(outputFolderName, filePrefix, "VisualizeOutput.pdf", sep= "") # this could be improved to be more dynamic
+outputPDFLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "VisualizeOutput.pdf", sep= "") # this could be improved to be more dynamic
 pdf(file = outputPDFLocation, width = 15, height = pdfLength)
 
 plot_grid(headlineGenes, histograms, signedGenes, ncol = 1, nrow = 3)
@@ -350,7 +370,7 @@ dev.off()
 
 if(useGeneEnrichment){
   for(i in 1:2){
-    enrichmentPDFLocation = paste(outputFolderName, filePrefix, "Geneset", names(enrichmentResultSets[i]), ".pdf", sep= "")
+    enrichmentPDFLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "Geneset", names(enrichmentResultSets[i]), ".pdf", sep= "")
     ggsave(file = enrichmentPDFLocation, enrichmentPlotSet[[i]], width = 12, height = 10)
   }
 }

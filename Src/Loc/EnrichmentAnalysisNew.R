@@ -11,12 +11,14 @@ source("Src/Reu/cmdArgImport.R")
 # r = filePrefix                            This is a prefix used to organize and separate files by analysis run. Always required. 
 # v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # m = gmtFileLocation.gmt                   This is the location of the main gmt file
-# p = <T or F>                              This sets if the code should use permulated or unpermualted values
+# p = <T or F or C>                         This sets if the code should use permulated or unpermulated values. If set to "C", will use permulations for categorical values, which are stored in the main file.
+# s = "subdirectoryName"                    This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
 # c = "correlationFileOverride.rds"         This can be used to manually set the correlation file. Used primarily to target pairwise comparisons of categorical phenotypes.
-# f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file. If set to "Categorical", will use in-built categorical values.
+# f = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file.
     #If using any file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #----------------
-args = c('r=Echolocation', 'm=Data/tissue_specific.gmt', 'v=T', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+#'m=c("Data/tissue_specific.gmt", "Data/GSEA-c5-HsSymbols.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")'
+args = c('r=CategoricalDiet3Phen', 'm=c("Data/tissue_specific.gmt")', 'v=T', 'p=C', "s=Overall") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -56,10 +58,13 @@ usePermulationPValOverride = FALSE
 permulationPValOverride = NULL 
 useCorrelationOverride = FALSE
 correlationOverride = NULL
+useCategoricalPermulations = FALSE
+useSubdirectory = FALSE
+subdirectoryValue = NULL
 
 { # Bracket used for collapsing purposes
   #Gmt file location
-  if(!is.na(cmdArgImport('m'))){
+  if(!any(is.na(cmdArgImport('m')))){
     gmtFileLocation = cmdArgImport('m')
   }else{
     paste("No gmt location arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
@@ -69,6 +74,10 @@ correlationOverride = NULL
   #Permulation use
   if(!is.na(cmdArgImport('p'))){
     usePermulations = cmdArgImport('p')
+    if(usePermulations == "C"){
+      usePermulations = TRUE
+      useCategoricalPermulations = TRUE
+    }
     usePermulations = as.logical(usePermulations)
     if(is.na(usePermulations)){
       usePermulations = TRUE
@@ -88,12 +97,24 @@ correlationOverride = NULL
     }
   }
   #Import correlation file override
-  if(!is.na(cmdArgImport('f'))){
+  if(!is.na(cmdArgImport('c'))){
     useCorrelationOverride = TRUE
-    correlationOverride = cmdArgImport('f')
+    correlationOverride = cmdArgImport('c')
     message("Using Manually specified correlation file.")
   }else{
     message("No corelation override specified.")
+  }
+  
+  #Import subdirectory
+  if(!is.na(cmdArgImport('s'))){
+    useSubdirectory = TRUE
+    subdirectoryValue = cmdArgImport('s')
+    message(paste("Using subdirectory", subdirectoryValue, "."))
+    
+    outputFolderName = paste(outputFolderName, subdirectoryValue, "/", sep="")
+    
+  }else{
+    message("No subdirectory specified.")
   }
 }
 
@@ -101,18 +122,21 @@ correlationOverride = NULL
 #                   ------- Code Body -------- 
 
 #Load correlation file
-correlationFileLocation = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #get the correlation file location based on prefix 
+correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "CorrelationFile.rds", sep= "") #get the correlation file location based on prefix 
+if(useCategoricalPermulations){
+  correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile", ".rds", sep= "")
+}
 if(useCorrelationOverride){                                                     #if a correlation override was specified, replace it with that
-  correlationFileLocation = correlationOverride                                      
+  correlationFileLocation = paste(outputFolderName, correlationOverride, sep="")                                      
 }
 correlationData = readRDS(correlationFileLocation)                              #Import the correlation data (non-permulated)
 
 if(usePermulations){                                                            #If permualtions are being used   
-  if(permulationPValOverride %in% c("Categorical", "categorical")){
+  if(useCategoricalPermulations){
     correlationData$P = correlationData$permP
   }else{
     if(usePermulationPValOverride){                                               #check for a location override
-      permulationFileLocation = permulationPValOverride                           #if so, use it 
+      permulationFileLocation = paste(outputFolderName, permulationPValOverride, sep="")                           #if so, use it 
     }else{                                                                        #if not, use the default 
       permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "") #get the default location based on prefix 
     }
@@ -123,19 +147,19 @@ if(usePermulations){                                                            
 
 rerStats = getStat(correlationData)                                             #processes the RERs somewhat into stat values. only uses the P column, and the sign of the Rho column. 
 
+for(i in 1:length(gmtFileLocation)){
 #Load the gmt annotations 
-gmtAnnotations = read.gmt(gmtFileLocation)                                      #read the gmt file
+gmtAnnotations = read.gmt(gmtFileLocation[i])                                      #read the gmt file
 annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
-enrichmentListName = substring(gmtFileLocation, 6, last = (nchar(gmtFileLocation) - 4)) #make a geneset name based on the filename 
+enrichmentListName = substring(gmtFileLocation[i], 6, last = (nchar(gmtFileLocation[i]) - 4)) #make a geneset name based on the filename 
 names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
 
 enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
 
 #save the enrichment output
-enrichmentFileName = paste(outputFolderName, filePrefix, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
 saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
-
-
+}
 
 # --- Visualize the enrichment ----
 

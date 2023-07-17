@@ -255,12 +255,25 @@ if(calulateValue){
   permulationsPValuesFilename = paste(outputFolderName, filePrefix, "PermulationsPValueCorrelations.rds", sep= "")
   saveRDS(permulationsPValuesOutput, permulationsPValuesFilename)
   
-  permulationsPValuesOverallFilename = paste(outputFolderName, filePrefix, "PermulationsOverallCorrelations.rds", sep= "")
+  outputSubdirectoryNoslash = paste(outputFolderName, "Overall", sep = "")
+  if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+    dir.create(outputSubdirectoryNoslash)
+  }
+  outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+  
+  permulationsPValuesOverallFilename = paste(outputSubdirectory, filePrefix, "OverallPermulationsCorrelationFile.rds", sep= "")
   saveRDS(permulationsPValuesOutput[[1]], permulationsPValuesOverallFilename)
   
   for(i in 1:length(pairwiseTableNames)){
     pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
-    permulationsPValuesPairFilename = paste(outputFolderName, filePrefix, "PermulationsCorrelations", pairwiseTableNames[i],".rds", sep= "")
+    
+    outputSubdirectoryNoslash = paste(outputFolderName, pairwiseTableNames[i], sep = "")
+    if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+      dir.create(outputSubdirectoryNoslash)
+    }
+    outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+    
+    permulationsPValuesPairFilename = paste(outputSubdirectory, filePrefix, pairwiseTableNames[i], "PermulationsCorrelationFile",".rds", sep= "")
     saveRDS(permulationsPValuesOutput[[2]][i], permulationsPValuesPairFilename)
   }
 }
