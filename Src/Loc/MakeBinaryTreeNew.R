@@ -27,7 +27,7 @@ source("Src/Reu/cmdArgImport.R")
 
 #----------------
 args = c("r=echolocation", )
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=Echolocation", "p=Echolocation", "t=bi", "c=all", "w=F", "v=T", "s=b")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=EcholocationUpdate", "p=Echolocation", "t=bi", "c=ancestral", "w=F", "v=T","s=Laurasiatheria")
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -116,11 +116,6 @@ screenCollumn = NA
   if(!is.na(cmdArgImport('s'))){
     useScreen = T
     screenCollumn = cmdArgImport('s')
-    screenCollumn = as.logical(screenCollumn)
-    if(is.na(screenCollumn)){
-      screenCollumn = FALSE
-      message("Argument value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
-    }
   }else{
     message("Screen Column not specified, not using screen column.")
   }
@@ -142,7 +137,7 @@ speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",
 if(!file.exists(speciesFilterFilename) | forceUpdate){
   relevantSpecies = manualAnnots[ manualAnnots[[phenotypeColumn]] %in% c(0,1),]
   if(useScreen){
-    relevantSpecies = relevantSpecies[ relevantSpecies[screenCollumn] %in% 1, ]
+    relevantSpecies = relevantSpecies[relevantSpecies[screenCollumn] == 1,]
   }
   relevantSpeciesNames = relevantSpecies$FaName
   saveRDS(relevantSpeciesNames, file = speciesFilterFilename)

@@ -126,7 +126,8 @@ source("Src/Reu/ZonomNameConvertVector.R")
 masterTree = mainTrees$masterTree
 
 pdf(height = 25)
-ZoonomTreeNameToCommon(masterTree)
+ZoonomTreeNameToCommon(readTest, isForegroundTree = T)
+
 
 dev.off()
 
