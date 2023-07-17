@@ -18,7 +18,7 @@ source("Src/Reu/cmdArgImport.R")
     #If using any file other than "CombinedPrunedFastAll" with no run instance number, it must be specified manually.
 #----------------
 #'m=c("Data/tissue_specific.gmt", "Data/GSEA-c5-HsSymbols.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")'
-args = c('r=CategoricalDiet3Phen', 'm=c("Data/tissue_specific.gmt")', 'v=T', 'p=C', "s=Overall") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet3Phen', 'm=c("Data/tissue_specific.gmt", "Data/GSEA-c5-HsSymbols.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=C', "s=_Omnivore-Carnivore") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
