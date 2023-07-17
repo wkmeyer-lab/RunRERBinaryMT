@@ -26,7 +26,7 @@ source("Src/Reu/cmdArgImport.R")
 
 
 #----------------
-args = c('r=CategoricalDiet3Phen', 'p=C', "s=Overall") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet3Phen', 'p=CB', "s=Overall") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -76,7 +76,11 @@ subdirectoryValue = NULL
   #Permulation use
   if(!is.na(cmdArgImport('p'))){
     usePermulations = cmdArgImport('p')
-    if(usePermulations %in% c("C", "c")){
+    if(usePermulations %in% c("CB", "cb")){
+      usePermulations = TRUE
+      useCategoricalPerms = TRUE 
+      useBoth = TRUE
+    }else if(usePermulations %in% c("C", "c")){
       usePermulations = TRUE
       useCategoricalPerms = TRUE 
     } else if(usePermulations %in% c("B", "b")){
@@ -207,11 +211,11 @@ makePHistogram = function(data, column, titleVal){
 }
 
 postiveRhoNonpermHistogram = makePHistogram(correlDataPositive, "p.adj", "Positive Rho Non-permulated")
-negativeRhoNonpermHistogram = makePHistogram(correlDataNegative, "p.adj", "Positive Rho Non-permulated")
+negativeRhoNonpermHistogram = makePHistogram(correlDataNegative, "p.adj", "Negative Rho Non-permulated")
 
 if(usePermulations){
   postiveRhoPermHistogram = makePHistogram(correlDataPositive, "permPValue", "Positive Rho Permulated")
-  negativeRhoPermHistogram = makePHistogram(correlDataNegative, "permPValue", "Positive Rho Permulated")
+  negativeRhoPermHistogram = makePHistogram(correlDataNegative, "permPValue", "Negative Rho Permulated")
   
 }
 #I think I want to display positive and negative side-by-side, and permulated non-permulated above/below eachother.
