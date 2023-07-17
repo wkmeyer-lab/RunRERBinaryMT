@@ -17,7 +17,7 @@ source("Src/Reu/cmdArgImport.R")
 # g = <T OR F>                                       This sets if Gene Enrichment analysis is included. Default TRUE. 
 # l = <"enrichmentListName" OR c("name1","name2")>   This defines the enrichment list(s) used in the GO analysis the script should display
 
-# p = <T or F or B>                                  This sets if the code should use permulated or unpermualted values, or both.
+# p = <T or F or B or C>                             This sets if the code should use permulated or unpermualted values, or both. "C" indicates categroical permulations, which are stored in the main file. 
 # f = "permulationPvalueFileLocation.rds"            This is a manual override to specify the script use a specific Permulation p-value file. 
       #If using any permulation p-value file other than "MainCombined" with no run instance number, it must be specified manually.
               
@@ -65,13 +65,17 @@ usePermulations = TRUE
 permulationPValOverride = NULL 
 useGeneEnrichment = TRUE
 useBoth = FALSE
+useCategoricalPerms = FALSE
 
 { # Bracket used for collapsing purposes
   
   #Permulation use
   if(!is.na(cmdArgImport('p'))){
     usePermulations = cmdArgImport('p')
-    if(usePermulations == "B"){
+    if(usePermulations %in% c("C", "c")){
+      usePermulations = TRUE
+      useCategoricalPerms = TRUE 
+    } else if(usePermulations %in% c("B", "b")){
       useBoth = TRUE
       usePermulations = TRUE
     }else{
@@ -118,13 +122,16 @@ correlData = readRDS(correlationFileLocation)                            #Import
 
 # - Permulations - 
 if(usePermulations){
-  if(!is.null(permulationPValOverride)){
-    permulationFileLocation = permulationPValOverride
+  if(useCategoricalPerms){
+    correlData$permPValue = correlData$permP
   }else{
-    permulationFileLocation = paste(outputFolderName, filePrefix, permulationDefaultFilename, sep= "")
+    if(!is.null(permulationPValOverride)){
+      permulationFileLocation = permulationPValOverride
+    }else{
+      permulationFileLocation = paste(outputFolderName, filePrefix, permulationDefaultFilename, sep= "")
+    }
+    correlData$permPValue = readRDS(permulationFileLocation)                       #Add a collumn to the data with the permulation p Values
   }
-  
-  correlData$permPValue = readRDS(permulationFileLocation)                       #Add a collumn to the data with the permulation p Values
 }
 
 # - Q values - 
