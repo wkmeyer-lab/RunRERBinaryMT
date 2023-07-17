@@ -255,6 +255,14 @@ if(calulateValue){
   permulationsPValuesFilename = paste(outputFolderName, filePrefix, "PermulationsPValueCorrelations.rds", sep= "")
   saveRDS(permulationsPValuesOutput, permulationsPValuesFilename)
   
+  permulationsPValuesOverallFilename = paste(outputFolderName, filePrefix, "PermulationsOverallCorrelations.rds", sep= "")
+  saveRDS(permulationsPValuesOutput[[1]], permulationsPValuesOverallFilename)
+  
+  for(i in 1:length(pairwiseTableNames)){
+    pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
+    permulationsPValuesPairFilename = paste(outputFolderName, filePrefix, "PermulationsCorrelations", pairwiseTableNames[i],".rds", sep= "")
+    saveRDS(permulationsPValuesOutput[[2]][i], permulationsPValuesPairFilename)
+  }
 }
 
 
