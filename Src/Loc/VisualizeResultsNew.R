@@ -26,7 +26,7 @@ source("Src/Reu/cmdArgImport.R")
 
 
 #----------------
-args = c('r=CategoricalDiet3Phen', 'p=CB', "s=Carnivore-Herbivore") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=EcholocationUpdate', 'p=B') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
