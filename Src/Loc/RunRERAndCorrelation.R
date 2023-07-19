@@ -131,7 +131,7 @@ if(file_ext(phenotypeTreeLocation) == "rds"){                                   
 RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")       #Set a filename for the RERs based on the prefix
 
 if(!file.exists(paste(RERFileName)) | forceUpdate){                             #if it does not exist, or update is forced 
-  RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F)  #Calculate the RERs
+  RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F, min.sp = 3, transform = "none")  #Calculate the RERs
   saveRDS(RERObject, file = RERFileName)                                        #Save them
 }else{                                                                          #Otherwise
   RERObject = readRDS(RERFileName)                                              #Use the existing ones
