@@ -170,3 +170,92 @@ intermediateList = permCorrelations
 gene = 1
 testOut = list(res = realCors, pvals = list(corsMatPvals, Ppvals), effsize = list(corsMatEffSize, Peffsize))
 testOutTrim = testOut$res
+
+
+categoricalPerms = readRDS("Output/CategoricalDiet3Phen/CategoricalDiet3PhenPermulationsPValueCorrelations.rds")
+categoricalNoPerms = readRDS("Output/CategoricalDiet3Phen/CategoricalDiet3PhenCombinedCategoricalCorrelationFile.rds")
+categoricalPairwise = readRDS("Output/CategoricalDiet3Phen/CategoricalDiet3PhenPairwiseCorrelationFile.rds")
+
+
+                            #select the group of pairwise comparisons
+
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #select the phenotype vector based on prefix
+phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
+categories = map_to_state_space(phenotypeVector)                              #and use it to connect branch lengths to phenotype name
+categoryNames = categories$name2index                                         #store the length-phenotype connection
+
+pairwiseTableNames = names(categoricalPerms[[2]])                               #Prepare to replace the number-number titles with phenotype-phenotype titles
+for(i in 1:length(categoryNames)){                                            #for each phenotype
+  pairwiseTableNames= gsub(i, names(categoryNames)[i], pairwiseTableNames)    #replace the number with the phenotype name  
+}
+names(categoricalPerms[[2]]) = pairwiseTableNames                               #update the dataframe titles
+
+permulationsPValuesFilename = paste(outputFolderName, filePrefix, "PermulationsPValueCorrelations.rds", sep= "")
+saveRDS(categoricalPerms, permulationsPValuesFilename)
+
+permulationsPValuesOutput = categoricalPerms
+
+permulationsPValuesOverallFilename = paste(outputFolderName, filePrefix, "PermulationsOverallCorrelations.rds", sep= "")
+saveRDS(permulationsPValuesOutput[[1]], permulationsPValuesOverallFilename)
+
+for(i in 1:length(pairwiseTableNames)){
+  pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
+  permulationsPValuesPairFilename = paste(outputFolderName, filePrefix, "PermulationsCorrelations", pairwiseTableNames[i],".rds", sep= "")
+  saveRDS(permulationsPValuesOutput[[2]][i], permulationsPValuesPairFilename)
+}
+
+#---
+
+outputSubdirectoryNoslash = paste(outputFolderName, "Overall", sep = "")
+if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+  dir.create(outputSubdirectoryNoslash)
+}
+outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+
+permulationsPValuesOverallFilename = paste(outputSubdirectory, filePrefix, "PermulationsOverallCorrelations.rds", sep= "")
+saveRDS(permulationsPValuesOutput[[1]], permulationsPValuesOverallFilename)
+
+for(i in 1:length(pairwiseTableNames)){
+  pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
+  
+  outputSubdirectoryNoslash = paste(outputFolderName, pairwiseTableNames[i], sep = "")
+  if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+    dir.create(outputSubdirectoryNoslash)
+  }
+  outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+  
+  permulationsPValuesPairFilename = paste(outputSubdirectory, filePrefix, "PermulationsCorrelations", pairwiseTableNames[i],".rds", sep= "")
+  saveRDS(permulationsPValuesOutput[[2]][i], permulationsPValuesPairFilename)
+}
+
+
+nonPermCorrelations = readRDS("Output/CategoricalDiet3Phen/CategoricalDiet3PhenCombinedCategoricalCorrelationFile.rds")
+
+
+nonPermCorrelations[[1]]$Rho
+
+permulationsPValuesOutput=categoricalPerms
+
+i=1
+
+for(i in 1:length(pairwiseTableNames)){
+  pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
+  
+  outputSubdirectoryNoslash = paste(outputFolderName, pairwiseTableNames[i], sep = "")
+  if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+    dir.create(outputSubdirectoryNoslash)
+  }
+  outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+  
+  permulationsPValuesPairFilename = paste(outputSubdirectory, filePrefix, pairwiseTableNames[i], "PermulationsCorrelationFile",".rds", sep= "")
+  saveRDS(permulationsPValuesOutput[[2]][[i]], permulationsPValuesPairFilename)
+}
+
+test1 = permulationsPValuesOutput[[2]][[i]]
+
+
+correlData$p.adj  
+
+nonPermCorrelations[[2]]$`1 - 3`$p.adj
+#saveRDS(mainTrees, "Data/FirstExpressionTrees.rds")
+write.csv(mainTrees$masterTree$tip.label, "test.csv")
