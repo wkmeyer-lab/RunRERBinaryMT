@@ -20,7 +20,7 @@ library(data.table)
 #----------------
 args = c('r=CVO', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=b') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 args = c("r=EcholocationUpdate", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "s=b")
-args = c("m=data/FirstExpressionTrees.rds", "r=LiverExpression", "v=T", "s=b")
+args = c("m=data/FirstExpressionTrees.rds", "r=LiverExpression", "v=F", "s=b")
 
 
 # --- Standard start-up code ---
