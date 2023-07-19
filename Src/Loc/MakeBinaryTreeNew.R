@@ -6,7 +6,7 @@ source("Src/Reu/cmdArgImport.R")
 
 # -- Usage:
 # This Script creates a binary tree from a csv file containing (at least) the following columns: 
-# FAName: The name of the species as it appears in the Mutliphylo 
+# FaName: The name of the species as it appears in the Mutliphylo 
 # Common.Name.Or.Group: The common name of the species
 # Species.Name: The scientific name of the species
 # [phenotypeCollumn]: A column (name set by argument) which contains the pehnotype data 
@@ -27,7 +27,7 @@ source("Src/Reu/cmdArgImport.R")
 
 #----------------
 args = c("r=echolocation", )
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=EcholocationUpdate", "p=Echolocation", "t=bi", "c=ancestral", "w=F", "v=T","s=Laurasiatheria")
+args = c("m=data/FirstExpressionTrees.rds", "r=LiverExpression", "p=Carnivory", "t=bi", "c=all", "w=F", "v=T", "a=Data/ExpressionAnnots.csv")
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
