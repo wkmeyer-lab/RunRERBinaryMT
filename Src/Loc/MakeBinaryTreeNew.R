@@ -26,7 +26,7 @@ source("Src/Reu/cmdArgImport.R")
 
 
 #----------------
-args = c("r=echolocation", )
+args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', "r=EcholocationUpdate2", "t=bi", "p=Echolocation", "c=all", "v=T", "s=Laurasiatheria")
 args = c("m=data/FirstExpressionTrees.rds", "r=LiverExpression", "p=Carnivory", "t=bi", "c=all", "w=F", "v=T", "a=Data/ExpressionAnnots.csv")
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)

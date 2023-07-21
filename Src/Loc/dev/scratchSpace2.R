@@ -259,3 +259,158 @@ correlData$p.adj
 nonPermCorrelations[[2]]$`1 - 3`$p.adj
 #saveRDS(mainTrees, "Data/FirstExpressionTrees.rds")
 write.csv(mainTrees$masterTree$tip.label, "test.csv")
+
+which(!is.na(RERObject[,1]))
+
+mainTrees$masterTree$tip.label %in% speciesFilter
+
+
+RERObjectNew = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F, min.sp = 3, transform = "none", maxT = 5)
+
+all(is.na(RERObjectNew))
+
+
+
+?getAllResiduals()
+
+function (treesObj, cutoff = NULL, transform = "sqrt", weighted = T, 
+          useSpecies = NULL, min.sp = 10, scale = T, doOnly = NULL, 
+          maxT = NULL, scaleForPproj = F, mean.trim = 0.05, plot = T) 
+{
+  if (is.null(cutoff)) {
+    cutoff = quantile(treesObj$paths, 0.05, na.rm = T)
+    message(paste("cutoff is set to", cutoff))
+  }
+  if (weighted) {
+    weights = computeWeightsAllVar(treesObj$paths, transform = transform, 
+                                   plot = plot)
+    residfunc = fastLmResidMatWeighted
+  }
+  else {
+    residfunc = fastLmResidMat
+  }
+  if (is.null(useSpecies)) {
+    useSpecies = treesObj$masterTree$tip.label
+  }
+  if (is.null(maxT)) {
+    maxT = treesObj$numTrees
+  }
+  if (transform != "none") {
+    transform = match.arg(transform, c("sqrt", "log"))
+    transform = get(transform)
+  }
+  else {
+    transform = NULL
+  }
+  cm = intersect(treesObj$masterTree$tip.label, useSpecies)
+  sp.miss = setdiff(treesObj$masterTree$tip.label, useSpecies)
+  if (length(sp.miss) > 0) {
+    message(paste0("Species from master tree not present in useSpecies: ", 
+                   paste(sp.miss, collapse = ",")))
+  }
+  rr = matrix(nrow = nrow(treesObj$paths), ncol = ncol(treesObj$paths))
+  maxn = rowSums(treesObj$report[, cm])
+  if (is.null(doOnly)) {
+    doOnly = 1
+  }
+  else {
+    maxT = 1
+  }
+  skipped = double(nrow(rr))
+  skipped[] = 0
+  for (i in doOnly:(doOnly + maxT - 1)) {
+    if (sum(!is.na(rr[i, ])) == 0 && !skipped[i] == 1) {
+      tree1 = treesObj$trees[[i]]
+      both = intersect(tree1$tip.label, cm)
+      if (length(both) < min.sp) {
+        next
+      }
+      tree1 = unroot(pruneTree(tree1, both))
+      allreport = treesObj$report[, both]
+      ss = rowSums(allreport)
+      iiboth = which(ss == length(both))
+      if (length(iiboth) < 2) {
+        message(paste("Skipping i =", i, "(no other genes with same species set)"))
+        next
+      }
+      nb = length(both)
+      ai = which(maxn[iiboth] == nb)
+      message(paste("i=", i))
+      if (T) {
+        ee = edgeIndexRelativeMaster(tree1, treesObj$masterTree)
+        ii = treesObj$matIndex[ee[, c(2, 1)]]
+        allbranch = treesObj$paths[iiboth, ii]
+        if (is.null(dim(allbranch))) {
+          message(paste("Issue with gettiing paths for genes with same species as tree", 
+                        i))
+          return(list(iiboth = iiboth, ii = ii))
+        }
+        if (weighted) {
+          allbranchw = weights[iiboth, ii]
+        }
+        if (scaleForPproj) {
+          nv = apply(scaleMatMean(allbranch), 2, mean, 
+                     na.rm = T, trim = mean.trim)
+        }
+        else {
+          nv = apply(allbranch, 2, mean, na.rm = T, trim = mean.trim)
+        }
+        iibad = which(allbranch < cutoff)
+        if (!is.null(transform)) {
+          nv = transform(nv)
+          allbranch = transform(allbranch)
+        }
+        allbranch[iibad] = NA
+        if (!scale) {
+          if (!weighted) {
+            proj = residfunc(allbranch[ai, , drop = F], 
+                             model.matrix(~1 + nv))
+          }
+          else {
+            proj = residfunc(allbranch[ai, , drop = F], 
+                             model.matrix(~1 + nv), allbranchw[ai, , 
+                                                               drop = F])
+          }
+        }
+        else {
+          if (!weighted) {
+            proj = residfunc(allbranch[, , drop = F], 
+                             model.matrix(~1 + nv))
+          }
+          else {
+            proj = residfunc(allbranch[, , drop = F], 
+                             model.matrix(~1 + nv), allbranchw)
+          }
+          proj = scale(proj, center = F)[ai, , drop = F]
+        }
+        rr[iiboth[ai], ii] = proj
+      }
+    }
+  }
+  message("Naming rows and columns of RER matrix")
+  rownames(rr) = names(treesObj$trees)
+  colnames(rr) = namePathsWSpecies(treesObj$masterTree)
+  rr
+}
+
+correlData[order(correlData$p.adj),]
+
+upham = ReadTntTree("Data/PrunedUphamTree65LiverTPMSpecies.tre")
+??Tnt
+
+library(TreeTools)
+
+upham = read.tree("Data/PrunedUphamTree65LiverTPMSpecies.tre")
+
+masterTree = mainTrees$masterTree
+plotTree(upham)
+plotTree(masterTree)
+
+unrootupham = UnrootTree(upham)
+
+#saveRDS(mainTrees, "Data/NoSignFirstExpressionTrees.rds")
+
+mainTrees$masterTree = unrootupham
+#saveRDS(mainTrees, "Data/NoSignFirstExpressionTreesNewMaster.rds")
+
+oldRERs = readRDS("Output/CVHRemake/CVHRemakeRERFile.rds")
