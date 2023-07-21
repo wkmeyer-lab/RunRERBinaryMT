@@ -27,6 +27,7 @@ source("Src/Reu/cmdArgImport.R")
 
 #----------------
 args = c('r=EcholocationUpdate', 'p=B') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet4Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-Piscivore", "Carnivore-Piscivore", "Herbivore-Piscivore", "Insectivore-Piscivore", "_Omnivore-carnivore")', 'p=F')
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -69,7 +70,7 @@ useGeneEnrichment = TRUE
 useBoth = FALSE
 useCategoricalPerms = FALSE
 useSubdirectory = FALSE
-subdirectoryValue = NULL
+subdirectoryValueList = NULL
 
 { # Bracket used for collapsing purposes
   
@@ -121,12 +122,12 @@ subdirectoryValue = NULL
   }
   
   #Import subdirectory
-  if(!is.na(cmdArgImport('s'))){
+  if(!any(is.na(cmdArgImport('s')))){
     useSubdirectory = TRUE
-    subdirectoryValue = cmdArgImport('s')
-    message(paste("Using subdirectory", subdirectoryValue, "."))
+    subdirectoryValueList = cmdArgImport('s')
+    message(paste("Using subdirectories", subdirectoryValueList, "."))
     
-    outputFolderName = paste(outputFolderName, subdirectoryValue, "/", sep="")
+    #outputFolderName = paste(outputFolderName, subdirectoryValue, "/", sep="")
     
   }else{
     message("No subdirectory specified.")
@@ -137,153 +138,106 @@ subdirectoryValue = NULL
 
 
 # ------ Import the Data ------ 
-if(useCategoricalPerms){
-  correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile.rds", sep= "")
-}else{
-  correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "CorrelationFile.rds", sep= "")
-}
-correlData = readRDS(correlationFileLocation)                            #Import the correlation data (non-permulated)
-
-# - Permulations - 
-if(usePermulations){
+for(i in 1:length(subdirectoryValueList)){
+  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+  message(paste("Using subdirectory", subdirectoryValueList[i], "."))
+  outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
+  subdirectoryValue = subdirectoryValueList[i]
+  
   if(useCategoricalPerms){
-    correlData$permPValue = correlData$permP
+    correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile.rds", sep= "")
   }else{
-    if(!is.null(permulationPValOverride)){
-      permulationFileLocation = permulationPValOverride
-    }else{
-      permulationFileLocation = paste(outputFolderName, filePrefix, permulationDefaultFilename, sep= "")
-    }
-    correlData$permPValue = readRDS(permulationFileLocation)                       #Add a collumn to the data with the permulation p Values
+    correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "CorrelationFile.rds", sep= "")
   }
-}
-
-# - Q values - 
-qValueNoperm = qvalue(p = correlData$p.adj)
-correlData$qValueNoperm = qValueNoperm$qvalues
-
-if(usePermulations){
-  qValuePerm = qvalue(p = correlData$permPValue)
-  correlData$qValuePerm = qValuePerm$qvalues
-}
-
-# - Negative and Positive Rho 
-correlDataPositive = correlData[which(correlData$Rho > 0),]
-correlDataNegative = correlData[which(correlData$Rho < 0),]
-correlDataZero = correlData[which(correlData$Rho == 0),]
-
-# - Enrichment results - 
-if(useGeneEnrichment){
-  outputFolderFilenames = list.files(paste("./",outputFolderName, sep=""))
-  enrichmentFileNames = outputFolderFilenames[grep("Enrichment-", outputFolderFilenames)]
-  if(length(enrichmentFileNames) == 0){
-    enrichmentRange = NA
-    useGeneEnrichment = FALSE
-    message("No enrichment files found. Deactivating enrichment analysis processing.")
-  }else{
-    enrichmentRange = length(enrichmentFileNames)
-    enrichmentResultSets = NULL
-    for(i in 1:enrichmentRange){
-      EnrichmentSetNumber = paste("enrichment", i, sep="")
-      EnrichmentData = readRDS(paste(outputFolderName, enrichmentFileNames[i], sep=""))
-      enrichmentResultSets[i] = EnrichmentData
-      names(enrichmentResultSets)[i] = names(EnrichmentData)
-      assign(EnrichmentSetNumber, EnrichmentData)
+  correlData = readRDS(correlationFileLocation)                            #Import the correlation data (non-permulated)
+  
+  # - Permulations - 
+  if(usePermulations){
+    if(useCategoricalPerms){
+      correlData$permPValue = correlData$permP
+    }else{
+      if(!is.null(permulationPValOverride)){
+        permulationFileLocation = permulationPValOverride
+      }else{
+        permulationFileLocation = paste(outputFolderName, filePrefix, permulationDefaultFilename, sep= "")
+      }
+      correlData$permPValue = readRDS(permulationFileLocation)                       #Add a collumn to the data with the permulation p Values
     }
   }
-}
-
-
-# ------ Make plots ------ 
-
-# - p value histograms - 
-makePHistogram = function(data, column, titleVal){
-  phist = ggplot(data, aes(x=data[[column]]))+
-    geom_histogram(binwidth = 0.02, alpha=0.9, col="white", boundary=0)+
-    scale_x_continuous(breaks = seq(0,1,0.1), lim = c(0,1))+
-    labs(title = titleVal)+
-    xlab("p Values")+
-    theme(
-          #axis.title.x = element_blank(),
-          plot.title = element_text(size=18, hjust = 0.5),
-          plot.title.position = "plot"
-        )
-}
-
-postiveRhoNonpermHistogram = makePHistogram(correlDataPositive, "p.adj", "Positive Rho Non-permulated")
-negativeRhoNonpermHistogram = makePHistogram(correlDataNegative, "p.adj", "Negative Rho Non-permulated")
-
-if(usePermulations){
-  postiveRhoPermHistogram = makePHistogram(correlDataPositive, "permPValue", "Positive Rho Permulated")
-  negativeRhoPermHistogram = makePHistogram(correlDataNegative, "permPValue", "Negative Rho Permulated")
   
-}
-#I think I want to display positive and negative side-by-side, and permulated non-permulated above/below eachother.
-
-
-# - List plots - 
-makePvListPlot = function(data, column, length, titleVal){
-  data = data[order(data[[column]]),]
-  dataHead = data[1:length,]
-  dataFront = dataHead[,1:2]
-  dataBack = dataHead[,3:ncol(dataHead)]
-  dataBack = format_table(dataBack, pretty_names = T, digits = "scientific3")
-  dataMain = data.frame(rownames(dataHead))
-  dataMain = append(dataMain, dataFront)
-  names(dataMain)[1] = "Gene"
-  dataMain = append(dataMain, dataBack)
-  dataMain = as.data.frame(dataMain)
-  listPlot = ggplot()+
-    theme_void()+
-    annotate(geom = "table",
-             x=1,
-             y=1,
-             label = dataMain)+
-    labs(title = titleVal)+
-    theme(plot.title = element_text(size=18, hjust = 0.5, vjust=0))
-}
-
-topGenesPadj = makePvListPlot(correlData, "p.adj", 25, "Top genes by P-value non-permulated")
-topPositiveGenesPadj = makePvListPlot(correlDataPositive, "p.adj", 10,"Top Positive genes by P-value non-permulated")
-topNegativeGenesPadj = makePvListPlot(correlDataNegative, "p.adj", 10, "Top Negative genes by P-value non-permulated")
-
-topGenesNPQ = makePvListPlot(correlData, "qValueNoperm", 25, "Top genes by Q-Value non-permulated")
-topPositiveGenesNPQ = makePvListPlot(correlDataPositive,  "qValueNoperm",10, "Top Positive genes by Q-Value non-permulated")
-topNegativeGenesNPQ = makePvListPlot(correlDataNegative,  "qValueNoperm", 10,"Top Negative genes by Q-Value non-permulated")
-
-if(usePermulations){
-  topGenesPerm = makePvListPlot(correlData, "permPValue", 25, "Top genes by P-value Permulated")
-  topPositiveGenesPerm = makePvListPlot(correlDataPositive,  "permPValue", 10,"Top Positive genes by P-value Permulated")
-  topNegativeGenesPerm = makePvListPlot(correlDataNegative,  "permPValue", 10,"Top Negative genes by P-value Permulated")
+  # - Q values - 
+  qValueNoperm = qvalue(p = correlData$p.adj)
+  correlData$qValueNoperm = qValueNoperm$qvalues
   
-  topGenesPermQ = makePvListPlot(correlData, "qValuePerm", 25, "Top genes by Q-Value Permulated")
-  topPositiveGenesPermQ = makePvListPlot(correlDataPositive,  "qValuePerm",10, "Top Positive genes by Q-Value Permulated")
-  topNegativeGenesPermQ = makePvListPlot(correlDataNegative,  "qValuePerm",10, "Top Negative genes by Q-Value Permulated")
-}
-
-# - Gene Enrichment Plots - 
-if(useGeneEnrichment){
-  enrichmentPlotSet = list()
-  makeGeListPlot = function(data, column, length, titleVal, decreasing){
-    setData = data[[1]]
-    if(decreasing){
-    setData = setData[order(abs(setData[[column]]), decreasing = T),]
+  if(usePermulations){
+    qValuePerm = qvalue(p = correlData$permPValue)
+    correlData$qValuePerm = qValuePerm$qvalues
+  }
+  
+  # - Negative and Positive Rho 
+  correlDataPositive = correlData[which(correlData$Rho > 0),]
+  correlDataNegative = correlData[which(correlData$Rho < 0),]
+  correlDataZero = correlData[which(correlData$Rho == 0),]
+  
+  # - Enrichment results - 
+  if(useGeneEnrichment){
+    outputFolderFilenames = list.files(paste("./",outputFolderName, sep=""))
+    enrichmentFileNames = outputFolderFilenames[grep("Enrichment-", outputFolderFilenames)]
+    if(length(enrichmentFileNames) == 0){
+      enrichmentRange = NA
+      useGeneEnrichment = FALSE
+      message("No enrichment files found. Deactivating enrichment analysis processing.")
     }else{
-      setData = setData[order(abs(setData[[column]])),]
+      enrichmentRange = length(enrichmentFileNames)
+      enrichmentResultSets = NULL
+      for(i in 1:enrichmentRange){
+        EnrichmentSetNumber = paste("enrichment", i, sep="")
+        EnrichmentData = readRDS(paste(outputFolderName, enrichmentFileNames[i], sep=""))
+        enrichmentResultSets[i] = EnrichmentData
+        names(enrichmentResultSets)[i] = names(EnrichmentData)
+        assign(EnrichmentSetNumber, EnrichmentData)
+      }
     }
-    dataHead = setData[1:length,]
-    dataHead$gene.vals= strsplit(dataHead$gene.vals, ",")
-    for(i in 1:length){
-      genesetlist = dataHead$gene.vals[[i]][1:6]
-      genesetlistsingle = paste(genesetlist[1], genesetlist[2], genesetlist[3], genesetlist[4], genesetlist[5],genesetlist[6])
-      dataHead$gene.vals[i] = genesetlistsingle
-    }
-    dataFront = dataHead[,c(1,4)]
-    dataBack = dataHead[,c(2,3,5)]
+  }
+  
+  
+  # ------ Make plots ------ 
+  
+  # - p value histograms - 
+  makePHistogram = function(data, column, titleVal){
+    phist = ggplot(data, aes(x=data[[column]]))+
+      geom_histogram(binwidth = 0.02, alpha=0.9, col="white", boundary=0)+
+      scale_x_continuous(breaks = seq(0,1,0.1), lim = c(0,1))+
+      labs(title = titleVal)+
+      xlab("p Values")+
+      theme(
+            #axis.title.x = element_blank(),
+            plot.title = element_text(size=18, hjust = 0.5),
+            plot.title.position = "plot"
+          )
+  }
+  
+  postiveRhoNonpermHistogram = makePHistogram(correlDataPositive, "p.adj", "Positive Rho Non-permulated")
+  negativeRhoNonpermHistogram = makePHistogram(correlDataNegative, "p.adj", "Negative Rho Non-permulated")
+  
+  if(usePermulations){
+    postiveRhoPermHistogram = makePHistogram(correlDataPositive, "permPValue", "Positive Rho Permulated")
+    negativeRhoPermHistogram = makePHistogram(correlDataNegative, "permPValue", "Negative Rho Permulated")
+    
+  }
+  #I think I want to display positive and negative side-by-side, and permulated non-permulated above/below eachother.
+  
+  
+  # - List plots - 
+  makePvListPlot = function(data, column, length, titleVal){
+    data = data[order(data[[column]]),]
+    dataHead = data[1:length,]
+    dataFront = dataHead[,1:2]
+    dataBack = dataHead[,3:ncol(dataHead)]
     dataBack = format_table(dataBack, pretty_names = T, digits = "scientific3")
-    dataMain = data.frame(substring(rownames(dataHead), 1, 40))
+    dataMain = data.frame(rownames(dataHead))
     dataMain = append(dataMain, dataFront)
-    names(dataMain)[1] = "Geneset"
+    names(dataMain)[1] = "Gene"
     dataMain = append(dataMain, dataBack)
     dataMain = as.data.frame(dataMain)
     listPlot = ggplot()+
@@ -292,93 +246,146 @@ if(useGeneEnrichment){
                x=1,
                y=1,
                label = dataMain)+
-      labs(title = paste(names(data), titleVal))+
-      theme(plot.title = element_text(size=18, hjust = 0.5, vjust=1))
+      labs(title = titleVal)+
+      theme(plot.title = element_text(size=18, hjust = 0.5, vjust=0))
   }
-  for(i in 1:enrichmentRange){
-    genesetPlotName = paste("genesetPlot", i, sep="")
-    if(usePermulations){
-      genesetPlot = makeGeListPlot(enrichmentResultSets[i], "p.adj", 40, "Top pathways by permulation", F)
-    }else{
-      genesetPlot = makeGeListPlot(enrichmentResultSets[i], "p.adj", 40, "Top pathways by non-permulation", F)
-    }
-    enrichmentPlotSet[[i]] = genesetPlot
-    assign(genesetPlotName, genesetPlot)
+  
+  topGenesPadj = makePvListPlot(correlData, "p.adj", 25, "Top genes by P-value non-permulated")
+  topPositiveGenesPadj = makePvListPlot(correlDataPositive, "p.adj", 10,"Top Positive genes by P-value non-permulated")
+  topNegativeGenesPadj = makePvListPlot(correlDataNegative, "p.adj", 10, "Top Negative genes by P-value non-permulated")
+  
+  topGenesNPQ = makePvListPlot(correlData, "qValueNoperm", 25, "Top genes by Q-Value non-permulated")
+  topPositiveGenesNPQ = makePvListPlot(correlDataPositive,  "qValueNoperm",10, "Top Positive genes by Q-Value non-permulated")
+  topNegativeGenesNPQ = makePvListPlot(correlDataNegative,  "qValueNoperm", 10,"Top Negative genes by Q-Value non-permulated")
+  
+  if(usePermulations){
+    topGenesPerm = makePvListPlot(correlData, "permPValue", 25, "Top genes by P-value Permulated")
+    topPositiveGenesPerm = makePvListPlot(correlDataPositive,  "permPValue", 10,"Top Positive genes by P-value Permulated")
+    topNegativeGenesPerm = makePvListPlot(correlDataNegative,  "permPValue", 10,"Top Negative genes by P-value Permulated")
     
+    topGenesPermQ = makePvListPlot(correlData, "qValuePerm", 25, "Top genes by Q-Value Permulated")
+    topPositiveGenesPermQ = makePvListPlot(correlDataPositive,  "qValuePerm",10, "Top Positive genes by Q-Value Permulated")
+    topNegativeGenesPermQ = makePvListPlot(correlDataNegative,  "qValuePerm",10, "Top Negative genes by Q-Value Permulated")
+  }
+  
+  # - Gene Enrichment Plots - 
+  if(useGeneEnrichment){
+    enrichmentPlotSet = list()
+    makeGeListPlot = function(data, column, length, titleVal, decreasing){
+      setData = data[[1]]
+      if(decreasing){
+      setData = setData[order(abs(setData[[column]]), decreasing = T),]
+      }else{
+        setData = setData[order(abs(setData[[column]])),]
+      }
+      dataHead = setData[1:length,]
+      dataHead$gene.vals= strsplit(dataHead$gene.vals, ",")
+      for(i in 1:length){
+        genesetlist = dataHead$gene.vals[[i]][1:6]
+        genesetlistsingle = paste(genesetlist[1], genesetlist[2], genesetlist[3], genesetlist[4], genesetlist[5],genesetlist[6])
+        dataHead$gene.vals[i] = genesetlistsingle
+      }
+      dataFront = dataHead[,c(1,4)]
+      dataBack = dataHead[,c(2,3,5)]
+      dataBack = format_table(dataBack, pretty_names = T, digits = "scientific3")
+      dataMain = data.frame(substring(rownames(dataHead), 1, 40))
+      dataMain = append(dataMain, dataFront)
+      names(dataMain)[1] = "Geneset"
+      dataMain = append(dataMain, dataBack)
+      dataMain = as.data.frame(dataMain)
+      listPlot = ggplot()+
+        theme_void()+
+        annotate(geom = "table",
+                 x=1,
+                 y=1,
+                 label = dataMain)+
+        labs(title = paste(names(data), titleVal))+
+        theme(plot.title = element_text(size=18, hjust = 0.5, vjust=1))
+    }
+    for(i in 1:enrichmentRange){
+      genesetPlotName = paste("genesetPlot", i, sep="")
+      if(usePermulations){
+        genesetPlot = makeGeListPlot(enrichmentResultSets[i], "p.adj", 40, "Top pathways by permulation", F)
+      }else{
+        genesetPlot = makeGeListPlot(enrichmentResultSets[i], "p.adj", 40, "Top pathways by non-permulation", F)
+      }
+      enrichmentPlotSet[[i]] = genesetPlot
+      assign(genesetPlotName, genesetPlot)
+      
+    }
+  }
+  # ------- Make Plots ------- 
+  
+  # - Plot the top genes - 
+  if(useBoth){
+    headlineGenes = plot_grid(topGenesPerm, topGenesPermQ, topGenesPadj, topGenesNPQ, ncol = 2, nrow = 2)
+    headlineRows = 2
+  }else if(usePermulations){
+    headlineGenes = plot_grid(topGenesPerm, topGenesPermQ, ncol = 2, nrow = 1)
+    headlineRows = 1
+  }else{
+    headlineGenes = plot_grid(topGenesPadj, topGenesNPQ, ncol = 2, nrow = 1)
+    headlineRows = 1
+  }
+  
+  # - plot the histograms - 
+  histograms = NULL
+  if(useBoth){
+    histograms = plot_grid(postiveRhoPermHistogram, negativeRhoPermHistogram, postiveRhoNonpermHistogram, negativeRhoNonpermHistogram, ncol = 2, nrow = 2)
+    histogramRows = 2
+  }else if(usePermulations){
+    histograms = plot_grid(postiveRhoPermHistogram, negativeRhoPermHistogram, ncol = 2, nrow = 1)
+    histogramRows = 1
+  }else{
+    histograms = plot_grid(postiveRhoNonpermHistogram, negativeRhoNonpermHistogram, ncol = 2, nrow = 1)
+    histogramRows = 1
+  }
+  
+  # - plot the signed genes - 
+  if(useBoth){
+    signedGenes = plot_grid(topPositiveGenesPerm, topNegativeGenesPerm, topPositiveGenesPadj, topNegativeGenesPadj, ncol = 2, nrow = 2)
+    signedRows = 2
+  }else if(usePermulations){
+    signedGenes = plot_grid(topPositiveGenesPerm, topNegativeGenesPerm, ncol = 2, nrow = 1)
+    signedRows = 1
+  }else{
+    signedGenes = plot_grid(topPositiveGenesPadj, topNegativeGenesPadj, ncol = 2, nrow = 1)
+    signedRows = 1
+  }
+  
+  # - plot enrichments - 
+  enrichmentRows = 0 
+  if(useGeneEnrichment){
+    #enrichmentPlots = enrichmentPlotSet[1][1]
+    #for(i in 2:enrichmentRange){
+    #  enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
+    #}
+    enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 5)
+    enrichmentRows = length(enrichmentRange)
+  }
+  
+  # ------ Output to pdf ------ 
+  pdfRows = headlineRows+histogramRows+signedRows+enrichmentRows
+  pdfLengthPerRow = 6.5
+  pdfLength = pdfRows*pdfLengthPerRow
+  
+  outputPDFLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "VisualizeOutput.pdf", sep= "") # this could be improved to be more dynamic
+  pdf(file = outputPDFLocation, width = 15, height = pdfLength)
+  
+  plot_grid(headlineGenes, histograms, signedGenes, ncol = 1, nrow = 3)
+  
+  if(useGeneEnrichment){
+    enrichmentPlots
+  }
+  dev.off()
+  
+  if(useGeneEnrichment){
+    for(i in 1:2){
+      enrichmentPDFLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "Geneset", names(enrichmentResultSets[i]), ".pdf", sep= "")
+      ggsave(file = enrichmentPDFLocation, enrichmentPlotSet[[i]], width = 12, height = 10)
+    }
   }
 }
-# ------- Make Plots ------- 
-
-# - Plot the top genes - 
-if(useBoth){
-  headlineGenes = plot_grid(topGenesPerm, topGenesPermQ, topGenesPadj, topGenesNPQ, ncol = 2, nrow = 2)
-  headlineRows = 2
-}else if(usePermulations){
-  headlineGenes = plot_grid(topGenesPerm, topGenesPermQ, ncol = 2, nrow = 1)
-  headlineRows = 1
-}else{
-  headlineGenes = plot_grid(topGenesPadj, topGenesNPQ, ncol = 2, nrow = 1)
-  headlineRows = 1
-}
-
-# - plot the histograms - 
-histograms = NULL
-if(useBoth){
-  histograms = plot_grid(postiveRhoPermHistogram, negativeRhoPermHistogram, postiveRhoNonpermHistogram, negativeRhoNonpermHistogram, ncol = 2, nrow = 2)
-  histogramRows = 2
-}else if(usePermulations){
-  histograms = plot_grid(postiveRhoPermHistogram, negativeRhoPermHistogram, ncol = 2, nrow = 1)
-  histogramRows = 1
-}else{
-  histograms = plot_grid(postiveRhoNonpermHistogram, negativeRhoNonpermHistogram, ncol = 2, nrow = 1)
-  histogramRows = 1
-}
-
-# - plot the signed genes - 
-if(useBoth){
-  signedGenes = plot_grid(topPositiveGenesPerm, topNegativeGenesPerm, topPositiveGenesPadj, topNegativeGenesPadj, ncol = 2, nrow = 2)
-  signedRows = 2
-}else if(usePermulations){
-  signedGenes = plot_grid(topPositiveGenesPerm, topNegativeGenesPerm, ncol = 2, nrow = 1)
-  signedRows = 1
-}else{
-  signedGenes = plot_grid(topPositiveGenesPadj, topNegativeGenesPadj, ncol = 2, nrow = 1)
-  signedRows = 1
-}
-
-# - plot enrichments - 
-enrichmentRows = 0 
-if(useGeneEnrichment){
-  #enrichmentPlots = enrichmentPlotSet[1][1]
-  #for(i in 2:enrichmentRange){
-  #  enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
-  #}
-  enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 5)
-  enrichmentRows = length(enrichmentRange)
-}
-
-# ------ Output to pdf ------ 
-pdfRows = headlineRows+histogramRows+signedRows+enrichmentRows
-pdfLengthPerRow = 6.5
-pdfLength = pdfRows*pdfLengthPerRow
-
-outputPDFLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "VisualizeOutput.pdf", sep= "") # this could be improved to be more dynamic
-pdf(file = outputPDFLocation, width = 15, height = pdfLength)
-
-plot_grid(headlineGenes, histograms, signedGenes, ncol = 1, nrow = 3)
-
-if(useGeneEnrichment){
-  enrichmentPlots
-}
-dev.off()
-
-if(useGeneEnrichment){
-  for(i in 1:2){
-    enrichmentPDFLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "Geneset", names(enrichmentResultSets[i]), ".pdf", sep= "")
-    ggsave(file = enrichmentPDFLocation, enrichmentPlotSet[[i]], width = 12, height = 10)
-  }
-}
-
 
 #improvements for this script: 
   #Update output title to be more dynamic

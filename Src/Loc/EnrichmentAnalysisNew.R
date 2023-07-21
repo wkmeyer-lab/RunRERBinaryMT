@@ -19,9 +19,11 @@ source("Src/Reu/cmdArgImport.R")
 #----------------
 #'m=c("Data/tissue_specific.gmt", "Data/GSEA-c5-HsSymbols.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")'
 #'m=c("Data/DisGeNET.gmt", "Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt")'
-args = c('r=CategoricalDiet3Phen', "s=_Omnivore-Carnivore", 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet4Phen', "s=_Omnivore-Carnivore", 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 args = c('r=LiverExpression',  'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 args = c('r=EcholocationUpdate',  'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet4Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-carnivore")', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet5Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-Piscivore", "Carnivore-Piscivore", "Herbivore-Piscivore", "Insectivore-Piscivore", "_Omnivore-carnivore")', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 
 # --- Standard start-up code ---
@@ -64,7 +66,7 @@ useCorrelationOverride = FALSE
 correlationOverride = NULL
 useCategoricalPermulations = FALSE
 useSubdirectory = FALSE
-subdirectoryValue = NULL
+subdirectoryValueList = NULL
 
 { # Bracket used for collapsing purposes
   #Gmt file location
@@ -110,12 +112,12 @@ subdirectoryValue = NULL
   }
   
   #Import subdirectory
-  if(!is.na(cmdArgImport('s'))){
+  if(!any(is.na(cmdArgImport('s')))){
     useSubdirectory = TRUE
-    subdirectoryValue = cmdArgImport('s')
+    subdirectoryValueList = cmdArgImport('s')
     message(paste("Using subdirectory", subdirectoryValue, "."))
     
-    outputFolderName = paste(outputFolderName, subdirectoryValue, "/", sep="")
+    if(length(subdirectoryValueList ==1)){outputFolderName = paste(outputFolderName, subdirectoryValueList[1], "/", sep=""); subdirectoryValue = subdirectoryValueList[1]}
     
   }else{
     message("No subdirectory specified.")
@@ -124,47 +126,52 @@ subdirectoryValue = NULL
 
 
 #                   ------- Code Body -------- 
-
-#Load correlation file
-correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "CorrelationFile.rds", sep= "") #get the correlation file location based on prefix 
-if(useCategoricalPermulations){
-  correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile", ".rds", sep= "")
-}
-if(useCorrelationOverride){                                                     #if a correlation override was specified, replace it with that
-  correlationFileLocation = paste(outputFolderName, correlationOverride, sep="")                                      
-}
-correlationData = readRDS(correlationFileLocation)                              #Import the correlation data (non-permulated)
-
-if(usePermulations){                                                            #If permualtions are being used   
+for(i in 1:length(subdirectoryValueList)){
+    outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+    message(paste("Using subdirectory", subdirectoryValueList[i], "."))
+    outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
+    subdirectoryValue = subdirectoryValueList[i]
+    
+  #Load correlation file
+  correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "CorrelationFile.rds", sep= "") #get the correlation file location based on prefix 
   if(useCategoricalPermulations){
-    correlationData$P = correlationData$permP
-  }else{
-    if(usePermulationPValOverride){                                               #check for a location override
-      permulationFileLocation = paste(outputFolderName, permulationPValOverride, sep="")                           #if so, use it 
-    }else{                                                                        #if not, use the default 
-      permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "") #get the default location based on prefix 
+    correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile", ".rds", sep= "")
+  }
+  if(useCorrelationOverride){                                                     #if a correlation override was specified, replace it with that
+    correlationFileLocation = paste(outputFolderName, correlationOverride, sep="")                                      
+  }
+  correlationData = readRDS(correlationFileLocation)                              #Import the correlation data (non-permulated)
+  
+  if(usePermulations){                                                            #If permualtions are being used   
+    if(useCategoricalPermulations){
+      correlationData$P = correlationData$permP
+    }else{
+      if(usePermulationPValOverride){                                               #check for a location override
+        permulationFileLocation = paste(outputFolderName, permulationPValOverride, sep="")                           #if so, use it 
+      }else{                                                                        #if not, use the default 
+        permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "") #get the default location based on prefix 
+      }
+      permulationValues = readRDS(permulationFileLocation)                          #read the permulation file
+      correlationData$P = permulationValues                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
     }
-    permulationValues = readRDS(permulationFileLocation)                          #read the permulation file
-    correlationData$P = permulationValues                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
+  }
+  
+  rerStats = getStat(correlationData)                                             #processes the RERs somewhat into stat values. only uses the P column, and the sign of the Rho column. 
+  
+  for(i in 1:length(gmtFileLocation)){
+  #Load the gmt annotations 
+  gmtAnnotations = read.gmt(gmtFileLocation[i])                                      #read the gmt file
+  annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
+  enrichmentListName = substring(gmtFileLocation[i], 6, last = (nchar(gmtFileLocation[i]) - 4)) #make a geneset name based on the filename 
+  names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
+  
+  enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
+  
+  #save the enrichment output
+  enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+  saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
   }
 }
-
-rerStats = getStat(correlationData)                                             #processes the RERs somewhat into stat values. only uses the P column, and the sign of the Rho column. 
-
-for(i in 1:length(gmtFileLocation)){
-#Load the gmt annotations 
-gmtAnnotations = read.gmt(gmtFileLocation[i])                                      #read the gmt file
-annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
-enrichmentListName = substring(gmtFileLocation[i], 6, last = (nchar(gmtFileLocation[i]) - 4)) #make a geneset name based on the filename 
-names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
-
-enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
-
-#save the enrichment output
-enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
-saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
-}
-
 # --- Visualize the enrichment ----
 
 {
