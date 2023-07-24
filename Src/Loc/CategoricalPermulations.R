@@ -16,10 +16,11 @@ source("Src/Reu/cmdArgImport.R")
 # p = <auto or stationary or flat>    This sets the probability of each state at the root of the tree.   
 # n = numberOfPermulations            This is the number of permulations to run in the script 
 # i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
+# l = relaxationValue <int, 0-1>      This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. 
 
 
 #----------------
-args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 't=ER', 'n=4', 'i=Dev') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 't=ER', 'n=4', 'i=Dev', 'l=0.1') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -58,6 +59,8 @@ modelType = "ER"
 rootProbability = "auto"
 permulationAmount = 100
 runInstanceValue = NULL
+useRelaxation = FALSE
+relaxationValue = NULL
 
 { # Bracket used for collapsing purposes
   #MainTrees Location
@@ -92,6 +95,15 @@ runInstanceValue = NULL
   }else{
     paste("This script does not have a run instance value")
   }
+  #Relaxation
+  if(!is.na(cmdArgImport('l'))){
+    useRelaxation = TRUE
+    relaxationValue = cmdArgImport('l')
+    relaxationValue = as.numeric(relaxationValue)
+    source("Src/Reu/RelaxedRejectionPermFuncs.R")
+  }else{
+    paste("Not relaxing permulations.")
+  }
 }
 
 
@@ -124,7 +136,11 @@ correlationsObject = readRDS(correlationFileName)                               
 # -- Run Permulations --
 
 permsStartTime = Sys.time()                                                     #get the time before start of permulations
-permulationData = categoricalPermulations(mainTrees, phenotypeVector, rm = modelType, rp = rootProbability, ntrees = permulationAmount)
+if(useRelaxation){
+  permulationData = categoricalPermulations(mainTrees, phenotypeVector, rm = modelType, rp = rootProbability, ntrees = permulationAmount, percent_relax = relaxationValue)
+}else{
+  permulationData = categoricalPermulations(mainTrees, phenotypeVector, rm = modelType, rp = rootProbability, ntrees = permulationAmount)
+}
 permsEndTime = Sys.time()                                                       #get time at end of permulations
 message(paste("Time to run permulations: ", (permsEndTime - permsStartTime), attr(permsEndTime - permsStartTime, "units"))) #Print the time taken to calculate permulations
 message(paste("Time per permulation: ", ((permsEndTime - permsStartTime)/permulationAmount), attr((permsEndTime - permsStartTime)/permulationAmount, "units")))
