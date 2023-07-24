@@ -29,6 +29,7 @@ source("Src/Reu/cmdArgImport.R")
 args = c('r=EcholocationUpdate', 'p=B') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 args = c('r=CategoricalDiet4Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-carnivore")', 'p=F')
 args = c('r=CategoricalDiet5Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-Piscivore", "Carnivore-Piscivore", "Herbivore-Piscivore", "Insectivore-Piscivore", "_Omnivore-carnivore")', 'p=F')
+args = c('r=CategoricalDiet3Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Carnivore")', 'p=CB')
 
 
 # --- Standard start-up code ---
@@ -140,11 +141,11 @@ subdirectoryValueList = NULL
 
 
 # ------ Import the Data ------ 
-for(i in 1:length(subdirectoryValueList)){
+for(j in 1:length(subdirectoryValueList)){
   outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  message(paste("Using subdirectory", subdirectoryValueList[i], "."))
-  outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
-  subdirectoryValue = subdirectoryValueList[i]
+  message(paste("Using subdirectory", subdirectoryValueList[j], "."))
+  outputFolderName = paste(outputFolderName, subdirectoryValueList[j], "/", sep="")
+  subdirectoryValue = subdirectoryValueList[j]
   
   if(useCategoricalPerms){
     correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile.rds", sep= "")
@@ -372,21 +373,24 @@ for(i in 1:length(subdirectoryValueList)){
   pdfLength = pdfRows*pdfLengthPerRow
   
   outputPDFLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "VisualizeOutput.pdf", sep= "") # this could be improved to be more dynamic
+  
   pdf(file = outputPDFLocation, width = 15, height = pdfLength)
   
-  plot_grid(headlineGenes, histograms, signedGenes, ncol = 1, nrow = 3)
-  
+  mainplot = plot_grid(headlineGenes, histograms, signedGenes, ncol = 1, nrow = 3)
+  print(mainplot)
   if(useGeneEnrichment){
-    enrichmentPlots
+    print(enrichmentPlots)
   }
+ 
+
   dev.off()
   
-  if(useGeneEnrichment){
-    for(i in 1:2){
-      enrichmentPDFLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "Geneset", names(enrichmentResultSets[i]), ".pdf", sep= "")
-      ggsave(file = enrichmentPDFLocation, enrichmentPlotSet[[i]], width = 12, height = 10)
-    }
-  }
+  #if(useGeneEnrichment){
+  #  for(i in 1:2){
+  #    enrichmentPDFLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "Geneset", names(enrichmentResultSets[i]), ".pdf", sep= "")
+  #    ggsave(file = enrichmentPDFLocation, enrichmentPlotSet[[i]], width = 12, height = 10)
+  #  }
+  #}
 }
 
 #improvements for this script: 

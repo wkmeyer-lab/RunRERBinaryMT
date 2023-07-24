@@ -414,3 +414,26 @@ mainTrees$masterTree = unrootupham
 #saveRDS(mainTrees, "Data/NoSignFirstExpressionTreesNewMaster.rds")
 
 oldRERs = readRDS("Output/CVHRemake/CVHRemakeRERFile.rds")
+
+
+cat4Crrels = readRDS("Output/CategoricalDiet4Phen/CategoricalDiet4PhenPairwiseCorrelationFile.rds")
+pairwiseTableNames = names(cat4Crrels)
+
+cat5Crrels = readRDS("Output/CategoricalDiet5Phen/CategoricalDiet5PhenPairwiseCorrelationFile.rds")
+pairwiseTableNames = names(cat5Crrels)
+
+cat4Crrels[[1]]
+
+for(i in 1:length(pairwiseTableNames)){
+  pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
+  
+  outputSubdirectoryNoslash = paste(outputFolderName, pairwiseTableNames[i], sep = "")
+  if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+    dir.create(outputSubdirectoryNoslash)
+  }
+  outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+  
+  permulationsPValuesPairFilename = paste(outputSubdirectory, filePrefix, pairwiseTableNames[i], "CorrelationFile",".rds", sep= "")
+  saveRDS(cat5Crrels[[i]], permulationsPValuesPairFilename)
+}
+j=1
