@@ -31,8 +31,8 @@ source("Src/Reu/fast_bin_perm.r")
 #testing args 
 args = c('r=demoInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=1')
 args = c('r=allInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
-args = c('r=carnvHerbs','n=3300','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=test', 'p=T')
-
+args = c('r=carnvHerbs','n=3300','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=test', 'p=F')
+args = c('r=LiverExpression3', 'n=300', 'i=$i', 'p=T', 'm=Data/NoSignExpressionTreesRound3.rds')
 
 args = commandArgs(trailingOnly = TRUE)
 #Get start time of the script 
@@ -246,27 +246,31 @@ if(willPruneTree){
 bitMap = makeLeafMap(rootedMasterTree)
 internalNumberValue = countInternal(rootedMasterTree, bitMap,fg=names(phenotypeVector)[which(phenotypeVector==1)])
 #The function used for each permulation:
-computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =35, internalNumber = internalNumberValue){
+computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, mainTrees, RERObject, min.sp =10, min.pos = 2, internalNumber = internalNumberValue){
   singlePermStartTime = Sys.time()
   message("perm")
   permulatedForeground = fastSimBinPhenoVec(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
   
   message("tree")
-  permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound
+  tryCatch({permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter)}, error = NULL) #generate a tree using that foregound
   #permulatedTree = debugTruncatedFG2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound
-  
-  message("paths")
-  permulatedPaths = tree2Paths(permulatedTree, mainTrees, binarize=T, useSpecies=speciesFilter)                                                    #generate a path from that tree
-  
-  singlePermulationEndTime = Sys.time()
-  permulationDuration = singlePermulationEndTime - singlePermStartTime
-  message("Permulation time: ", permulationDuration)
-  permulatedCorrelations = correlateWithBinaryPhenotype(RERObject, permulatedPaths, min.sp=min.sp)                                                 #Use that path to get a coreelation of the null phenotype to genes (this is the outbut of a Get PermsBinary run)
-  
-  correlationEndTime = Sys.time()
-  correlationDuration = correlationEndTime - singlePermulationEndTime
-  message("Correlation Duration: ", correlationDuration)
-  permulatedCorrelations
+  if(!is.null(permulatedTree)){
+    message("paths")
+    permulatedPaths = tree2Paths(permulatedTree, mainTrees, binarize=T, useSpecies=speciesFilter)                                                    #generate a path from that tree
+    
+    singlePermulationEndTime = Sys.time()
+    permulationDuration = singlePermulationEndTime - singlePermStartTime
+    message("Permulation time: ", permulationDuration)
+    permulatedCorrelations = correlateWithBinaryPhenotype(RERObject, permulatedPaths, min.sp=min.sp, min.pos = min.pos)                                                 #Use that path to get a coreelation of the null phenotype to genes (this is the outbut of a Get PermsBinary run)
+    
+    correlationEndTime = Sys.time()
+    correlationDuration = correlationEndTime - singlePermulationEndTime
+    message("Correlation Duration: ", correlationDuration)
+    permulatedCorrelations
+  }else{
+    message("Perm failed, skipping")
+    return(NULL)
+  }
 }
 
 #run repeated permulations
