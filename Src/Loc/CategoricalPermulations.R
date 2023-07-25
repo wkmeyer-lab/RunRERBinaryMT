@@ -100,7 +100,7 @@ relaxationValue = NULL
     useRelaxation = TRUE
     relaxationValue = cmdArgImport('l')
     relaxationValue = as.numeric(relaxationValue)
-    source("Src/Reu/RelaxedRejectionPermFuncs.R")
+    source("Src/Reu/RelaxedRejectionPermFuncs2.R")
   }else{
     paste("Not relaxing permulations.")
   }
