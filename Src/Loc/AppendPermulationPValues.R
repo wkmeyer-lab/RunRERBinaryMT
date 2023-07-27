@@ -5,7 +5,7 @@ library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/convertLogiToNumeric.R")
-source("Src/Loc/permPValCorReport.R")
+source("Src/Reu/permPValCorReport.R")
 
 #---- USAGE -----
 #used to calculate p values on combined permulations files made by CombinePermualtions.R. 
