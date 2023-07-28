@@ -10,7 +10,7 @@
 #treeToConvertLocation = "Data/CVHRemakeBinaryForegroundTree.rds"
 #inputTree = readRDS(treeToConvertLocation)
 
-ZoonomTreeNameToCommon = function(tree, plot = T, isForegroundTree = T, manualAnnotLocation = "Data/manualAnnotationsSheet.csv", hlcol = "blue", bgcol = "black"){
+ZoonomTreeNameToCommon = function(tree, plot = T, isForegroundTree = T, manualAnnotLocation = "Data/manualAnnotationsSheet.csv", hlcol = "blue", bgcol = "black", fontSize = 0.8){
   
   manualAnnot = read.csv(manualAnnotLocation) 
   inputTree = tree
@@ -33,7 +33,7 @@ ZoonomTreeNameToCommon = function(tree, plot = T, isForegroundTree = T, manualAn
     if(isForegroundTree){
       readableTree = inputTree
       readableTree$edge.length[readableTree$edge.length == 0] = 1
-      plotTreeHighlightBranches2(readableTree, hlspecies = which(inputTree$edge.length == 1), hlcols = hlcol, bgcol = bgcol)
+      plotTreeHighlightBranches2(readableTree, hlspecies = which(inputTree$edge.length == 1), hlcols = hlcol, bgcol = bgcol, fontSize = fontSize)
     }else{
       plotTree(inputTree)
     }
@@ -42,7 +42,7 @@ ZoonomTreeNameToCommon = function(tree, plot = T, isForegroundTree = T, manualAn
 }
 
 plotTreeHighlightBranches2 =function (tree, outgroup = NULL, hlspecies, hlcols = NULL, main = "", 
-          useGG = FALSE, bgcol = "black") 
+          useGG = FALSE, bgcol = "black", fontSize =0.8) 
 {
   if (is.null(hlcols)) {
     hlcols <- c(2:(length(hlspecies) + 1))
@@ -140,7 +140,7 @@ plotTreeHighlightBranches2 =function (tree, outgroup = NULL, hlspecies, hlcols =
     rooted2$edge.length[rooted2$edge.length == 0] = max(0.02, 
                                                         mm/20)
     plotobj = plot.phylo(rooted2, main = main, edge.color = colMaster, 
-                         tip.color = colMasterTip, edge.width = 2, cex = 0.8)
+                         tip.color = colMasterTip, edge.width = 2, cex = fontSize)
     return(plotobj)
   }
 }

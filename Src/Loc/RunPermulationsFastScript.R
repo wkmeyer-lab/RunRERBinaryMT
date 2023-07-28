@@ -252,7 +252,7 @@ computeCorrelationOnePermulation = function(rootedMasterTree, phenotypeVector, m
   permulatedForeground = fastSimBinPhenoVec(tree=rootedMasterTree, phenvec=phenotypeVector, internal=internalNumber)                                     #generate a null foreground via permulation
   
   message("tree")
-  tryCatch({permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter)}, error = NULL) #generate a tree using that foregound
+  tryCatch({permulatedTree = foreground2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter)}, error = function(cond){permulatedTree = NULL; message("Original error:"); message(cond)}) #generate a tree using that foregound
   #permulatedTree = debugTruncatedFG2Tree(permulatedForeground, mainTrees, plotTree=F, clade="all", transition="bidirectional", useSpecies=speciesFilter) #generate a tree using that foregound
   if(!is.null(permulatedTree)){
     message("paths")
