@@ -19,8 +19,13 @@ Output/Test
 Output/Domestication/IgnoreGit
 *Correlationfile*
 *PathsFile*
-*RERFile*
+RERFile
 *graphs*
 Output/categoryTest
 Output/CategoricalSpeedTest
 Results/CategoricalPermulationsTimingTrees.rds
+Output/CategoricalDiet3Phen
+Output/CategoricalDiet4Phen
+Output/CategoricalDiet5Phen
+Data/Old
+Data/NoSign
