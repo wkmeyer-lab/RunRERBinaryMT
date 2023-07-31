@@ -437,3 +437,222 @@ for(i in 1:length(pairwiseTableNames)){
   saveRDS(cat5Crrels[[i]], permulationsPValuesPairFilename)
 }
 j=1
+
+correlation[order(correlation$p.adj),]
+
+saveRDS(mainTrees, "Data/NoSignExpressionTreesRound3.rds")
+
+signmulitmat = readRDS("Data/SignMultiplierExpressionTreesRound3.rds")
+
+unsignedRER = RERObject
+signedRER = unsignedRER * signmulitmat
+
+RERObject = signedRER
+
+all.equal(signedRER, unsignedRER)
+all.equal(signedRER, RERObject)
+
+
+# ----------# 
+
+
+foreground = permulatedForeground; treesObj = mainTrees; plotTree=F; clade="all"; transition="bidirectional"; useSpecies=speciesFilter; weighted = F; 
+
+source("Src/Reu/RERCOnvergeFunctions.R")
+foreground2TreeDebug = function (foreground, treesObj, plotTree = T, clade = c("ancestral", "terminal", "all"), weighted = F, transition = "unidirectional", useSpecies = NULL) 
+{
+  res = treesObj$masterTree
+  if (!is.null(useSpecies)) {
+    sp.miss = setdiff(res$tip.label, useSpecies)
+    if (length(sp.miss) > 0) {
+      message(paste0("Species from master tree not present in useSpecies: ", 
+                     paste(sp.miss, collapse = ",")))
+    }
+    useSpecies = intersect(useSpecies, res$tip.label)
+    res = pruneTree(res, useSpecies)
+  }
+  foreground = intersect(foreground, useSpecies)
+  res$edge.length <- rep(0, length(res$edge.length))
+  {
+    if (transition == "bidirectional") {
+      res <- inferBidirectionalForegroundCladesDebug(res, foreground, 
+                                                ancestralOnly = F)
+    }
+  }
+  res
+}
+
+
+treeinput = res; foreground = foreground; ancestralOnly = F; i=1
+
+inferBidirectionalForegroundCladesDebug = function(treeinput, foreground = NULL, ancestralOnly = F){
+  tree <- treeinput
+  tip.vals=rep(0, length(tree$tip.label))
+  names(tip.vals)=tree$tip.label
+  tip.vals[foreground]=1
+  tmp=cbind(as.character(tip.vals))
+  rownames(tmp)=names(tip.vals)
+  tip.vals=tmp
+  #Add option to function for "type" within ancestral.pars
+  ancres=ancestral.pars(tree, df<-as.phyDat(tip.vals, type="USER", levels=unique(as.character(tip.vals))),type="ACCTRAN" )
+  ancres=unlist(lapply(ancres, function(x){x[2]}))
+  internalVals=ancres
+  #evals=matrix(nrow=nrow(treesObj$masterTree$edge), ncol=2)
+  evals=matrix(nrow=nrow(tree$edge), ncol=2)
+  eres=ancres
+  #evals[,1]=eres[treesObj$masterTree$edge[,1]]
+  evals[,1]=eres[tree$edge[,1]]
+  #evals[,2]=eres[treesObj$masterTree$edge[,2]]
+  evals[,2]=eres[tree$edge[,2]]
+  tree$edge.length=evals[,2]-evals[,1]
+  #res$edge.length[res$edge.length<1]=0
+  if(!ancestralOnly){
+    edgeIndex=which(tree$edge.length>0)
+    edgeIndexNeg=which(tree$edge.length<0)
+    edgeIndexAll = c(edgeIndex,edgeIndexNeg)
+    edgeDirection = c(rep(1, length(edgeIndex)),rep(-1, length(edgeIndexNeg)))
+    edgedf = data.frame(edgeIndexAll,edgeDirection)
+    edgedf = edgedf[order(edgedf$edgeIndexAll),]
+    clade.edges=NA
+    clade.lengths=NA
+    cladedf = data.frame(clade.edges,clade.lengths)
+    for(i in 1:nrow(edgedf)) { #Does this go from ancestral to terminal?
+      #save the clade until the edges no longer overlap
+      clade.edges=getAllCladeEdgesDebug(tree, edgedf$edgeIndexAll[i])
+      clade.edges=unique(c(edgedf$edgeIndexAll[i], clade.edges))
+      if (any(clade.edges %in% cladedf$clade.edges)==F) {
+        tree$edge.length[cladedf$clade.edges[which(cladedf$clade.lengths==1)]]=1
+        if (edgedf$edgeDirection[i] == 1) {
+          clade.lengths = c(rep(1,length(clade.edges)))
+        } else {
+          clade.lengths = c(rep(0,length(clade.edges)))
+        }
+        cladedf = data.frame(clade.edges,clade.lengths)
+      } else {
+        #update df lengths
+        if (edgedf$edgeDirection[i] == 1) {
+          cladedf$clade.lengths[which(cladedf$clade.edges %in% clade.edges)] = 1
+        } else {
+          cladedf$clade.lengths[which(cladedf$clade.edges %in% clade.edges)] = 0
+        }
+      }
+    }
+    #update edge lengths from the final clade
+    tree$edge.length[cladedf$clade.edges[which(cladedf$clade.lengths==1)]]=1
+    tree$edge.length[tree$edge.length<0]=0
+  }
+  tree$edge.length[tree$edge.length<0]=0
+  tree
+}
+
+tree= tree; AncEdge = edgedf$edgeIndexAll[i]
+
+getAllCladeEdgesDebug = function(tree, AncEdge){
+  node=tree$edge[AncEdge,2]
+  #get descendants
+  iid=getDescendantsDebug(tree, node)
+  #find their edges
+  iim=match(iid, tree$edge[,2])
+  iim
+}
+
+tree= tree; node = node; curr = NULL
+
+getDescendantsDebug = function (tree, node, curr = NULL) 
+{
+  
+  daughters <- tree$edge[which(tree$edge[, 1] == node), 2]
+  curr <- daughters
+  if(is.na(length(curr)) || is.null(length(curr)) || is.na(Ntip(tree)) || is.null(Ntip(tree)) || is.na(node) ||is.null(node)){
+    print(node)
+    print(curr)
+    print(tree)
+  }
+  if (length(curr) == 0 && node <= Ntip(tree)) 
+    curr <- node
+  w <- which(daughters > Ntip(tree))
+  if (length(w) > 0) 
+    for (i in 1:length(w)) curr <- getDescendants(tree, daughters[w[i]], 
+                                                  curr)
+  return(curr)
+}
+
+
+readRDS("Output/LiverExpression3/LiverExpression3CombinedPrunedFastAppendedPermulationsPValue.rds")
+
+permVal = readRDS("Output/LiverExpression3/LiverExpression3CombinedPrunedFastAppendedPermulationsPValue.rds")
+permValNew = readRDS("Output/LiverExpression3/LiverExpression3CombinedPrunedFastAppendedPermulationsPValue.rds")
+
+which(is.null(names(permVal)))
+tail(names(permVal))
+cleanedPermVal = a
+  
+which(!names(permVal) %in% unique(names(permVal)))
+
+rownames(correlData)
+which(!names(permVal) %in% rownames(correlData))
+
+length(rownames(correlData))
+length(names(permVal))
+
+which(!rownames(correlData) %in% names(permVal))
+
+cleanedPermVals = unique(permVal)
+
+length(unique(names(permVal)))
+
+which(duplicated(names(permVal)))
+length(which(duplicated(names(permVal))))
+4250-3401
+
+permSub1 = permVal[1:850]
+permSub2 = permVal[3401:4250]
+
+names(permSub2)
+
+all(names(permSub1) %in% names(permSub2))
+
+all.equal(permSub1, permSub2)
+
+permValClean = permVal[-c(3401:4250)]
+
+all.equal(rownames(correlData), names(permValClean))
+match(rownames(correlData), names(permValClean), nomatch = T)
+
+names = data.frame(rownames(correlData)[c(1:17000)], names(permValNew))
+
+unMatched = subset(names, names[[1]] != names[[2]])
+
+all.equal(rownames(correlData), names(permValNew))
+
+tail(rownames(unMatched))
+
+
+pValset1= readRDS("Output/LiverExpression3/LiverExpression3CombinedPrunedFast1-3400PermulationsPValue.rds")
+pValset2= readRDS("Output/LiverExpression3/LiverExpression3CombinedPrunedFast3401-6800PermulationsPValue.rds")
+pValset3= readRDS("Output/LiverExpression3/LiverExpression3CombinedPrunedFast6801-10200PermulationsPValue.rds")
+pValset4= readRDS("Output/LiverExpression3/LiverExpression3CombinedPrunedFast10201-13600PermulationsPValue.rds")
+pValset5= readRDS("Output/LiverExpression3/LiverExpression3CombinedPrunedFast13601-17000PermulationsPValue.rds")
+
+
+pvalCombined = append(pValset1, pValset2)
+pvalCombined = append(pvalCombined, pValset3)
+pvalCombined = append(pvalCombined, pValset4)
+pvalCombined = append(pvalCombined, pValset5)
+
+names = data.frame(rownames(correlData)[c(1:17000)], names(pvalCombined))
+all.equal(rownames(correlData), names(pvalCombined))
+unMatched = subset(names, names[[1]] != names[[2]])
+
+saveRDS(pvalCombined, file = "Output/LiverExpression3/LiverExpression3CombinedPrunedFastAllPermulationsPValue.rds")
+correlData = correlData[1:17000,]
+
+#correlDataBackup = correlData
+correlData = correlDataBackup
+
+correlData = correlData[-which(correlData$permPValue ==0),]
+correlDataPositive = correlDataPositive[which(correlDataPositive$permPValue==0)]
+
+
+saveRDS(correlData, "Output/LiverExpression3/LiverExpression3PermulatedCorrelations.rds")
+write.csv(correlData, "Output/LiverExpression3/LiverExpression3PermulatedCorrelations.CSV")
