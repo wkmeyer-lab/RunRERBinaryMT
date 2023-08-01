@@ -24,7 +24,8 @@ args = c('r=LiverExpression',  'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", 
 args = c('r=EcholocationUpdate',  'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 args = c('r=CategoricalDiet4Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-carnivore")', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 args = c('r=CategoricalDiet5Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-Piscivore", "Carnivore-Piscivore", "Herbivore-Piscivore", "Insectivore-Piscivore", "_Omnivore-carnivore")', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'v=T', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
-args = c('r=CategoricalDiet3Phen', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Carnivore")', 'p=C')
+args = c('r=CategoricalDiet3Phen', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Carnivore")', 'p=T')
+args = c('r=LiverExpression3', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=T', "c=LiverExpression3CorrelationDataPermulatedNamesConverted.rds")
 
 
 
@@ -132,7 +133,9 @@ subdirectoryValueList = NULL
 for(i in 1:length(subdirectoryValueList)){
     outputFolderName = paste("Output/",filePrefix,"/", sep = "")
     message(paste("Using subdirectory", subdirectoryValueList[i], "."))
-    outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
+    if(useSubdirectory){
+      outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
+    }
     subdirectoryValue = subdirectoryValueList[i]
     
   #Load correlation file
@@ -222,4 +225,5 @@ for(i in 1:length(subdirectoryValueList)){
     }
   }
 }  
+
 
