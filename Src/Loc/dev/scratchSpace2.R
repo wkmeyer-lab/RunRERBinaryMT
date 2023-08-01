@@ -1,4 +1,5 @@
 a = b #This is to prevent accidental ful runs 
+source("Src/Reu/RERConvergeFunctions.r")
 
 permdata = readRDS("Output/CategoricalDiet3Phen/CategoricalDiet3PhenPermulationsData1.rds")
 
@@ -654,5 +655,246 @@ correlData = correlData[-which(correlData$permPValue ==0),]
 correlDataPositive = correlDataPositive[which(correlDataPositive$permPValue==0)]
 
 
-saveRDS(correlData, "Output/LiverExpression3/LiverExpression3PermulatedCorrelations.rds")
-write.csv(correlData, "Output/LiverExpression3/LiverExpression3PermulatedCorrelations.CSV")
+#saveRDS(correlData, "Output/LiverExpression3/LiverExpression3PermulatedCorrelations.rds")
+#write.csv(correlData, "Output/LiverExpression3/LiverExpression3PermulatedCorrelations.CSV")
+
+nameConvert = read.csv("Data/mart_export_convert_ensid_genename.csv")
+
+oldNames = rownames(correlData)
+convertTable = data.frame(oldNames)
+convertTable$stoneIndex = match(oldNames, nameConvert$Gene.stable.ID)
+
+convertTable$newName = NA
+for(i in 1:length(convertTable$newName)){
+  convertTable$newName[i] = nameConvert$Gene.name[convertTable$stoneIndex[i]]
+}
+
+correlDataFixedNames = correlData
+
+
+
+length(which(duplicated(nameConvert$Gene.name)))
+
+convertTable$newName[(which(duplicated(convertTable$newName)))]
+convertTable$newNameFixed = convertTable$newName
+convertTable$newNameFixed[(which(duplicated(convertTable$newNameFixed)))]
+
+i=41
+problemPositions = (which(duplicated(convertTable$newNameFixed)))
+replacements = c("NOGENENAME1", "HLA-DQB1-DUPLICATE1", "HLA-DRB1-DUPLICATE2", "MISSINGCONVERSION", "NOGENENAME14", "HLA-DRB1-DUP1", "HLA-DRB1-DUP2", "NOGENENAME2", "TAP2-DUP1", "HLA-C-DUP1", "DDR1-DUP1", "ATP6V1G2-DUP1", "TNXB-DUP1", "EHMT2-DUP1", "NOGENENAME3", "GART-DUP1", "NOGENENAME4", "NOGENENAME5", "NOGENENAME6", "NOGENENAME7", "NOGENENAME8", "NOGENENAME9", "UPK3B-DUP1", "NOGENENAME10", "KIR3DL1-DUP1", "UNC79-DUP1","GTF2H2-DUP1", "OPRL1-DUP1", "PRODH-DUP1", "NOGENENAME11", "CCL3L3-DUP1", "MUC20-DUP1", "MUC4-DUP1", "NOGENENAME12", "NOGENENAME13", "MATR3-DUP1", "NXN-DUP1", "CABIN1-DUP1", "SEPTIN9-DUP1", "CCL4L2-DUP1", "NOGENENAME15")
+for(i in 1:41){
+  convertTable$newNameFixed[problemPositions[i]] = replacements[i] 
+}
+convertTable$newNameFixed[which(is.na(convertTable$newNameFixed))] = "MISSINGCONVERSION3"
+rownames(correlDataFixedNames) = convertTable$newNameFixed
+
+#
+convertTable$newNameFixed[which(duplicated(convertTable$newNameFixed))]
+length(replacements)
+length(problemPositions)
+
+problemNames = convertTable$newNameFixed[(which(duplicated(convertTable$newNameFixed)))]
+convertTable$newNameFixed[problemPositions]
+
+which(is.na(convertTable$newNameFixed))
+#
+
+all.equal(correlDataFixedNames, correlData)
+
+#rownames(correlDataFixedNames)[13976] = "NOGENENAME16"
+
+#saveRDS(correlDataFixedNames, "Output/LiverExpression3/LiverExpression3CorrelationDataPermulatedNamesConverted.rds")
+correlData = correlDataFixedNames
+i=4
+correlationData = correlDataFixedNames
+
+
+
+geneSetNames = unlist(annotationsList$GO_Biological_Process_2023$genesets[c(1:5407)])
+
+length(which(convertTable$newNameFixed %in% geneSetNames))
+length(convertTable$newNameFixed)
+rerStats[which(rerStats == -Inf)] = 0
+
+which(is.na(rerStats))
+which(names(rerStats) == "")
+which(rownames(correlationData) == "")
+which(is.null(names(correlationData)))
+
+
+vals=rerStats
+gmt = annotationsList[[1]]
+
+fastwilcoxGMT=function(vals, gmt, simple=T, use.all=F, num.g=10,genes=NULL, outputGeneVals=T, order=F,
+                       alternative = "two.sided"){
+  vals=vals[!is.na(vals)]
+  if(is.null(genes)){
+    genes=unique(unlist(gmt$genesets))
+  }
+  out=matrix(nrow=length(gmt$genesets), ncol=5)
+  rownames(out)=gmt$geneset.names
+  colnames(out)=c("stat", "pval", "p.adj","num.genes", "gene.vals")
+  out=as.data.frame(out)
+  genes=intersect(genes, names(vals))
+  
+  valsr=rank(vals[genes])
+  numg=length(vals)+1
+  valsallr=rank(vals)
+  for( i in 1:nrow(out)){
+    
+    curgenes=intersect(genes,gmt$genesets[[i]])
+    
+    bkgenes=setdiff(genes, curgenes)
+    
+    if (length(bkgenes)==0 || use.all){
+      bkgenes=setdiff(names(vals), curgenes)
+    }
+    if(length(curgenes)>=num.g & length(bkgenes)>2){
+      if(!simple){
+        # change alternative = "greater" for the one-sided test
+        res=wilcox.test(x = vals[curgenes], y=vals[bkgenes], exact=F, alternative = alternative)
+        
+        out[i, 1:2]=c(res$statistic/(as.numeric(length(bkgenes))*as.numeric(length(curgenes))), res$p.value)
+      }
+      else{
+        # add an alternative parameter (can be "greater" or "two.sided")
+        out[i, 1:2]=simpleAUCgenesRanks(valsr[curgenes],valsr[bkgenes], alt = alternative)
+        
+      }
+      out[i,"num.genes"]=length(curgenes)
+      if(outputGeneVals){
+        if (out[i,1]>0.5){
+          oo=order(vals[curgenes], decreasing = T)
+          granks=numg-valsallr[curgenes]
+        }
+        else{
+          oo=order(vals[curgenes], decreasing = F)
+          granks=valsallr[curgenes]
+        }
+        
+        
+        nn=paste(curgenes[oo],round((granks[curgenes])[oo],2),sep=':' )
+        out[i,"gene.vals"]=paste(nn, collapse = ", ")
+      }
+    }
+    
+  }
+  # hist(out[,2])
+  out[,1]=out[,1]-0.5
+  out[, "p.adj"]=p.adjust(out[,2], method="BH")
+  
+  out=out[!is.na(out[,2]),]
+  if(order){
+    out=out[order(-abs(out[,1])),]
+  }
+  out
+}
+
+
+pos = valsr[curgenes]
+neg = valsr[bkgenes]
+alt = alternative
+
+simpleAUCgenesRanks=function(pos, neg, alt = "two.sided"){
+  
+  posn=length(pos)
+  negn=length(neg)
+  posn=as.numeric(posn)
+  negn=as.numeric(negn)
+  stat=sum(pos)-posn*(posn+1)/2
+  auc=stat/(posn*negn)
+  mu=posn*negn/2
+  sd=sqrt((posn*negn*(posn+negn+1))/12)
+  
+  if(alt == "two.sided") {
+    stattest=apply(cbind(stat, posn*negn-stat),1,max)
+    pp=(2*pnorm(stattest, mu, sd, lower.tail = F))
+  }
+  
+  else if(alt == "greater"){
+    pp=(pnorm(stat,mu,sd,lower.tail=FALSE)) 
+  }
+  return(c(auc,pp))
+}
+
+which(names(stat) =="")
+which(rownames(res) =="")
+which(rownames(correlationData) =="")
+res=correlationData
+function(res){
+  stat=sign(res$Rho)*(-log10(res$P))
+  names(stat)=rownames(res)
+  #deal with duplicated genes
+  genenames=sub("\\..*", "",names(stat))
+  multname=names(which(table(genenames)>1))
+  for(n in multname){
+    ii=which(genenames==n)
+    iimax=which(max(stat[ii])==max(abs(stat[ii])))
+    stat[ii[-iimax]]=NA
+  }
+  sum(is.na(stat))
+  stat=stat[!is.na(stat)]
+  
+  stat
+}
+
+convertTable[13976,]
+nameConvert[124243,]
+correlData = correlationData
+#write.csv(correlDataFixedNames, "Output/LiverExpression3/LiverExpression3CorrelationDataPermulatedNamesConverted.csv")
+
+
+
+
+
+##  ------ NAME CONVERSION ----- ##
+
+nameConvert = read.csv("Data/mart_export_convert_ensid_genename.csv")
+
+oldNames = rownames(correlData)
+convertTable = data.frame(oldNames)
+convertTable$stoneIndex = match(oldNames, nameConvert$Gene.stable.ID)
+
+convertTable$newName = NA
+for(i in 1:length(convertTable$newName)){
+  convertTable$newName[i] = nameConvert$Gene.name[convertTable$stoneIndex[i]]
+}
+
+correlDataFixedNames = correlData
+
+convertTable$newNameFixed = convertTable$newName
+convertTable$newNameFixed[(which(duplicated(convertTable$newNameFixed)))]
+
+problemPositions = (which(duplicated(convertTable$newNameFixed)))
+replacements = c("NOGENENAME1", "HLA-DQB1-DUPLICATE1", "HLA-DRB1-DUPLICATE2", "MISSINGCONVERSION", "NOGENENAME14", "HLA-DRB1-DUP1", "HLA-DRB1-DUP2", "NOGENENAME2", "TAP2-DUP1", "HLA-C-DUP1", "DDR1-DUP1", "ATP6V1G2-DUP1", "TNXB-DUP1", "EHMT2-DUP1", "NOGENENAME3", "GART-DUP1", "NOGENENAME4", "NOGENENAME5", "NOGENENAME6", "NOGENENAME7", "NOGENENAME8", "NOGENENAME9", "UPK3B-DUP1", "NOGENENAME10", "KIR3DL1-DUP1", "UNC79-DUP1","GTF2H2-DUP1", "OPRL1-DUP1", "PRODH-DUP1", "NOGENENAME11", "CCL3L3-DUP1", "MUC20-DUP1", "MUC4-DUP1", "NOGENENAME12", "NOGENENAME13", "MATR3-DUP1", "NXN-DUP1", "CABIN1-DUP1", "SEPTIN9-DUP1", "CCL4L2-DUP1", "NOGENENAME15")
+
+for(i in 1:41){
+  convertTable$newNameFixed[problemPositions[i]] = replacements[i] 
+}
+convertTable$newNameFixed[which(is.na(convertTable$newNameFixed))] = "MISSINGCONVERSION3"
+rownames(correlDataFixedNames) = convertTable$newNameFixed
+
+
+
+
+# -- RER NAME CONVERSIONS --
+RERsToTranslate = readRDS("Output/LiverExpression3/LiverExpression3RERFile.rds")
+
+oldNames = rownames(RERsToTranslate)
+convertTable = data.frame(oldNames)
+convertTable$stoneIndex = match(oldNames, nameConvert$Gene.stable.ID)
+
+convertTable$newName = NA
+for(i in 1:length(convertTable$newName)){
+  convertTable$newName[i] = nameConvert$Gene.name[convertTable$stoneIndex[i]]
+}
+
+RERsFixedNames = RERsToTranslate
+
+convertTable$newNameFixed = convertTable$newName
+convertTable$newNameFixed[(which(duplicated(convertTable$newNameFixed)))]
+
+
+rownames(RERsFixedNames) = convertTable$newNameFixed
+
+saveRDS(RERsFixedNames, "Output/LiverExpression3/LiverExpression3RERsFileNamesFixed.rds")
