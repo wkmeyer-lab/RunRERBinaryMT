@@ -31,7 +31,7 @@ args = c('r=CategoricalDiet4Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbiv
 args = c('r=CategoricalDiet5Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-Piscivore", "Carnivore-Piscivore", "Herbivore-Piscivore", "Insectivore-Piscivore", "_Omnivore-carnivore")', 'p=F')
 args = c('r=CategoricalDiet3Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Carnivore")', 'p=CB')
 args = c('r=LiverExpression3', 'p=B') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
-
+args = c('r=CVHRemake', 'p=B')
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -366,7 +366,7 @@ for(j in 1:length(subdirectoryValueList)){
     #for(i in 2:enrichmentRange){
     #  enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
     #}
-    enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 5)
+    enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, ncol = 1, nrow = 5)
     enrichmentRows = pmax(length(enrichmentRange), enrichmentRange)
   }
   
