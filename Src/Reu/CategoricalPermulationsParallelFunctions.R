@@ -40,6 +40,7 @@ CategoricalPermulationGetCor =  function (realCors, nullPhens, phenvals, treesOb
       Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
     }
     #if(report){message(paste("compelted", i))}
+    gc()
   }
   output = list(corsMatEffSize, Peffsize, corsMatPvals, Ppvals)
   names(output) = c("corsMatEffSize", "Peffsize", "corsMatPvals", "Ppvals")
