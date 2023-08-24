@@ -897,4 +897,9 @@ convertTable$newNameFixed[(which(duplicated(convertTable$newNameFixed)))]
 
 rownames(RERsFixedNames) = convertTable$newNameFixed
 
-saveRDS(RERsFixedNames, "Output/LiverExpression3/LiverExpression3RERsFileNamesFixed.rds")
+#saveRDS(RERsFixedNames, "Output/LiverExpression3/LiverExpression3RERsFileNamesFixed.rds")
+
+saveRDS(correlData, file = "Output/CVHRemake/CVHRemakeCorrelationsFilePermulated.rds")
+
+hist(correlData$P, breaks = 40)
+?hist()

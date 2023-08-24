@@ -26,7 +26,7 @@ source("Src/Reu/cmdArgImport.R")
 
 
 #----------------
-args = c('r=EcholocationUpdate', 'p=B') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=EcholocationUpdate2', 'p=F') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 args = c('r=CategoricalDiet4Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-carnivore")', 'p=F')
 args = c('r=CategoricalDiet5Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "_Omnivore-Piscivore", "Carnivore-Piscivore", "Herbivore-Piscivore", "Insectivore-Piscivore", "_Omnivore-carnivore")', 'p=F')
 args = c('r=CategoricalDiet3Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Carnivore")', 'p=CB')
