@@ -903,3 +903,63 @@ saveRDS(correlData, file = "Output/CVHRemake/CVHRemakeCorrelationsFilePermulated
 
 hist(correlData$P, breaks = 40)
 ?hist()
+
+
+# ---------
+
+realCors = correlationsObject; nullPhens =  permulationsData$trees; phenvals = phenotypeVector; treesObj = mainTrees; RERmat =  RERObject; method = "kw"; 
+min.sp = 10; min.pos = 2; winsorizeRER = NULL; winsorizetrait = NULL; 
+weighted = F; extantOnly = FALSE; report=T
+saveRDS(nullPaths, "Results/nullPathDev.rds")
+saveRDS(nullPhens, "Results/nullPhens.rds")
+i =6
+
+function (realCors, nullPhens, phenvals, treesObj, RERmat, method = "kw", 
+          min.sp = 10, min.pos = 2, winsorizeRER = NULL, winsorizetrait = NULL, 
+          weighted = F, extantOnly = FALSE, report=F) 
+{
+  tree = treesObj$masterTree
+  keep = intersect(names(phenvals), tree$tip.label)
+  tree = pruneTree(tree, keep)
+  if (is.rooted(tree)) {
+    tree = unroot(tree)
+  }
+  if(report){pathStartTime = Sys.time()}
+  message("Generating null paths")
+  nullPaths = lapply(nullPhens, function(x) {
+    if(report){message("One path complete")}
+    tr = tree
+    tr$edge.length = c(x$tips, x$nodes)[tr$edge[,2]]
+    tree2Paths(tr, treesObj, categorical = TRUE, useSpecies = names(phenvals))
+  })
+  if(report){pathsEndTime = Sys.time(); pathsDuration = pathsEndTime - pathStartTime; message(paste("Completed paths;","Duration", pathsDuration, attr(pathsDuration, "units")))}
+  
+  message("Calculating correlation statistics")
+  corsMatPvals = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
+  corsMatEffSize = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
+  if(report){message("Matrixes")}
+  Ppvals = lapply(1:length(realCors[[2]]), matrix, data = NA, nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
+  names(Ppvals) = names(realCors[[2]])
+  Peffsize = lapply(1:length(realCors[[2]]), matrix, data = NA, nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
+  names(Peffsize) = names(realCors[[2]])
+  if(report){message("pVals")}
+  
+  for (i in 7:17) {
+    if(report){corStartTime = Sys.time()}
+    cors = getAllCor(RERmat, nullPaths[[i]], method = method, 
+                     min.sp = min.sp, min.pos = min.pos, winsorizeRER = winsorizeRER, 
+                     winsorizetrait = winsorizetrait, weighted = weighted)
+    if(report){corEndTime = Sys.time(); corDuration = corEndTime - corStartTime; message(paste("Completed Correlation", i, "Duration", corDuration, attr(corDuration, "units")))}
+    corsMatPvals[, i] = cors[[1]]$P
+    corsMatEffSize[, i] = cors[[1]]$Rho
+    for (j in 1:length(cors[[2]])) {
+      Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
+      Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
+    }
+    #if(report){message(paste("compelted", i))}
+    gc()
+  }
+  output = list(corsMatEffSize, Peffsize, corsMatPvals, Ppvals)
+  names(output) = c("corsMatEffSize", "Peffsize", "corsMatPvals", "Ppvals")
+  return(output)
+}
