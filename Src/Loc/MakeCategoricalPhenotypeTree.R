@@ -19,7 +19,7 @@ source("Src/Reu/cmdArgImport.R")
 # t = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
 # n = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 #----------------
-args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
+args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -123,6 +123,18 @@ substitutions = NULL
 #                   ------- Code Body --------  
 
 manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")                      #load the manual annotations file holding the phenotype data
+manualAnnots[[annotColumn]] = trimws(manualAnnots[[annotColumn]])               #trim away whitespace to allow for better matching 
+
+if(!is.null(substitutions)){                                                    #Consider species with multiple combined categories as the maintained category
+  for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("Combining", substitutePhenotypes[1], "/", substitutePhenotypes[2]))
+    entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[annotColumn]])
+    entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[annotColumn]])
+    combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
+    manualAnnots[[annotColumn]][combineEntries] = substitutePhenotypes[2]
+  }
+}
 
 
 # - Species Filter - 
