@@ -125,7 +125,7 @@ substitutions = NULL
 manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")                      #load the manual annotations file holding the phenotype data
 manualAnnots[[annotColumn]] = trimws(manualAnnots[[annotColumn]])               #trim away whitespace to allow for better matching 
 
-if(!is.null(substitutions)){                                                    #Consider species with multiple combined categories as the maintained category
+if(!is.null(substitutions)){                                                    #Consider species with multiple combined categories as the merged category
   for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
     substitutePhenotypes = substitutions[[i]]
     message(paste("Combining", substitutePhenotypes[1], "/", substitutePhenotypes[2]))
