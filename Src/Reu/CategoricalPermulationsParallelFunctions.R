@@ -90,7 +90,7 @@ CategoricalCalculatePermulationPValues = function(realCors, intermediateList, st
         signValue = sign(realValue)
         peffValues = Peffsize[[names(realCors[[2]][j])]][gene, ]
         signedPeffValues = peffValues[which( sign(peffValues) == signValue)]
-        p = sum(abs(signedPeffValues) > abs(realValue), na.rm = TRUE)/ (sum(!is.na(signedPeffValues))+1)
+        p = (sum(abs(signedPeffValues) > abs(realValue), na.rm = TRUE)+1)/ (sum(!is.na(signedPeffValues))+1)
       }
       realCors[[2]][[j]]$permP[gene] = p
     }
