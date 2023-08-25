@@ -963,3 +963,298 @@ function (realCors, nullPhens, phenvals, treesObj, RERmat, method = "kw",
   names(output) = c("corsMatEffSize", "Peffsize", "corsMatPvals", "Ppvals")
   return(output)
 }
+
+
+corrWithBinTest = function (RERmat, charP, min.sp = 10, min.pos = 2, weighted = "auto") 
+{
+  if (weighted == "auto") {
+    if (any(charP > 0 & charP < 1, na.rm = TRUE)) {
+      message("Fractional values detected, will use weighted correlation mode")
+      weighted = T
+    }
+    else {
+      weighted = F
+    }
+  }
+  getAllCorTest(RERmat, charP, min.sp, min.pos, method = "k", weighted = weighted)
+}
+
+CVHRer = readRDS("Output/CVHRemake/CVHRemakeRERFile.rds")
+CVHCharP = readRDS("Output/CVHRemake/CVHRemakePathsFile.rds")
+length(unique(CVHCharP))
+
+corrWithBinTest(CVHRer, CVHCharP, min.sp =10)
+
+
+
+getAllCorTest = function (RERmat, charP, method = "auto", min.sp = 10, min.pos = 2, 
+          winsorizeRER = NULL, winsorizetrait = NULL, weighted = F) 
+{
+  RERna = (apply(is.na(RERmat), 2, all))
+  iicharPna = which(is.na(charP))
+  if (!all(RERna[iicharPna])) {
+    warning("Species in phenotype vector are a subset of the those used for RER computation. For best results run getAllResiduals with the useSpecies")
+  }
+  if (method == "auto") {
+    lu = length(unique(charP))
+    if (lu == 2) {
+      method = "k"
+      message("Setting method to Kendall")
+    }
+    else if (lu <= 5) {
+      method = "s"
+      message("Setting method to Spearman")
+    }
+    else {
+      method = "p"
+      message("Setting method to Pearson")
+      if (is.null(winsorizeRER)) {
+        message("Setting winsorizeRER=3")
+        winsorizeRER = 3
+      }
+      if (is.null(winsorizetrait)) {
+        message("Setting winsorizetrait=3")
+        winsorizetrait = 3
+      }
+    }
+  }
+  win = function(x, w) {
+    xs = sort(x[!is.na(x)], decreasing = T)
+    xmax = xs[w]
+    xmin = xs[length(xs) - w + 1]
+    x[x > xmax] = xmax
+    x[x < xmin] = xmin
+    x
+  }
+  corout = matrix(nrow = nrow(RERmat), ncol = 3)
+  rownames(corout) = rownames(RERmat)
+  if (method == "aov" || method == "kw") {
+    lu = length(unique(charP[!is.na(charP)]))
+    n = choose(lu, 2)
+    tables = lapply(1:n, matrix, data = NA, nrow = nrow(RERmat), 
+                    ncol = 2, dimnames = list(rownames(RERmat), c("Rho", 
+                                                                  "P")))
+    if (method == "aov") {
+      names(tables) = rep(NA, n)
+    }
+    else {
+      for (i in 2:lu) {
+        for (j in 1:(i - 1)) {
+          index <- (i - 1) * (i - 2)/2 + j
+          names(tables)[index] <- paste0(j, " - ", i)
+        }
+      }
+    }
+  }
+  colnames(corout) = c("Rho", "N", "P")
+  for (i in 1:nrow(corout)) {
+    if (((nb <- sum(ii <- (!is.na(charP) & !is.na(RERmat[i, 
+    ])))) >= min.sp)) {
+      if (method == "kw" || method == "aov") {
+        counts = table(charP[ii])
+        num_groups = length(counts)
+        if (num_groups < 2 || min(counts) < min.pos) {
+          next
+        }
+      }
+      else if (method != "p" && sum(charP[ii] != 0) < min.pos) {
+        next
+      }
+      if (!weighted) {
+        x = RERmat[i, ]
+        indstouse = which(!is.na(x) & !is.na(charP))
+        if (!is.null(winsorizeRER)) {
+          x = win(x[indstouse], winsorizeRER)
+        }
+        else {
+          x = x[indstouse]
+        }
+        if (!is.null(winsorizetrait)) {
+          y = win(charP[indstouse], winsorizetrait)
+        }
+        else {
+          y = charP[indstouse]
+        }
+        if (method == "aov") {
+          yfacts = as.factor(y)
+          df = data.frame(x, yfacts)
+          colnames(df) = c("RER", "category")
+          ares = aov(RER ~ category, data = df)
+          sumsq = summary(ares)[[1]][1, 2]
+          sumsqres = summary(ares)[[1]][2, 2]
+          effect_size = sumsq/(sumsq + sumsqres)
+          ares_pval = summary(ares)[[1]][1, 5]
+          corout[i, 1:3] = c(effect_size, nb, ares_pval)
+          tukey = TukeyHSD(ares)
+          groups = rownames(tukey[[1]])
+          unnamedinds = which(is.na(names(tables)))
+          if (length(unnamedinds > 0)) {
+            newnamesinds = which(is.na(match(groups, 
+                                             names(tables))))
+            if (length(newnamesinds) > 0) {
+              names(tables)[unnamedinds][1:length(newnamesinds)] = groups[newnamesinds]
+            }
+          }
+          for (k in 1:length(groups)) {
+            name = groups[k]
+            tables[[name]][i, "Rho"] = tukey[[1]][name, 
+                                                  1]
+            tables[[name]][i, "P"] = tukey[[1]][name, 
+                                                4]
+          }
+        }
+        else if (method == "kw") {
+          yfacts = factor(y)
+          kres = kwdunn.test(x, yfacts, ncategories = lu)
+          effect_size = kres$kw$H/(nb - 1)
+          corout[i, 1:3] = c(effect_size, nb, kres$kw$p)
+          for (k in 1:length(kres$dunn$Z)) {
+            tables[[k]][i, "Rho"] = kres$dunn$Z[k]
+            tables[[k]][i, "P"] = kres$dunn$P.adjust[k]
+          }
+        }
+        else {
+          cres = cor.test(x, y, method = method, exact = F)
+          corout[i, 1:3] = c(cres$estimate, nb, cres$p.value)
+        }
+      }
+      else {
+        charPb = (charP[ii] > 0) + 1 - 1
+        weights = charP[ii]
+        weights[weights == 0] = 1
+        cres = wtd.cor(RERmat[i, ii], charPb, weight = weights, 
+                       mean1 = F)
+        corout[i, 1:3] = c(cres[1], nb, cres[4])
+      }
+    }
+    else {
+    }
+  }
+  corout = as.data.frame(corout)
+  corout$p.adj = p.adjust(corout$P, method = "BH")
+  if (method == "aov" || method == "kw") {
+    for (i in 1:length(tables)) {
+      tables[[i]] = as.data.frame(tables[[i]])
+      tables[[i]]$p.adj = p.adjust(tables[[i]]$P, method = "BH")
+    }
+    return(list(corout, tables))
+  }
+  else {
+    corout
+  }
+}
+
+CVHRemakeBinTree = readRDS("OUtput/CVHRemake/CVHRemakeBinaryTree.rds")
+CVHUpdateBinTree = readRDS("Output/CVHUpdate/CVHUpdateBinaryTree.rds")
+all.equal(CVHRemakeBinTree, CVHUpdateBinTree)
+
+all.equal(RERObject, CVHRer)
+all.equal(pathsObject, CVHCharP)
+
+
+
+
+function (realCors, nullPhens, phenvals, treesObj, RERmat, method = "kw", 
+          min.sp = 10, min.pos = 2, winsorizeRER = NULL, winsorizetrait = NULL, 
+          weighted = F, extantOnly = FALSE, report=F) 
+{
+  tree = treesObj$masterTree
+  keep = intersect(names(phenvals), tree$tip.label)
+  tree = pruneTree(tree, keep)
+  if (is.rooted(tree)) {
+    tree = unroot(tree)
+  }
+  if(report){pathStartTime = Sys.time()}
+  message("Generating null paths")
+  nullPaths = lapply(nullPhens, function(x) {
+    if(report){message("One path complete")}
+    tr = tree
+    tr$edge.length = c(x$tips, x$nodes)[tr$edge[,2]]
+    tree2Paths(tr, treesObj, categorical = TRUE, useSpecies = names(phenvals))
+  })
+  if(report){pathsEndTime = Sys.time(); pathsDuration = pathsEndTime - pathStartTime; message(paste("Completed paths;","Duration", pathsDuration, attr(pathsDuration, "units")))}
+  
+  message("Calculating correlation statistics")
+  corsMatPvals = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
+  corsMatEffSize = matrix(nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
+  if(report){message("Matrixes")}
+  Ppvals = lapply(1:length(realCors[[2]]), matrix, data = NA, nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
+  names(Ppvals) = names(realCors[[2]])
+  Peffsize = lapply(1:length(realCors[[2]]), matrix, data = NA, nrow = nrow(RERmat), ncol = length(nullPhens), dimnames = list(rownames(RERmat), NULL))
+  names(Peffsize) = names(realCors[[2]])
+  if(report){message("pVals")}
+  for (i in 1:length(nullPaths)) {
+    if(report){corStartTime = Sys.time()}
+    cors = getAllCor(RERmat, nullPaths[[i]], method = method, 
+                     min.sp = min.sp, min.pos = min.pos, winsorizeRER = winsorizeRER, 
+                     winsorizetrait = winsorizetrait, weighted = weighted)
+    if(report){corEndTime = Sys.time(); corDuration = corEndTime - corStartTime; message(paste("Completed Correlation", i, "Duration", corDuration, attr(corDuration, "units")))}
+    corsMatPvals[, i] = cors[[1]]$P
+    corsMatEffSize[, i] = cors[[1]]$Rho
+    for (j in 1:length(cors[[2]])) {
+      Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
+      Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
+    }
+    #if(report){message(paste("compelted", i))}
+    gc()
+  }
+  output = list(corsMatEffSize, Peffsize, corsMatPvals, Ppvals)
+  names(output) = c("corsMatEffSize", "Peffsize", "corsMatPvals", "Ppvals")
+  return(output)
+}
+
+
+> CategoricalCalculatePermulationPValues
+function(realCors, intermediateList, start=1, end=NULL, report=F){
+  {totalStart = Sys.time()}
+  corsMatEffSize = intermediateList[[1]]
+  Peffsize = intermediateList[[2]]
+  corsMatPvals = intermediateList[[3]]
+  Ppvals = intermediateList[[4]]
+  message("Obtaining permulations p-values")
+  N = nrow(realCors[[1]]) #
+  #if(start = 1){ #Only do this if start = 1, because otherwise it's already made and you'll overwrite the old script's results 
+  realCors[[1]]$permP = rep(NA, N) #Make a column for permP values in all of the dataframes 
+  for (j in 1:length(realCors[[2]])) {
+    realCors[[2]][[j]]$permP = rep(NA, N) #Make a column for permP values in all of the dataframes 
+  }
+  #}
+  
+  #Start updating the correlations
+  if(is.null(end)){ #if no end specified
+    stop = N
+  }else{
+    stop = end
+  }
+  for (gene in start:stop) {
+    if(report){geneStart = Sys.time()}
+    if (is.na(realCors[[1]]$Rho[gene])) {
+      p = NA
+    }
+    else {
+      signVal = sign(realCors[[1]]$Rho[gene])
+      MatEffSizes = corsMatEffSize[gene, ]
+      signedMatEffSizes = MatEffSizes[which(sign(MatEffSizes) == signVal)]
+      p = (sum(abs(signedMatEffSizes) > abs(realCors[[1]]$Rho[gene]), na.rm = TRUE)+1)/(sum(!is.na(signedMatEffSizes))+1)
+    }
+    realCors[[1]]$permP[gene] = p
+    for (j in 1:length(realCors[[2]])) {
+      if (is.na(realCors[[2]][[j]]$Rho[gene])) {
+        p = NA
+      }
+      else {
+        realValue = realCors[[2]][[j]]$Rho[gene]
+        signValue = sign(realValue)
+        peffValues = Peffsize[[names(realCors[[2]][j])]][gene, ]
+        signedPeffValues = peffValues[which( sign(peffValues) == signValue)]
+        p = sum(abs(signedPeffValues) > abs(realValue), na.rm = TRUE)/ (sum(!is.na(signedPeffValues))+1)
+      }
+      realCors[[2]][[j]]$permP[gene] = p
+    }
+    if(report){geneEnd = Sys.time(); geneDuration = geneEnd - geneStart;message(paste("Completed Gene", gene, "Duration", geneDuration, attr(geneDuration, "units")))}
+  }
+  message("Done")
+  {totalEnd = Sys.time(); totalDuration = totalEnd - totalStart;message(paste("Completed p-Values; Duration", totalDuration, attr(totalDuration, "units")))}
+  return(list(res = realCors, pvals = list(corsMatPvals, Ppvals), effsize = list(corsMatEffSize, Peffsize)))
+  
+  
