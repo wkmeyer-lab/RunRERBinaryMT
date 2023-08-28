@@ -1255,6 +1255,26 @@ function(realCors, intermediateList, start=1, end=NULL, report=F){
   }
   message("Done")
   {totalEnd = Sys.time(); totalDuration = totalEnd - totalStart;message(paste("Completed p-Values; Duration", totalDuration, attr(totalDuration, "units")))}
-  return(list(res = realCors, pvals = list(corsMatPvals, Ppvals), effsize = list(corsMatEffSize, Peffsize)))
-  
-  
+  return(list(res = realCors, pvals = list(corsMatPvals, Ppvals), effsize = list(corsMatEffSize, Peffsize)))}
+
+
+permPValue = readRDS(permulationFileLocation) 
+permPValue[16210:16310]
+which(is.na(permPValue))  
+plot(c(1:17000), match(names(permPValue), rownames(correlData)))
+
+perm1 = readRDS("Output/EcholocationUpdate2/EcholocationUpdate2CombinedPrunedFast1-3400PermulationsPValue.rds")
+perm2 = readRDS("Output/EcholocationUpdate2/EcholocationUpdate2CombinedPrunedFast3401-6800PermulationsPValue.rds")
+perm3 = readRDS("Output/EcholocationUpdate2/EcholocationUpdate2CombinedPrunedFast6801-10200PermulationsPValue.rds")
+perm4 = readRDS("Output/EcholocationUpdate2/EcholocationUpdate2CombinedPrunedFast10201-13600PermulationsPValue.rds")
+perm5 = readRDS("Output/EcholocationUpdate2/EcholocationUpdate2CombinedPrunedFast13601-17000PermulationsPValue.rds")
+tail(perm5)
+perm5Trimmed = perm5[1:2609]
+tail(perm5Trimmed)
+
+permsAppended = append(perm1, perm2)
+permsAppended = append(permsAppended, perm3)
+permsAppended = append(permsAppended, perm4)
+permsAppended = append(permsAppended, perm5Trimmed)
+
+saveRDS(permsAppended, "Output/EcholocationUpdate2/EcholocationUpdate2CombinedPrunedFastAllPermulationsPValue.rds")
