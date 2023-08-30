@@ -3,7 +3,8 @@
 .RData
 .Ruserdata
 
-Output/
+Output/*
+!Output/BinaryCVHApplesToApples
 RemadeTreesAllZoonomiaSpecies.rds
 ProjectFrameworkPreGitted.Rproj
 allInsectivory
