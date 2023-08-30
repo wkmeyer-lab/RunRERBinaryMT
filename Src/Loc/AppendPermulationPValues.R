@@ -131,6 +131,11 @@ for(i in 1:length(fileSetStep4)){
   message(paste(outputFolderName, fileSetStep4[i], sep= ""))
 }
 
+while((tail(names(appenedPermPValues), n=1))==""){
+  appenedPermPValues = appenedPermPValues[-length(appenedPermPValues)]
+}
+
+
 
 appendedPerPValuesFilename = paste(outputFolderName, filePrefix, "Combined", fileTypeString, "Appended", "PermulationsPValue", runInstanceValue, ".rds", sep= "")
 saveRDS(appenedPermPValues, file = appendedPerPValuesFilename)
