@@ -1278,3 +1278,48 @@ permsAppended = append(permsAppended, perm4)
 permsAppended = append(permsAppended, perm5Trimmed)
 
 saveRDS(permsAppended, "Output/EcholocationUpdate2/EcholocationUpdate2CombinedPrunedFastAllPermulationsPValue.rds")
+write.csv(correlData, "Output/EcholocationUpdate2/EcholocationUpdate2Correlations.csv")
+enriment = readRDS("Output/EcholocationUpdate2/EcholocationUpdate2Enrichment-EnrichmentHsSymbolsFile2.rds")
+geneset = "tissue_specific"
+write.csv(enrichmentResultSets[5], paste("Output/EcholocationUpdate2/EcholocationUpdate", geneset, ".csv"))
+
+
+# -- manually appending CVHRemake perm vals
+perm1 = readRDS("Output/CVHRemake/CVHRemakeCombinedPrunedFast1-3242PermulationsPValue.rds")
+perm2 = readRDS("Output/CVHRemake/CVHRemakeCombinedPrunedFast3243-6484PermulationsPValue.rds")
+perm3 = readRDS("Output/CVHRemake/CVHRemakeCombinedPrunedFast6485-9726PermulationsPValue.rds")
+perm4 = readRDS("Output/CVHRemake/CVHRemakeCombinedPrunedFast9727-12968PermulationsPValue.rds")
+perm5 = readRDS("Output/CVHRemake/CVHRemakeCombinedPrunedFast12969-16210PermulationsPValue.rds")
+autoAppended = readRDS("Output/CVHRemake/CVHRemakeCombinedPrunedFastAppendedPermulationsPValue.rds") 
+tail(perm5)
+perm5Trimmed = perm5[1:2609]
+tail(perm5Trimmed)
+
+permsAppended = append(perm1, perm2)
+permsAppended = append(permsAppended, perm3)
+permsAppended = append(permsAppended, perm4)
+permsAppended = append(permsAppended, perm5)
+
+all.equal(permsAppended, autoAppended)
+
+tail(autoAppended)
+tail(perm5)
+
+saveRDS(permsAppended, "Output/EcholocationUpdate2/EcholocationUpdate2CombinedPrunedFastAllPermulationsPValue.rds")
+autoAppended = readRDS("Output/CVHRemake/CVHRemakeCombinedPrunedFastAppendedPermulationsPValueOld.rds")
+autoAppended = autoAppended[1:16209]
+
+
+
+originalAppended = readRDS("Output/CVHRemake/CVHRemakeCombinedPrunedFastAllPermulationsPValue.rds") 
+all.equal(names(originalAppended), names(appenedPermPValues))
+all.equal(appenedPermPValues, autoAppended)
+
+
+CVHCOrrelsPermAttached = readRDS("Output/CVHRemake/CVHRemakeCorrelationsFilePermulated.rds")
+correlP = CVHCOrrelsPermAttached$permPValue  
+
+which(is.na(correlP)) %in% which(is.na(autoAppended))
+correlP[16209] = NA
+autoAppended[16209] = NA
+all.equal(correlP, autoAppended)
