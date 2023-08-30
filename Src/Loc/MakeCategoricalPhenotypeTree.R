@@ -20,6 +20,8 @@ source("Src/Reu/cmdArgImport.R")
 # n = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 #----------------
 args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
+args = c('r=BinaryCVHApplesToApples', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Herbivore")', 'u=list(c("Carnivore","_Carnivore"), c("Piscivore", "_Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
+
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -51,6 +53,7 @@ args = commandArgs(trailingOnly = TRUE)
 }
 
 # --- Argument Imports ---
+{ # Bracket used for collapsing purposes
 # Defaults
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
 annotColumn = NULL
@@ -61,7 +64,6 @@ modelType = "ER"
 ancestralTrait = NULL
 substitutions = NULL
 
-{ # Bracket used for collapsing purposes
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
     mainTreesLocation = cmdArgImport('m')
@@ -186,3 +188,31 @@ pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", 
 paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
 saveRDS(paths, file = pathsFilename)                                            #save the path 
 
+
+# -- Convert Tree to Binary (Manual only) --
+convertToBinary = T
+convertToBinary = F
+foreground = "_Carnivore"
+
+if(convertToBinary){
+  binaryTree = categoricalTree
+  phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
+  categories = map_to_state_space(phenotypeVector) 
+  categoryNames = categories$name2index                                         #store the length-phenotype connection
+  foregroundInt = categoryNames[which(names(categoryNames) == foreground)]
+  binaryTree$edge.length[-(which(binaryTree$edge.length == foregroundInt))] = 0
+  binaryTree$edge.length[(which(binaryTree$edge.length == foregroundInt))] = 1
+  
+  binaryTreeImageFilename = paste(outputFolderName, filePrefix, "BinaryTree.pdf", sep="") #make a filename based on the prefix
+  pdf(binaryTreeImageFilename, height = length(phenotypeVector)/18)                     #make a pdf to store the plot, sized based on tree size
+  plotTree(binaryTree)
+  dev.off()                                                                       #save the plot to the pdf
+  
+  binaryTreeFilename = paste(outputFolderName, filePrefix, "BinaryTree.rds", sep="") #make a filename based on the prefix
+  saveRDS(binaryTree, binaryTreeFilename)                               #save the tree
+  
+  # - Paths - 
+  binaryPathsFilename = paste(outputFolderName, filePrefix, "PathsFile.rds", sep= "") #make a filename based on the prefix
+  binaryPaths = tree2Paths(binaryTree, mainTrees, binarize = T, speciesFilter) #make a path based on the phenotype vector
+  saveRDS(binaryPaths, file = binaryPathsFilename) 
+}
