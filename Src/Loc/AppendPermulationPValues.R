@@ -3,6 +3,7 @@
 library(RERconverge) #load RERconverge package
 library(RERconverge)
 library("tools")
+library(stringr)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/convertLogiToNumeric.R")
 source("Src/Reu/permPValCorReport.R")
@@ -23,6 +24,7 @@ source("Src/Reu/permPValCorReport.R")
 args = c('r=demoinsectivory', 'n=3', 'e=F', 't=p')
 args = c('r=allInsectivory', 'e=F', 's=1', 't=s', 'i=1')
 args = c('r=carnvHerbs', "t=p")
+args = c('r=CVHRemake', "t=p")
 #------
 
 
@@ -100,20 +102,35 @@ paste(fileSetStep1)
 fileSetStep2 = grep("PermulationsPValue", fileSetStep1, value = TRUE)
 paste(fileSetStep2)
 OtherAppendOutputFiles = grep("Appended", fileSetStep2)
+OtherAllOutputFiles= grep("All", fileSetStep2)
+OtherAppendOutputFiles = append(OtherAppendOutputFiles, OtherAllOutputFiles)
 paste(OtherAppendOutputFiles)
 if(is.integer(OtherAppendOutputFiles) & length(OtherAppendOutputFiles) != 0){ 
   fileSetStep3 = fileSetStep2[-OtherAppendOutputFiles]
 }else{fileSetStep3 = fileSetStep2}
 paste(fileSetStep3)
 
-#import all of the files
+
+
+#sort the files correctly 
+fileSetNamesSort = fileSetStep3
+fileSetNamesSort = sapply(fileSetNamesSort, str_sub, end = -23)
+fileSetNamesSort = sapply(fileSetNamesSort, gsub, pattern = ".*-", replacement = "")
+fileSetNamesSort = fileSetNamesSort[order(as.integer(fileSetNamesSort))]
+
+fileSetStep4 = names(fileSetNamesSort)
+paste(fileSetStep4)
+
+#append the files
 message("Appending files:")
 appenedPermPValues = NULL
-for(i in 1:length(fileSetStep3)){
-  currentFile = readRDS(paste(outputFolderName, fileSetStep3[i], sep= ""))
-  message(paste(outputFolderName, fileSetStep3[i], sep= ""))
+#import all of the files
+for(i in 1:length(fileSetStep4)){
+  currentFile = readRDS(paste(outputFolderName, fileSetStep4[i], sep= ""))
   appenedPermPValues = append(appenedPermPValues, currentFile)
+  message(paste(outputFolderName, fileSetStep4[i], sep= ""))
 }
+
 
 appendedPerPValuesFilename = paste(outputFolderName, filePrefix, "Combined", fileTypeString, "Appended", "PermulationsPValue", runInstanceValue, ".rds", sep= "")
 saveRDS(appenedPermPValues, file = appendedPerPValuesFilename)
