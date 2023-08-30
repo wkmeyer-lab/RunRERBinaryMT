@@ -161,8 +161,24 @@ correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep
 
 if(phenotypeStyle == "Binary"){                                                 #If binary
   correlation = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =10)#Correlate with binary phenotype
+  
+  #Generate a phenotype vector 
+  fgEdgeObjects = inputTree$edge[which(inputTree$edge.length>=1) ,]                                        #Make an object of the edges in the foreground. This is used as opposed to just referencing the tree directly to allow for "walking" in the final loop of the code
+  foregroundNodes = which(1:length(inputTree$tip.label) %in% as.vector(fgEdgeObjects))
+  foregroundSpecies = inputTree$tip.label[foregroundStartNodes]
+  phenotypeVector = c(0,0);length(phenotypeVector) = length(inputTree$tip.label);phenotypeVector[] = 0 
+  names(phenotypeVector) = inputTree$tip.label
+  phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
+  if(trimPhenotypeVector){
+    phenotypeVector = phenotypeVector[names(phenotypeVector) %in% speciesFilter]
+  }
+  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
+  saveRDS(phenotypeVector, file = phenotypeVectorFilename)
+  
 }else if(phenotypeStyle == "Continous"){                                        #if continous
-  stop("This function hasn't been completed")                                   
+  stop("This function hasn't been completed")    
+  
+  
 } else if(phenotypeStyle == "Categorical"){                                     #if categorical
   categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = 10, min.pos = 2) #Calculate with categorical, min 2 species per category 
   overalCategorical = categoricalCorrelation[[1]]                               #select the results relating to overall difference between all categories
