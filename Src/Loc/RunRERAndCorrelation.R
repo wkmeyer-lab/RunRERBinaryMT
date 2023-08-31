@@ -170,9 +170,7 @@ if(phenotypeStyle == "Binary"){                                                 
   phenotypeVector = c(0,0);length(phenotypeVector) = length(phenotypeTree$tip.label);phenotypeVector[] = 0 
   names(phenotypeVector) = phenotypeTree$tip.label
   phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
-  if(trimPhenotypeVector){
-    phenotypeVector = phenotypeVector[names(phenotypeVector) %in% speciesFilter]
-  }
+  phenotypeVector = phenotypeVector[names(phenotypeVector) %in% speciesFilter]
   phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
   saveRDS(phenotypeVector, file = phenotypeVectorFilename)
   
