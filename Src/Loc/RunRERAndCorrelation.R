@@ -166,7 +166,7 @@ if(phenotypeStyle == "Binary"){                                                 
   #Generate a phenotype vector 
   fgEdgeObjects = phenotypeTree$edge[which(phenotypeTree$edge.length>=1) ,]                                        #Make an object of the edges in the foreground. This is used as opposed to just referencing the tree directly to allow for "walking" in the final loop of the code
   foregroundNodes = which(1:length(phenotypeTree$tip.label) %in% as.vector(fgEdgeObjects))
-  foregroundSpecies = phenotypeTree$tip.label[foregroundStartNodes]
+  foregroundSpecies = phenotypeTree$tip.label[foregroundNodes]
   phenotypeVector = c(0,0);length(phenotypeVector) = length(phenotypeTree$tip.label);phenotypeVector[] = 0 
   names(phenotypeVector) = phenotypeTree$tip.label
   phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
