@@ -1323,3 +1323,70 @@ which(is.na(correlP)) %in% which(is.na(autoAppended))
 correlP[16209] = NA
 autoAppended[16209] = NA
 all.equal(correlP, autoAppended)
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+fgEdgeObjects = inputTree$edge[which(inputTree$edge.length>=1) ,]                                        #Make an object of the edges in the foreground. This is used as opposed to just referencing the tree directly to allow for "walking" in the final loop of the code
+foregroundNodes = which(1:length(inputTree$tip.label) %in% as.vector(fgEdgeObjects))
+foregroundSpecies = inputTree$tip.label[foregroundStartNodes]
+
+#---- generate a phenotypeVector (named int of all tips with0/1 indicating foreground)-----
+phenotypeVector = c(0,0);length(phenotypeVector) = length(inputTree$tip.label);phenotypeVector[] = 0 
+names(phenotypeVector) = inputTree$tip.label
+phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
+if(trimPhenotypeVector){
+  phenotypeVector = phenotypeVector[names(phenotypeVector) %in% speciesFilter]
+}
+#Save the phenotypeVector
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
+saveRDS(phenotypeVector, file = phenotypeVectorFilename)
+
+
+masterTree = mainTrees$masterTree
+
+write_tree(masterTree, "Data/MasterTree.tree")
+
+
+treePlotRers(mainTrees, RERObject, index = "CMBL", phenv = pathsObject)
+
+
+source("Src/Reu/ZonomNameConvertMatrixCommon.R")
+source("Src/Reu/ZonomNameConvertVector.R")
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+
+commonRER = ZonomNameConvertMatrixCommon(RERObject)
+commonPath  = ZonomNameConvertVectorCommon(pathsObject)
+
+plotRers(commonRER, "DECR2", commonPath)
+treePlotRers(mainTrees, RERObject, index = "GADD45GIP1", phenv = pathsObject)
+
+MGICVHBin = enrichment5$MGI_Mammalian_Phenotype_Level_4
+rownames(MGICVHBin)
+
+rownames(MGICVHBin)[grep("intestinal", rownames(MGICVHBin))]
+
+DisGenCVH = enrichment1$DisGeNET
+rownames(DisGenCVH)
+rownames(DisGenCVH)[grep("intestinal", rownames(DisGenCVH))]
+
+GOProcessesCVH = enrichment3$GO_Biological_Process_2023
+rownames(GOProcessesCVH)
+rownames(GOProcessesCVH)[grep("digestive", rownames(GOProcessesCVH))]
+
+rownames(GOProcessesCVH)[grep("digestive", rownames(GOProcessesCVH))]
+
+CVHEnrichmentHs = enrichment2$EnrichmentHsSymbolsFile2
+rownames(CVHEnrichmentHs)
+CVHEnrichmentHs[grep("STARCH", rownames(CVHEnrichmentHs)),]
+
+
+correlationData
+correlationData[grep("ITBG4", rownames(correlationData))]
+rownames(correlationData)
+correlData[grep("ITGA6", rownames(correlData)),]
+
+
+foregroundNames = readRDS(foregroundFilename)
+makeMasterAndGeneTreePlots(mainTrees, "DNAH1", foregroundVector = foregroundNames)

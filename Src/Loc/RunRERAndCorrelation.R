@@ -22,7 +22,7 @@ args = c('r=CVO', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=b') #Thi
 args = c("r=EcholocationUpdate2", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "s=b")
 args = c("m=Data/NoSignExpressionTreesRound3.rds", "r=LiverExpression3", "v=T", "s=b")
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CategoricalDiet4Phen", "v=T", "s=c")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHUpdate", "s=b")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHRemake", "s=b")
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=BinaryCVHApplesToApples", "s=b")
 
 
