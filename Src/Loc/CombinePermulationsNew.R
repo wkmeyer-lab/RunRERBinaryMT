@@ -17,6 +17,8 @@ source("Src/Reu/convertLogiToNumeric.R")
 # c = <T or F>                        This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # p = <T or F>                        This value determines whether or not to calculate the pValues. [DEPRECATED]
 
+args = c("r=LiverExpression3", "n=5", "c=F", "t=PrunedFast")
+
 #----------------
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -162,6 +164,7 @@ message("Initial permulation combination time: ", firstCombinationTime, attr(fir
 
 if((startValue+2) < (startValue+permulationNumberValue-1)){                     #Sanity check that there are additional combinations to loop through
   for(i in (startValue+2):(startValue+permulationNumberValue-1)){
+    tryCatch({
     message(i)
     iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
     
@@ -188,6 +191,11 @@ if((startValue+2) < (startValue+permulationNumberValue-1)){                     
     }else{
       message("Permulation file number ", i, " does not exist. Combining other files.")
     }
+    }, error = function(i){
+      message("This error occurred on this file:") 
+      message(i)
+      message("Skipping.")
+    })
   }
 }
 combinationSectionEnd = Sys.time()
