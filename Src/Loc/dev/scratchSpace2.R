@@ -1390,3 +1390,156 @@ correlData[grep("ITGA6", rownames(correlData)),]
 
 foregroundNames = readRDS(foregroundFilename)
 makeMasterAndGeneTreePlots(mainTrees, "DNAH1", foregroundVector = foregroundNames)
+
+
+library(readr)
+scores = read_tsv("../../ZoonomiaSpecies_CarnivoryScores.tsv")
+
+
+
+scoreValues = scores$`100`
+scoreValues = append(100, scoreValues)
+scoreNames = scores$Chrysochloris_asiatica
+scoreNames = append("Chrysochloris_asiatica", scoreNames)
+names(scoreValues) = scoreNames
+saveRDS(scoreValues, "../../ZoonomiaSpecies_CanivoryScores.rds")
+write.csv(scoreValues, "../../ZoonomiaSpecies_CanivoryScores.csv")
+
+readRDS()
+
+myVectorNmaemIchael = c(1,2,3,4,5,5)
+
+vector = c(1,2,3,4)
+
+vectorTheSecond = c(1,4,3,2)
+
+vectorTheThird = c(1,2,3,4)
+
+plot(vector, vectorTheSecond)
+
+
+myVal = 5
+
+myVal = c(1,5)
+
+
+set.seed(25852)                             # Create example data
+x <- rnorm(30)
+y1 <- x + rnorm(30)
+y2 <- x + rnorm(30, 5)
+
+par(mar = c(5, 4, 4, 4) + 0.3)              # Additional space for second y-axis
+plot(x, y1, pch = 16, col = 2)              # Create first plot
+par(new = TRUE)                             # Add new plot
+plot(x, y2, pch = 17, col = 3,              # Create second plot without axes
+     axes = FALSE, xlab = "", ylab = "")
+axis(side = 4, at = pretty(range(y2)))      # Add second axis
+mtext("y2", side= 4, line = 3)             # Add second axis label
+
+
+tipvals = phenotypeVector; treesObj= mainTrees; useSpecies = speciesFilter; model = modelType; anctrait = ancestralTrait; plot = T; root_prior = "auto"
+source("Src/Reu/RERConvergeFunctions.R")
+function (tipvals, treesObj, useSpecies = NULL, model = "ER", 
+          root_prior = "auto", plot = FALSE, anctrait = NULL) 
+{
+  mastertree = treesObj$masterTree
+  if (!is.null(useSpecies)) {
+    sp.miss = setdiff(mastertree$tip.label, useSpecies)
+    if (length(sp.miss) > 0) {
+      message(paste0("Species from master tree not present in useSpecies: ", 
+                     paste(sp.miss, collapse = ",")))
+    }
+    useSpecies = intersect(mastertree$tip.label, useSpecies)
+    mastertree = pruneTree(mastertree, useSpecies)
+    mastertree = unroot(mastertree)
+  }
+  else {
+    mastertree = pruneTree(mastertree, intersect(mastertree$tip.label, 
+                                                 names(tipvals)))
+    mastertree = unroot(mastertree)
+  }
+  if (is.null(anctrait)) {
+    tipvals <- tipvals[mastertree$tip.label]
+    intlabels <- map_to_state_space(tipvals)
+    print("The integer labels corresponding to each category are:")
+    print(intlabels$name2index)
+    ancliks = getAncLiks(mastertree, intlabels$mapped_states, 
+                         rate_model = model, root_prior = root_prior)
+    states = rep(0, nrow(ancliks))
+    for (i in 1:length(states)) {
+      states[i] = which.max(ancliks[i, ])
+    }
+    states = c(intlabels$mapped_states, states)
+    tree = mastertree
+    tree$edge.length = states[tree$edge[, 2]]
+    if (length(unique(tipvals)) == 2) {
+      if (sum(!unique(tipvals) %in% c(TRUE, FALSE)) > 0) {
+        message("Returning categorical tree for binary phenotype because phenotype values are not TRUE/FALSE")
+      }
+      else {
+        tree$edge.length = ifelse(tree$edge.length == 
+                                    2, 1, 0)
+        print("There are only 2 categories: returning a binary phenotype tree.")
+        if (plot) {
+          plotTree(tree)
+        }
+        return(tree)
+      }
+    }
+    if (plot) {
+      plotTreeCategorical(tree, category_names = intlabels$state_names, 
+                          master = mastertree, node_states = states)
+    }
+    return(tree)
+  }
+  else {
+    if (length(unique(tipvals)) <= 2) {
+      fgspecs <- names(tipvals)[tipvals != anctrait]
+      res <- foreground2Tree(fgspecs, treesObj, plotTree = plot, 
+                             clade = "terminal", useSpecies = useSpecies)
+      print("There are only 2 categories: returning a binary phenotype tree.")
+      if (plot) {
+        plotTree(res)
+      }
+      return(res)
+    }
+    else {
+      tipvals <- tipvals[mastertree$tip.label]
+      intlabels <- map_to_state_space(tipvals)
+      j <- which(intlabels$state_names == anctrait)
+      if (length(j) < 1) {
+        warning("The ancestral trait provided must match one of the traits in the phenotype vector.")
+      }
+      res = mastertree
+      res$edge.length <- rep(j, length(res$edge.length))
+      traits <- intlabels$state_names
+      for (trait in traits) {
+        if (trait == anctrait) {
+          next
+        }
+        i <- which(intlabels$state_names == trait)
+        res$edge.length[nameEdges(res) %in% names(tipvals)[tipvals == 
+                                                             trait]] = i
+      }
+      names(res$edge.length) = nameEdges(res)
+      if (plot) {
+        states = res$edge.length[order(res$edge[, 2])]
+        states = c(j, states)
+        plotTreeCategorical(res, category_names = traits, 
+                            master = treesObj$masterTree, node_states = states)
+      }
+      print("Category names are mapped to integers as follows:")
+      print(intlabels$name2index)
+      return(res)
+    }
+  }
+}
+
+ERohenv = commonPhenotypeVector
+erMainTrees = 
+char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = "ARD", anctrait = ancestralTrait, plot = T)
+
+
+rm = matrix(c(1,2,3,2,4,5,6,7,8),3)
+categoricalPath = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = rm, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
+

@@ -33,6 +33,7 @@ args = c('r=demoInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds', '
 args = c('r=allInsectivory','n=3','m=Data/RemadeTreesAllZoonomiaSpecies.rds')
 args = c('r=carnvHerbs','n=3300','m=Data/RemadeTreesAllZoonomiaSpecies.rds', 'i=test', 'p=F')
 args = c('r=LiverExpression3', 'n=300', 'i=$i', 'p=T', 'm=Data/NoSignExpressionTreesRound3.rds')
+args = c('r=LiverExpression3', 'n=3', 'i=4', 'p=T', 'm=Data/NoSignExpressionTreesRound3.rds')
 
 args = commandArgs(trailingOnly = TRUE)
 #Get start time of the script 
