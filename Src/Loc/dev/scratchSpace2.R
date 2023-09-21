@@ -1391,6 +1391,7 @@ correlData[grep("ITGA6", rownames(correlData)),]
 foregroundNames = readRDS(foregroundFilename)
 makeMasterAndGeneTreePlots(mainTrees, "DNAH1", foregroundVector = foregroundNames)
 
+
 library(readr)
 scores = read_tsv("../../ZoonomiaSpecies_CarnivoryScores.tsv")
 
@@ -1537,6 +1538,7 @@ function (tipvals, treesObj, useSpecies = NULL, model = "ER",
 ERohenv = commonPhenotypeVector
 erMainTrees = 
 char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = "ARD", anctrait = ancestralTrait, plot = T)
+
 
 rm = matrix(c(1,2,3,2,4,5,6,7,8),3)
 categoricalPath = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
