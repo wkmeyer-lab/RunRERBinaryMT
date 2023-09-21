@@ -1541,9 +1541,5 @@ char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter
 
 
 rm = matrix(c(1,2,3,2,4,5,6,7,8),3)
-<<<<<<< HEAD
 categoricalPath = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = rm, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
-=======
-categoricalPath = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
->>>>>>> 38635b2f428e739928d6f208b6550cb3d68bc0ae
 
