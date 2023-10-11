@@ -16,6 +16,7 @@ source("Src/Reu/ZonomNameConvertVector.R")
 # a = "annotCollumn"                                     This is the column in the manual annotations spreadsheet to use
 # c = <c("nameOfCategory1,"nameOfCategory2")>            This is the list of category names 
 # u = list(c("replace1", "with1"),c("replace2, with2"))
+# o = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
 # s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
 # t = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
 # n = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
@@ -27,10 +28,9 @@ args = c('r=CategoricalARD5Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore"
 args = c('r=CategoricalARD3Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore")), c("Piscivore", "Carnivore")',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ARD')
 args = c('r=RubyRegenARD',   'm=data/mam120aa_trees.rds', 'v=F', 't=ARD')
 args = c('r=RubyRegenER',   'm=data/mam120aa_trees.rds', 'v=F', 't=ER', 'a=Meyer.Lab.Classification')
-args = c('r=OnetwentyWay6Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist")', 'u=list(c("Generalist","Anthropivore"), c("Generalist", "Omnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ARD')
-
 args = c('r=Categorical3PhenARDTest', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'u=list(c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=rm')
 
+args = c('r=OnetwentyWay6Phen', 'm=data/mam120aa_trees.rds', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist")', 'u=list(c("Generalist","Anthropivore"), c("Generalist", "Omnivore"))', 'o=list(c("Carnivore", "Piscivore"))', 'v=T', 't=SYM')
 
 
 
@@ -125,11 +125,17 @@ substitutions = NULL
     message("No ancestral trait specified, using NULL")
   }
   
-  #Category list 
+  #Substitution list 
   if(!is.null(cmdArgImport('u'))){
     substitutions = cmdArgImport('u')
   }else{
     message("No substitutions provided")
+  }
+  #Merge list 
+  if(!is.null(cmdArgImport('o'))){
+    mergeOnlys = cmdArgImport('o')
+  }else{
+    message("No merges provided")
   }
 }
 
@@ -143,6 +149,18 @@ if(!is.null(substitutions)){                                                    
   for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
     substitutePhenotypes = substitutions[[i]]
     message(paste("Combining", substitutePhenotypes[1], "/", substitutePhenotypes[2]))
+    entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[annotColumn]])
+    entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[annotColumn]])
+    combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
+    combineIndexes = entriesWithPhen1[combineEntries]
+    manualAnnots[[annotColumn]][combineIndexes] = substitutePhenotypes[2]
+  }
+}
+
+if(!is.null(mergeOnlys)){                                                    #Consider species with multiple combined categories as the merged category
+  for( i in 1:length(mergeOnlys)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
+    substitutePhenotypes = mergeOnlys[[i]]
+    message(paste("Merging Hybrids of", substitutePhenotypes[1], "/", substitutePhenotypes[2], "to", substitutePhenotypes[2]))
     entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[annotColumn]])
     entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[annotColumn]])
     combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
