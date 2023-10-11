@@ -1543,3 +1543,113 @@ char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter
 rm = matrix(c(1,2,3,2,4,5,6,7,8),3)
 categoricalPath = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = rm, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
 
+codeTable = readRDS("Data/zoonomiaToHillerCodesTable.rds")
+zoonomNames = names(phenotypeVector) 
+workingNames = zoonomNames
+
+for(i in 1:length(zoonomNames)){
+  
+  hilName = codeTable$TipLabel[which(codeTable$zoonomiaCode %in% zoonomNames[i])]
+  if(length(hilName)!= 0){
+    workingNames[i] = hilName
+  }
+}
+remainingIndexes = which(workingNames == zoonomNames)
+remainingIndexes2 = remainingIndexes
+for(i in remainingIndexes){
+  annotRow = manualAnnots[manualAnnots$FaName %in% zoonomNames[i],]
+  scientificName = annotRow$Tip_Label..Red.is.included.in.CMU.enhancer.dataset..but.missing.alignment.
+  hilName = codeTable$TipLabel[which(tolower(codeTable$`species binomial`) %in% tolower(scientificName))]
+  if(length(hilName)!= 0){
+    workingNames[i] = hilName
+    message(i)
+    remainingIndexes2 = remainingIndexes2[-which(remainingIndexes2 == i)]
+  }
+}
+
+workingNames = workingNames
+names(workingNames) = zoonomNames
+
+hillerNames = workingNames
+hillerNames[which(workingNames == names(workingNames))] = NA
+length(hillerNames)
+saveRDS(hillerNames, "Results/hillerToZoonomiaDietConversion.rds")
+
+
+names(phenotypeVector) = hillerNames
+phenotypeVector2 = phenotypeVector[-which(is.na(names(phenotypeVector)))]
+length(phenotypeVector2)
+phenotypeVector = phenotypeVector2
+
+
+remainingIndexes2 
+
+zoonomNames[remainingIndexes]
+
+
+
+remaining120s = codeTable$TipLabel[!codeTable$TipLabel %in% workingNames]
+codeTable$`species binomial`[codeTable$TipLabel %in% remaining120s]
+remaining120s = remaining120s[-1]
+remaining120s = remaining120s[-2]
+remaining120s = remaining120s[-3]
+remainingIndexes = remainingIndexes[-c(1:3)]
+
+
+grep("dip", zoonomNames)
+zoonomNames
+
+remaining120s[which(!remaining120s %in% manualAnnots$Genome)]
+remainingScNames = codeTable$`species binomial`[codeTable$TipLabel %in% remaining120s[(!remaining120s %in% manualAnnots$Genome)]]
+possibleZonoms = manualAnnots$FaName[which(tolower(manualAnnots$Tip_Label..Red.is.included.in.CMU.enhancer.dataset..but.missing.alignment.) %in% tolower(remainingScNames))]
+
+zoonomNames[remainingIndexes][which(zoonomNames[remainingIndexes] %in% possibleZonoms)]
+
+which(manualAnnots$FaName %in% zoonomNames[remainingIndexes][which(zoonomNames[remainingIndexes] %in% possibleZonoms)])
+
+which(zoonomNames == "vs_HLproCap3")
+
+
+
+
+
+hillerNames = readRDS("Data/hillerToZoonomiaTable.rds")
+hillerTable = data.frame(hillerNames, names(hillerNames))
+names(hillerTable) = c("Hiller", "Zoonomia")
+hillerTable$common = ZonomNameConvertVectorCommon(hillerTable$Zoonomia)
+
+saveRDS(hillerTable, "Results/hillerZoonomiaCommonTable.rds")
+
+hillerTable = readRDS("Data/hillerToZoonomiaTable.rds")
+commonTips = hillerTable$common[match(masterTips, hillerTable$Hiller)]
+commonPhenotypeVecNames =  hillerTable$common[match(names(phenotypeVector), hillerTable$Hiller)]
+
+commonMainTrees = mainTrees
+commonMainTrees$masterTree$tip.label = commonTips
+commonPhenotypeVector = phenotypeVector
+names(commonPhenotypeVector) = commonPhenotypeVecNames
+
+
+treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
+pdf(treeImageFilename, height = length(phenotypeVector)/18)                     #make a pdf to store the plot, sized based on tree size
+char2TreeCategorical(commonPhenotypeVector, commonMainTrees, model = "ER", anctrait = ancestralTrait, plot = T)
+
+categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, model = "ER", anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
+dev.off()                                                                       #save the plot to the pdf
+
+categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+saveRDS(categoricalTree, categoricalTreeFilename)  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
