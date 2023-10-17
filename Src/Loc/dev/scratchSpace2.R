@@ -1544,9 +1544,170 @@ rm = matrix(c(1,2,3,2,4,5,6,7,8),3)
 categoricalPath = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = rm, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
 
 codeTable = readRDS("Data/zoonomiaToHillerCodesTable.rds")
+manualAnnots = read.csv("Data/manualAnnotationsSheet.csv") 
 zoonomNames = names(phenotypeVector) 
 workingNames = zoonomNames
 
+
+hillerNames = codeTable$TipLabel
+workingNames = hillerNames
+remainingIndexes = numeric()
+phenotype = vector()
+commonName = vector()
+for(i in 1:length(hillerNames)){
+  
+  zonName = codeTable$zoonomiaCode[which(codeTable$TipLabel %in% hillerNames[i])]
+  if(length(zonName)!= 0 & !is.na(zonName)){
+    workingNames[i] = zonName
+    annotRowNumber = which(manualAnnots$FaName %in% zonName)
+    annotRow = manualAnnots[annotRowNumber,]
+    phenotype[i] = annotRow$Meyer.Lab.Classification
+    commonName[i] = annotRow$Common.Name.or.Group
+  }else{
+    remainingIndexes = append(remainingIndexes, i)
+    phenotype[i] = NA
+  }
+  
+}
+workingNames
+remainingIndexes
+codeTable$`species binomial`[remainingIndexes]
+length(which(is.na(phenotype)))
+
+remainingIndexes2 = numeric()
+for(i in remainingIndexes){
+  hilName = hillerNames[i]
+  scientificName = codeTable$ScientificName[i]
+  annotRowNumber = which(manualAnnots$Species.Name %in% scientificName) 
+  if(!length(annotRowNumber) == 0){
+    annotRow = manualAnnots[annotRowNumber,]
+    zoName = annotRow$FaName
+    phenotype[i] = annotRow$Meyer.Lab.Classification
+    commonName[i] = annotRow$Common.Name.or.Group
+    if(!is.na(zoName) & length(zoName)!= 0 & zoName != ""){
+      workingNames[i] = zoName
+    }else{
+      workingNames[i] = "NoZoonomiaName"
+    }
+  }else{
+    remainingIndexes2 = append(remainingIndexes2, i)
+  }
+}
+remainingIndexes2
+length(which(is.na(phenotype)))
+
+remainingIndexes3 = numeric()
+for(i in remainingIndexes2){
+  hilName = hillerNames[i]
+  scientificName = codeTable$`species binomial`[i]
+  annotRowNumber = which(tolower(manualAnnots$Tip_Label..Red.is.included.in.CMU.enhancer.dataset..but.missing.alignment.) %in% tolower(scientificName)) 
+  if(!length(annotRowNumber) == 0){
+    annotRow = manualAnnots[annotRowNumber,]
+    zoName = annotRow$FaName
+    phenotype[i] = annotRow$Meyer.Lab.Classification
+    commonName[i] = annotRow$Common.Name.or.Group
+    if(!is.na(zoName) & length(zoName)!= 0){
+      workingNames[i] = zoName
+    }else{
+      remainingIndexes3 = append(remainingIndexes3, i)
+      workingNames[i] = "NoZoonomiaName"
+    }
+  }else{
+    remainingIndexes3 = append(remainingIndexes3, i)
+  }
+}
+remainingIndexes2
+remainingIndexes3
+length(which(is.na(phenotype)))
+
+workingNames[which(workingNames == hillerNames)] = NA
+
+zoonomiaNames = workingNames
+conversionTable = data.frame(hillerNames, zoonomiaNames, commonName, codeTable$`species binomial`, phenotype)
+names(conversionTable) = c("Hiller", "Zoonomia", "common", "scientific", "phenotype")
+
+#manually add the six missing phenotypes 
+conversionTable$phenotype[which(is.na(conversionTable$phenotype))] = c("Insectivore", "Herbivore", "Piscivore", "Planktivore", NA, NA, "Herbivore", "Herbivore")
+all.equal(conversionTable$phenotype[55], conversionTable$phenotype[57])
+conversionTable$phenotype = trimws(conversionTable$phenotype)
+
+saveRDS(conversionTable, "Results/HillerZoonomPhenotypeTable.rds")
+
+
+conversionTable[which(is.na(conversionTable$phenotype)),]
+conversionTable2 = conversionTable
+
+dietPhenVector = conversionTable$phenotype
+names(dietPhenVector) = conversionTable$Hiller
+
+substitutions = list(c("Generalist","Anthropivore"))
+if(!is.null(substitutions)){
+  for( i in 1:length(substitutions)){
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
+    dietPhenVector = gsub(substitutePhenotypes[1], substitutePhenotypes[2], dietPhenVector)
+  }
+}
+
+saveRDS(dietPhenVector, "Output/OnetwentyWay6Phen/OnetwentyWay6PhenAllPhenotypesVector.rds")
+
+
+if(!is.null(substitutions)){                                                    #Consider species with multiple combined categories as the merged category
+  for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("Combining", substitutePhenotypes[1], "/", substitutePhenotypes[2]))
+    entriesWithPhen1 = grep(substitutePhenotypes[1], dietPhenVector)
+    entriesWithPhen2 = grep(substitutePhenotypes[2], dietPhenVector)
+    combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
+    combineIndexes = entriesWithPhen1[combineEntries]
+    dietPhenVector[combineIndexes] = substitutePhenotypes[2]
+  }
+}
+
+if(!is.null(mergeOnlys)){                                                    #Consider species with multiple combined categories as the merged category
+  for( i in 1:length(mergeOnlys)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
+    substitutePhenotypes = mergeOnlys[[i]]
+    message(paste("Merging Hybrids of", substitutePhenotypes[1], "/", substitutePhenotypes[2], "to", substitutePhenotypes[2]))
+    entriesWithPhen1 = grep(substitutePhenotypes[1],  dietPhenVector)
+    entriesWithPhen2 = grep(substitutePhenotypes[2],  dietPhenVector)
+    combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
+    combineIndexes = entriesWithPhen1[combineEntries]
+    dietPhenVector[combineIndexes] = substitutePhenotypes[2]
+  }
+}
+
+if(!is.null(substitutions)){
+  for( i in 1:length(substitutions)){
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
+    dietPhenVector = gsub(substitutePhenotypes[1], substitutePhenotypes[2], dietPhenVector)
+  }
+}
+saveRDS(dietPhenVector, phenotypeVectorFilename)
+
+
+names(dietPhenVector)[which(is.na(dietPhenVector))]
+
+dietPhenVector[which(is.na(dietPhenVector))] = c("Insectivore", "Herbivore", "Piscivore", "Planktivore", NA, NA, "Herbivore", "Herbivore")
+
+conversionTable$phenotype[which(is.na(conversionTable$phenotype))] = c("Insectivore", "Herbivore", "Piscivore", "Planktivore", NA, NA, "Herbivore", "Herbivore")
+all.equal(conversionTable$phenotype[55], conversionTable$phenotype[57])
+conversionTable$phenotype = trimws(conversionTable$phenotype)
+
+codeTable$`species binomial`[which(workingNames == "NoZoonomiaName")]
+codeTable$`species binomial`[remainingIndexes3]
+
+
+
+
+codeTable[remainingIndexes3,]
+grep("ornAna", codeTable$TipLabel)
+
+
+
+codeTable = readRDS("Data/zoonomiaToHillerCodesTable.rds")
+zoonomNames = names(phenotypeVector) 
+workingNames = zoonomNames  
 for(i in 1:length(zoonomNames)){
   
   hilName = codeTable$TipLabel[which(codeTable$zoonomiaCode %in% zoonomNames[i])]
@@ -1613,7 +1774,7 @@ which(zoonomNames == "vs_HLproCap3")
 
 
 
-hillerNames = readRDS("Data/hillerToZoonomiaTable.rds")
+hillerNames = readRDS("Data/hillerZoonomiaCommonTable.rds")
 hillerTable = data.frame(hillerNames, names(hillerNames))
 names(hillerTable) = c("Hiller", "Zoonomia")
 hillerTable$common = ZonomNameConvertVectorCommon(hillerTable$Zoonomia)
@@ -1621,8 +1782,10 @@ hillerTable$common = ZonomNameConvertVectorCommon(hillerTable$Zoonomia)
 saveRDS(hillerTable, "Results/hillerZoonomiaCommonTable.rds")
 
 hillerTable = readRDS("Data/hillerToZoonomiaTable.rds")
+commonPhentypeVector = readRDS("Results/OnetwentyWay6PhenCategoricalPhenotypeVector.rds")
 commonTips = hillerTable$common[match(masterTips, hillerTable$Hiller)]
 commonPhenotypeVecNames =  hillerTable$common[match(names(phenotypeVector), hillerTable$Hiller)]
+
 
 commonMainTrees = mainTrees
 commonMainTrees$masterTree$tip.label = commonTips
