@@ -154,7 +154,7 @@ quickViolin("SLC47A1")
 quickViolin("SPEGNB")
 quickViolin("SPECC1L")
 quickViolin("CRB1")
-
+quickViolin("SDS")
 
 quickViolin("PROM2")
 
@@ -1781,12 +1781,12 @@ hillerTable$common = ZonomNameConvertVectorCommon(hillerTable$Zoonomia)
 
 saveRDS(hillerTable, "Results/hillerZoonomiaCommonTable.rds")
 
-hillerTable = readRDS("Data/hillerToZoonomiaTable.rds")
+hillerTable = readRDS("Data/HillerZoonomPhenotypeTable.rds")
 commonPhentypeVector = readRDS("Results/OnetwentyWay6PhenCategoricalPhenotypeVector.rds")
 commonTips = hillerTable$common[match(masterTips, hillerTable$Hiller)]
 commonPhenotypeVecNames =  hillerTable$common[match(names(phenotypeVector), hillerTable$Hiller)]
 
-
+phenotypeVector = commonPhenotypeVector
 commonMainTrees = mainTrees
 commonMainTrees$masterTree$tip.label = commonTips
 commonPhenotypeVector = phenotypeVector
@@ -1804,15 +1804,15 @@ categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.r
 saveRDS(categoricalTree, categoricalTreeFilename)  
 
 
+phenotypeVector = hillerTable$phenotype
+names(phenotypeVector) = hillerTable$Hiller
 
 
+phenotypeVector  = readRDS("Data/CategoricalPermulationsTimingHillerPhenotypes.rds")
+
+phenotypeVector= phenotypeVector[-which(phenotypeVector == "Insectivore")]
 
 
-
-
-
-
-
-
+speciesFilter = NULL
 
 
