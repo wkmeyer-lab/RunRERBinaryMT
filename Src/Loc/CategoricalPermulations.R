@@ -122,16 +122,16 @@ phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenot
 phenotypeVector = readRDS(phenotypeVectorFilename)                              #Load the phenotype vector 
 
 #RERs 
-RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")       #Set a filename for the RERs based on the prefix
-RERObject = readRDS(RERFileName)                                                #Load the RERs 
+#RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")       #Set a filename for the RERs based on the prefix
+#RERObject = readRDS(RERFileName)                                                #Load the RERs 
 
 #Paths
-pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
-pathsObject = readRDS(pathsFilename)                                            #Load the paths
+#pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
+#pathsObject = readRDS(pathsFilename)                                            #Load the paths
 
 #Correlations
-correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
-correlationsObject = readRDS(correlationFileName)                               #Load the correlations
+#correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
+#correlationsObject = readRDS(correlationFileName)                               #Load the correlations
 
 # -- Run Permulations --
 
