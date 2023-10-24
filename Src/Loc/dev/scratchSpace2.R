@@ -1813,6 +1813,74 @@ phenotypeVector  = readRDS("Data/CategoricalPermulationsTimingHillerPhenotypes.r
 phenotypeVector= phenotypeVector[-which(phenotypeVector == "Insectivore")]
 
 
+
+
 speciesFilter = NULL
 
+
+vec = readRDS("Output/ThreePhenLikeihoodTest/ThreePhenLikeihoodTestCategoricalPhenotypeVector.rds")
+
+catCVHDisGen = readRDS("Output/CategoricalDiet3Phen/Carnivore-Herbivore/CategoricalDiet3PhenCarnivore-HerbivoreEnrichment-DisGeNET.rds")
+
+catCVHDisGen = catCVHDisGen$DisGeNET
+
+catCVHDisGen = catCVHDisGen[order(catCVHDisGen$stat),]
+
+
+# Make custom gene sets 
+
+HumanLocalAdaptionDietAll = c("LCT", "FADS", "AS3MT", "DI2", "SelS", "GPX1", "GPX3", "CELF1", "SPS2", "SEPSECS", "HFE", "TRIP4", "TRVP6", "SLC30A9", "SLC39A8", "IBD5", "SLC22A4", "SLC22A5", "CREBRF")
+NAFLDGWAS = c("PNPLA3", "TM6SF2", "APOE", "GCKR", "TRIB1", "GPAM", "MTARC1", "MTTP", "TOR1B", "ADH1B", "FTO", "COBLL1", "INSR", "DRG2", "GID4", "PTPRD", "PNPLA2" )
+expressionDirectionalSelection = c("HLA-DQB1",
+                                   "HLA-DRB1",
+                                   "FADS1",
+                                   "POU5F1",
+                                   "HLA-DRB5",
+                                   "KAT8",
+                                   "HLA-DQA2",
+                                   "LILRB1",
+                                   "KHK",
+                                   "TRIM40",
+                                   "DEF8",
+                                   "ZBTB12",
+                                   "ZNF646",
+                                   "SCAPER",
+                                   "HLA-DQA1",
+                                   "COMMD6",
+                                   "FEN1",
+                                   "SBK1",
+                                   "ACO2",
+                                   "ZNF668",
+                                   "LY6K",
+                                   "FADS3",
+                                   "GSDMD",
+                                   "ERBB2",
+                                   "SULT1A2",
+                                   "C18orf8",
+                                   "LRRC61",
+                                   "CLDN23",
+                                   "TLR10",
+                                   "LGALS2",
+                                   "MAPT",
+                                   "UBE2U",
+                                   "NSL1",
+                                   "TLR6",
+                                   "SPG7",
+                                   "ITGAM",
+                                   "AXIN1",
+                                   "PSCA",
+                                   "ZNF19",
+                                   "PCDHA4",
+                                   "DPCR1",
+                                   "STX1B",
+                                   "LILRA4",
+                                   "HLA-C",
+                                   "HSD17B8")
+genesets = list(HumanLocalAdaptionDietAll, NAFLDGWAS, expressionDirectionalSelection)
+CustomGeneSet = list(genesets)
+annotation
+
+cat(HumanLocalAdaptionDietAll, sep="\t")
+cat(NAFLDGWAS, sep="\t")
+cat(expressionDirectionalSelection, sep="\t")
 
