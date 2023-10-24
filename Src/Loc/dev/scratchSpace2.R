@@ -1884,3 +1884,23 @@ cat(HumanLocalAdaptionDietAll, sep="\t")
 cat(NAFLDGWAS, sep="\t")
 cat(expressionDirectionalSelection, sep="\t")
 
+
+
+
+enrichmentBackup1 = enrichmentResult[[1]]
+rownames(enrichmentBackup1) = paste(rownames(enrichmentBackup1), "-OvH", sep = "")
+
+enrichmentBackup2 = enrichmentResult[[1]]
+rownames(enrichmentBackup2) = paste(rownames(enrichmentBackup2), "-CvH", sep = "")
+
+enrichmentBackup3 = enrichmentResult[[1]]
+rownames(enrichmentBackup3) = paste(rownames(enrichmentBackup3), "-OvC", sep = "")
+
+enrichmentBackup4 = enrichmentResult[[1]]
+rownames(enrichmentBackup4) = paste(rownames(enrichmentBackup4), "-Overall", sep = "")
+
+enrichmentResulta = rbind(enrichmentBackup1, enrichmentBackup2, enrichmentBackup3, enrichmentBackup4)
+
+enrichmentResult = list(enrichmentResulta)
+
+"Output/LiverExpression3/LiverExpression3CorrelationDataPermulatedNamesConverted.rds"
