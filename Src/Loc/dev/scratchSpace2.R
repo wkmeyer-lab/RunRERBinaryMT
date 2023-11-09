@@ -1904,3 +1904,14 @@ enrichmentResulta = rbind(enrichmentBackup1, enrichmentBackup2, enrichmentBackup
 enrichmentResult = list(enrichmentResulta)
 
 "Output/LiverExpression3/LiverExpression3CorrelationDataPermulatedNamesConverted.rds"
+
+
+tissueEnrich = readRDS("Output/CVHRemake/CVHRemakeEnrichment-tissue_specific.rds")
+write.csv(tissueEnrich, "Output/CVHRemake/CVHRemakeEnrichment-tissue_specific.csv")
+
+
+oldDisG = read.gmt("Data/DisGeNET.gmt")
+newDisG = read.gmt("Data/DisGeNETTest.gmt")
+newerDisG = read.gmt("Data/DisGegene_associations.gmt")
+
+all.equal(oldDisG, newDisG)
