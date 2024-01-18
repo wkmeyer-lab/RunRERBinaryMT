@@ -17,7 +17,9 @@ source("Src/Reu/cmdArgImport.R")
 # v = <T or F>                                       This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # g = <T OR F>                                       This sets if Gene Enrichment analysis is included. Default TRUE. 
 # l = <"enrichmentListName" OR c("name1","name2")>   This defines the enrichment list(s) used in the GO analysis the script should display
-# s = "subdirectoryName"                            This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
+# s = "subdirectoryName"                             This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
+# o = "EnrichmentSortCollum"                         This is used to specify what the enrichment plots should be sorted by 
+# u = < T or F or A>                                 This is used to set if the enrichment plots should be ordered by decreasing or not, or A for absolute value 
 
 # p = <T or F or B or C>                             This sets if the code should use permulated or unpermualted values, or both. "C" indicates categorical permulations, which are stored in the main file. 
 # f = "permulationPvalueFileLocation.rds"            This is a manual override to specify the script use a specific Permulation p-value file. 
@@ -32,6 +34,8 @@ args = c('r=CategoricalDiet5Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbiv
 args = c('r=CategoricalDiet3Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Carnivore")', 'p=CB')
 args = c('r=LiverExpression3', 'p=B') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 args = c('r=CVHRemake', 'p=B')
+args = c('r=CategoricalDiet3Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Carnivore", "Overall")', 'p=C', 'o=stat', 'u=A')
+args = c('r=CVHRemake', 'p=P', 'o=stat', 'u=A')
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -76,6 +80,8 @@ useCategoricalPerms = FALSE
 useSubdirectory = FALSE
 subdirectoryValueList = NULL
 j=1
+enrichmentSortColumn = "p.adj"
+enrichmentOrderDecrease = F
 
 { # Bracket used for collapsing purposes
   
@@ -136,6 +142,30 @@ j=1
     
   }else{
     message("No subdirectory specified.")
+  }
+  
+  #Import enrichment column
+  if(!any(is.na(cmdArgImport('o')))){
+    useSubdirectory = TRUE
+    enrichmentSortColumn = cmdArgImport('o')
+    message(paste("Sorting erichments by", enrichmentSortColumn, "."))
+    
+    #outputFolderName = paste(outputFolderName, subdirectoryValue, "/", sep="")
+    
+  }else{
+    message("No Column specified, using p.adj.")
+  }
+  
+  #Import erichment sort direction
+  if(!any(is.na(cmdArgImport('u')))){
+    useSubdirectory = TRUE
+    enrichmentOrderDecrease = cmdArgImport('u')
+    message(paste("Ordering erichments by ", enrichmentOrderDecrease, "."))
+    
+    #outputFolderName = paste(outputFolderName, subdirectoryValue, "/", sep="")
+    
+  }else{
+    message("No enrichment order speciefied, sorting by decreasing = F.")
   }
 }
 
@@ -280,7 +310,9 @@ for(j in 1:length(subdirectoryValueList)){
     enrichmentPlotSet = list()
     makeGeListPlot = function(data, column, length, titleVal, decreasing){
       setData = data[[1]]
-      if(decreasing){
+      if(decreasing == "A"){
+        setData = setData[order(abs(setData[[column]]), decreasing = T),]
+      }else if(decreasing){
       setData = setData[order(abs(setData[[column]]), decreasing = T),]
       }else{
         setData = setData[order(abs(setData[[column]])),]
@@ -312,9 +344,9 @@ for(j in 1:length(subdirectoryValueList)){
     for(i in 1:enrichmentRange){
       genesetPlotName = paste("genesetPlot", i, sep="")
       if(usePermulations){
-        genesetPlot = makeGeListPlot(enrichmentResultSets[i], "p.adj", 40, "Top pathways by permulation", F)
+        genesetPlot = makeGeListPlot(enrichmentResultSets[i], enrichmentSortColumn, 40, "Top pathways by permulation", enrichmentOrderDecrease)
       }else{
-        genesetPlot = makeGeListPlot(enrichmentResultSets[i], "p.adj", 40, "Top pathways by non-permulation", F)
+        genesetPlot = makeGeListPlot(enrichmentResultSets[i], enrichmentSortColumn, 40, "Top pathways by non-permulation", enrichmentOrderDecrease)
       }
       enrichmentPlotSet[[i]] = genesetPlot
       assign(genesetPlotName, genesetPlot)

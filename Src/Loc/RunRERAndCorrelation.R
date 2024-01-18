@@ -22,8 +22,13 @@ args = c('r=CVO', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=b') #Thi
 args = c("r=EcholocationUpdate2", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "s=b")
 args = c("m=Data/NoSignExpressionTreesRound3.rds", "r=LiverExpression3", "v=T", "s=b")
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CategoricalDiet4Phen", "v=T", "s=c")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHUpdate", "s=b")
-
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHRemake", "s=b")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=BinaryCVHApplesToApples", "s=b")
+args = c('r=RubyRegenARD',   'm=data/mam120aa_trees.rds', 'v=F', 't=ARD')
+args = c('r=RubyRegenER',   'm=data/mam120aa_trees.rds', 'v=F', 't=ER')
+args = c('r=ThreePhenLikeihoodTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
+args = c('r=HMGRelaxTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
+args = c('r=IPCRelaxTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -161,8 +166,22 @@ correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep
 
 if(phenotypeStyle == "Binary"){                                                 #If binary
   correlation = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =10)#Correlate with binary phenotype
+  
+  #Generate a phenotype vector 
+  fgEdgeObjects = phenotypeTree$edge[which(phenotypeTree$edge.length>=1) ,]                                        #Make an object of the edges in the foreground. This is used as opposed to just referencing the tree directly to allow for "walking" in the final loop of the code
+  foregroundNodes = which(1:length(phenotypeTree$tip.label) %in% as.vector(fgEdgeObjects))
+  foregroundSpecies = phenotypeTree$tip.label[foregroundNodes]
+  phenotypeVector = c(0,0);length(phenotypeVector) = length(phenotypeTree$tip.label);phenotypeVector[] = 0 
+  names(phenotypeVector) = phenotypeTree$tip.label
+  phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
+  phenotypeVector = phenotypeVector[names(phenotypeVector) %in% speciesFilter]
+  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
+  saveRDS(phenotypeVector, file = phenotypeVectorFilename)
+  
 }else if(phenotypeStyle == "Continous"){                                        #if continous
-  stop("This function hasn't been completed")                                   
+  stop("This function hasn't been completed")    
+  
+  
 } else if(phenotypeStyle == "Categorical"){                                     #if categorical
   categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = 10, min.pos = 2) #Calculate with categorical, min 2 species per category 
   overalCategorical = categoricalCorrelation[[1]]                               #select the results relating to overall difference between all categories

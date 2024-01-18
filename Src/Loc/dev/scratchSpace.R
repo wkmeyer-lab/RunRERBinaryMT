@@ -400,9 +400,11 @@ for(i in 1:100){
   Sys.sleep(2)
 }
 
-makeMasterVsGeneTreePlots(mainTrees, CVHRERs, "DNAH2", foregroundSpecies, correlationPlot = F)
+makeMasterAndGeneTreePlots(mainTrees,"DNAH1", CVHRERs,  foregroundSpecies, correlationPlot = F)
   
 ?ggtitle()
+
+mainTrees$trees[["DNAH1"]]
 
 newPlot = rerViolinPlot(mainTrees, CVHRERs, phenotypeTree, foregroundSpecies, "BCAT2", "Carnivore", "Herbivore", correlData)
 newPlot

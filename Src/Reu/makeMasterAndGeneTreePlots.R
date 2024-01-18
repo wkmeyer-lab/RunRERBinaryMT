@@ -5,7 +5,7 @@
 #This script will by default convert names from zoonomia names to common names. This requires "Data/manualAnnotationsSheet.csv". This can be toggled off using convertNames = F=
 #This script can also make a plot of overall genome length vs gene length by toggling correlationPlot = T.
 
-makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL, convertNames = T, twoInOne = T){
+makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL, convertNames = T, twoInOne = T, dropTips = T){
   masterTree = mainTrees$masterTree
   geneTree = mainTrees$trees[[geneInQuestion]]
   
@@ -16,8 +16,13 @@ makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NUL
     namesToKeep = geneTree$tip.label
   }
   
-  prunedMaster = drop.tip(masterTree, which(!masterTree$tip.label %in% namesToKeep))
-  prunedGeneTree = drop.tip(geneTree, which(!geneTree$tip.label %in% namesToKeep))
+  if(dropTips){
+    prunedMaster = drop.tip(masterTree, which(!masterTree$tip.label %in% namesToKeep))
+    prunedGeneTree = drop.tip(geneTree, which(!geneTree$tip.label %in% namesToKeep))
+  }else{
+    prunedMaster = masterTree
+    prunedGeneTree = geneTree
+  }
   
   if(convertNames){
     if(file.exists("Src/Reu/ZonomNameConvertVector.R")){source("Src/Reu/ZonomNameConvertVector.R")}

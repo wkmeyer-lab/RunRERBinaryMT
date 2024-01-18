@@ -2,8 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
-
-Output/
+Output/*
+!Output/BinaryCVHApplesToApples
 RemadeTreesAllZoonomiaSpecies.rds
 ProjectFrameworkPreGitted.Rproj
 allInsectivory
@@ -30,3 +30,11 @@ Output/CategoricalDiet5Phen
 Data/Old
 Data/NoSign
 Output/EcholocationUpdate2
+!Output/ThreePhenLikeihoodTest
+!Output/CategoricalDiet3Phen
+!Output/CVHRemake
+!Output/LiverExpression3
+!Output/IPCRelaxTest
+!Output/HMGRelaxTest
+!Output/IPCUnRelaxTest
+!Output/HMGUnRelaxTest

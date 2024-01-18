@@ -3,7 +3,8 @@
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
-
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+source("Src/Reu/ZonomNameConvertVector.R")
 # -- Usage:
 # This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
 # In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is named "FaName". 
@@ -15,12 +16,27 @@ source("Src/Reu/cmdArgImport.R")
 # a = "annotCollumn"                                     This is the column in the manual annotations spreadsheet to use
 # c = <c("nameOfCategory1,"nameOfCategory2")>            This is the list of category names 
 # u = list(c("replace1", "with1"),c("replace2, with2"))
+# o = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
 # s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
 # t = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
 # n = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 #----------------
 args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
 args = c('r=BinaryCVHApplesToApples', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Herbivore")', 'u=list(c("Carnivore","_Carnivore"), c("Piscivore", "_Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
+args = c('r=CategoricalER5Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
+args = c('r=CategoricalARD5Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ARD')
+args = c('r=CategoricalARD3Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore")), c("Piscivore", "Carnivore")',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ARD')
+args = c('r=RubyRegenARD',   'm=data/mam120aa_trees.rds', 'v=F', 't=ARD')
+args = c('r=RubyRegenER',   'm=data/mam120aa_trees.rds', 'v=F', 't=ER', 'a=Meyer.Lab.Classification')
+args = c('r=Categorical3PhenARDTest', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'u=list(c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=rm')
+
+args = c('r=OnetwentyWay6Phen', 'm=data/mam120aa_trees.rds', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist")', 'u=list(c("Generalist","Anthropivore"), c("Generalist", "Omnivore"))', 'o=list(c("Carnivore", "Piscivore"))', 'v=F', 't=SYM')
+args = c('r=ThreePhenLikeihoodTest', 'm=data/mam120aa_trees.rds', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Piscivore", "Generalist", "Insectivore")', 'u=list(c("Anthropivore","_Omninivore"), c("Omnivore", "_Omninivore"), c("Piscivore", "Carnivore"), c("Insectivore", "Carnivore"))', 'o=list(c("Carnivore", "Piscivore"))', 'v=F', 't=ARD')
+args = c('r=HMGRelaxTest', 'm=data/mam120aa_trees.rds', 'a=DEBUG_using_preexisting_phenotypeVector', 'v=F', 't=ER')
+args = c('r=HMGUnRelaxTest', 'm=data/mam120aa_trees.rds', 'a=DEBUG_using_preexisting_phenotypeVector', 'v=F', 't=ER')
+args = c('r=IPCRelaxTest', 'm=data/mam120aa_trees.rds', 'a=DEBUG_using_preexisting_phenotypeVector', 'v=F', 't=ER')
+args = c('r=IPCUnRelaxTest', 'm=data/mam120aa_trees.rds', 'a=DEBUG_using_preexisting_phenotypeVector', 'v=F', 't=ER')
+
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -113,11 +129,17 @@ substitutions = NULL
     message("No ancestral trait specified, using NULL")
   }
   
-  #Category list 
+  #Substitution list 
   if(!is.null(cmdArgImport('u'))){
     substitutions = cmdArgImport('u')
   }else{
     message("No substitutions provided")
+  }
+  #Merge list 
+  if(!is.null(cmdArgImport('o'))){
+    mergeOnlys = cmdArgImport('o')
+  }else{
+    message("No merges provided")
   }
 }
 
@@ -127,6 +149,7 @@ substitutions = NULL
 manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")                      #load the manual annotations file holding the phenotype data
 manualAnnots[[annotColumn]] = trimws(manualAnnots[[annotColumn]])               #trim away whitespace to allow for better matching 
 
+# - Merge hyrbid of either substituted phenotypes or merge-only phenotypes - 
 if(!is.null(substitutions)){                                                    #Consider species with multiple combined categories as the merged category
   for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
     substitutePhenotypes = substitutions[[i]]
@@ -134,7 +157,20 @@ if(!is.null(substitutions)){                                                    
     entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[annotColumn]])
     entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[annotColumn]])
     combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
-    manualAnnots[[annotColumn]][combineEntries] = substitutePhenotypes[2]
+    combineIndexes = entriesWithPhen1[combineEntries]
+    manualAnnots[[annotColumn]][combineIndexes] = substitutePhenotypes[2]
+  }
+}
+
+if(!is.null(mergeOnlys)){                                                    #Consider species with multiple combined categories as the merged category
+  for( i in 1:length(mergeOnlys)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
+    substitutePhenotypes = mergeOnlys[[i]]
+    message(paste("Merging Hybrids of", substitutePhenotypes[1], "/", substitutePhenotypes[2], "to", substitutePhenotypes[2]))
+    entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[annotColumn]])
+    entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[annotColumn]])
+    combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
+    combineIndexes = entriesWithPhen1[combineEntries]
+    manualAnnots[[annotColumn]][combineIndexes] = substitutePhenotypes[2]
   }
 }
 
@@ -154,6 +190,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   saveRDS(speciesFilter, file = speciesFilterFilename)                          #save that as the species filter
 }else{ #if not, use the existing one 
   relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
+  speciesFilter = relevantSpecieslist                                           #make the speciesFilter object for later 
   relevantSpecies = manualAnnots[ manualAnnots[["FaName"]] %in% relevantSpecieslist,] #and select the manual annotations entries in that list (useful if the list is more restrictive than it would be by default) 
 }
 
@@ -174,9 +211,18 @@ if(!is.null(substitutions)){
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
 saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        #save the phenotype vector
 
+# - Make common name versions of objects (used in visualization) - 
+commonMainTrees = mainTrees
+commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree)
+commonPhenotypeVector = phenotypeVector
+names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector))
+commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter)
+
 # - Categorical Tree - 
 treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
 pdf(treeImageFilename, height = length(phenotypeVector)/18)                     #make a pdf to store the plot, sized based on tree size
+  char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
+  
   categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
 dev.off()                                                                       #save the plot to the pdf
  
