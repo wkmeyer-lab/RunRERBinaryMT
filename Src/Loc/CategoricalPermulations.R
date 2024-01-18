@@ -16,7 +16,7 @@ source("Src/Reu/cmdArgImport.R")
 # p = <auto or stationary or flat>    This sets the probability of each state at the root of the tree.   
 # n = numberOfPermulations            This is the number of permulations to run in the script 
 # i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
-# l = relaxationValue <int, 0-1>      This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. 
+# l = relaxationValue <int, 0-1>      This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. Recommend 0.1 if more than 3 categories
 
 
 #----------------
