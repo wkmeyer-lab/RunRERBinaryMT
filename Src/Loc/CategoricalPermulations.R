@@ -16,7 +16,7 @@ source("Src/Reu/cmdArgImport.R")
 # p = <auto or stationary or flat>    This sets the probability of each state at the root of the tree.   
 # n = numberOfPermulations            This is the number of permulations to run in the script 
 # i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
-# l = relaxationValue <int, 0-1>      This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. 
+# l = relaxationValue <int, 0-1>      This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. Recommend 0.1 if more than 3 categories
 
 
 #----------------
@@ -122,16 +122,16 @@ phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenot
 phenotypeVector = readRDS(phenotypeVectorFilename)                              #Load the phenotype vector 
 
 #RERs 
-RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")       #Set a filename for the RERs based on the prefix
-RERObject = readRDS(RERFileName)                                                #Load the RERs 
+#RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")       #Set a filename for the RERs based on the prefix
+#RERObject = readRDS(RERFileName)                                                #Load the RERs 
 
 #Paths
-pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
-pathsObject = readRDS(pathsFilename)                                            #Load the paths
+#pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
+#pathsObject = readRDS(pathsFilename)                                            #Load the paths
 
 #Correlations
-correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
-correlationsObject = readRDS(correlationFileName)                               #Load the correlations
+#correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
+#correlationsObject = readRDS(correlationFileName)                               #Load the correlations
 
 # -- Run Permulations --
 

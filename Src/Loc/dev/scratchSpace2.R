@@ -154,7 +154,7 @@ quickViolin("SLC47A1")
 quickViolin("SPEGNB")
 quickViolin("SPECC1L")
 quickViolin("CRB1")
-
+quickViolin("SDS")
 
 quickViolin("PROM2")
 
@@ -1543,3 +1543,375 @@ char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter
 rm = matrix(c(1,2,3,2,4,5,6,7,8),3)
 categoricalPath = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = rm, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
 
+codeTable = readRDS("Data/zoonomiaToHillerCodesTable.rds")
+manualAnnots = read.csv("Data/manualAnnotationsSheet.csv") 
+zoonomNames = names(phenotypeVector) 
+workingNames = zoonomNames
+
+
+hillerNames = codeTable$TipLabel
+workingNames = hillerNames
+remainingIndexes = numeric()
+phenotype = vector()
+commonName = vector()
+for(i in 1:length(hillerNames)){
+  
+  zonName = codeTable$zoonomiaCode[which(codeTable$TipLabel %in% hillerNames[i])]
+  if(length(zonName)!= 0 & !is.na(zonName)){
+    workingNames[i] = zonName
+    annotRowNumber = which(manualAnnots$FaName %in% zonName)
+    annotRow = manualAnnots[annotRowNumber,]
+    phenotype[i] = annotRow$Meyer.Lab.Classification
+    commonName[i] = annotRow$Common.Name.or.Group
+  }else{
+    remainingIndexes = append(remainingIndexes, i)
+    phenotype[i] = NA
+  }
+  
+}
+workingNames
+remainingIndexes
+codeTable$`species binomial`[remainingIndexes]
+length(which(is.na(phenotype)))
+
+remainingIndexes2 = numeric()
+for(i in remainingIndexes){
+  hilName = hillerNames[i]
+  scientificName = codeTable$ScientificName[i]
+  annotRowNumber = which(manualAnnots$Species.Name %in% scientificName) 
+  if(!length(annotRowNumber) == 0){
+    annotRow = manualAnnots[annotRowNumber,]
+    zoName = annotRow$FaName
+    phenotype[i] = annotRow$Meyer.Lab.Classification
+    commonName[i] = annotRow$Common.Name.or.Group
+    if(!is.na(zoName) & length(zoName)!= 0 & zoName != ""){
+      workingNames[i] = zoName
+    }else{
+      workingNames[i] = "NoZoonomiaName"
+    }
+  }else{
+    remainingIndexes2 = append(remainingIndexes2, i)
+  }
+}
+remainingIndexes2
+length(which(is.na(phenotype)))
+
+remainingIndexes3 = numeric()
+for(i in remainingIndexes2){
+  hilName = hillerNames[i]
+  scientificName = codeTable$`species binomial`[i]
+  annotRowNumber = which(tolower(manualAnnots$Tip_Label..Red.is.included.in.CMU.enhancer.dataset..but.missing.alignment.) %in% tolower(scientificName)) 
+  if(!length(annotRowNumber) == 0){
+    annotRow = manualAnnots[annotRowNumber,]
+    zoName = annotRow$FaName
+    phenotype[i] = annotRow$Meyer.Lab.Classification
+    commonName[i] = annotRow$Common.Name.or.Group
+    if(!is.na(zoName) & length(zoName)!= 0){
+      workingNames[i] = zoName
+    }else{
+      remainingIndexes3 = append(remainingIndexes3, i)
+      workingNames[i] = "NoZoonomiaName"
+    }
+  }else{
+    remainingIndexes3 = append(remainingIndexes3, i)
+  }
+}
+remainingIndexes2
+remainingIndexes3
+length(which(is.na(phenotype)))
+
+workingNames[which(workingNames == hillerNames)] = NA
+
+zoonomiaNames = workingNames
+conversionTable = data.frame(hillerNames, zoonomiaNames, commonName, codeTable$`species binomial`, phenotype)
+names(conversionTable) = c("Hiller", "Zoonomia", "common", "scientific", "phenotype")
+
+#manually add the six missing phenotypes 
+conversionTable$phenotype[which(is.na(conversionTable$phenotype))] = c("Insectivore", "Herbivore", "Piscivore", "Planktivore", NA, NA, "Herbivore", "Herbivore")
+all.equal(conversionTable$phenotype[55], conversionTable$phenotype[57])
+conversionTable$phenotype = trimws(conversionTable$phenotype)
+
+saveRDS(conversionTable, "Results/HillerZoonomPhenotypeTable.rds")
+
+
+conversionTable[which(is.na(conversionTable$phenotype)),]
+conversionTable2 = conversionTable
+
+dietPhenVector = conversionTable$phenotype
+names(dietPhenVector) = conversionTable$Hiller
+
+substitutions = list(c("Generalist","Anthropivore"))
+if(!is.null(substitutions)){
+  for( i in 1:length(substitutions)){
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
+    dietPhenVector = gsub(substitutePhenotypes[1], substitutePhenotypes[2], dietPhenVector)
+  }
+}
+
+saveRDS(dietPhenVector, "Output/OnetwentyWay6Phen/OnetwentyWay6PhenAllPhenotypesVector.rds")
+
+
+if(!is.null(substitutions)){                                                    #Consider species with multiple combined categories as the merged category
+  for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("Combining", substitutePhenotypes[1], "/", substitutePhenotypes[2]))
+    entriesWithPhen1 = grep(substitutePhenotypes[1], dietPhenVector)
+    entriesWithPhen2 = grep(substitutePhenotypes[2], dietPhenVector)
+    combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
+    combineIndexes = entriesWithPhen1[combineEntries]
+    dietPhenVector[combineIndexes] = substitutePhenotypes[2]
+  }
+}
+
+if(!is.null(mergeOnlys)){                                                    #Consider species with multiple combined categories as the merged category
+  for( i in 1:length(mergeOnlys)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
+    substitutePhenotypes = mergeOnlys[[i]]
+    message(paste("Merging Hybrids of", substitutePhenotypes[1], "/", substitutePhenotypes[2], "to", substitutePhenotypes[2]))
+    entriesWithPhen1 = grep(substitutePhenotypes[1],  dietPhenVector)
+    entriesWithPhen2 = grep(substitutePhenotypes[2],  dietPhenVector)
+    combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
+    combineIndexes = entriesWithPhen1[combineEntries]
+    dietPhenVector[combineIndexes] = substitutePhenotypes[2]
+  }
+}
+
+if(!is.null(substitutions)){
+  for( i in 1:length(substitutions)){
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
+    dietPhenVector = gsub(substitutePhenotypes[1], substitutePhenotypes[2], dietPhenVector)
+  }
+}
+saveRDS(dietPhenVector, phenotypeVectorFilename)
+
+
+names(dietPhenVector)[which(is.na(dietPhenVector))]
+
+dietPhenVector[which(is.na(dietPhenVector))] = c("Insectivore", "Herbivore", "Piscivore", "Planktivore", NA, NA, "Herbivore", "Herbivore")
+
+conversionTable$phenotype[which(is.na(conversionTable$phenotype))] = c("Insectivore", "Herbivore", "Piscivore", "Planktivore", NA, NA, "Herbivore", "Herbivore")
+all.equal(conversionTable$phenotype[55], conversionTable$phenotype[57])
+conversionTable$phenotype = trimws(conversionTable$phenotype)
+
+codeTable$`species binomial`[which(workingNames == "NoZoonomiaName")]
+codeTable$`species binomial`[remainingIndexes3]
+
+
+
+
+codeTable[remainingIndexes3,]
+grep("ornAna", codeTable$TipLabel)
+
+
+
+codeTable = readRDS("Data/zoonomiaToHillerCodesTable.rds")
+zoonomNames = names(phenotypeVector) 
+workingNames = zoonomNames  
+for(i in 1:length(zoonomNames)){
+  
+  hilName = codeTable$TipLabel[which(codeTable$zoonomiaCode %in% zoonomNames[i])]
+  if(length(hilName)!= 0){
+    workingNames[i] = hilName
+  }
+}
+remainingIndexes = which(workingNames == zoonomNames)
+remainingIndexes2 = remainingIndexes
+for(i in remainingIndexes){
+  annotRow = manualAnnots[manualAnnots$FaName %in% zoonomNames[i],]
+  scientificName = annotRow$Tip_Label..Red.is.included.in.CMU.enhancer.dataset..but.missing.alignment.
+  hilName = codeTable$TipLabel[which(tolower(codeTable$`species binomial`) %in% tolower(scientificName))]
+  if(length(hilName)!= 0){
+    workingNames[i] = hilName
+    message(i)
+    remainingIndexes2 = remainingIndexes2[-which(remainingIndexes2 == i)]
+  }
+}
+
+workingNames = workingNames
+names(workingNames) = zoonomNames
+
+hillerNames = workingNames
+hillerNames[which(workingNames == names(workingNames))] = NA
+length(hillerNames)
+saveRDS(hillerNames, "Results/hillerToZoonomiaDietConversion.rds")
+
+
+names(phenotypeVector) = hillerNames
+phenotypeVector2 = phenotypeVector[-which(is.na(names(phenotypeVector)))]
+length(phenotypeVector2)
+phenotypeVector = phenotypeVector2
+
+
+remainingIndexes2 
+
+zoonomNames[remainingIndexes]
+
+
+
+remaining120s = codeTable$TipLabel[!codeTable$TipLabel %in% workingNames]
+codeTable$`species binomial`[codeTable$TipLabel %in% remaining120s]
+remaining120s = remaining120s[-1]
+remaining120s = remaining120s[-2]
+remaining120s = remaining120s[-3]
+remainingIndexes = remainingIndexes[-c(1:3)]
+
+
+grep("dip", zoonomNames)
+zoonomNames
+
+remaining120s[which(!remaining120s %in% manualAnnots$Genome)]
+remainingScNames = codeTable$`species binomial`[codeTable$TipLabel %in% remaining120s[(!remaining120s %in% manualAnnots$Genome)]]
+possibleZonoms = manualAnnots$FaName[which(tolower(manualAnnots$Tip_Label..Red.is.included.in.CMU.enhancer.dataset..but.missing.alignment.) %in% tolower(remainingScNames))]
+
+zoonomNames[remainingIndexes][which(zoonomNames[remainingIndexes] %in% possibleZonoms)]
+
+which(manualAnnots$FaName %in% zoonomNames[remainingIndexes][which(zoonomNames[remainingIndexes] %in% possibleZonoms)])
+
+which(zoonomNames == "vs_HLproCap3")
+
+
+
+
+
+hillerNames = readRDS("Data/hillerZoonomiaCommonTable.rds")
+hillerTable = data.frame(hillerNames, names(hillerNames))
+names(hillerTable) = c("Hiller", "Zoonomia")
+hillerTable$common = ZonomNameConvertVectorCommon(hillerTable$Zoonomia)
+
+saveRDS(hillerTable, "Results/hillerZoonomiaCommonTable.rds")
+
+hillerTable = readRDS("Data/HillerZoonomPhenotypeTable.rds")
+commonPhentypeVector = readRDS("Results/OnetwentyWay6PhenCategoricalPhenotypeVector.rds")
+commonTips = hillerTable$common[match(masterTips, hillerTable$Hiller)]
+commonPhenotypeVecNames =  hillerTable$common[match(names(phenotypeVector), hillerTable$Hiller)]
+
+phenotypeVector = commonPhenotypeVector
+commonMainTrees = mainTrees
+commonMainTrees$masterTree$tip.label = commonTips
+commonPhenotypeVector = phenotypeVector
+names(commonPhenotypeVector) = commonPhenotypeVecNames
+
+
+treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
+pdf(treeImageFilename, height = length(phenotypeVector)/18)                     #make a pdf to store the plot, sized based on tree size
+char2TreeCategorical(commonPhenotypeVector, commonMainTrees, model = "ER", anctrait = ancestralTrait, plot = T)
+
+categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, model = "ER", anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
+dev.off()                                                                       #save the plot to the pdf
+
+categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+saveRDS(categoricalTree, categoricalTreeFilename)  
+
+
+phenotypeVector = hillerTable$phenotype
+names(phenotypeVector) = hillerTable$Hiller
+
+
+phenotypeVector  = readRDS("Data/CategoricalPermulationsTimingHillerPhenotypes.rds")
+
+phenotypeVector= phenotypeVector[-which(phenotypeVector == "Insectivore")]
+
+
+
+
+speciesFilter = NULL
+
+
+vec = readRDS("Output/ThreePhenLikeihoodTest/ThreePhenLikeihoodTestCategoricalPhenotypeVector.rds")
+
+catCVHDisGen = readRDS("Output/CategoricalDiet3Phen/Carnivore-Herbivore/CategoricalDiet3PhenCarnivore-HerbivoreEnrichment-DisGeNET.rds")
+
+catCVHDisGen = catCVHDisGen$DisGeNET
+
+catCVHDisGen = catCVHDisGen[order(catCVHDisGen$stat),]
+
+
+# Make custom gene sets 
+
+HumanLocalAdaptionDietAll = c("LCT", "FADS", "AS3MT", "DI2", "SelS", "GPX1", "GPX3", "CELF1", "SPS2", "SEPSECS", "HFE", "TRIP4", "TRVP6", "SLC30A9", "SLC39A8", "IBD5", "SLC22A4", "SLC22A5", "CREBRF")
+NAFLDGWAS = c("PNPLA3", "TM6SF2", "APOE", "GCKR", "TRIB1", "GPAM", "MTARC1", "MTTP", "TOR1B", "ADH1B", "FTO", "COBLL1", "INSR", "DRG2", "GID4", "PTPRD", "PNPLA2" )
+expressionDirectionalSelection = c("HLA-DQB1",
+                                   "HLA-DRB1",
+                                   "FADS1",
+                                   "POU5F1",
+                                   "HLA-DRB5",
+                                   "KAT8",
+                                   "HLA-DQA2",
+                                   "LILRB1",
+                                   "KHK",
+                                   "TRIM40",
+                                   "DEF8",
+                                   "ZBTB12",
+                                   "ZNF646",
+                                   "SCAPER",
+                                   "HLA-DQA1",
+                                   "COMMD6",
+                                   "FEN1",
+                                   "SBK1",
+                                   "ACO2",
+                                   "ZNF668",
+                                   "LY6K",
+                                   "FADS3",
+                                   "GSDMD",
+                                   "ERBB2",
+                                   "SULT1A2",
+                                   "C18orf8",
+                                   "LRRC61",
+                                   "CLDN23",
+                                   "TLR10",
+                                   "LGALS2",
+                                   "MAPT",
+                                   "UBE2U",
+                                   "NSL1",
+                                   "TLR6",
+                                   "SPG7",
+                                   "ITGAM",
+                                   "AXIN1",
+                                   "PSCA",
+                                   "ZNF19",
+                                   "PCDHA4",
+                                   "DPCR1",
+                                   "STX1B",
+                                   "LILRA4",
+                                   "HLA-C",
+                                   "HSD17B8")
+genesets = list(HumanLocalAdaptionDietAll, NAFLDGWAS, expressionDirectionalSelection)
+CustomGeneSet = list(genesets)
+annotation
+
+cat(HumanLocalAdaptionDietAll, sep="\t")
+cat(NAFLDGWAS, sep="\t")
+cat(expressionDirectionalSelection, sep="\t")
+
+
+
+
+enrichmentBackup1 = enrichmentResult[[1]]
+rownames(enrichmentBackup1) = paste(rownames(enrichmentBackup1), "-OvH", sep = "")
+
+enrichmentBackup2 = enrichmentResult[[1]]
+rownames(enrichmentBackup2) = paste(rownames(enrichmentBackup2), "-CvH", sep = "")
+
+enrichmentBackup3 = enrichmentResult[[1]]
+rownames(enrichmentBackup3) = paste(rownames(enrichmentBackup3), "-OvC", sep = "")
+
+enrichmentBackup4 = enrichmentResult[[1]]
+rownames(enrichmentBackup4) = paste(rownames(enrichmentBackup4), "-Overall", sep = "")
+
+enrichmentResulta = rbind(enrichmentBackup1, enrichmentBackup2, enrichmentBackup3, enrichmentBackup4)
+
+enrichmentResult = list(enrichmentResulta)
+
+"Output/LiverExpression3/LiverExpression3CorrelationDataPermulatedNamesConverted.rds"
+
+
+tissueEnrich = readRDS("Output/CVHRemake/CVHRemakeEnrichment-tissue_specific.rds")
+write.csv(tissueEnrich, "Output/CVHRemake/CVHRemakeEnrichment-tissue_specific.csv")
+
+
+oldDisG = read.gmt("Data/DisGeNET.gmt")
+newDisG = read.gmt("Data/DisGeNETTest.gmt")
+newerDisG = read.gmt("Data/DisGegene_associations.gmt")
+
+all.equal(oldDisG, newDisG)

@@ -1,6 +1,6 @@
-ZonomNameConvertVectorCommon = function(namesVector, common = T){
+ZonomNameConvertVectorCommon = function(namesVector, common = T, manualAnnotLocation = "Data/manualAnnotationsSheet.csv"){
   names = namesVector                                                    #make a vector of the names
-  manualAnnot = read.csv("Data/manualAnnotationsSheet.csv")                     #improt manual annots file
+  manualAnnot = read.csv(manualAnnotLocation)                     #improt manual annots file
   for(i in 1:length(names)){                                                    #for each name: 
     currentName = names[i]                                                      #use the 'i'th name in the list
     currentRow = manualAnnot[manualAnnot$FaName %in% currentName, ]             #find a row with the zonom name that matches the current name 
