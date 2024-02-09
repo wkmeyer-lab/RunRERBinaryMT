@@ -30,6 +30,10 @@ args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', "r=EcholocationUpdate2", "t
 args = c("m=data/FirstExpressionTrees.rds", "r=LiverExpression", "p=Carnivory", "t=bi", "c=all", "w=F", "v=T", "a=Data/ExpressionAnnots.csv")
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHApplesToApples", "p=Carnivory", "t=bi", "c=all", "w=F", "v=T", "a=Data/ExpressionAnnots.csv")
 
+args = c()
+
+
+
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -136,12 +140,12 @@ manualAnnots = read.csv(annotationsLocation)
 # - Species Filter - 
 speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="")
 
-if(!file.exists(speciesFilterFilename) | forceUpdate){
-  relevantSpecies = manualAnnots[ manualAnnots[[phenotypeColumn]] %in% c(0,1),]
-  if(useScreen){
-    relevantSpecies = relevantSpecies[relevantSpecies[screenCollumn] == 1,]
-  }
-  relevantSpeciesNames = relevantSpecies$FaName
+if(!file.exists(speciesFilterFilename) | forceUpdate){                          #If not using exisitng species filter
+  relevantSpecies = manualAnnots[ manualAnnots[[phenotypeColumn]] %in% c(0,1),] #Set the relevant species to species with a 1 or a 0 in the annotation column 
+  if(useScreen){                                                                #if using a screening column, 
+    relevantSpecies = relevantSpecies[relevantSpecies[screenCollumn] == 1,]     #only include species with a 1 in the screen column
+  }                                                                             
+  relevantSpeciesNames = relevantSpecies$FaName                                 #use the species names 
   saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
   
 }else{
@@ -152,7 +156,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){
 
 # - Setup foreground Species --
 
-foregroundSpeciesAnnot = relevantSpecies[ relevantSpecies[[phenotypeColumn]] %in% 1,]
+foregroundSpeciesAnnot = relevantSpecies[ relevantSpecies[[phenotypeColumn]] %in% 1,] #set the foreground species to spcies with a 1 in the annotation column
 
 foregroundNames = foregroundSpeciesAnnot$FaName
 
@@ -195,6 +199,8 @@ if(weightValue ==TRUE || weightValue == 't'){
 binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 
 
+
+# ---- Saving and visualization ----
 
 # - Save the Tree - 
 binaryTreeFilename = paste(outputFolderName, filePrefix, "BinaryForegroundTree.rds", sep="")
