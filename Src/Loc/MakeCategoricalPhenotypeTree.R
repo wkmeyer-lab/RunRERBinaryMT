@@ -42,7 +42,8 @@ args = c('r=IPCRelaxTest', 'm=data/mam120aa_trees.rds', 'a=DEBUG_using_preexisti
 args = c('r=IPCUnRelaxTest', 'm=data/mam120aa_trees.rds', 'a=DEBUG_using_preexisting_phenotypeVector', 'v=F', 't=ER')
 
 
-args = c('r=Hiller5Phen', 'm=data/mam120aa_trees.rds', 'd=Data/HillerZoonomiaPhenotypeTable.csv', 'a=phenotype', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist")', 'u=list(c("Generalist","Omnivore"), c("Omnivore", "_Omnivore"))', 'o=list(c("Piscivore", "Carnivore"))', 'v=F', 't=ER')
+args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoonomiaPhenotypeTable.csv', 'a=phenotype', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist")', 'u=list(c("Generalist","Omnivore"), c("Omnivore", "_Omnivore"), c("Piscivore", "Carnivore"))', 'v=F', 't=ER')
+args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoonomiaPhenotypeTable.csv', 'a=phenotype', 'c=c("Carnivore", "Herbivore", "Piscivore")', 'u=list(c("Piscivore", "Carnivore"))', 'v=F', 't=ER')
 
 
 

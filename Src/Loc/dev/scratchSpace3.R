@@ -32,3 +32,13 @@ relevantSpecies
 
 hillerNames = match(speciesNames, hillerConversionTable$Zoonomia)
 ?match()
+
+newHillerTrees = readTrees('Data/newHillerMainTrees.txt')
+saveRDS(newHillerTrees, "Data/newHillerMainTrees.rds")
+
+oldHillerTrees = readRDS("Data/mam120aa_trees.rds")
+
+newHillerTrees = names(newHillerTrees$trees)
+oldHillerTrees = names(oldHillerTrees$trees)
+
+missingGenes = oldHillerTrees[which(oldHillerTrees %in% newHillerTrees)]
