@@ -110,12 +110,12 @@
 109,triMan1,vs_triMan1,Manatee,trichechus_manatus,Herbivore
 110,HLproCap2,vs_HLproCap3,Hydrax,procavia_capensis,Herbivore
 111,chrAsi1,vs_chrAsi1,Cape golden mole,chrysochloris_asiatica,Insectivore
-112,echTel2,NoZoonomiaName,Tenrec,echinops_telfairi,Ambiguous
+112,echTel2,NA,Tenrec,echinops_telfairi,Ambiguous
 113,eleEdw1,vs_eleEdw1,Cape elephant shrew,elephantulus_edwardii,Insectivore
-114,oryAfe1,NoZoonomiaName,Aardvark,orycteropus_afer_afer,Insectivore
+114,oryAfe1,NA,Aardvark,orycteropus_afer_afer,Insectivore
 115,dasNov3,vs_dasNov3,Armadillo,dasypus_novemcinctus,Insectivore/Carnivore
 116,HLchoHof2,NA,Two-Toed Sloth,choloepus_hoffmanni,Herbivore
-117,monDom5,NoZoonomiaName,Opossum,monodelphis_domestica,Omnivore
-118,sarHar1,NoZoonomiaName,Tasmanian devil,sarcophilus_harrisii,Omnivore
+117,monDom5,NA,Opossum,monodelphis_domestica,Omnivore
+118,sarHar1,NA,Tasmanian devil,sarcophilus_harrisii,Omnivore
 119,HLphaCin1,NA,Koala,phascolarctos_cinereus,Herbivore
-120,ornAna2,NoZoonomiaName,Platypus,ornithorhynchus_anatinus,Insectivore/Carnivore
+120,ornAna2,NA,Platypus,ornithorhynchus_anatinus,Insectivore/Carnivore
