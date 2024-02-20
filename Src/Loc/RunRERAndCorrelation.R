@@ -31,7 +31,7 @@ args = c('r=HMGRelaxTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
 args = c('r=IPCRelaxTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
 
 args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
-
+args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)

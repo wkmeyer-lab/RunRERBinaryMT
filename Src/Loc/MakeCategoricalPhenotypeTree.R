@@ -46,6 +46,7 @@ args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoon
 args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoonomiaPhenotypeTable.csv', 'a=phenotype', 'c=c("Carnivore", "Herbivore", "Piscivore")', 'u=list(c("Piscivore", "Carnivore"))', 'v=F', 't=ER')
 
 args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoonomiaPhenotypeTable.csv', 'a=phenotypeSimplified', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist")', 'u=list(c("Generalist","Omnivore"), c("Omnivore", "_Omnivore"), c("Piscivore", "Carnivore"))', 'o=list(c("Carnivore", "Insectivore"))','v=T', 't=ER')
+args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoonomiaPhenotypeTable.csv', 'a=phenotypeSimplified', 'c=c("Carnivore", "Herbivore", "Piscivore")', 'u=list(c("Herbivore", "_Herbivore"), c("Piscivore", "Carnivore"))','v=T', 't=ER')
 
 
 # --- Standard start-up code ---
@@ -259,7 +260,7 @@ saveRDS(paths, file = pathsFilename)                                            
 # -- Convert Tree to Binary (Manual only) --
 convertToBinary = T
 convertToBinary = F
-foreground = "_Carnivore"
+foreground = "Carnivore"
 
 if(convertToBinary){
   binaryTree = categoricalTree
