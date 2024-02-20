@@ -32,7 +32,7 @@
 31,criGri1,vs_HLcriGri3,Chinese hamster,cricetulus_griseus,Herbivore,Herbivore
 32,mesAur1,vs_mesAur1,Golden hamster,mesocricetus_auratus,Omnivore,Omnivore
 33,perManBai1,vs_HLperManBai2,Deer mouse,peromyscus_maniculatus_bairdii,Omnivore,Omnivore
-34,mm10,vs_HLammLer1,Aoudad,ammotragus_lervia,Herbivore,Herbivore
+34,mm10,vs_HLammLer1,Aoudad,ammotragus_lervia,Herbivore,removedDueToNonsensicalBranchLength_PossibleQualityIssue
 35,HLmusCar1,vs_HLmusCar1,Ryukyu mouse,mus_caroli,Generalist,Generalist
 36,HLmusPah1,vs_HLmusPah1,Gairdner's shrewmouse,mus_pahari,Generalist,Generalist
 37,rn6,vs_HLratNor7,Rat,rattus_norvegicus,Generalist,Generalist
@@ -70,7 +70,7 @@
 69,HLcapHir2,vs_HLcapHir2,Domestic goat,capra_hircus,Herbivore,Herbivore
 70,panHod1,vs_panHod1,Tibetan antelope,pantholops_hodgsonii,Herbivore,Herbivore
 71,HLodoVir1,vs_HLodoVir3,White-tailed Deer,odocoileus_virginianus,Herbivore,Herbivore
-72,HLcerEla1,NA,NA,cervus_elaphus_hippelaphus,Herbivore,Herbivore
+72,HLcerEla1,NA,Central European Red Deer,cervus_elaphus_hippelaphus,Herbivore,Herbivore
 73,susScr11,vs_susScr11,Pig,sus_scrofa,Generalist,Generalist
 74,HLequCab3,vs_equCab3,Horse,equus_caballus,Herbivore,Herbivore
 75,equPrz1,vs_equPrz1,Przewalskii Horse,equus_przewalskii,Herbivore,Herbivore
