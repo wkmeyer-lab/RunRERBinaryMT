@@ -30,7 +30,7 @@ args = c('r=ThreePhenLikeihoodTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
 args = c('r=HMGRelaxTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
 args = c('r=IPCRelaxTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
 
-args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
+args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'v=F', 's=g')
 args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
 
 # --- Standard start-up code ---
@@ -210,6 +210,30 @@ if(phenotypeStyle == "Binary"){                                                 
   
   combinedCategoricalCorrelationFilename = pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "CombinedCategoricalCorrelationFile", sep= "") # make this file for later functions that want it in combo
   saveRDS(categoricalCorrelation, paste(combinedCategoricalCorrelationFilename, ".rds", sep="")) #and as an rds 
+  
+  #save the outputs to subdirectories 
+  outputSubdirectoryNoslash = paste(outputFolderName, "Overall", sep = "")
+  if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+    dir.create(outputSubdirectoryNoslash)
+  }
+  outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+  
+  correlationsOverallFilename = paste(outputSubdirectory, filePrefix, "OverallCorrelationFile.rds", sep= "")
+  saveRDS(categoricalCorrelation[[1]], correlationsOverallFilename)
+  
+  for(i in 1:length(pairwiseTableNames)){
+    pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
+    
+    outputSubdirectoryNoslash = paste(outputFolderName, pairwiseTableNames[i], sep = "")
+    if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+      dir.create(outputSubdirectoryNoslash)
+    }
+    outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+    
+    correlationsPairFilename = paste(outputSubdirectory, filePrefix, pairwiseTableNames[i], "CorrelationFile",".rds", sep= "")
+    saveRDS(categoricalCorrelation[[2]][[i]], correlationsPairFilename)
+  }
+  
 }
 
 write.csv(correlation, file= paste(correlationFileName, ".csv", sep=""), row.names = T, quote = F) #Save correlations as csv

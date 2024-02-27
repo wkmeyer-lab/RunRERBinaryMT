@@ -34,6 +34,8 @@ args = c('r=CategoricalDiet3Phen', 'm=c("Data/customGeneSet.gmt")', 's=c("_Omniv
 args = c('r=LiverExpression3', 'm=c("Data/customGeneSet.gmt")', 'p=T', "c=LiverExpression3CorrelationDataPermulatedNamesConverted.rds")
 
 
+args = c('r=NewHiller4Phen', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("_Omnivore-Carnivore", "_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "Overall")')
+
 
 
 # --- Standard start-up code ---
@@ -125,7 +127,7 @@ subdirectoryValueList = NULL
   if(!any(is.na(cmdArgImport('s')))){
     useSubdirectory = TRUE
     subdirectoryValueList = cmdArgImport('s')
-    message(paste("Using subdirectory", subdirectoryValue, "."))
+    #message(paste("Using subdirectory", subdirectoryValue, "."))
     
     if(length(subdirectoryValueList ==1)){outputFolderName = paste(outputFolderName, subdirectoryValueList[1], "/", sep=""); subdirectoryValue = subdirectoryValueList[1]}
     
