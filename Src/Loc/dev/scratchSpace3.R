@@ -2,8 +2,56 @@
 
 plotRers(rermat = RERObject, index = "OR10J5", phenv = pathsObject)
 
+phenVec = readRDS("OUtput/NewHiller4Phen/NewHIller4PhenCategoricalPhenotypeVector.rds")
+
+solPhenVec = c(hg38 = "_Omnivore", panTro5 = "_Omnivore", panPan2 = "_Omnivore",
+               gorGor5 = "Herbivore", ponAbe2 = "_Omnivore", nomLeu3 = "Herbivore",
+               rheMac8 = "_Omnivore", macFas5 = "_Omnivore", macNem1 = "_Omnivore",
+               papAnu3 = "_Omnivore", manLeu1 = "_Omnivore", cerAty1 = "_Omnivore",
+               chlSab2 = "_Omnivore", nasLar1 = "Herbivore", rhiRox1 = "Herbivore",
+               rhiBie1 = "Herbivore", colAng1 = "Herbivore", HLpilTep1 = "Herbivore",
+               calJac3 = "_Omnivore", aotNan1 = "_Omnivore", saiBol1 = "_Omnivore",
+               cebCap1 = "_Omnivore", tarSyr2 = "Insectivore", otoGar3 = "Herbivore",
+               micMur3 = "_Omnivore", proCoq1 = "Herbivore", galVar1 = "Herbivore",
+               jacJac1 = "Herbivore", micOch1 = "Herbivore", criGri1 = "Herbivore",
+               mesAur1 = "_Omnivore", perManBai1 = "_Omnivore", HLmusCar1 = "_Omnivore",
+               HLmusPah1 = "_Omnivore", rn6 = "_Omnivore", HLmerUng1 = "Herbivore",
+               nanGal1 = "Herbivore", HLcasCan1 = "Herbivore", HLdipOrd2 = "_Omnivore",
+               hetGla2 = "Herbivore", HLfukDam1 = "_Omnivore", cavPor3 = "Herbivore",
+               chiLan1 = "Herbivore", octDeg1 = "Herbivore", speTri2 = "_Omnivore",
+               HLmarMar1 = "_Omnivore", oryCun2 = "Herbivore", ochPri3 = "Herbivore",
+               vicPac2 = "Herbivore", HLcamFer2 = "_Omnivore", HLcamBac1 = "_Omnivore",
+               HLcamDro1 = "_Omnivore", HLturTru3 = "Carnivore", HLorcOrc1 = "Carnivore",
+               HLdelLeu1 = "Carnivore", lipVex1 = "Carnivore", phyCat1 = "Carnivore",
+               bosTau8 = "Herbivore", HLbosInd1 = "Herbivore", bisBis1 = "Herbivore",
+               bosMut1 = "Herbivore", bubBub1 = "Herbivore", HLoviAri4 = "Herbivore",
+               HLoviCan1 = "Herbivore", HLcapHir2 = "Herbivore", panHod1 = "Herbivore",
+               HLodoVir1 = "Herbivore", HLcerEla1 = "Herbivore", susScr11 = "_Omnivore",
+               HLequCab3 = "Herbivore", equPrz1 = "Herbivore", HLequAsi1 = "Herbivore",
+               cerSim1 = "Herbivore", felCat8 = "Carnivore", HLaciJub1 = "Carnivore",
+               panTig1 = "Carnivore", HLpanPar1 = "Carnivore", canFam3 = "Carnivore",
+               HLlycPic1 = "Carnivore", musFur1 = "Carnivore", HLailFul1 = "_Omnivore",
+               ailMel1 = "_Omnivore", ursMar1 = "Carnivore", odoRosDiv1 = "Carnivore",
+               lepWed1 = "Carnivore", neoSch1 = "Carnivore", manPen1 = "Insectivore",
+               HLmanJav1 = "Insectivore", pteAle1 = "Herbivore", HLpteVam2 = "Herbivore",
+               rouAeg1 = "Herbivore", HLrhiSin1 = "Insectivore", HLhipArm1 = "Insectivore",
+               eptFus1 = "Insectivore", myoDav1 = "Insectivore", myoBra1 = "Insectivore",
+               myoLuc2 = "Insectivore", HLminNat1 = "Insectivore", eriEur2 = "_Omnivore",
+               sorAra2 = "_Omnivore", conCri1 = "Carnivore", loxAfr3 = "Herbivore",
+               triMan1 = "Herbivore", HLproCap2 = "Herbivore", chrAsi1 = "Insectivore",
+               eleEdw1 = "Insectivore", oryAfe1 = "Insectivore", dasNov3 = "Insectivore",
+               HLchoHof2 = "Herbivore", monDom5 = "_Omnivore", sarHar1 = "_Omnivore",
+               HLphaCin1 = "Herbivore", ornAna2 = "Insectivore")
 
 
+all.equal(phenVec, solPhenVec)
+which(!phenVec == solPhenVec)
+phenVec[82]
+solPhenVec[82]
+source("Src/Reu/ZonomNameConvertVector.R")
+commonPhenVec = ZonomNameConvertVectorCommon(solPhenVec, manualAnnotLocation = "Data/HillerZoonomiaPhenotypeTable.csv")
+names(commonPhenVec) = ZonomNameConvertVectorCommon(names(solPhenVec), manualAnnotLocation = "Data/HillerZoonomiaPhenotypeTable.csv")
+commonPhenVec[82]
 
 
 rownames(enrichmentReorder)
