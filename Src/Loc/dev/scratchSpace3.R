@@ -1,3 +1,13 @@
+
+
+plotRers(rermat = RERObject, index = "OR10J5", phenv = pathsObject)
+
+
+
+
+
+rownames(enrichmentReorder)
+
 phenotypeVector = readRDS("Output/IPCRelaxTest/HillerIPCPhenotype.rds")
 speciesFilter = names(phenotypeVector) 
 speciesFilter = speciesFilter[-which(speciesFilter == "ornAna2")]
@@ -80,8 +90,12 @@ oldHillerTrees = names(oldHillerTrees$trees)
 missingGenes = oldHillerTrees[which(oldHillerTrees %in% newHillerTrees)]
 
 
+testSubfolderData = readRDS("Output/CategoricalDiet3Phen/Overall/CategoricalDiet3PhenOverallPermulationsCorrelations.rds")
 
 
+?plotRers
+
+plotRers(RERObject, "ALOX15", phenv = pathsObject)
 
 # --------------------------
 
