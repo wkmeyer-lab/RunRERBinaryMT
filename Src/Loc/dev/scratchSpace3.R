@@ -1,4 +1,20 @@
+library(RERconverge)
 
+hiller4PhenTree = readRDS("Output/NewHiller4Phen/NewHiller4PhenCategoricalTree.rds")
+plotTree(hiller4PhenTree)
+
+hillerPhenotypeTable = read.csv("Data/HillerZoonomiaPhenotypeTable.csv")
+supraPrimates = hillerPhenotypeTable[which(hillerPhenotypeTable$Supraprimates ==1),]
+supraPrimates$FaName
+
+
+plotTreeHighlightBranches(hiller4PhenTree,hlspecies = supraPrimates$FaName, hlcols = "blue")
+
+
+all.equal(hillerPhenotypeTable$phenotype, hillerPhenotypeTable$phenotypeSimplified)
+hillerPhenotypeTable$phenotype[which(!hillerPhenotypeTable$phenotype == hillerPhenotypeTable$phenotypeSimplified)]
+
+RERObject = readRDS("Output/NewHil")
 
 plotRers(rermat = RERObject, index = "OR10J5", phenv = pathsObject)
 
