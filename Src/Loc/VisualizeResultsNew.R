@@ -39,6 +39,7 @@ args = c('r=CVHRemake', 'p=P', 'o=stat', 'u=A')
 
 
 args = c('r=NewHiller4Phen', 'p=F', 's=c("_Omnivore-Carnivore", "_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "Overall")')
+args = c('r=NewHillerTestSupraPrimates', 'p=F', 's=c("0-1", "Overall")')
 
 
 # --- Standard start-up code ---
@@ -404,7 +405,7 @@ for(j in 1:length(subdirectoryValueList)){
     #  enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
     #}
     enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, ncol = 1, nrow = 5)
-    enrichmentPlots= plot_grid(genesetPlot3, genesetPlot2, genesetPlot1, genesetPlot4, genesetPlot5, genesetPlot6, ncol = 1, nrow = 6)
+    enrichmentPlots= plot_grid(genesetPlot3, genesetPlot2, genesetPlot1, genesetPlot4, genesetPlot5, ncol = 1, nrow = 5)
     enrichmentRows = pmax(length(enrichmentRange), enrichmentRange)
   }
   

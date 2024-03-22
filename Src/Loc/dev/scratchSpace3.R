@@ -14,6 +14,11 @@ plotTreeHighlightBranches(hiller4PhenTree,hlspecies = supraPrimates$FaName, hlco
 all.equal(hillerPhenotypeTable$phenotype, hillerPhenotypeTable$phenotypeSimplified)
 hillerPhenotypeTable$phenotype[which(!hillerPhenotypeTable$phenotype == hillerPhenotypeTable$phenotypeSimplified)]
 
+
+mainTrees$masterTree
+
+
+
 RERObject = readRDS("Output/NewHil")
 
 plotRers(rermat = RERObject, index = "OR10J5", phenv = pathsObject)
