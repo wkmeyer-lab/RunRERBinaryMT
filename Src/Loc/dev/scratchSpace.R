@@ -376,6 +376,8 @@ quickViolin = function(geneInterest){
   print(plot)
 }
 
+
+
 geneNames = rownames(sortedCorrelations)
 i=1
 

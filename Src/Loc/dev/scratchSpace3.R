@@ -14,9 +14,70 @@ plotTreeHighlightBranches(hiller4PhenTree,hlspecies = supraPrimates$FaName, hlco
 all.equal(hillerPhenotypeTable$phenotype, hillerPhenotypeTable$phenotypeSimplified)
 hillerPhenotypeTable$phenotype[which(!hillerPhenotypeTable$phenotype == hillerPhenotypeTable$phenotypeSimplified)]
 
+GOValues = enrichmentResultSets[4][[1]]
+
+GOTable = GOValues[order(GOValues$pval),]
+
+GOTable[c(15,35),]   
+
+GSEAValues = enrichmentResultSets[5][[1]]
+GSEATable = GSEAValues[order(GSEAValues$pval),]
+      
+GSEATable[c(8,17,18,23,37),]
+
+AAMetabloismTable = rbind(GOTable[c(15,35),], GSEATable[c(8,17,18,23,37),])
+
+dput(rownames(AAMetabloismTable))
+pathwayNames = rownames(AAMetabloismTable)
+
+pathwayNames = gsub("_", " ", pathwayNames)
+pathwayNames = str_to_title(pathwayNames)
+pathwayNames = gsub("Gobp ", "", pathwayNames)
+pathwayNames = gsub(" \\(.*", "", pathwayNames)
+
+
+rownames(AAMetabloismTable) = pathwayNames
+
+names(AAMetabloismTable) = c("Stat", "P Value", "", "Genes in pathway", "Gene Enrichment Values")
+
+AAMetabloismTableTrimmed = AAMetabloismTable[,c(1,2,4,5)]
+
+AAMetabloismTableTrimmed = AAMetabloismTableTrimmed[order(AAMetabloismTableTrimmed$stat),]
+
+AAMEtabolismTableList = list(AAMetabloismTableTrimmed)
+testPlot = makeGeListPlot(AAMEtabolismTableList, enrichmentSortColumn, 40, "Top pathways by permulation", enrichmentOrderDecrease)
+testPlot
+
+demoPDF = "Output/CVHRemake/AminoAcidPathways.pdf"
+pdf(demoPDF)
+pdf(file = demoPDF, width = 15, height = pdfLength)
+testPlot
+dev.off()
+
+
+
+mainTrees = readRDS("Data/RemadeTreesAllZoonomiaSpecies.rds")
+RERObject = CVHRERs = readRDS("Output/CVHRemake/CVHRemakeRERFile.rds")
+phenotypeTree = readRDS("Output/CVHRemake/CVHRemakeBinaryForegroundTree.rds")
+foregroundSpecies = readRDS("Output/CVHRemake/CVHRemakeBinaryTreeForegroundSpecies.rds")
+CVHCorrelations = readRDS("Output/CVHRemake/CVHRemakeCorrelationFile.rds")
+CVHPermulationP = readRDS("Output/CVHRemake/CVHRemakeCombinedPrunedFastAllPermulationsPValue.rds")
+CorrelationData = CVHCorrelations
+CorrelationData$permPValue = CVHPermulationP
+source("Src/Reu/rerViolinPlot.R")
+quickViolin = function(geneInterest){
+  plot = rerViolinPlot(mainTrees, CVHRERs, phenotypeTree, foregroundSpecies, geneInterest, "Carnivore", "Herbivore", "salmon", "darkgreen", CorrelationData)
+  print(plot)
+}
+
+quickViolin("SDS")
+
 
 mainTrees$masterTree
 
+
+newDemoEnrichment = 
+  
 
 
 RERObject = readRDS("Output/NewHil")

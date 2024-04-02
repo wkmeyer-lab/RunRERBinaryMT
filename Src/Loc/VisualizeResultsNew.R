@@ -35,7 +35,7 @@ args = c('r=CategoricalDiet3Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbiv
 args = c('r=LiverExpression3', 'p=B') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 args = c('r=CVHRemake', 'p=B')
 args = c('r=CategoricalDiet3Phen', 's=c("_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Carnivore", "Overall")', 'p=C', 'o=stat', 'u=A')
-args = c('r=CVHRemake', 'p=P', 'o=stat', 'u=A')
+args = c('r=CVHRemake', 'p=P', 'o=pval', 'u=F')
 
 
 args = c('r=NewHiller4Phen', 'p=F', 's=c("_Omnivore-Carnivore", "_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "Overall")')
