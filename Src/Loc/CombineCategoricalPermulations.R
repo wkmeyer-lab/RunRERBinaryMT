@@ -139,7 +139,7 @@ onlyCalulateValue = FALSE
 if(metacombineValue == F){
   basePermulationsFilename = paste(outputFolderName, filePrefix, permulationPrefix, "CategoricalPermulationsIntermediates", sep= "")
 }else{
-  basePermulationsFilename = paste(outputFolderName, filePrefix, "Combined", permulationPrefix, "CategoricalPermulationsIntermediates",  sep="")
+  basePermulationsFilename = paste(outputFolderName, filePrefix, "Combined", permulationPrefix, "PermulationsIntermediates",  sep="")
 }
 
 if(!onlyCalulateValue){
