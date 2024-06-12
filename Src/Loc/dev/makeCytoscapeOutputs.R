@@ -5,6 +5,12 @@ subdirectory = "_Omnivore-Herbivore"
 filetag = paste(mainPrefix, subdirectory, sep="")
 outputFolder = paste("Output", mainPrefix, subdirectory, "", sep="/")
 
+mainPrefix = "CVHRemake"
+subdirectory = ""
+filetag = paste(mainPrefix, sep="")
+outputFolder = paste("Output", mainPrefix, "", sep="/")
+
+
 correlationsfile = paste(outputFolder, mainPrefix, subdirectory, "CorrelationFile.rds", sep="")
 correlations = readRDS(correlationsfile)
 rownames(correlations)

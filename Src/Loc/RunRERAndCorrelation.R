@@ -13,9 +13,10 @@ library(data.table)
 # r = filePrefix                                                               This is a prefix used to organize and separate files by analysis run. Always required. 
 # v = <T or F>                                                                 This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # m = mainTreeFilename.txt or .rds                                             This sets the location of the maintrees file
-# p = phenotypeTreeFilename.txt or .rds                                        This can be used to manually override the phenotype tree being used 
+# p = phenotypeTreeFilename.txt or .rds                                        This can be used to manually override the phenotype tree being used. For continuous analyses, this is the location of the trait vector.
 # f = speciesFilterText                                                        This can be used to manually specify a species filer; leave blank for automatic
 # s = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the type of phenotype being supplied
+# c = < "diff" or "mean" or "last" >                                           This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
 
 #----------------
 args = c('r=CVO', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=b') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
@@ -33,6 +34,9 @@ args = c('r=IPCRelaxTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
 args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'v=F', 's=g')
 args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
 args = c('r=NewHillerTestSupraPrimates', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
+
+args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 's=c','v=T')
+
 
 
 # --- Standard start-up code ---
@@ -71,6 +75,8 @@ mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia
 binaryPhenotypeTreeLocation = NULL
 speciesFilter = NULL
 phenotypeStyle = "continuous"
+continousMetric = "diff"
+validMetrics = c("diff", "mean", "last")
 
 { # Bracket used for collapsing purposes
 
@@ -96,7 +102,12 @@ phenotypeStyle = "continuous"
   if(!is.na(cmdArgImport('p'))){
     phenotypeTreeLocation = cmdArgImport('p')
   }else{                                                                        #See if a pre-made tree for this prefix and style exists 
-    phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "Tree.rds", sep="")
+    if(phenotypeStyle == "Continuous"){
+      phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "PhenotypeVector.rds", sep="")
+    }else{
+      phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "Tree.rds", sep="")
+    }
+    
     if(file.exists(paste(phenotypeTreeFilename))){                              #if so, use it                
       phenotypeTreeLocation = phenotypeTreeFilename                     
       paste("Pre-made Phenotype tree found, using pre-made tree.")
@@ -119,7 +130,17 @@ phenotypeStyle = "continuous"
   }
   }
   
-
+  #Continuous Metric 
+  if(!is.na(cmdArgImport('c'))){
+    continousMetric = cmdArgImport('c')
+    if(!any(continousMetric == validMetrics)){
+      stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
+    }
+  }else{                                                                        #If a continuous phenotype, report using Diff
+    if(phenotypeStyle == "Continuous"){
+      message("No continuous metric specified, using diff")
+    }
+  }
 }
 
 #                   ------- Code Body -------- 
@@ -155,8 +176,9 @@ pathsFileName = paste(outputFolderName, filePrefix, phenotypeStyle, "PathsFile.r
 if(!file.exists(paste(pathsFileName)) | forceUpdate){                           #if it does not exist, or update is forced 
   if(phenotypeStyle == "Binary"){                                               #If binary 
     pathsObject = tree2Paths(phenotypeTree, mainTrees, binarize=T, useSpecies = speciesFilter)  #make path with binary function
-  }else if(phenotypeStyle == "Continous"){                                      #If continous
-    stop("This function hasn't been completed")
+  }else if(phenotypeStyle == "Continuous"){                                      #If continous
+    continousTraitVector = readRDS(phenotypeTreeLocation)                         #repurposing the phenotype tree argument for this, as it is the equivalent
+    pathsObject = char2Paths(phenotypeTree, mainTrees, metric = continousMetric)
   } else if(phenotypeStyle == "Categorical"){                                   #if categorical
       pathsObject = tree2Paths(phenotypeTree, mainTrees, useSpecies = speciesFilter, categorical = TRUE) #do not binarize; the categorical data is already contained in the phenotype tree.
   }
@@ -183,9 +205,8 @@ if(phenotypeStyle == "Binary"){                                                 
   phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
   saveRDS(phenotypeVector, file = phenotypeVectorFilename)
   
-}else if(phenotypeStyle == "Continous"){                                        #if continous
-  stop("This function hasn't been completed")    
-  
+}else if(phenotypeStyle == "Continuous"){                                        #if continuous
+  correlation = correlateWithContinuousPhenotype(RERObject, pathsObject)
   
 } else if(phenotypeStyle == "Categorical"){                                     #if categorical
   categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = 10, min.pos = 2) #Calculate with categorical, min 2 species per category 

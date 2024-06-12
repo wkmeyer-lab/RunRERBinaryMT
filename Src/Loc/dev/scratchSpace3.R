@@ -1,5 +1,16 @@
 library(RERconverge)
 
+testData = readRDS("Data/newHillerMainTrees.rds")
+
+plotTree(testData$masterTree)
+
+DomesticationTree = readRDS("Output/Domestication/DomesticationBinaryForegroundTree.rds")
+plotTree(DomesticationTree)
+
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+ZoonomTreeNameToCommon(DomesticationTree)
+
+
 hiller4PhenTree = readRDS("Output/NewHiller4Phen/NewHiller4PhenCategoricalTree.rds")
 plotTree(hiller4PhenTree)
 
