@@ -1,4 +1,14 @@
 a = b #This is to prevent accidental ful runs 
+
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("qvalue")
+
+
+readRDS("Output/")
+
+
 source("Src/Reu/RERConvergeFunctions.r")
 
 permdata = readRDS("Output/CategoricalDiet3Phen/CategoricalDiet3PhenPermulationsData1.rds")
@@ -1915,3 +1925,20 @@ newDisG = read.gmt("Data/DisGeNETTest.gmt")
 newerDisG = read.gmt("Data/DisGegene_associations.gmt")
 
 all.equal(oldDisG, newDisG)
+
+
+saveRDS(mainTrees, "Data/UNICORNsDemo.rds")
+mainTrees$masterTree$tip.label
+
+
+
+toothData = read.csv("Data/ToothData.csv")
+
+toothData$FaName = toothData$Taxon
+
+toothData$FaName = sub(" ", "_", toothData$FaName)
+
+write.csv(toothData, "Results/ToothData.csv")
+
+
+
