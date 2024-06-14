@@ -41,6 +41,7 @@ args = c('r=CVHRemake', 'p=P', 'o=pval', 'u=F')
 args = c('r=NewHiller4Phen', 'p=F', 's=c("_Omnivore-Carnivore", "_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "Overall")')
 args = c('r=NewHillerTestSupraPrimates', 'p=F', 's=c("0-1", "Overall")')
 
+args = c('r=MaturityLifespanPercent', 'p=F', 'g=T')
 
 
 args = c('r=LiverExpression2', 'p=F', 'g=F')
@@ -262,8 +263,8 @@ for(j in 1:length(subdirectoryValueList)){
           )
   }
   
-  postiveRhoNonpermHistogram = makePHistogram(correlDataPositive, "p.adj", "Positive Rho Non-permulated")
-  negativeRhoNonpermHistogram = makePHistogram(correlDataNegative, "p.adj", "Negative Rho Non-permulated")
+  postiveRhoNonpermHistogram = makePHistogram(correlDataPositive, "P", "Positive Rho Non-permulated")
+  negativeRhoNonpermHistogram = makePHistogram(correlDataNegative, "P", "Negative Rho Non-permulated")
   
   if(usePermulations){
     postiveRhoPermHistogram = makePHistogram(correlDataPositive, "permPValue", "Positive Rho Permulated")
