@@ -7,7 +7,7 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 source("Src/Reu/ZonomNameConvertVector.R")
 # -- Usage:
 # This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
-# In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is named "FaName", and the column with common names is named "Common.Name.Or.Group". 
+# In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is specified using the n argument, and the column with common names is named "CommonName". 
 
 # -- Command arguments list
 # r = filePrefix                                         This is a prefix used to organize and separate files by analysis run. Always required. 
@@ -20,7 +20,9 @@ source("Src/Reu/ZonomNameConvertVector.R")
 # o = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
 # s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
 # t = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
-# n = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
+# g = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
+# n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
+
 #----------------
 args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
 args = c('r=BinaryCVHApplesToApples', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Herbivore")', 'u=list(c("Carnivore","_Carnivore"), c("Piscivore", "_Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
@@ -92,6 +94,7 @@ screenColumn = NULL
 modelType = "ER"
 ancestralTrait = NULL
 substitutions = NULL
+nameColumn = "tipName"
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -143,8 +146,8 @@ substitutions = NULL
   }
   
   #Ancestral Trait
-  if(!is.na(cmdArgImport('n'))){
-    ancestralTrait = cmdArgImport('n')
+  if(!is.na(cmdArgImport('g'))){
+    ancestralTrait = cmdArgImport('g')
   }else{
     message("No ancestral trait specified, using NULL")
   }
@@ -160,6 +163,12 @@ substitutions = NULL
     mergeOnlys = cmdArgImport('o')
   }else{
     message("No merges provided")
+  }
+  #Name Column
+  if(!is.na(cmdArgImport('n'))){
+    nameColumn = cmdArgImport('n')
+  }else{
+    message("Name Column not specified, using 'tipName'.")
   }
 }
 
@@ -204,21 +213,21 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   if(useScreen){                                                                #if using a screening collumn 
     relevantSpecies = relevantSpecies[ relevantSpecies[screenColumn] %in% 1, ]  #remove all species not positive for that collumn 
   }
-  relevantSpecies = relevantSpecies[!relevantSpecies$FaName %in% "", ]          #remove any species without an FA name (not on the master tree)
-  speciesFilter = relevantSpecies$FaName                                        #make a list of the master tree tip labels of the included species
+  relevantSpecies = relevantSpecies[!relevantSpecies[[nameColumn]] %in% "", ]          #remove any species without an FA name (not on the master tree)
+  speciesFilter = relevantSpecies[[nameColumn]]                                       #make a list of the master tree tip labels of the included species
 
   saveRDS(speciesFilter, file = speciesFilterFilename)                          #save that as the species filter
   
-  irrelevantSpecies = manualAnnots[! manualAnnots[["FaName"]] %in% speciesFilter,]
+  irrelevantSpecies = manualAnnots[! manualAnnots[[nameColumn]] %in% speciesFilter,]
 }else{ #if not, use the existing one 
   relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
   speciesFilter = relevantSpecieslist                                           #make the speciesFilter object for later 
-  relevantSpecies = manualAnnots[ manualAnnots[["FaName"]] %in% relevantSpecieslist,] #and select the manual annotations entries in that list (useful if the list is more restrictive than it would be by default) 
-  irrelevantSpecies = manualAnnots[! manualAnnots[["FaName"]] %in% relevantSpecieslist,]
+  relevantSpecies = manualAnnots[ manualAnnots[[nameColumn]] %in% relevantSpecieslist,] #and select the manual annotations entries in that list (useful if the list is more restrictive than it would be by default) 
+  irrelevantSpecies = manualAnnots[! manualAnnots[[nameColumn]] %in% relevantSpecieslist,]
 }
 
 # - Phenotype Vector - 
-speciesNames = relevantSpecies$FaName                                           #Exract the tip name of each species
+speciesNames = relevantSpecies[[nameColumn]]                                         #Exract the tip name of each species
 speciesCategories = relevantSpecies[[annotColumn]]                              #extract the category of each species (in same order)
 
 phenotypeVector = speciesCategories                                             #combine those into⌄
@@ -236,10 +245,10 @@ saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        
 
 # - Make common name versions of objects (used in visualization) - 
 commonMainTrees = mainTrees
-commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation)
+commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
 commonPhenotypeVector = phenotypeVector
-names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), manualAnnotLocation = spreadSheetLocation)
-commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, manualAnnotLocation = spreadSheetLocation)
+names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), manualAnnotLocation = spreadSheetLocation, tipColumn = nameColumn)
+commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, manualAnnotLocation = spreadSheetLocation, tipColumn = nameColumn)
 
 # - Categorical Tree - 
 treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix

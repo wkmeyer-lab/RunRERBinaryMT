@@ -6,10 +6,19 @@ if (!require("BiocManager", quietly = TRUE))
 BiocManager::install("qvalue")
 
 
-readRDS("Output/")
+maturityCorrelations = readRDS("Output/MaturityLifespanPercent/MaturityLifespanPercentCorrelationFile.rds")
 
+orderedMaturityCors = maturityCorrelations[order(maturityCorrelations$P),]
+
+
+unique(orderedMaturityCors$p.adj)
 
 source("Src/Reu/RERConvergeFunctions.r")
+
+ZoonomTreeNameToCommon(binaryForegroundTreeOutput, tipCol = "Zoonomia")
+
+tree = binaryForegroundTreeOutput
+namesVector = tipNames
 
 permdata = readRDS("Output/CategoricalDiet3Phen/CategoricalDiet3PhenPermulationsData1.rds")
 

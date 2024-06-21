@@ -35,6 +35,7 @@ args = c("m=Data/UNICORNsDemo.txt", "r=ActueLoafs", "a=Results/ToothData.csv", "
 
 
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia")
 
 
 
