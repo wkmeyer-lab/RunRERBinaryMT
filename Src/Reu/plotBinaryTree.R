@@ -5,7 +5,7 @@
 #This script will by default convert names from zoonomia names to common names. This requires "Data/manualAnnotationsSheet.csv". This can be toggled off using convertNames = F=
 #This script can also make a plot of overall genome length vs gene length by toggling correlationPlot = T.
 
-plotBinaryTree = function(mainTrees, binaryTree, foregroundVector = NULL, fgcols = "blue", bgcolor = "black", convertNames = T, mainTitle = NULL){
+plotBinaryTree = function(mainTrees, binaryTree, foregroundVector = NULL, fgcols = "blue", bgcolor = "black", convertNames = T, mainTitle = NULL, tipColumn = "tipName"){
   masterTree = mainTrees$masterTree
   namesToKeep = binaryTree$tip.label
   prunedMaster = drop.tip(masterTree, which(!masterTree$tip.label %in% namesToKeep))
@@ -13,14 +13,14 @@ plotBinaryTree = function(mainTrees, binaryTree, foregroundVector = NULL, fgcols
   if(convertNames){
     if(file.exists("Src/Reu/ZonomNameConvertVector.R")){source("Src/Reu/ZonomNameConvertVector.R")}
     if(file.exists("Src/Reu/ZoonomTreeNameToCommon.R")){source("Src/Reu/ZoonomTreeNameToCommon.R")}
-    commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot = F)
+    commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot = F, tipCol = tipColumn)
     plotMaster = commonMaster
   }else{
     plotMaster = prunedMaster
   }
   if(!is.null(foregroundVector)){
     if(file.exists("Src/Reu/GetForegroundEdges.R")){source("Src/Reu/GetForegroundEdges.R")}
-    if(convertNames){foregroundVector = ZonomNameConvertVectorCommon(foregroundVector)}
+    if(convertNames){foregroundVector = ZonomNameConvertVectorCommon(foregroundVector, tipColumn = tipColumn)}
     masterFGEdges = getForegroundEdges(plotMaster, foregroundVector)
   }else{
     masterFGEdges = ""

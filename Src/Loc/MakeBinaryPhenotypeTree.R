@@ -23,6 +23,7 @@ source("Src/Reu/cmdArgImport.R")
 # c = <"ancestral" OR "all" OR "terminal"> This sets the clade type to be used in tree creation
 # w = <T or F>                             This sets if the tree should be weighted 
 # s = "screenColumn"                       This sets the column with the screening data
+# n = "nameColumn"                         This sets the column with the tip names as they appear in the maintrees file. 
 
 
 #----------------
@@ -31,6 +32,9 @@ args = c("m=data/FirstExpressionTrees.rds", "r=LiverExpression", "p=Carnivory", 
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHApplesToApples", "p=Carnivory", "t=bi", "c=all", "w=F", "v=T", "a=Data/ExpressionAnnots.csv")
 
 args = c("m=Data/UNICORNsDemo.txt", "r=ActueLoafs", "a=Results/ToothData.csv", "p=FCT_AL")
+
+
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia")
 
 
 
@@ -74,6 +78,7 @@ cladeValue = "Default"
 weightValue = FALSE
 useScreen = F
 screenCollumn = NA
+nameCollumn = "tipName"
 
 { # Bracket used for collapsing purposes
   
@@ -125,6 +130,11 @@ screenCollumn = NA
   }else{
     message("Screen Column not specified, not using screen column.")
   }
+  if(!is.na(cmdArgImport('n'))){
+    nameCollumn = cmdArgImport('n')
+  }else{
+    message("Name Column not specified, using 'tipName'.")
+  }
 }
 
 #                   ------- Code Body -------- 
@@ -145,20 +155,21 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   if(useScreen){                                                                #if using a screening column, 
     relevantSpecies = relevantSpecies[relevantSpecies[screenCollumn] == 1,]     #only include species with a 1 in the screen column
   }                                                                             
-  relevantSpeciesNames = relevantSpecies$FaName                                 #use the species names 
+  relevantSpeciesNames = relevantSpecies[[nameCollumn]]                                 #use the species names 
   saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
   
 }else{
   relevantSpecieslist = readRDS(speciesFilterFilename)
   relevantSpeciesNames = relevantSpecieslist
-  relevantSpecies = manualAnnots[ manualAnnots[["FaName"]] %in% relevantSpecieslist,]
+  relevantSpecies = manualAnnots[ manualAnnots[[nameCollumn]] %in% relevantSpecieslist,]
 }
 
 # - Setup foreground Species --
 
 foregroundSpeciesAnnot = relevantSpecies[ relevantSpecies[[phenotypeColumn]] %in% 1,] #set the foreground species to spcies with a 1 in the annotation column
 
-foregroundNames = foregroundSpeciesAnnot$FaName
+foregroundNames = foregroundSpeciesAnnot[[nameCollumn]]
+foregroundNames = foregroundNames[-which(is.na(foregroundNames))]
 
 foregroundFilename = paste(outputFolderName, filePrefix, "BinaryTreeForegroundSpecies.rds", sep="")
 saveRDS(foregroundNames, file = foregroundFilename)
@@ -218,8 +229,8 @@ source("Src/Reu/plotBinaryTree.R")
 
 binaryTreePdfname = paste(outputFolderName, filePrefix, "BinaryForegroundTree.pdf", sep="")
 pdf(binaryTreePdfname, width=8, height = 14)
-plotBinaryTree(mainTrees, readTest, foregroundNames, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"))
-plotBinaryTree(mainTrees, readTest, foregroundNames, convertNames = F, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"))
+plotBinaryTree(mainTrees, readTest, foregroundNames, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameCollumn)
+plotBinaryTree(mainTrees, readTest, foregroundNames, convertNames = F, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameCollumn)
 #plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(readTest$edge.length==1), hlcols="blue",)
 dev.off()
 
