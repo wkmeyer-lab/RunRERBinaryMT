@@ -4,7 +4,6 @@ library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/ZoonomTreeNameToCommon.R")
-source("Src/Reu/ZonomNameConvertVector.R")
 # -- Usage:
 # This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
 # In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is specified using the n argument, and the column with common names is named "CommonName". 
@@ -50,6 +49,9 @@ args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoon
 args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoonomiaPhenotypeTable.csv', 'a=phenotypeSimplified', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist")', 'u=list(c("Generalist","Omnivore"), c("Omnivore", "_Omnivore"), c("Piscivore", "Carnivore"))', 'o=list(c("Carnivore", "Insectivore"))','v=T', 't=ER')
 args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoonomiaPhenotypeTable.csv', 'a=phenotypeSimplified', 'c=c("Carnivore", "Herbivore", "Piscivore")', 'u=list(c("Herbivore", "_Herbivore"), c("Piscivore", "Carnivore"))','v=T', 't=ER')
 args = c('r=NewHillerTestSupraPrimates', 'm=data/newHillerMainTrees.rds', 'd=Data/HillerZoonomiaPhenotypeTable.csv', 'a=Supraprimates', 'c=c("1", "0")', 'u=list(c("Herbivore", "_Herbivore"), c("Piscivore", "Carnivore"))','v=T', 't=ER')
+
+args = c('r=CIvHBinaryHiller', 'm=data/newHillerMainTrees.rds', 'd=Data/mergedData.csv', 'a=Meyer.Diet.Categorical', 'c=c("Carnivore", "Herbivore", "Insectivore", "Piscivore")', 'u=list(c("Herbivore", "_Herbivore"), c("Piscivore", "Carnivore"), c("Insectivore", "Carnivore"))','v=T', 't=ER', 'n=HillerName', 's=NoAoudad')
+args = c('r=CIvHBinaryZoonomia', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Herbivore", "Insectivore", "Piscivore")', 'u=list(c("Herbivore", "_Herbivore"), c("Piscivore", "Carnivore"), c("Insectivore", "Carnivore"))','v=T', 't=ER', 'n=Zoonomia', 's=NoAoudad')
 
 
 # --- Standard start-up code ---
@@ -211,7 +213,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   # --- subset the manual annots to only those with data in the categories used, and optionally by the screen column
   relevantSpecies = manualAnnots[manualAnnots[[annotColumn]] %in% categoryList,]#remove all species which are not part of the specified categories
   if(useScreen){                                                                #if using a screening collumn 
-    relevantSpecies = relevantSpecies[ relevantSpecies[screenColumn] %in% 1, ]  #remove all species not positive for that collumn 
+    relevantSpecies = relevantSpecies[ relevantSpecies[[screenColumn]] %in% 1, ]  #remove all species not positive for that collumn 
   }
   relevantSpecies = relevantSpecies[!relevantSpecies[[nameColumn]] %in% "", ]          #remove any species without an FA name (not on the master tree)
   speciesFilter = relevantSpecies[[nameColumn]]                                       #make a list of the master tree tip labels of the included species
@@ -247,8 +249,8 @@ saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        
 commonMainTrees = mainTrees
 commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
 commonPhenotypeVector = phenotypeVector
-names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), manualAnnotLocation = spreadSheetLocation, tipColumn = nameColumn)
-commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, manualAnnotLocation = spreadSheetLocation, tipColumn = nameColumn)
+names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
 
 # - Categorical Tree - 
 treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix

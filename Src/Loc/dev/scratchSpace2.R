@@ -10,6 +10,43 @@ maturityCorrelations = readRDS("Output/MaturityLifespanPercent/MaturityLifespanP
 
 orderedMaturityCors = maturityCorrelations[order(maturityCorrelations$P),]
 
+plotTree(binaryForegroundTreeOutput)
+
+binaryForegroundTreeOutput
+
+
+manualAnnots = read.csv("Data/mergedData.csv")
+
+which(manualAnnots$Meyer.Lab.Classification)
+
+manualAnnots$HerbBinary = rep(0)
+manualAnnots$HerbBinary[grep("Herb", manualAnnots$Meyer.Lab.Classification)] = 1
+
+manualAnnots$CarnBinary = rep(0)
+manualAnnots$CarnBinary[grep("Carn", manualAnnots$Meyer.Lab.Classification)] = 1
+manualAnnots$CarnBinary[grep("Pisc", manualAnnots$Meyer.Lab.Classification)] = 1
+
+
+manualAnnots$CarnInsectBinary = rep(0)
+manualAnnots$CarnInsectBinary[grep("Carn", manualAnnots$Meyer.Lab.Classification)] = 1
+manualAnnots$CarnInsectBinary[grep("Pisc", manualAnnots$Meyer.Lab.Classification)] = 1
+manualAnnots$CarnInsectBinary[grep("Insect", manualAnnots$Meyer.Lab.Classification)] = 1
+
+#write.csv(manualAnnots, "Data/mergedData.csv", row.names = F)
+
+
+testTree = mainTrees$masterTree
+testTree = binaryForegroundTreeOutput
+
+
+tipToDrop = testTree$tip.label[which(!testTree$tip.label %in% relevantSpeciesNames)]
+
+trimTree = drop.tip(testTree, tipToDrop)
+trimTree = drop.tip(trimTree, "mm10")
+
+plotTree(trimTree)
+
+binaryForegroundTreeOutput = trimTree
 
 unique(orderedMaturityCors$p.adj)
 

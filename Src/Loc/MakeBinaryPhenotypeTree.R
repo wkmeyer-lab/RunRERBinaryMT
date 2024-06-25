@@ -37,6 +37,15 @@ args = c("m=Data/UNICORNsDemo.txt", "r=ActueLoafs", "a=Results/ToothData.csv", "
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia")
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia")
 
+args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "a=Data/MergedData.csv", "n=HillerName")
+args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=HillerName")
+
+args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "a=Data/MergedData.csv", "n=HillerName")
+args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=HillerName")
+
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvAllZoonomia", "p=CarnBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=HvAllZoonomia", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CIvAllZoonomia", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
 
 
 # --- Standard start-up code ---
@@ -157,6 +166,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     relevantSpecies = relevantSpecies[relevantSpecies[screenCollumn] == 1,]     #only include species with a 1 in the screen column
   }                                                                             
   relevantSpeciesNames = relevantSpecies[[nameCollumn]]                                 #use the species names 
+  relevantSpeciesNames = relevantSpeciesNames[-which(is.na(relevantSpeciesNames))]
   saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
   
 }else{
