@@ -1,5 +1,6 @@
 # -- Libraries 
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+.libPaths("/share/ceph/wym219group/shared/libraries/R4") #DO NOT RUN LOCALLY. add Cluster path to custom libraries to searched locations
+
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
