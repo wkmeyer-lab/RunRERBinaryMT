@@ -21,6 +21,9 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # t = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
 # g = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 # n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
+# z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
+# x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
+
 
 #----------------
 args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
@@ -172,6 +175,21 @@ nameColumn = "tipName"
   }else{
     message("Name Column not specified, using 'tipName'.")
   }
+
+  #Pruning cutoff
+  if(!is.na(cmdArgImport('z'))){
+    usingPruning = T
+    pruningCutoff = cmdArgImport('z')
+  }else{
+    message("Pruning Cutoff not specified, not pruning tree.")
+  }
+  
+  #PruningPrefrenceColumn 
+  if(!is.na(cmdArgImport('x'))){
+    pruningPrefrenceColumn = cmdArgImport('x')
+  }else{
+    if(usingPruning){message("No pruning prefrence column specified")}
+  }
 }
 
 
@@ -218,6 +236,34 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   relevantSpecies = relevantSpecies[!relevantSpecies[[nameColumn]] %in% "", ]          #remove any species without an FA name (not on the master tree)
   speciesFilter = relevantSpecies[[nameColumn]]                                       #make a list of the master tree tip labels of the included species
 
+  if(usingPruning){
+    source("Src/Reu/autoPruner.R")
+    if(is.na(pruningPrefrenceColumn)){
+      if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
+        pruningProtection = T
+      }else{ pruningProtection = F}
+      
+      pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
+      pruningProtectionSpecies = pruningProtectionRows[[nameCollumn]]
+    }
+    
+    workingTree = mainTrees$masterTree
+    workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
+    
+    pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
+    pdf(pruningFilename, width=16, height = 14)
+    prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation)
+    if(!pruningProtection){
+      prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+    }
+    dev.off()
+    
+    prunedSpecies = speciesFilter[!speciesFilter %in% prunedTree$tip.label]
+    speciesFilter = speciesFilter[-which(speciesFilter %in% prunedTree$tip.label)]
+  }
+  
+  
+  
   saveRDS(speciesFilter, file = speciesFilterFilename)                          #save that as the species filter
   
   irrelevantSpecies = manualAnnots[! manualAnnots[[nameColumn]] %in% speciesFilter,]

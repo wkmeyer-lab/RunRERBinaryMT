@@ -6,6 +6,60 @@ if (!require("BiocManager", quietly = TRUE))
 BiocManager::install("qvalue")
 
 
+
+mergedData = read.csv("Data/mergedData.csv")
+
+which(!is.na(mergedData$HillerName) & !is.na(mergedData$Zoonomia))
+mergedData$HillerZoonomiaOverlap = 0
+mergedData$HillerZoonomiaOverlap[which(!is.na(mergedData$HillerName) & !is.na(mergedData$Zoonomia))] = 1
+
+mergedData$HillerZoonomiaOverlapLogical = F
+mergedData$HillerZoonomiaOverlapLogical[which(!is.na(mergedData$HillerName) & !is.na(mergedData$Zoonomia))] = T
+
+
+#write.csv(mergedData, "Data/mergedData.csv", row.names = F)
+#
+
+binaryTree = readTest 
+originalMasterTree = mainTrees$masterTree
+masterTree = ZoonomTreeNameToCommon(masterTree, tipCol = "Zoonomia")
+
+namesToKeep = binaryTree$tip.label
+prunedMaster = drop.tip(masterTree, which(!masterTree$tip.label %in% namesToKeep))
+
+masterTree= prunedMaster
+masterTree = ZoonomTreeNameToCommon(masterTree, tipCol = "Zoonomia")
+
+
+
+
+
+hist(prunedMaster$edge.length, breaks=100)
+
+?hist
+
+# -- Autopruner --
+returnEdgeTable = T
+procedurePlot = T
+tipsToKeep = "Domestic goat"
+
+overlapData = mergedData[mergedData$HillerZoonomiaOverlap ==1, ]
+
+overlapTips = overlapData$Zoonomia
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 maturityCorrelations = readRDS("Output/MaturityLifespanPercent/MaturityLifespanPercentCorrelationFile.rds")
 
 orderedMaturityCors = maturityCorrelations[order(maturityCorrelations$P),]
