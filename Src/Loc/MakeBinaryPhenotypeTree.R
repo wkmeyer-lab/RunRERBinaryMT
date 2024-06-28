@@ -80,18 +80,17 @@ args = commandArgs(trailingOnly = TRUE)
 }
 
 # --- Argument Imports ---
-# Defaults
-mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
-annotationsLocation = "Data/manualAnnotationsSheet.csv"
-phenotypeColumn = "ERRORDEFAULT"
-transitionValue = "Default"
-cladeValue = "Default"
-weightValue = FALSE
-useScreen = F
-screenCollumn = NA
-nameCollumn = "tipName"
-
 { # Bracket used for collapsing purposes
+  # Defaults
+  mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
+  annotationsLocation = "Data/manualAnnotationsSheet.csv"
+  phenotypeColumn = "ERRORDEFAULT"
+  transitionValue = "Default"
+  cladeValue = "Default"
+  weightValue = FALSE
+  useScreen = F
+  screenCollumn = NA
+  nameCollumn = "tipName"
   
   #Main Tree Location
   if(!is.na(cmdArgImport('m'))){
@@ -222,7 +221,6 @@ if(weightValue ==TRUE || weightValue == 't'){
 binaryForegroundTreeOutput = do.call(foreground2Tree, f2tInputList)
 
 
-
 # ---- Saving and visualization ----
 
 # - Save the Tree - 
@@ -243,7 +241,7 @@ binaryTreePdfname = paste(outputFolderName, filePrefix, "BinaryForegroundTree.pd
 pdf(binaryTreePdfname, width=8, height = 14)
 plotBinaryTree(mainTrees, readTest, foregroundNames, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameCollumn)
 plotBinaryTree(mainTrees, readTest, foregroundNames, convertNames = F, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameCollumn)
-#plotTreeHighlightBranches(testTreeDisplayable, hlspecies=which(readTest$edge.length==1), hlcols="blue",)
+plotTree(testTreeDisplayable)
 dev.off()
 
 

@@ -272,9 +272,21 @@ saveRDS(paths, file = pathsFilename)                                            
 # -- Convert Tree to Binary (Manual only) --
 convertToBinary = T
 convertToBinary = F
+convertToBinaryStandalone = T
+convertToBinaryStandalone = F
 foreground = "Carnivore"
 
+if(convertToBinaryStandalone){
+  categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+  categoricalTree = readRDS(categoricalTreeFilename)
+  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
+  speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
+  relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
+  speciesFilter = relevantSpecieslist                                           #make the speciesFilter object for later 
+}
+
 if(convertToBinary){
+  
   binaryTree = categoricalTree
   phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
   categories = map_to_state_space(phenotypeVector) 
@@ -284,7 +296,10 @@ if(convertToBinary){
   binaryTree$edge.length[(which(binaryTree$edge.length == foregroundInt))] = 1
   
   binaryTreeImageFilename = paste(outputFolderName, filePrefix, "BinaryTree.pdf", sep="") #make a filename based on the prefix
-  pdf(binaryTreeImageFilename, height = length(phenotypeVector)/18)                     #make a pdf to store the plot, sized based on tree size
+  pdf(binaryTreeImageFilename, height = length(phenotypeVector)/7)                     #make a pdf to store the plot, sized based on tree size
+  source("Src/Reu/plotBinaryTree.R")
+  plotBinaryTree(mainTrees, binaryTree, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameColumn)
+  plotBinaryTree(mainTrees, binaryTree, convertNames = F, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameColumn)
   plotTree(binaryTree)
   dev.off()                                                                       #save the plot to the pdf
   
