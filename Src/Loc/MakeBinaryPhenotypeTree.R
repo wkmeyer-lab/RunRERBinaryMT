@@ -209,6 +209,9 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     workingTree = mainTrees$masterTree
     workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% relevantSpeciesNames))
     
+    fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation)
+    workingTree = drop.tip(workingTree, fewGeneSpecies)
+    
     pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
     pdf(pruningFilename, width=16, height = 14)
     prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation)

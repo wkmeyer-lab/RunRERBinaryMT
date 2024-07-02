@@ -1,5 +1,7 @@
 source("Src/Reu/ZoonomTreeNameToCommon.R")
 
+
+
 autopruner= function(masterTree, dropPercent = NA, dropValue = 0.01, tipsToKeep = NA, returnEdgeTable = F, procedurePlot = F, nameConversionColumn = NA, nameConversionData = "Data/mergedData.csv", preDroppedTips = NA, originalTree = NA){
   if(all(is.na(originalTree))){originalTree = masterTree}
   
@@ -11,7 +13,7 @@ autopruner= function(masterTree, dropPercent = NA, dropValue = 0.01, tipsToKeep 
     lengthCutoff = dropValue
   }
   
-  # -- drop tips until the branch lengths are within the cutoff -- 
+  # -- Make a table of the terminal edges-- 
   trimmedTree = masterTree 
   terminalEdges = which(trimmedTree$edge[,2] <= length(trimmedTree$tip.label))
   terminalEdges = which(trimmedTree$edge[,2] <= length(trimmedTree$tip.label))
@@ -29,6 +31,7 @@ autopruner= function(masterTree, dropPercent = NA, dropValue = 0.01, tipsToKeep 
   droppedTips = vector()
   skippedTips = vector()
   
+  # --- drop tips until the branch lengths are within the cutoff --- 
   while(min(terminalEdgeTable$edgeLength) <= lengthCutoff){
     {
     selectingBranch = T; i = 1
@@ -111,5 +114,31 @@ tipDropPlot = function(nameConversionColumn, nameConversionData, masterTree, tri
     message(paste("Dropped tips:"))
     message((paste(plotDroppedTips, collaspe = ", ", sep="")))
   }
+}
+
+dropFewGeneSpecies = function(mainTrees, masterTree = NA, cutoff = -3, nameConversionColumn = NA, nameConversionData = "Data/mergedData.csv"){
+  reportTable= mainTrees$report
+  
+  speciesGeneNumber = colSums(mainTrees$report)
+  
+  zScores = scale(speciesGeneNumber)[,1]
+  fewGeneSp = zScores[which(zScores < -3)]
+  fewGeneSpNumber = speciesGeneNumber[names(speciesGeneNumber) %in% names(fewGeneSp)]
+  commonFewGeneSp = ZonomNameConvertVectorCommon(names(fewGeneSp), annotationLocation = nameConversionData, tipCol = nameConversionColumn)
+  
+  fewGeneTable = data.frame(commonFewGeneSp, names(fewGeneSp), fewGeneSp, fewGeneSpNumber)
+  names(fewGeneTable) = c("CommonName", "TipName", "Z-score", "Num_of_Genes")
+  
+  droppedTips = fewGeneTable
+  if(!all(is.na(masterTree))){
+    droppedTips = droppedTips[droppedTips$TipName %in% masterTree$tip.label,]
+  }
+  message("Dropping these tips due to few genes from species:")
+  message(paste(names(droppedTips), collapse = "   "))
+  for(i in 1:nrow(droppedTips)){
+    message(paste(droppedTips[i,], collapse = "   "))
+  }
+  
+  return(droppedTips$TipName)
 }
 

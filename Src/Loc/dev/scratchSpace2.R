@@ -5,8 +5,33 @@ if (!require("BiocManager", quietly = TRUE))
 
 BiocManager::install("qvalue")
 
+tipCol = "Zoonomia"
+
+length(which(is.na(RERObject))) / length(RERObject) 
+
+workingTree
+
+masterTree = workingTree
+
+View(mainTrees$report)
+
+colSums(mainTrees$report)
+
+hist(colSums(mainTrees$report))
+
+zScores = scale(colSums(mainTrees$report))[,1]
 
 
+which(zScores < -3)
+
+mean(scale(colSums(mainTrees$report)))
+
+which(colSums(mainTrees$report) < 12000)
+
+ZonomNameConvertVectorCommon(names(which(colSums(mainTrees$report) < 12000)), tipColumn = )
+
+dev.off()
+dev.new()
 mergedData = read.csv("Data/mergedData.csv")
 
 which(!is.na(mergedData$HillerName) & !is.na(mergedData$Zoonomia))
