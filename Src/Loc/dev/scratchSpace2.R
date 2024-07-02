@@ -5,6 +5,51 @@ if (!require("BiocManager", quietly = TRUE))
 
 BiocManager::install("qvalue")
 
+RERObject[which(!is.na(RERObject))]
+
+sapply(RERObject, is.numeric)
+
+str(RERObject)
+
+is.numeric(RERObject)
+
+
+df <- data.frame(
+  A = c(1, 2, NA, 4),
+  B = c(NA, 5, 6, NA),
+  C = c(7, 8, 9, 10)
+)
+
+nonNA <- rowSums(!is.na(RERObject))
+
+nonNA = nonNA[order(nonNA, decreasing = T)]
+
+which(rownames(RERObject) == "UTP20")
+
+which(!is.na(RERObject[1984,]))
+
+trimRERs = RERObject[,which(!is.na(RERObject[1984,]))]
+
+View(trimRERs)
+
+
+nonNaVals = colSums(!is.na(trimRERs))
+
+hist(nonNaVals)
+
+manyNaSpecies = nonNaVals[order(scale(nonNaVals))]
+manyNaSpecies = manyNaSpecies[-which(is.na(names(manyNaSpecies)))]
+manyNaSpeciesCommon = manyNaSpecies
+
+names(manyNaSpeciesCommon) = ZonomNameConvertVectorCommon(names(manyNaSpecies), tipColumn = "Zoonomia")
+
+?plotTreeHighlightBranches
+
+hist(nonNA)
+
+arf5 = RERObject[1,]
+length(which(!is.na(arf5)))
+
 tipCol = "Zoonomia"
 
 length(which(is.na(RERObject))) / length(RERObject) 
