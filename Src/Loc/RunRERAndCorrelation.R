@@ -37,7 +37,7 @@ args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
 args = c('r=NewHillerTestSupraPrimates', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
 
 args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 's=c','v=T')
-args = c('r=CVHNew', 's=b', 'v=T')
+args = c('r=CVHNew', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies.rds')
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)

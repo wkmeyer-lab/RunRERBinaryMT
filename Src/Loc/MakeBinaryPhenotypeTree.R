@@ -214,7 +214,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     
     pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
     pdf(pruningFilename, width=16, height = 14)
-    prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation)
+    prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation, preDroppedTips = fewGeneSpecies)
     if(!pruningProtection){
       prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation, preDroppedTips = droppedTips, originalTree = workingTree)
     }
