@@ -1,4 +1,4 @@
-
+source("Src/Reu/ZoonomTreeNameToCommon.R")
 
 autopruner= function(masterTree, dropPercent = NA, dropValue = 0.01, tipsToKeep = NA, returnEdgeTable = F, procedurePlot = F, nameConversionColumn = NA, nameConversionData = "Data/mergedData.csv", preDroppedTips = NA, originalTree = NA){
   if(all(is.na(originalTree))){originalTree = masterTree}

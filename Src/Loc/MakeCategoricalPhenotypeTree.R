@@ -238,10 +238,13 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
 
   if(usingPruning){
     source("Src/Reu/autoPruner.R")
-    if(is.na(pruningPrefrenceColumn)){
+    pruningProtectionSpecies = NA
+    if(!is.na(pruningPrefrenceColumn)){
       if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
         pruningProtection = T
-      }else{ pruningProtection = F}
+      }else{ 
+        pruningProtection = F
+      }
       
       pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
       pruningProtectionSpecies = pruningProtectionRows[[nameCollumn]]
@@ -259,7 +262,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     dev.off()
     
     prunedSpecies = speciesFilter[!speciesFilter %in% prunedTree$tip.label]
-    speciesFilter = speciesFilter[-which(speciesFilter %in% prunedTree$tip.label)]
+    speciesFilter = speciesFilter[-which(speciesFilter %in% prunedSpecies)]
   }
   
   

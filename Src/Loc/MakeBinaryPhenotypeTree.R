@@ -195,13 +195,15 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   
   if(usingPruning){
     source("Src/Reu/autoPruner.R")
-    if(is.na(pruningPrefrenceColumn)){
-      if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
-        pruningProtection = T
-      }else{ pruningProtection = F}
-      
+    pruningProtectionSpecies = NA
+    if(!is.na(pruningPrefrenceColumn)){
       pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
       pruningProtectionSpecies = pruningProtectionRows[[nameCollumn]]
+      if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
+        pruningProtection = T
+      }else{ 
+        pruningProtection = F
+      }
     }
     
     workingTree = mainTrees$masterTree
@@ -216,7 +218,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     dev.off()
     
     prunedSpecies = relevantSpeciesNames[!relevantSpeciesNames %in% prunedTree$tip.label]
-    relevantSpeciesNames = relevantSpeciesNames[-which(relevantSpeciesNames %in% prunedTree$tip.label)]
+    relevantSpeciesNames = relevantSpeciesNames[-which(relevantSpeciesNames %in% prunedSpecies)]
   }
   
   saveRDS(relevantSpeciesNames, file = speciesFilterFilename)
