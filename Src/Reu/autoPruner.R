@@ -138,7 +138,9 @@ dropFewGeneSpecies = function(mainTrees, masterTree = NA, cutoff = -3, nameConve
   for(i in 1:nrow(droppedTips)){
     message(paste(droppedTips[i,], collapse = "   "))
   }
+  tipsToDrop = droppedTips$TipName
   
-  return(droppedTips$TipName)
+  if(length(tipsToDrop) = 0){tipsToDrop = NA }
+  return(tipsToDrop)
 }
 
