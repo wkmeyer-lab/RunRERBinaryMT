@@ -68,7 +68,7 @@ args = commandArgs(trailingOnly = TRUE)
     forceUpdate = cmdArgImport('v')
     forceUpdate = as.logical(forceUpdate)
   }else{
-    paste("Force update not specified, not forcing update")
+    message("Force update not specified, not forcing update")
   }
 }
 
@@ -113,7 +113,7 @@ validMetrics = c("diff", "mean", "last")
     
     if(file.exists(paste(phenotypeTreeFilename))){                              #if so, use it                
       phenotypeTreeLocation = phenotypeTreeFilename                     
-      paste("Pre-made Phenotype tree found, using pre-made tree.")
+      message("Pre-made Phenotype tree found, using pre-made tree.")
     }else{
       #paste("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE TREE")
       stop("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE TREE")

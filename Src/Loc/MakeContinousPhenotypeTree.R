@@ -50,7 +50,7 @@ args = commandArgs(trailingOnly = TRUE)
     forceUpdate = cmdArgImport('v')
     forceUpdate = as.logical(forceUpdate)
   }else{
-    paste("Force update not specified, not forcing update")
+    message("Force update not specified, not forcing update")
   }
 }
 
@@ -168,7 +168,4 @@ saveRDS(commonPhenotypeVector, commonPhenotypeVectorFilename)
 pathsFilename = paste(outputFolderName, filePrefix, "ContinuousPathsFile.rds", sep= "") #make a filename based on the prefix
 paths = char2Paths(phenotypeVector, mainTrees, metric = continousMetric) #make a path based on the phenotype vector
 saveRDS(paths, file = pathsFilename)                                            #save the path 
-
-
-?char2Paths
 

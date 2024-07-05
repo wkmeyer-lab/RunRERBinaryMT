@@ -126,16 +126,16 @@ if(!is.na(cmdArgImport('f'))){
   speciesFilter = cmdArgImport('f')
 }else if (file.exists(paste(speciesFilterFileName))){                  #See if a pre-made filter for this prefix exists 
   speciesFilter = readRDS(speciesFilterFileName)                       #if so, use it 
-  paste("Pre-made filter found, using pre-made filter.")
+  message("Pre-made filter found, using pre-made filter.")
 }else{                                                    
-  paste("No speciesFilter arg, using NULL")                           #if not, use no filter
+  message("No speciesFilter arg, using NULL")                           #if not, use no filter
 }
 
 #Root species
 if(!is.na(cmdArgImport('t'))){
   rootSpeciesValue = cmdArgImport('t')
 }else{
-  paste("No root species specified, using 'REFERENCE'")
+  message("No root species specified, using 'REFERENCE'")
 }
 
 #Number of permulations
@@ -143,14 +143,14 @@ if(!is.na(cmdArgImport('n'))){
   permulationNumberValue = cmdArgImport('n')
   permulationNumberValue = as.numeric(permulationNumberValue)
 }else{
-  paste("Number of permulations not specified, using 100")
+  message("Number of permulations not specified, using 100")
 }
 
 #instance of the script 
 if(!is.na(cmdArgImport('i'))){
   runInstanceValue = cmdArgImport('i')
 }else{
-  paste("This script does not have a run instance value")
+  message("This script does not have a run instance value")
 }
 print(permulationNumberValue)
 str(permulationNumberValue)
@@ -160,7 +160,7 @@ if(!is.na(cmdArgImport('a'))){
   useAutomatic = cmdArgImport('a')
   useAutomatic = as.logical(useAutomatic)
 }else{
-  paste("Manual list not being forced, using automatic if available")
+  message("Manual list not being forced, using automatic if available")
 }
 
 #number of internal nodes 

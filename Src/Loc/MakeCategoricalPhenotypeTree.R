@@ -83,7 +83,7 @@ args = commandArgs(trailingOnly = TRUE)
     forceUpdate = cmdArgImport('v')
     forceUpdate = as.logical(forceUpdate)
   }else{
-    paste("Force update not specified, not forcing update")
+    message("Force update not specified, not forcing update")
   }
 }
 

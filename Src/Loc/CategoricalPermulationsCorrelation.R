@@ -44,7 +44,7 @@ args = commandArgs(trailingOnly = TRUE)
     forceUpdate = cmdArgImport('v')
     forceUpdate = as.logical(forceUpdate)
   }else{
-    paste("Force update not specified, not forcing update")
+    message("Force update not specified, not forcing update")
   }
 }
 
@@ -77,14 +77,14 @@ targetFileInstance = NULL
   if(!is.na(cmdArgImport('i'))){
     runInstanceValue = cmdArgImport('i')
   }else{
-    paste("This script does not have a run instance value")
+    message("This script does not have a run instance value")
   }
   #target File Instance
   if(!is.na(cmdArgImport('t'))){
     targetFileInstance = cmdArgImport('t')
   }else{
     targetFileInstance = runInstanceValue
-    paste("No target file Instance specified, defaulting to this scripts run instance.")
+    message("No target file Instance specified, defaulting to this scripts run instance.")
   }
   
 }

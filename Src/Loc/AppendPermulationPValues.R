@@ -69,7 +69,7 @@ runInstanceValue = NULL
 if(!is.na(cmdArgImport('i'))){
   runInstanceValue = cmdArgImport('i')
 }else{
-  paste("This script does not have a run instance value")
+  message("This script does not have a run instance value")
 }
 
 # -- Import which filetype to use  --- 
@@ -77,7 +77,7 @@ if(!is.na(cmdArgImport('t'))){
   fileType = cmdArgImport('t')
   fileType = as.character(fileType)
 }else{
-  paste("No fileType specified, defaulting to slow (PermulationsData)")
+  message("No fileType specified, defaulting to slow (PermulationsData)")
 }
 
 # ------- append the files ------- 
@@ -108,7 +108,7 @@ paste(OtherAppendOutputFiles)
 if(is.integer(OtherAppendOutputFiles) & length(OtherAppendOutputFiles) != 0){ 
   fileSetStep3 = fileSetStep2[-OtherAppendOutputFiles]
 }else{fileSetStep3 = fileSetStep2}
-paste(fileSetStep3)
+message(fileSetStep3)
 
 
 
@@ -119,7 +119,7 @@ fileSetNamesSort = sapply(fileSetNamesSort, gsub, pattern = ".*-", replacement =
 fileSetNamesSort = fileSetNamesSort[order(as.integer(fileSetNamesSort))]
 
 fileSetStep4 = names(fileSetNamesSort)
-paste(fileSetStep4)
+message(fileSetStep4)
 
 #append the files
 message("Appending files:")
