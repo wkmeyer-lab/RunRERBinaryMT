@@ -129,7 +129,7 @@ validMetrics = c("diff", "mean", "last")
       speciesFilter = readRDS(speciesFilterFileName)                       #if so, use it 
       message("Pre-made filter found, using pre-made filter.")
     }else{                                                    
-      message("No speciesFilter arg, using NULL")                           #if not, use no filter
+      message("No speciesFilter arg, using all species")                           #if not, use no filter
     }
   }
   
@@ -160,6 +160,11 @@ if(file_ext(phenotypeTreeLocation) == "rds"){                                   
   phenotypeTree = readRDS(phenotypeTreeLocation)                                #Read as RDS
 }else{                                                                          #Otherwise
   phenotypeTree = readTrees(phenotypeTreeLocation)                              #read as text
+}
+
+#Species filter
+if(speciesFilter = NULL){ # If the species filter is meant to be empty, that is, all of the species should be used
+  speciesFilter = mainTrees$masterTree$tip.label #include all of the species on the tree in the filter 
 }
 
 
