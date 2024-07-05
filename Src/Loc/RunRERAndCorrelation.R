@@ -38,6 +38,9 @@ args = c('r=NewHillerTestSupraPrimates', 'm=data/newHillerMainTrees.rds', 'v=T',
 
 args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 's=c','v=T')
 args = c('r=CVHNew', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies.rds')
+args = c('r=CIvAllZoonomia', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies.rds')
+
+
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -124,10 +127,10 @@ validMetrics = c("diff", "mean", "last")
     speciesFilterFileName = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
     if (file.exists(paste(speciesFilterFileName))){                  
       speciesFilter = readRDS(speciesFilterFileName)                       #if so, use it 
-      paste("Pre-made filter found, using pre-made filter.")
-  }else{                                                    
-    message("No speciesFilter arg, using NULL")                           #if not, use no filter
-  }
+      message("Pre-made filter found, using pre-made filter.")
+    }else{                                                    
+      message("No speciesFilter arg, using NULL")                           #if not, use no filter
+    }
   }
   
   #Continuous Metric 
@@ -158,6 +161,8 @@ if(file_ext(phenotypeTreeLocation) == "rds"){                                   
 }else{                                                                          #Otherwise
   phenotypeTree = readTrees(phenotypeTreeLocation)                              #read as text
 }
+
+
 
 # --- RERs ---
 
