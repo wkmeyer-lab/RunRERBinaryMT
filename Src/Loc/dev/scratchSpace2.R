@@ -41,7 +41,14 @@ manyNaSpecies = nonNaVals[order(scale(nonNaVals))]
 manyNaSpecies = manyNaSpecies[-which(is.na(names(manyNaSpecies)))]
 manyNaSpeciesCommon = manyNaSpecies
 
+View(permulationData)
+
 names(manyNaSpeciesCommon) = ZonomNameConvertVectorCommon(names(manyNaSpecies), tipColumn = "Zoonomia")
+
+categoricalPermulations
+
+getPermsBinaryFudged
+
 
 ?plotTreeHighlightBranches
 
