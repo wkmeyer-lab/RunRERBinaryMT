@@ -40,7 +40,7 @@ args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 's=c','v=
 args = c('r=CVHNew', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies.rds')
 args = c('r=CIvAllZoonomia', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies.rds')
 
-
+args = c("r=CVHNew", 'm=data/RemadeTreesAllZoonomiaSpecies.rds', "s=b")
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -163,7 +163,7 @@ if(file_ext(phenotypeTreeLocation) == "rds"){                                   
 }
 
 #Species filter
-if(speciesFilter = NULL){ # If the species filter is meant to be empty, that is, all of the species should be used
+if(all(speciesFilter == NULL)){ # If the species filter is meant to be empty, that is, all of the species should be used
   speciesFilter = mainTrees$masterTree$tip.label #include all of the species on the tree in the filter 
 }
 
