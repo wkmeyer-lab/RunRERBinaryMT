@@ -52,6 +52,9 @@ args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CIvAllZoonomia", "p=Carn
 
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
 
+args = c("r=CVHDemo", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "a=Data/MergedData.csv", "p=CarnFish_Herbs", "t=bi", "n=Zoonomia")
+
+
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -285,6 +288,8 @@ binaryTreeFilename = paste(outputFolderName, filePrefix, "BinaryForegroundTree.r
 saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
 binaryTreeFilename = paste(outputFolderName, filePrefix, "BinaryTree.rds", sep="")
 saveRDS(binaryForegroundTreeOutput, file = binaryTreeFilename)
+binaryNewickFilename = paste(outputFolderName, filePrefix, "NewickTree.nwk", sep="")
+write.tree(binaryForegroundTreeOutput, file = binaryNewickFilename)
 
 # - Read back in tree and print to pdf - 
 readTest = readRDS(binaryTreeFilename)
