@@ -54,7 +54,7 @@ args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Her
 
 args = c("r=CVHDemo", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "a=Data/MergedData.csv", "p=CarnFish_Herbs", "t=bi", "n=Zoonomia")
 
-
+args = c("r=harshalBats", "m=Data/batDemoMaintrees.rds", "a=Data/harshalpheno.csv", "p=Phenotype", "t=bi", "n=")
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -194,7 +194,9 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     relevantSpecies = relevantSpecies[relevantSpecies[screenCollumn] == 1,]     #only include species with a 1 in the screen column
   }                                                                             
   relevantSpeciesNames = relevantSpecies[[nameCollumn]]                                 #use the species names 
-  relevantSpeciesNames = relevantSpeciesNames[-which(is.na(relevantSpeciesNames))]
+  relevantNamesNA = which(is.na(relevantSpeciesNames))
+  if(length(relevantNamesNA) > 0){  relevantSpeciesNames = relevantSpeciesNames[-relevantNamesNA]}
+
   
   if(usingPruning){
     source("Src/Reu/autoPruner.R")
