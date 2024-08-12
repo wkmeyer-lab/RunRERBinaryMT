@@ -54,7 +54,7 @@ args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Her
 
 args = c("r=CVHDemo", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "a=Data/MergedData.csv", "p=CarnFish_Herbs", "t=bi", "n=Zoonomia")
 
-args = c("r=harshalBats", "m=Data/batDemoMaintrees.rds", "a=Data/harshalpheno.csv", "p=Phenotype", "t=bi", "n=")
+args = c("r=harshalBats", "m=Data/batDemoMaintrees.rds", "a=Data/harshalpheno.csv", "p=Phenotype", "t=bi", "n=Species", "v=T")
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -242,7 +242,9 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
 foregroundSpeciesAnnot = relevantSpecies[ relevantSpecies[[phenotypeColumn]] %in% 1,] #set the foreground species to spcies with a 1 in the annotation column
 
 foregroundNames = foregroundSpeciesAnnot[[nameCollumn]]
-foregroundNames = foregroundNames[-which(is.na(foregroundNames))]
+foregroundNamesNA = which(is.na(foregroundNames))
+if(length(foregroundNamesNA) > 0){  foregroundNames = foregroundNames[-foregroundNamesNA]}
+
 
 foregroundFilename = paste(outputFolderName, filePrefix, "BinaryTreeForegroundSpecies.rds", sep="")
 saveRDS(foregroundNames, file = foregroundFilename)
