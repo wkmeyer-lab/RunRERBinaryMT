@@ -23,7 +23,7 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
 # z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
 # x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
-
+# y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
 
 #----------------
 args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
@@ -105,6 +105,7 @@ ancestralTrait = NULL
 substitutions = NULL
 nameColumn = "tipName"
 usingPruning = F
+manualPruningProtections = NULL
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -195,6 +196,15 @@ usingPruning = F
   }else{
     if(usingPruning){message("No pruning prefrence column specified")}
   }
+
+  #ManualPruningProtections
+  if(!is.na(cmdArgImport('y'))){
+    manualPruningProtections = cmdArgImport('y')
+  }else{
+    if(usingPruning){message("No manually protected species specified")}
+  }
+
+
 }
 
 
@@ -254,6 +264,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
       pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
       pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
     }
+    allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
     
     workingTree = mainTrees$masterTree
     workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
@@ -265,7 +276,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     pdf(pruningFilename, width = 16, height = 14)
     prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
     if(!pruningProtection){
-      prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+      prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
     }
     dev.off()
     

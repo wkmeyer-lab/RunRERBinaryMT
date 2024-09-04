@@ -27,6 +27,8 @@ source("Src/Reu/cmdArgImport.R")
 # n = "nameColumn"                         This sets the column with the tip names as they appear in the maintrees file. 
 # z = <minimum branch length>              This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
 # x = "pruningPrefrenceColumn"             This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
+# y = "c('unprunedtip1', 'unprunedtip2')"  This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
+
 
 #----------------
 args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', "r=EcholocationUpdate2", "t=bi", "p=Echolocation", "c=all", "v=T", "s=Laurasiatheria")
@@ -48,13 +50,24 @@ args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvAllZoonomia", "p=CarnB
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=HvAllZoonomia", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CIvAllZoonomia", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
 
-
-
 args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
 
 args = c("r=CVHDemo", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "a=Data/MergedData.csv", "p=CarnFish_Herbs", "t=bi", "n=Zoonomia")
 
 args = c("r=harshalBats", "m=Data/batDemoMaintrees.rds", "a=Data/harshalpheno.csv", "p=Phenotype", "t=bi", "n=Species", "v=T")
+
+
+#pruned reruns
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHZoonomia", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CIvAllZoonomia", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvAllZoonomia", "p=CarnBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=HvAllZoonomia", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
+
+args = c("m=data/newHillerMainTrees.rds", "r=CvHHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/newHillerMainTrees.rds", "r=CIvAllHiller", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/newHillerMainTrees.rds", "r=CvAllHiller", "p=CarnBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/newHillerMainTrees.rds", "r=HvAllHiller", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
+
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
@@ -173,6 +186,13 @@ args = commandArgs(trailingOnly = TRUE)
   }else{
     if(usingPruning){message("No pruning prefrence column specified")}
   }
+  
+  #ManualPruningProtections
+  if(!is.na(cmdArgImport('y'))){
+    manualPruningProtections = cmdArgImport('y')
+  }else{
+    if(usingPruning){message("No manually protected species specified")}
+  }
 }
 
 #                   ------- Code Body -------- 
@@ -210,6 +230,8 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
         pruningProtection = F
       }
     }
+    allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
+    
     
     workingTree = mainTrees$masterTree
     workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% relevantSpeciesNames))
@@ -221,7 +243,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     pdf(pruningFilename, width=16, height = 14)
     prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation, preDroppedTips = fewGeneSpecies)
     if(!pruningProtection){
-      prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+      prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation, preDroppedTips = droppedTips, originalTree = workingTree)
     }
     dev.off()
     
