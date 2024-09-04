@@ -57,6 +57,10 @@ args = c('r=CIvHBinaryHiller', 'm=data/newHillerMainTrees.rds', 'd=Data/mergedDa
 args = c('r=CIvHBinaryZoonomia', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Herbivore", "Insectivore", "Piscivore")', 'u=list(c("Herbivore", "_Herbivore"), c("Piscivore", "Carnivore"), c("Insectivore", "Carnivore"))','v=T', 't=ER', 'n=Zoonomia', 's=NoAoudad')
 
 
+args = c('r=ZoonomiaCategoricalRefrenceTree', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist")', 'u=list(c("Generalist", "Omnivore"))', 'o=list(c("Carnivore", "Piscivore"))','v=T', 't=ER', 'n=Zoonomia')
+args = c('r=PruningTest', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist")', 'u=list(c("Generalist", "Omnivore"))', 'o=list(c("Carnivore", "Piscivore"))','v=T', 't=ER', 'n=Zoonomia', "z=0.01", "x=HillerZoonomiaOverlap")
+
+
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -100,6 +104,7 @@ modelType = "ER"
 ancestralTrait = NULL
 substitutions = NULL
 nameColumn = "tipName"
+usingPruning = F
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -247,7 +252,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
       }
       
       pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
-      pruningProtectionSpecies = pruningProtectionRows[[nameCollumn]]
+      pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
     }
     
     workingTree = mainTrees$masterTree
@@ -257,7 +262,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     workingTree = drop.tip(workingTree, fewGeneSpecies)
     
     pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
-    pdf(pruningFilename, width=16, height = 14)
+    pdf(pruningFilename, width = 16, height = 14)
     prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocationpreDroppedTips = fewGeneSpecies)
     if(!pruningProtection){
       prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation, preDroppedTips = droppedTips, originalTree = workingTree)

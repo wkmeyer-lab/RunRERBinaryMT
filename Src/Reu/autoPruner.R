@@ -140,7 +140,7 @@ dropFewGeneSpecies = function(mainTrees, masterTree = NA, cutoff = -3, nameConve
   }
   tipsToDrop = droppedTips$TipName
   
-  if(length(tipsToDrop) = 0){tipsToDrop = NA }
+  if(length(tipsToDrop) == 0){tipsToDrop = NA }
   return(tipsToDrop)
 }
 
