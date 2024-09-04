@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-Output/*
 !Output/BinaryCVHApplesToApples
 RemadeTreesAllZoonomiaSpecies.rds
 ProjectFrameworkPreGitted.Rproj

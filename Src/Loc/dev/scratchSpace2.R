@@ -1,5 +1,38 @@
 a = b #This is to prevent accidental ful runs 
 
+
+demoTree = read.tree("data/nickDemoTree.nwk")
+
+
+mainTrees = list()
+
+mainTrees$masterTree = demoTree
+
+saveRDS(mainTrees, "Data/batDemoMaintrees.rds")
+
+
+which(!relevantSpeciesNames %in% mainTrees$masterTree$tip.label)
+
+f2tInputList
+
+foreground2Tree()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
@@ -13,6 +46,16 @@ str(RERObject)
 
 is.numeric(RERObject)
 
+testMaster = readNexus("Data/output.nex")
+
+testTree = read.tree("Data/nickDemoTree.nwk")
+plotTree(testTree)
+
+masterTree = test$masterTree
+
+testMaster
+
+masterTree$tip.label
 
 df <- data.frame(
   A = c(1, 2, NA, 4),
@@ -48,6 +91,103 @@ names(manyNaSpeciesCommon) = ZonomNameConvertVectorCommon(names(manyNaSpecies), 
 categoricalPermulations
 
 getPermsBinaryFudged
+
+foreground2Tree
+
+
+function (foreground, treesObj, plotTree = T, clade = c("ancestral", 
+                                                        "terminal", "all"), weighted = F, transition = "unidirectional", 
+          useSpecies = NULL) 
+{
+  clade <- match.arg(clade)
+  res = treesObj$masterTree
+  if (!is.null(useSpecies)) {
+    sp.miss = setdiff(res$tip.label, useSpecies)
+    if (length(sp.miss) > 0) {
+      message(paste0("Species from master tree not present in useSpecies: ", 
+                     paste(sp.miss, collapse = ",")))
+    }
+    useSpecies = intersect(useSpecies, res$tip.label)
+    res = pruneTree(res, useSpecies)
+  }
+  else {
+    useSpecies = res$tip.label
+  }
+  foreground = intersect(foreground, useSpecies)
+  res$edge.length <- rep(0, length(res$edge.length))
+  if (clade == "terminal") {
+    res$edge.length[nameEdges(res) %in% foreground] = 1
+    names(res$edge.length) = nameEdges(res)
+  }
+  else if (clade == "ancestral") {
+    weighted = F
+    if (transition == "bidirectional") {
+      res <- inferBidirectionalForegroundClades(res, foreground, 
+                                                ancestralOnly = T)
+    }
+    else {
+      res <- inferUnidirectionalForegroundClades(res, foreground, 
+                                                 ancestralOnly = T)
+    }
+  }
+  else {
+    if (transition == "bidirectional") {
+      res <- inferBidirectionalForegroundClades(res, foreground, 
+                                                ancestralOnly = F)
+    }
+    else {
+      res <- inferUnidirectionalForegroundClades(res, foreground, 
+                                                 ancestralOnly = F)
+    }
+  }
+  if (weighted) {
+    if (clade == "all") {
+      tobeweighted <- rep(TRUE, length(res$edge.length))
+      tobeweighted[res$edge.length == 0] <- FALSE
+      while (sum(tobeweighted) > 0) {
+        edgetodo <- which(tobeweighted == T)[1]
+        clade.down.edges = getAllCladeEdges(res, edgetodo)
+        if (length(clade.down.edges) > 1) {
+          clade.edges = c(clade.down.edges, edgetodo)
+          clade.edges.toweight <- clade.edges[res$edge.length[clade.edges] == 
+                                                1]
+          res$edge.length[clade.edges.toweight] <- 1/(length(clade.edges.toweight))
+          tobeweighted[clade.edges] <- FALSE
+        }
+        else {
+          tobeweighted[clade.down.edges] <- FALSE
+        }
+      }
+    }
+    else if (clade == "terminal") {
+      tobeweightededgeterminalnode <- unique(res$edge[(res$edge[, 
+                                                                2] %in% c(1:length(res$tip.label))), 1])
+      tobeweighted <- setdiff(match(tobeweightededgeterminalnode, 
+                                    res$edge[, 2]), NA)
+      for (edgetodo in tobeweighted) {
+        clade.down.edges = getAllCladeEdges(res, edgetodo)
+        if (all(res$edge.length[clade.down.edges] == 
+                1)) {
+          res$edge.length[clade.down.edges] <- 0.5
+        }
+      }
+    }
+  }
+  if (plotTree) {
+    res2 = res
+    mm = min(res2$edge.length[res2$edge.length > 0])
+    res2$edge.length[res2$edge.length == 0] = max(0.02, mm/20)
+    plot(res2, main = paste0("Clade: ", clade, "\nTransition: ", 
+                             transition, "\nWeighted: ", weighted), cex = 0.5)
+    if (weighted) {
+      labs <- round(res$edge.length, 3)
+      labs[labs == 0] <- NA
+      edgelabels(labs, col = "black", bg = "transparent", 
+                 adj = c(0.5, -0.5), cex = 0.4, frame = "n")
+    }
+  }
+  res
+}
 
 
 ?plotTreeHighlightBranches
