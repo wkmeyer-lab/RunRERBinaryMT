@@ -3,12 +3,22 @@ a = b #This is to prevent accidental ful runs
 
 demoTree = read.tree("data/nickDemoTree.nwk")
 
+saveRDS(mainTrees, "Data/zoonomiaAllMammalsTrees.rds")
 
 mainTrees = list()
 
 mainTrees$masterTree = demoTree
 
 saveRDS(mainTrees, "Data/batDemoMaintrees.rds")
+
+
+?readTrees
+
+togaTree = read.tree("Data/togaTree.nwk")
+plotTree(togaTree)
+
+mainTrees = readTrees(mainTreesLocation, masterTree = togaTree)
+
 
 
 which(!relevantSpeciesNames %in% mainTrees$masterTree$tip.label)
