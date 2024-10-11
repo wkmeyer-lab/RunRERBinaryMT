@@ -12,6 +12,20 @@ mainTrees$masterTree = demoTree
 saveRDS(mainTrees, "Data/batDemoMaintrees.rds")
 
 
+ageTree = readRDS("Data/Output/Old")
+
+names(enrichment1[1])
+enrichment1[1]
+
+library(xlsx)
+write.xlsx(enrichment1[1], file="Output/MaturityLIfespanPercent/GOResults.xlsx", sheetName=names(enrichment1[1]), row.names=FALSE)
+write.xlsx(enrichment2[1], file="Output/MaturityLIfespanPercent/GOResults.xlsx", sheetName=names(enrichment2[1]), append = T, row.names=FALSE)
+write.xlsx(enrichment3[1], file="Output/MaturityLIfespanPercent/GOResults.xlsx", sheetName=names(enrichment3[1]), append = T, row.names=FALSE)
+write.xlsx(enrichment4[1], file="Output/MaturityLIfespanPercent/GOResults.xlsx", sheetName=names(enrichment4[1]), append = T, row.names=FALSE)
+write.xlsx(enrichment5[1], file="Output/MaturityLIfespanPercent/GOResults.xlsx", sheetName=names(enrichment5[1]), append = T, row.names=FALSE)
+
+
+
 ?readTrees
 
 togaTree = read.tree("Data/togaTree.nwk")
