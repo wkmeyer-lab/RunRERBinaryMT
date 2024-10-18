@@ -1,0 +1,44 @@
+GO.ID	Description	p.Val	Empty	phenoType
+NADH Dehydrogenase Complex Assembly (GO:0010257)	NADH Dehydrogenase Complex Assembly 	1.21549831585659e-07		1
+Adenylate Cyclase-Modulating G Protein-Coupled Receptor Signaling Pathway (GO:0007188)	Adenylate Cyclase-Modulating G Protein-Coupled Receptor Signaling Pathway 	0.0605677677680974		-1
+Aerobic Electron Transport Chain (GO:0019646)	Aerobic Electron Transport Chain 	4.07719629483233e-05		1
+Aerobic Respiration (GO:0009060)	Aerobic Respiration 	0.00460743879702014		1
+Cardiac Conduction (GO:0061337)	Cardiac Conduction 	0.0990244739193116		-1
+Cellular Respiration (GO:0045333)	Cellular Respiration 	6.33924310392791e-05		1
+Chemical Synaptic Transmission (GO:0007268)	Chemical Synaptic Transmission 	0.0568411824650698		-1
+Cytoplasmic Translation (GO:0002181)	Cytoplasmic Translation 	0.0406051418467401		1
+Epidermis Development (GO:0008544)	Epidermis Development 	0.0108607027334206		-1
+Gene Expression (GO:0010467)	Gene Expression 	0.0695117443790718		1
+Hepoxilin Biosynthetic Process (GO:0051122)	Hepoxilin Biosynthetic Process 	0.0783737459036114		-1
+Hepoxilin Metabolic Process (GO:0051121)	Hepoxilin Metabolic Process 	0.0783737459036114		-1
+Intermediate Filament Organization (GO:0045109)	Intermediate Filament Organization 	1.01476707737823e-13		-1
+Long-Chain Fatty Acid Biosynthetic Process (GO:0042759)	Long-Chain Fatty Acid Biosynthetic Process 	0.0568411824650698		-1
+Long-Chain Fatty Acid Metabolic Process (GO:0001676)	Long-Chain Fatty Acid Metabolic Process 	0.0748010190119497		-1
+Mitochondrial ATP Synthesis Coupled Electron Transport (GO:0042775)	Mitochondrial ATP Synthesis Coupled Electron Transport 	4.07719629483233e-05		1
+Mitochondrial RNA Metabolic Process (GO:0000959)	Mitochondrial RNA Metabolic Process 	0.0568411824650698		1
+Mitochondrial Electron Transport, NADH To Ubiquinone (GO:0006120)	Mitochondrial Electron Transport, NADH To Ubiquinone 	0.000262726701960138		1
+Mitochondrial Gene Expression (GO:0140053)	Mitochondrial Gene Expression 	0.0132839489896978		1
+Mitochondrial Respiratory Chain Complex I Assembly (GO:0032981)	Mitochondrial Respiratory Chain Complex I Assembly 	1.21549831585659e-07		1
+Mitochondrial Respiratory Chain Complex Assembly (GO:0033108)	Mitochondrial Respiratory Chain Complex Assembly 	3.20312522685545e-07		1
+Mitochondrial Translation (GO:0032543)	Mitochondrial Translation 	0.071356391148231		1
+Mitotic Sister Chromatid Segregation (GO:0000070)	Mitotic Sister Chromatid Segregation 	0.0828644141506955		1
+Monoatomic Cation Transmembrane Transport (GO:0098655)	Monoatomic Cation Transmembrane Transport 	0.0369789962392704		-1
+Monoatomic Cation Transport (GO:0006812)	Monoatomic Cation Transport 	0.0964502287574728		-1
+Muscle Contraction (GO:0006936)	Muscle Contraction 	0.0100265720945042		-1
+Oxidative Phosphorylation (GO:0006119)	Oxidative Phosphorylation 	4.07719629483233e-05		1
+Peptide Biosynthetic Process (GO:0043043)	Peptide Biosynthetic Process 	0.0503786926561593		1
+Peptide Cross-Linking (GO:0018149)	Peptide Cross-Linking 	0.0369789962392704		-1
+Positive Regulation Of DNA Metabolic Process (GO:0051054)	Positive Regulation Of DNA Metabolic Process 	0.0728884678251123		1
+Positive Regulation Of Cell Cycle Process (GO:0090068)	Positive Regulation Of Cell Cycle Process 	0.0644315613357344		1
+Potassium Ion Transmembrane Transport (GO:0071805)	Potassium Ion Transmembrane Transport 	0.0568411824650698		-1
+Proton Motive Force-Driven ATP Synthesis (GO:0015986)	Proton Motive Force-Driven ATP Synthesis 	0.000135584217338408		1
+Proton Motive Force-Driven Mitochondrial ATP Synthesis (GO:0042776)	Proton Motive Force-Driven Mitochondrial ATP Synthesis 	4.3518810254705e-05		1
+Regulation Of DNA Metabolic Process (GO:0051052)	Regulation Of DNA Metabolic Process 	0.00639380929802883		1
+Regulation Of DNA Replication (GO:0006275)	Regulation Of DNA Replication 	0.0381674843042918		1
+Regulation Of Heart Rate By Cardiac Conduction (GO:0086091)	Regulation Of Heart Rate By Cardiac Conduction 	0.0381674843042918		-1
+Regulation Of Transcription By RNA Polymerase II (GO:0006357)	Regulation Of Transcription By RNA Polymerase II 	0.0435478854641662		1
+Striated Muscle Contraction (GO:0006941)	Striated Muscle Contraction 	0.0959325311853702		-1
+Supramolecular Fiber Organization (GO:0097435)	Supramolecular Fiber Organization 	0.000164374493921417		-1
+tRNA Methylation (GO:0030488)	tRNA Methylation 	0.0369739289011463		1
+tRNA Modification (GO:0006400)	tRNA Modification 	0.0753187723093145		1
+Translation (GO:0006412)	Translation 	0.00167481404307843		1

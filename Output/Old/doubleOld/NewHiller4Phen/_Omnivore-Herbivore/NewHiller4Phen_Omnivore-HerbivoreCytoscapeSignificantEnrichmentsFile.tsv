@@ -1,0 +1,24 @@
+GO.ID	Description	p.Val	Empty	phenoType
+NADH Dehydrogenase Complex Assembly (GO:0010257)	NADH Dehydrogenase Complex Assembly 	7.75021872055571e-06		1
+Aerobic Electron Transport Chain (GO:0019646)	Aerobic Electron Transport Chain 	0.00346695606007867		1
+Axonemal Dynein Complex Assembly (GO:0070286)	Axonemal Dynein Complex Assembly 	0.0636310228821383		1
+Cellular Respiration (GO:0045333)	Cellular Respiration 	0.056380820446869		1
+Cilium Assembly (GO:0060271)	Cilium Assembly 	2.89499026676226e-05		1
+Cilium Movement (GO:0003341)	Cilium Movement 	0.0715942403299411		1
+Cilium Organization (GO:0044782)	Cilium Organization 	0.00156857598786281		1
+Intermediate Filament Organization (GO:0045109)	Intermediate Filament Organization 	0.0568803551307444		-1
+Mitochondrial ATP Synthesis Coupled Electron Transport (GO:0042775)	Mitochondrial ATP Synthesis Coupled Electron Transport 	0.00209415478791615		1
+Mitochondrial RNA Metabolic Process (GO:0000959)	Mitochondrial RNA Metabolic Process 	0.00761859568161315		1
+Mitochondrial RNA Processing (GO:0000963)	Mitochondrial RNA Processing 	0.056380820446869		1
+Mitochondrial Electron Transport, NADH To Ubiquinone (GO:0006120)	Mitochondrial Electron Transport, NADH To Ubiquinone 	0.0308083201587211		1
+Mitochondrial Gene Expression (GO:0140053)	Mitochondrial Gene Expression 	2.89499026676226e-05		1
+Mitochondrial Respiratory Chain Complex I Assembly (GO:0032981)	Mitochondrial Respiratory Chain Complex I Assembly 	7.75021872055571e-06		1
+Mitochondrial Respiratory Chain Complex Assembly (GO:0033108)	Mitochondrial Respiratory Chain Complex Assembly 	1.6913473969016e-07		1
+Mitochondrial Translation (GO:0032543)	Mitochondrial Translation 	0.000104684012588058		1
+Organic Substance Transport (GO:0071702)	Organic Substance Transport 	0.032350387500406		-1
+Oxidative Phosphorylation (GO:0006119)	Oxidative Phosphorylation 	0.00178299198635841		1
+Plasma Membrane Bounded Cell Projection Assembly (GO:0120031)	Plasma Membrane Bounded Cell Projection Assembly 	0.0321007153171153		1
+Positive Regulation Of Mitochondrial Translation (GO:0070131)	Positive Regulation Of Mitochondrial Translation 	0.0568803551307444		1
+Proton Motive Force-Driven ATP Synthesis (GO:0015986)	Proton Motive Force-Driven ATP Synthesis 	0.00346695606007867		1
+Proton Motive Force-Driven Mitochondrial ATP Synthesis (GO:0042776)	Proton Motive Force-Driven Mitochondrial ATP Synthesis 	0.00173954219813221		1
+Translation (GO:0006412)	Translation 	0.00761859568161315		1

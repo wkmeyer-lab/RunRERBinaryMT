@@ -1,0 +1,52 @@
+GO.ID	Description	p.Val	Empty	phenoType
+DNA Repair (GO:0006281)	DNA Repair 	0.0592702771553371		1
+NADH Dehydrogenase Complex Assembly (GO:0010257)	NADH Dehydrogenase Complex Assembly 	5.95663751491747e-05		1
+Adenylate Cyclase-Activating G Protein-Coupled Receptor Signaling Pathway (GO:0007189)	Adenylate Cyclase-Activating G Protein-Coupled Receptor Signaling Pathway 	0.0170361229581327		-1
+Adenylate Cyclase-Modulating G Protein-Coupled Receptor Signaling Pathway (GO:0007188)	Adenylate Cyclase-Modulating G Protein-Coupled Receptor Signaling Pathway 	0.000281459122104439		-1
+Aerobic Electron Transport Chain (GO:0019646)	Aerobic Electron Transport Chain 	9.81011018092761e-05		1
+Aerobic Respiration (GO:0009060)	Aerobic Respiration 	0.0153991174194783		1
+Calcium Ion Import Across Plasma Membrane (GO:0098703)	Calcium Ion Import Across Plasma Membrane 	0.0592702771553371		-1
+Calcium Ion Transport (GO:0006816)	Calcium Ion Transport 	0.0602273954156962		-1
+Cellular Respiration (GO:0045333)	Cellular Respiration 	0.00677209452807508		1
+Centromere Complex Assembly (GO:0034508)	Centromere Complex Assembly 	0.0141604997109581		1
+Chemical Synaptic Transmission (GO:0007268)	Chemical Synaptic Transmission 	0.0592702771553371		-1
+Double-Strand Break Repair (GO:0006302)	Double-Strand Break Repair 	0.0602273954156962		1
+Inorganic Cation Transmembrane Transport (GO:0098662)	Inorganic Cation Transmembrane Transport 	0.0602273954156962		-1
+Intermediate Filament Organization (GO:0045109)	Intermediate Filament Organization 	0.0176562653535201		-1
+Kinetochore Assembly (GO:0051382)	Kinetochore Assembly 	0.0626811883820554		1
+Lymphocyte Activation Involved In Immune Response (GO:0002285)	Lymphocyte Activation Involved In Immune Response 	0.0538481407729527		-1
+Macromolecule Biosynthetic Process (GO:0009059)	Macromolecule Biosynthetic Process 	0.0895295437230811		1
+Metal Ion Transport (GO:0030001)	Metal Ion Transport 	0.0602273954156962		-1
+Mitochondrial ATP Synthesis Coupled Electron Transport (GO:0042775)	Mitochondrial ATP Synthesis Coupled Electron Transport 	0.000258392333921164		1
+Mitochondrial RNA Metabolic Process (GO:0000959)	Mitochondrial RNA Metabolic Process 	0.000350021442383935		1
+Mitochondrial RNA Processing (GO:0000963)	Mitochondrial RNA Processing 	0.0153991174194783		1
+Mitochondrial Electron Transport, NADH To Ubiquinone (GO:0006120)	Mitochondrial Electron Transport, NADH To Ubiquinone 	0.00880587771034761		1
+Mitochondrial Gene Expression (GO:0140053)	Mitochondrial Gene Expression 	7.57566989530264e-06		1
+Mitochondrial Respiratory Chain Complex I Assembly (GO:0032981)	Mitochondrial Respiratory Chain Complex I Assembly 	5.95663751491747e-05		1
+Mitochondrial Respiratory Chain Complex Assembly (GO:0033108)	Mitochondrial Respiratory Chain Complex Assembly 	9.81011018092761e-05		1
+Mitochondrial Transcription (GO:0006390)	Mitochondrial Transcription 	0.0176562653535201		1
+Mitochondrial Translation (GO:0032543)	Mitochondrial Translation 	5.95663751491747e-05		1
+Modulation Of Chemical Synaptic Transmission (GO:0050804)	Modulation Of Chemical Synaptic Transmission 	0.0852432258334979		-1
+Monoatomic Cation Transmembrane Transport (GO:0098655)	Monoatomic Cation Transmembrane Transport 	0.0602273954156962		-1
+Organic Substance Transport (GO:0071702)	Organic Substance Transport 	0.0895295437230811		-1
+Oxidative Phosphorylation (GO:0006119)	Oxidative Phosphorylation 	0.000609846301853986		1
+Peptide Biosynthetic Process (GO:0043043)	Peptide Biosynthetic Process 	0.0374643011894678		1
+Positive Regulation Of Calcium Ion Transmembrane Transport (GO:1904427)	Positive Regulation Of Calcium Ion Transmembrane Transport 	0.021469426992715		-1
+Positive Regulation Of Mitochondrial Translation (GO:0070131)	Positive Regulation Of Mitochondrial Translation 	0.00821947422828424		1
+Potassium Ion Transmembrane Transport (GO:0071805)	Potassium Ion Transmembrane Transport 	0.032761805209815		-1
+Potassium Ion Transport (GO:0006813)	Potassium Ion Transport 	0.0444990219384937		-1
+Protein Localization To Centrosome (GO:0071539)	Protein Localization To Centrosome 	0.0895295437230811		1
+Protein Localization To Microtubule Organizing Center (GO:1905508)	Protein Localization To Microtubule Organizing Center 	0.0592702771553371		1
+Proton Motive Force-Driven ATP Synthesis (GO:0015986)	Proton Motive Force-Driven ATP Synthesis 	0.0127439148084746		1
+Proton Motive Force-Driven Mitochondrial ATP Synthesis (GO:0042776)	Proton Motive Force-Driven Mitochondrial ATP Synthesis 	0.00677209452807508		1
+Regulation Of Mitochondrial Translation (GO:0070129)	Regulation Of Mitochondrial Translation 	0.0103872978624923		1
+Regulation Of Peptidyl-Serine Phosphorylation Of STAT Protein (GO:0033139)	Regulation Of Peptidyl-Serine Phosphorylation Of STAT Protein 	0.0924042555378173		-1
+Regulation Of Synaptic Transmission, Glutamatergic (GO:0051966)	Regulation Of Synaptic Transmission, Glutamatergic 	0.0725716665306677		-1
+Ribonucleoprotein Complex Biogenesis (GO:0022613)	Ribonucleoprotein Complex Biogenesis 	0.0895295437230811		1
+Ribosomal Small Subunit Biogenesis (GO:0042274)	Ribosomal Small Subunit Biogenesis 	0.0137803011418448		1
+Sensory Perception Of Light Stimulus (GO:0050953)	Sensory Perception Of Light Stimulus 	0.0725716665306677		-1
+Sensory Perception Of Smell (GO:0007608)	Sensory Perception Of Smell 	0.0429822924943447		-1
+tRNA Methylation (GO:0030488)	tRNA Methylation 	0.05366032915411		1
+tRNA Modification (GO:0006400)	tRNA Modification 	0.00677209452807508		1
+Translation (GO:0006412)	Translation 	0.000279789581397306		1
+Visual Perception (GO:0007601)	Visual Perception 	0.0437348204066098		-1
