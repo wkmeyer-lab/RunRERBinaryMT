@@ -15,8 +15,9 @@ source("Src/Reu/cmdArgImport.R")
 # n = numberOfPermulations            This is the number of permulations to run in the script 
 # i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
 # o = outgroupSpecies                 This is the outgroup species with the tip name as it appears on mainTrees$masterTree
+# p = <T or F>                        This sets if the script should calculate permulation p vals. ONLY USE THIS IF NOT PARRALLELIZING, as it only considers permulations from this script.
 #----------------
-args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'v=F', 'n=20', 'i=Dev', 'o="OrnAna2') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'v=F', 'n=20', 'i=Dev', 'o=ornAna2', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 
 # --- Standard start-up code ---
@@ -55,6 +56,7 @@ mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia
 permulationAmount = 100
 runInstanceValue = NULL
 outgroupVal = "Debug"
+calculatePVal = F
 
 { # Bracket used for collapsing purposes
   #MainTrees Location
@@ -83,6 +85,12 @@ outgroupVal = "Debug"
   }else{
     stop("An outgroup is required, specify outgroup species")
   }
+  #Calculate P 
+  if(!is.na(cmdArgImport('p'))){
+    calculatePVal = cmdArgImport('p')
+  }else{
+    paste("p caluclation not specified, not interally calculating p values.")
+  }
 }
 
 
@@ -109,20 +117,18 @@ RERObject = readRDS(RERFileName)                                                
 #pathsObject = readRDS(pathsFilename)                                            #Load the paths
 
 #Correlations
-#correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
-#correlationsObject = readRDS(correlationFileName)                               #Load the correlations
+correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
+correlationsObject = readRDS(correlationFileName)                               #Load the correlations
 
 # -- make rooted Mastertree --
 
-rootedMaster = root.phylo(mainTrees$masterTree)
+rootedMaster = root.phylo(mainTrees$masterTree, outgroup = outgroupVal, resolve.root = T)
+is.binary(rootedMaster)
 
 # -- Run Permulations --
 
 permsStartTime = Sys.time()                                                     #get the time before start of permulations
-permulationData = getPermsContinuous(permulationAmount,phenotypeVector,RERObject, trees = mainTrees, mastertree = mainTrees$masterTree, calculateenrich = F)
-
-
-permulationData = categoricalPermulations(mainTrees, phenotypeVector, rm = modelType, rp = rootProbability, ntrees = permulationAmount)
+permulationData = getPermsContinuous(permulationAmount,phenotypeVector,RERObject, trees = mainTrees, mastertree = rootedMaster, calculateenrich = F)
 permsEndTime = Sys.time()                                                       #get time at end of permulations
 message(paste("Time to run permulations: ", (permsEndTime - permsStartTime), attr(permsEndTime - permsStartTime, "units"))) #Print the time taken to calculate permulations
 message(paste("Time per permulation: ", ((permsEndTime - permsStartTime)/permulationAmount), attr((permsEndTime - permsStartTime)/permulationAmount, "units")))
@@ -134,3 +140,15 @@ permulationsDataFileName = paste(outputFolderName, filePrefix, "PermulationsData
 saveRDS(permulationData, permulationsDataFileName)
 saveEndTime= Sys.time()
 message(paste("Time to save permulations: ", (saveEndTime - saveStartTime), attr(saveEndTime - saveStartTime, "units")))
+
+# -- Calculate p values (optional) --
+
+if(calculatePVal){
+  permulatedPVals = permpvalcor(correlationsObject, permulationData)
+  
+  
+  permulationsOutputFilename = paste(outputFolderName, filePrefix, "PermulationPValue", sep= "")
+  write.csv(permulatedPVals, file= paste(permulationsOutputFilename, ".csv", sep=""), row.names = T, quote = F) #Save correlations as csv
+  saveRDS(permulatedPVals, paste(permulationsOutputFilename, ".rds", sep=""))                          #and as an rds 
+  
+}
