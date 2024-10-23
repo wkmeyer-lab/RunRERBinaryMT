@@ -41,7 +41,7 @@ args = c('r=CVHRemake', 'p=P', 'o=pval', 'u=F')
 args = c('r=NewHiller4Phen', 'p=F', 's=c("_Omnivore-Carnivore", "_Omnivore-Herbivore", "Carnivore-Herbivore", "_Omnivore-Insectivore", "Carnivore-Insectivore", "Herbivore-Insectivore", "Overall")')
 args = c('r=NewHillerTestSupraPrimates', 'p=F', 's=c("0-1", "Overall")')
 
-args = c('r=MaturityLifespanPercent', 'p=F', 'g=T')
+args = c('r=MaturityLifespanPercent', 'p=B', 'g=T', 'f=Output/MaturityLifespanPercent/MaturityLifespanPercentPermulationPValue.rds')
 
 
 args = c('r=LiverExpression2', 'p=F', 'g=F')
@@ -207,7 +207,13 @@ for(j in 1:length(subdirectoryValueList)){
       }else{
         permulationFileLocation = paste(outputFolderName, filePrefix, permulationDefaultFilename, sep= "")
       }
-      correlData$permPValue = readRDS(permulationFileLocation)                       #Add a collumn to the data with the permulation p Values
+      permData = readRDS(permulationFileLocation) 
+      if(ncol(permData) ==1 ){
+        correlData$permPValue = permData                       #Add a collumn to the data with the permulation p Values  
+      }else{
+        correlData$permPValue = permData$permpval                      #Add a collumn to the data with the permulation p Values  
+      }
+      
     }
   }
   
