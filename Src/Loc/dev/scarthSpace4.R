@@ -97,13 +97,13 @@ write.csv(report, file= "Results/geneTreesReport.csv")
 numSpecies = rowSums(report)[order(rowSums(report), decreasing = T)]
 test = table(numSpecies)
 
-topGeneNames = names(numSpecies[1:length(which(numSpecies >466))])
-
+topGeneNames = names(numSpecies[1:length(which(numSpecies >453))])
+topGeneNames = names(numSpecies)
 
 topGenes = report[which(row.names(report)%in% topGeneNames),]
 
 speciesInTopTrees = colSums(topGenes)[order(colSums(topGenes))]
-speciesMissingFromTopTrees = speciesInTopTrees[speciesInTopTrees < 35]
+speciesMissingFromTopTrees = speciesInTopTrees[speciesInTopTrees < length(topGeneNames)]
 length(speciesMissingFromTopTrees)
 
 
@@ -140,10 +140,31 @@ while(T){
     i = i+1
   )
 }
+tipsInNewMaster3 = colnames(testDrop)
+
+
+tipsInNewMaster2 = colnames(testDrop)
 
 tipsInNewMaster = colnames(testDrop)
-saveRDS(tipsInNewMaster, "Results/newZoMasterTips.rds")
 
+all.equal(tipsInNewMaster3, tipsInNewMaster2)
+
+saveRDS(tipsInNewMaster2, "Results/newZoMasterTips.rds")
+
+
+length(tipsInNewMaster3)
+length(tipsInNewMaster)
+
+
+togaTree = read.tree("Data/togaTree.nwk")
+plot.phylo(togaTree)
+
+tipsToDrop = togaTree$tip.label[!togaTree$tip.label %in% tipsInNewMaster2]
+
+togaPruned = drop.tip(togaTree, tipsToDrop)
+plot.phylo(togaPruned)
+
+write.tree(togaPruned, "Results/NewZoonomiaMasterTreePrunedToAlignmentSpecies.nwk")
 
 #
 

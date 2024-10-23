@@ -29,7 +29,7 @@ write.xlsx(enrichment5[1], file="Output/MaturityLIfespanPercent/GOResults.xlsx",
 ?readTrees
 
 togaTree = read.tree("Data/togaTree.nwk")
-plotTree(togaTree)
+plot.phylo(togaTree)
 
 mainTrees = readTrees(mainTreesLocation, masterTree = togaTree)
 
