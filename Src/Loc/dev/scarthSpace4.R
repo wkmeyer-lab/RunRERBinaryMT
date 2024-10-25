@@ -27,6 +27,10 @@ for(i in 1:length(fullTreeTrees)){
 
 tipNumberList[order(tipNumberList, decreasing = T)]
 
+plotTree(mainTrees$masterTree)
+mainTrees$masterTree$tip.label
+grep("ana", mainTrees$masterTree$tip.label)
+
 
 biggestTree = fullTreeTrees[[8866]]$tip.label
 
@@ -92,7 +96,16 @@ all.equal(all10kspeciesTreesSameTest$KAT7, all10kspeciesTreesSameTest$CFAP97D1)
 
 
 report = fullTree$report
-write.csv(report, file= "Results/geneTreesReport.csv")
+#write.csv(report, file= "Results/geneTreesReport.csv")
+
+
+sum(report$vs_HLthyCyn1)
+
+# ---
+
+report = read.csv("Results/geneTreesReport.csv")
+rownames(report) = report$X
+report = report[,-1]
 
 numSpecies = rowSums(report)[order(rowSums(report), decreasing = T)]
 test = table(numSpecies)
@@ -107,22 +120,25 @@ speciesMissingFromTopTrees = speciesInTopTrees[speciesInTopTrees < length(topGen
 length(speciesMissingFromTopTrees)
 
 
-# ---
+speciesToKeep = c("vs_HLornAna3", "vs_HLtacAcu1", "vs_HLgymLea1", "vs_HLpseCup1", "vs_ptePar1", "vs_HLpseCor1")
+
+
 testDrop = topGenes
 i=1
 tipsToDrop = character()
-
 while(T){
   currentLowestSpecies = names(speciesMissingFromTopTrees[i])
   
   message(" -------------- ")
   message(" i = ", i )
   message(currentLowestSpecies)
-  tipsToDrop = append(tipsToDrop, currentLowestSpecies)
-  
-  dropCol = which(colnames(testDrop) == currentLowestSpecies)
-  
-  testDrop = testDrop[,-dropCol]
+  if(!currentLowestSpecies %in% speciesToKeep){
+  #if(T){
+    tipsToDrop = append(tipsToDrop, currentLowestSpecies)
+    dropCol = which(colnames(testDrop) == currentLowestSpecies)
+    
+    testDrop = testDrop[,-dropCol]
+  }
 
   
   #check
@@ -140,6 +156,23 @@ while(T){
     i = i+1
   )
 }
+
+tipsToDrop1 = tipsToDrop
+tipsToDrop2 = tipsToDrop
+tipsToDrop3 = tipsToDrop
+tipsToDrop4 = tipsToDrop 
+
+tipsToDropFinal = tipsToDrop
+
+
+ZonomNameConvertVectorCommon(tipsToDrop, tipColumn = "Zoonomia")
+
+
+tipsToDrop1 %in% tipsToDrop2
+tipsToDrop4 %in% tipsToDrop1
+
+
+
 tipsInNewMaster3 = colnames(testDrop)
 
 
@@ -151,8 +184,10 @@ all.equal(tipsInNewMaster3, tipsInNewMaster2)
 
 saveRDS(tipsInNewMaster2, "Results/newZoMasterTips.rds")
 
+tipsInUpdatedMaster = colnames(testDrop)
 
-length(tipsInNewMaster3)
+
+length(tipsInUpdatedMaster)
 length(tipsInNewMaster)
 
 
@@ -165,6 +200,12 @@ togaPruned = drop.tip(togaTree, tipsToDrop)
 plot.phylo(togaPruned)
 
 write.tree(togaPruned, "Results/NewZoonomiaMasterTreePrunedToAlignmentSpecies.nwk")
+
+tipsToDrop = togaTree$tip.label[!togaTree$tip.label %in% tipsInUpdatedMaster]
+togaPruned = drop.tip(togaTree, tipsToDrop)
+plot.phylo(togaPruned)
+write.tree(togaPruned, "Results/NewZoonomiaMasterTreePrunedToAlignmentSpecies.nwk")
+
 
 #
 
