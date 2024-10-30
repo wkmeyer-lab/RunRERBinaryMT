@@ -112,6 +112,14 @@ write.xlsx(enrichment5[1], file="Output/MaturityLIfespanPercent/GOResults.xlsx",
 
 ?readTrees
 
+<<<<<<< HEAD
+=======
+togaTree = read.tree("Data/togaTree.nwk")
+plot.phylo(togaTree)
+
+mainTrees = readTrees(mainTreesLocation, masterTree = togaTree)
+
+>>>>>>> 708e40e56dcfa8d258cfdd49b8ee5d6ac6f3167b
 
 
 which(!relevantSpeciesNames %in% mainTrees$masterTree$tip.label)
