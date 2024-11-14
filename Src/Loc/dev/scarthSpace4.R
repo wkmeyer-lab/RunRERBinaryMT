@@ -1,7 +1,200 @@
 a = b #this is to prevent accidental full runs
 
-library(RERconverge)
+palette(c("yellowgreen", "darkgray", "yellow", "darkgreen", "darkblue", "lightblue", "gold", "black", "pink", "red"))
+palette(c("yellowgreen", "yellow", "darkgreen", "darkblue", "lightblue", "gold", "black", "pink", "red"))
 
+palette(c("yellow", "darkgreen", "darkblue", "lightblue", "black", "pink", "red"))
+palette(c( "darkgreen", "darkblue", "lightblue", "black", "red"))
+palette(c( "darkgreen", "darkblue", "lightblue", "black", "pink", "red"))
+palette(c( "darkgreen", "darkblue", "black", "red"))
+
+
+library(RERconverge)
+# -------------------
+
+prunedTree$edge.length
+
+mainTrees2 = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+length(mainTrees2$masterTree$tip.label)
+
+all.equal(mainTrees$masterTree, mainTrees2$masterTree)
+
+length(mainTrees$masterTree$tip.label)
+grep("ornAna", mainTrees$masterTree$tip.label)
+mainTrees$masterTree$edge.length
+
+
+testTrees = readRDS("data/RemadeTreesAllZoonomiaSpecies.rds")
+testTrees$masterTree$edge.length
+
+which(names(phenotypeVector) == "vs_HLlniGeo1")
+phenotypeVector[94]
+
+plotTreeCategorical2 = function (tree, category_names = NULL, master = NULL, node_states = NULL) 
+{
+  n = length(unique(tree$edge.length))
+  if (n > length(palette())) {
+    colors = colorRampPalette(palette())(n)
+  }
+  else {
+    colors = c("yellowgreen", "lightgray", "yellow", "darkgreen", "darkblue", "lightblue", "gold", "black", "pink", "red")
+  }
+  edge_colors = tree$edge.length
+  edge_colors = sapply(edge_colors, function(x) {
+    colors[x]
+  })
+  par(mar = c(5, 4, 4, 10), xpd = TRUE)
+  if (!is.null(master)) {
+    cm = intersect(master$tip.label, tree$tip.label)
+    master = pruneTree(master, cm)
+    if (!is.null(node_states)) {
+      node_colors = node_states
+      node_colors = sapply(node_colors, function(x) {
+        colors[x]
+      })
+      plot(master, cex = 0.25, edge.color = edge_colors, 
+           node.color = node_colors)
+    }
+    else {
+      plot(master, cex = 0.25, edge.color = edge_colors)
+    }
+  }
+  else {
+    if (!is.null(node_states)) {
+      node_colors = node_states
+      node_colors = sapply(node_colors, function(x) {
+        colors[x]
+      })
+      plot(tree, cex = 0.25, edge.color = edge_colors, 
+           use.edge.length = FALSE, node.depth = 2, node.color = node_colors)
+    }
+    else {
+      plot(tree, cex = 0.25, edge.color = edge_colors, 
+           use.edge.length = FALSE, node.depth = 2)
+    }
+  }
+  if (!is.null(category_names)) {
+    legend(x = "bottomright", inset = c(-0.25, 0), cex = 0.5, 
+           legend = category_names, col = colors, lwd = 2)
+  }
+}
+
+char2TreeCategorical2 = function (tipvals, treesObj, useSpecies = NULL, model = "ER", 
+          root_prior = "auto", plot = FALSE, anctrait = NULL) 
+{
+  mastertree = treesObj$masterTree
+  if (!is.null(useSpecies)) {
+    sp.miss = setdiff(mastertree$tip.label, useSpecies)
+    if (length(sp.miss) > 0) {
+      message(paste0("Species from master tree not present in useSpecies: ", 
+                     paste(sp.miss, collapse = ",")))
+    }
+    useSpecies = intersect(mastertree$tip.label, useSpecies)
+    mastertree = pruneTree(mastertree, useSpecies)
+    mastertree = unroot(mastertree)
+  }
+  else {
+    mastertree = pruneTree(mastertree, intersect(mastertree$tip.label, 
+                                                 names(tipvals)))
+    mastertree = unroot(mastertree)
+  }
+  if (is.null(anctrait)) {
+    tipvals <- tipvals[mastertree$tip.label]
+    intlabels <- map_to_state_space(tipvals)
+    print("The integer labels corresponding to each category are:")
+    print(intlabels$name2index)
+    ancliks = getAncLiks(mastertree, intlabels$mapped_states, 
+                         rate_model = model, root_prior = root_prior)
+    states = rep(0, nrow(ancliks))
+    for (i in 1:length(states)) {
+      states[i] = which.max(ancliks[i, ])
+    }
+    states = c(intlabels$mapped_states, states)
+    tree = mastertree
+    tree$edge.length = states[tree$edge[, 2]]
+    if (length(unique(tipvals)) == 2) {
+      if (sum(!unique(tipvals) %in% c(TRUE, FALSE)) > 0) {
+        message("Returning categorical tree for binary phenotype because phenotype values are not TRUE/FALSE")
+      }
+      else {
+        tree$edge.length = ifelse(tree$edge.length == 
+                                    2, 1, 0)
+        print("There are only 2 categories: returning a binary phenotype tree.")
+        if (plot) {
+          plotTree(tree)
+        }
+        return(tree)
+      }
+    }
+    if (plot) {
+      plotTreeCategorical2(tree, category_names = intlabels$state_names, 
+                          master = mastertree, node_states = states)
+    }
+    return(tree)
+  }
+  else {
+    if (length(unique(tipvals)) <= 2) {
+      fgspecs <- names(tipvals)[tipvals != anctrait]
+      res <- foreground2Tree(fgspecs, treesObj, plotTree = plot, 
+                             clade = "terminal", useSpecies = useSpecies)
+      print("There are only 2 categories: returning a binary phenotype tree.")
+      if (plot) {
+        plotTree(res)
+      }
+      return(res)
+    }
+    else {
+      tipvals <- tipvals[mastertree$tip.label]
+      intlabels <- map_to_state_space(tipvals)
+      j <- which(intlabels$state_names == anctrait)
+      if (length(j) < 1) {
+        warning("The ancestral trait provided must match one of the traits in the phenotype vector.")
+      }
+      res = mastertree
+      res$edge.length <- rep(j, length(res$edge.length))
+      traits <- intlabels$state_names
+      for (trait in traits) {
+        if (trait == anctrait) {
+          next
+        }
+        i <- which(intlabels$state_names == trait)
+        res$edge.length[nameEdges(res) %in% names(tipvals)[tipvals == 
+                                                             trait]] = i
+      }
+      names(res$edge.length) = nameEdges(res)
+      if (plot) {
+        states = res$edge.length[order(res$edge[, 2])]
+        states = c(j, states)
+        plotTreeCategorical(res, category_names = traits, 
+                            master = treesObj$masterTree, node_states = states)
+      }
+      print("Category names are mapped to integers as follows:")
+      print(intlabels$name2index)
+      return(res)
+    }
+  }
+}
+
+
+
+treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
+pdf(treeImageFilename, height = length(phenotypeVector)/18)                     #make a pdf to store the plot, sized based on tree size
+char2TreeCategorical2(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
+
+categoricalTree = char2TreeCategorical2(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
+dev.off()   
+
+
+
+mainTrees3 = read.tree("Results/NewZoonomiaMasterTreePrunedToAlignmentSpecies.nwk")
+
+
+
+
+
+
+
+# ------------------------------
 fullTree = readRDS("Data/zoonomiaAllMammalsTrees.rds")
 plotTree(commonMainTrees$masterTree)
 
@@ -250,3 +443,12 @@ oldZoMain = readRDS("data/RemadeTreesAllZoonomiaSpecies.rds")
 
 which(is.na(hillerMain$masterTree$edge.length))
 which(is.na(oldZoMain$masterTree$edge.length))
+
+
+
+#------ 
+
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+masterTree = mainTrees$masterTree
+
+masterTree$tip.label
