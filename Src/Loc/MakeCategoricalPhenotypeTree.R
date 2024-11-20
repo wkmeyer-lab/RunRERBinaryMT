@@ -1,5 +1,7 @@
 # -- Libraries 
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+clusterRun = F
+clusterRun = T
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
@@ -64,9 +66,139 @@ args = c('r=HillerCategoricalRefrenceTree', 'm=data/NewHillerMainTrees.rds', 'd=
 
 args = c('r=TrueCategoricalRefrenceTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification.Clean', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist", "Planktivore")', 'u=list(c("Generalist", "Omnivore"), c("Omnivore-IH", "Omnivore"), c("Omnivore", "_Omnivore"))', 'o=list(c("Piscivore", "Carnivore"), c("Planktivore", "Carnivore"), c("Insectivore", "Carnivore"), c("Piscivore", "Insectivore"))','v=T', 't=ER', 'n=Zoonomia')
 
+args = c('r=TrueCategoricalRefrenceTreeComplex', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90', 
+          'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+          'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), 
+            c("C-Herpetivore", "Herpetivore"),
+            c("C-Piscivore", "Piscivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), 
+            c("C-All-Animals-Eater", "Mobivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Frugivore"), 
+            c("H-Nectarivore", "Nectarivore"), 
+            c("H-High-sugar-plants-Eater", "Glucivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Generalist")
+          )', 
+          'v=T', 't=ER', 'n=ZoonomiaTip')
+
+args = c('r=TrueCategoricalRefrenceTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90', 
+         'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+         'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), 
+            c("C-Herpetivore", "Herpetivore"),
+            c("C-Piscivore", "Piscivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), 
+            c("C-All-Animals-Eater", "Mobivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Frugivore"), 
+            c("H-Nectarivore", "Nectarivore"), 
+            c("H-High-sugar-plants-Eater", "Glucivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Omnivore")
+          )', 
+         'v=T', 't=ER', 'n=ZoonomiaTip')
+
+args = c('r=TrueCategoricalRefrenceTreeCompressed', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90', 
+         'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+         'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), 
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), 
+            c("C-All-Animals-Eater", "Mobivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Herbivore"), 
+            c("H-Nectarivore", "Herbivore"), 
+            c("H-High-sugar-plants-Eater", "Herbivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Omnivore")
+          )', 
+         'v=T', 't=ER', 'n=ZoonomiaTip')
+
+args = c('r=CategoricalWorkingTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90', 
+         'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+         'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), 
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), 
+            c("C-All-Animals-Eater", "Mobivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Herbivore"), 
+            c("H-Nectarivore", "Herbivore"), 
+            c("H-High-sugar-plants-Eater", "Herbivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Omnivore")
+          )', 
+         'v=T', 't=ER', 'n=ZoonomiaTip')
+
+args = c('r=CategoricalMobivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90MobivoreSorting', 
+         'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "C-Mobivore-Mixed", "C-Mobivore-Piscivore", "C-Mobivore-Insectivore","C-Mobivore-Carnivore",
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+         'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), c("C-Mobivore-Insectivore", "Insectivore"),
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"), c("C-Mobivore-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-Mobivore-Carnivore", "Vertivore"),
+            c("C-Mobivore-Mixed", "Omnivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Herbivore"), 
+            c("H-Nectarivore", "Herbivore"), 
+            c("H-High-sugar-plants-Eater", "Herbivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Omnivore")
+          )', 
+         'v=T', 't=ER', 'n=ZoonomiaTip')
 
 # --- Standard start-up code ---
-args = commandArgs(trailingOnly = TRUE)
+if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
 {  # Bracket used for collapsing purposes
   #File Prefix
   if(!is.na(cmdArgImport('r'))){
@@ -110,6 +242,8 @@ substitutions = NULL
 nameColumn = "tipName"
 usingPruning = F
 manualPruningProtections = NULL
+pruningPrefrenceColumn = NA
+pruningProtection = F
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -119,9 +253,9 @@ manualPruningProtections = NULL
   }
   #read in the tree based on filetype extension
   if(file_ext(mainTreesLocation) == "rds"){
-    mainTrees = readRDS(mainTreesLocation)
+    if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
   }else{
-    mainTrees = readTrees(mainTreesLocation) 
+    if(!exists("mainTrees")){mainTrees = readTrees(mainTreesLocation)} 
   }
 
   #spreadsheet File
@@ -202,7 +336,7 @@ manualPruningProtections = NULL
   }
 
   #ManualPruningProtections
-  if(!is.na(cmdArgImport('y'))){
+  if(!all(is.na(cmdArgImport('y')))){
     manualPruningProtections = cmdArgImport('y')
   }else{
     if(usingPruning){message("No manually protected species specified")}
@@ -274,10 +408,11 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
     
     fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
+    fewGeneSpecies = fewGeneSpecies[- which(fewGeneSpecies %in% allProtectedSpecies)]
     workingTree = drop.tip(workingTree, fewGeneSpecies)
     
     pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
-    pdf(pruningFilename, width = 16, height = 14)
+    pdf(pruningFilename, width = 16, height = length(workingTree$tip.label)/10)
     prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
     if(!pruningProtection){
       prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)

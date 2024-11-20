@@ -1,9 +1,98 @@
 a = b #This is to prevent accidental ful runs 
 
 
+library(RERconverge)
+?readTrees
+
+
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+
+togaTree = read.tree("Data/togaTree.nwk")
+plotTree(togaTree)
+
+allZoonomiaAlignments = read.table("Data/zoonomiaAllMammalsTrees.tsv")
+
+togaTree$tip.label
+
+mainTrees = readTrees(mainTreesLocation, masterTree = togaTree)
+#saveRDS(mainTrees, "Data/zoonomiaAllMammalsTrees.rds")
+
+
+mainTreesTrees = mainTrees[[1]]
+
+alltips = character()
+
+for(i in 1:length(mainTreesTrees)){
+  currentTree = mainTreesTrees[[i]]
+  currentTips = currentTree$tip.label
+  
+  if(i%%100 == 0){
+    message(i)
+  }
+  
+  tipsToAdd = currentTips[!currentTips %in% alltips]
+  
+  alltips = append(alltips, tipsToAdd)
+}
+
+alltipsUnique = unique(alltips)
+
+allTips = character()
+for(i in 1:length(mainTreesTrees)){
+  currentTips = mainTreesTrees[[i]]$tip.label
+  
+  tipsToAdd = currentTips[!currentTips %in% allTips]
+  
+  allTips = append(allTips, tipsToAdd)
+}
+length(allTips)
+
+mainTreesTrees[[1]]
+
+treesTips = 
+
+
+newickSet = allZoonomiaAlignments[,2]
+newickSet[1]
+read.newick(text = newickSet[1])$tip.label
+
+
+allTipsNewick = character()
+for(i in 1:length(newickSet)){
+  currentTips = read.newick(text = newickSet[i])$tip.label
+  
+  tipsToAdd = currentTips[!currentTips %in% allTipsNewick]
+  
+  allTipsNewick = append(allTipsNewick, tipsToAdd)
+  
+  if(i%%100 == 0){
+    message(i)
+  }
+}
+saveRDS(allTipsNewick, "Results/allZoonomiaAlignmentTips.rds")
+
+length(allTipsNewick)
+
+tipsOnlyInMasterTree = togaTree$tip.label[!togaTree$tip.label %in% allTipsNewick]
+
+togaTreeTrimmed = drop.tip(togaTree, tipsOnlyInMasterTree)
+
+plot.phylo(togaTreeTrimmed)
+
+
+?readTrees
+
+
+
+
+
+
+
+
+
 demoTree = read.tree("data/nickDemoTree.nwk")
 
-saveRDS(mainTrees, "Data/zoonomiaAllMammalsTrees.rds")
+
 
 mainTrees = list()
 
@@ -28,11 +117,14 @@ write.xlsx(enrichment5[1], file="Output/MaturityLIfespanPercent/GOResults.xlsx",
 
 ?readTrees
 
+<<<<<<< HEAD
+=======
 togaTree = read.tree("Data/togaTree.nwk")
 plot.phylo(togaTree)
 
 mainTrees = readTrees(mainTreesLocation, masterTree = togaTree)
 
+>>>>>>> 708e40e56dcfa8d258cfdd49b8ee5d6ac6f3167b
 
 
 which(!relevantSpeciesNames %in% mainTrees$masterTree$tip.label)
