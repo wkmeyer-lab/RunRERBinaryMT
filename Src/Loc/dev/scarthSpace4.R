@@ -3,6 +3,7 @@ a = b #this is to prevent accidental full runs
 palette(c("yellowgreen", "darkgray", "yellow", "darkgreen", "darkblue", "lightblue", "gold", "black", "pink", "red"))
 palette(c("yellowgreen", "yellow", "darkgreen", "darkblue", "lightblue", "gold", "black", "pink", "red"))
 
+
 palette(c("yellow", "darkgreen", "darkblue", "lightblue", "black", "pink", "red"))
 palette(c( "darkgreen", "darkblue", "lightblue", "black", "red"))
 palette(c( "darkgreen", "darkblue", "lightblue", "black", "pink", "red"))
@@ -195,6 +196,7 @@ mainTrees3 = read.tree("Results/NewZoonomiaMasterTreePrunedToAlignmentSpecies.nw
 
 
 # ------------------------------
+
 fullTree = readRDS("Data/zoonomiaAllMammalsTrees.rds")
 plotTree(commonMainTrees$masterTree)
 
