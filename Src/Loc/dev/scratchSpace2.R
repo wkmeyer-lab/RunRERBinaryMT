@@ -1,5 +1,10 @@
 a = b #This is to prevent accidental ful runs 
 
+
+library(RERconverge)
+?readTrees
+
+
 mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
 
 togaTree = read.tree("Data/togaTree.nwk")

@@ -1,7 +1,7 @@
 # -- Libraries 
 clusterRun = F
 clusterRun = T
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
@@ -195,8 +195,7 @@ args = c('r=CategoricalMobivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=D
             c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
             c("O-Generalist", "Omnivore")
           )', 
-         'v=T', 't=ER', 'n=ZoonomiaTip',
-         'z=0.1','y=c("vs_HLornAna3", "vs_HLtacAcu1")')
+         'v=T', 't=ER', 'n=ZoonomiaTip')
 
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
