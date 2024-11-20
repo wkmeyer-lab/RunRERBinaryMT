@@ -2,6 +2,9 @@ a = b #this is to prevent accidental full runs
 
 library(RERconverge)
 
+test = mean()
+
+
 fullTree = readRDS("Data/zoonomiaAllMammalsTrees.rds")
 plotTree(commonMainTrees$masterTree)
 
