@@ -73,7 +73,7 @@ args = c('r=TrueCategoricalRefrenceTreeComplex', 'm=data/zoonomiaAllMammalsTrees
               "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
               "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
               "O-Generalist", 
-              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
             )', 
           'u=list(
             c("C-Invertebrate-eater", "Insectivore"), 
@@ -81,7 +81,7 @@ args = c('r=TrueCategoricalRefrenceTreeComplex', 'm=data/zoonomiaAllMammalsTrees
             c("C-Piscivore", "Piscivore"),
             c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
             c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), 
-            c("C-All-Animals-Eater", "Mobivore"), 
+            c("C-All-Animals-Eater", "InsVertivore"), 
             c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
             c("H-Frugivore", "Frugivore"), 
             c("H-Nectarivore", "Nectarivore"), 
@@ -99,7 +99,7 @@ args = c('r=TrueCategoricalRefrenceTree', 'm=data/zoonomiaAllMammalsTrees.rds', 
               "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
               "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
               "O-Generalist", 
-              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
             )', 
          'u=list(
             c("C-Invertebrate-eater", "Insectivore"), 
@@ -107,7 +107,7 @@ args = c('r=TrueCategoricalRefrenceTree', 'm=data/zoonomiaAllMammalsTrees.rds', 
             c("C-Piscivore", "Piscivore"),
             c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
             c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), 
-            c("C-All-Animals-Eater", "Mobivore"), 
+            c("C-All-Animals-Eater", "InsVertivore"), 
             c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
             c("H-Frugivore", "Frugivore"), 
             c("H-Nectarivore", "Nectarivore"), 
@@ -125,7 +125,7 @@ args = c('r=TrueCategoricalRefrenceTreeCompressed', 'm=data/zoonomiaAllMammalsTr
               "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
               "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
               "O-Generalist", 
-              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
             )', 
          'u=list(
             c("C-Invertebrate-eater", "Insectivore"), 
@@ -133,7 +133,7 @@ args = c('r=TrueCategoricalRefrenceTreeCompressed', 'm=data/zoonomiaAllMammalsTr
             c("C-Piscivore", "Vertivore"),
             c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
             c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), 
-            c("C-All-Animals-Eater", "Mobivore"), 
+            c("C-All-Animals-Eater", "InsVertivore"), 
             c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
             c("H-Frugivore", "Herbivore"), 
             c("H-Nectarivore", "Herbivore"), 
@@ -151,7 +151,7 @@ args = c('r=CategoricalWorkingTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Da
               "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
               "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
               "O-Generalist", 
-              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
             )', 
          'u=list(
             c("C-Invertebrate-eater", "Insectivore"), 
@@ -159,7 +159,7 @@ args = c('r=CategoricalWorkingTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Da
             c("C-Piscivore", "Vertivore"),
             c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
             c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), 
-            c("C-All-Animals-Eater", "Mobivore"), 
+            c("C-All-Animals-Eater", "InsVertivore"), 
             c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
             c("H-Frugivore", "Herbivore"), 
             c("H-Nectarivore", "Herbivore"), 
@@ -170,23 +170,23 @@ args = c('r=CategoricalWorkingTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Da
           )', 
          'v=T', 't=ER', 'n=ZoonomiaTip')
 
-args = c('r=CategoricalMobivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90MobivoreSorting', 
+args = c('r=CategoricalMobivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
          'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
               "O-For Examination", "O-Scavenger", 
               "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
               "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
               "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
               "O-Generalist", 
-              "C-Mobivore-Mixed", "C-Mobivore-Piscivore", "C-Mobivore-Insectivore","C-Mobivore-Carnivore",
-              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "Mobivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+              "C-InsVertivore-Mixed", "C-InsVertivore-Piscivore", "C-InsVertivore-Insectivore","C-InsVertivore-Carnivore",
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
             )', 
          'u=list(
-            c("C-Invertebrate-eater", "Insectivore"), c("C-Mobivore-Insectivore", "Insectivore"),
+            c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
             c("C-Herpetivore", "Vertivore"),
-            c("C-Piscivore", "Vertivore"), c("C-Mobivore-Piscivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
             c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
-            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-Mobivore-Carnivore", "Vertivore"),
-            c("C-Mobivore-Mixed", "Omnivore"), 
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
+            c("C-InsVertivore-Mixed", "Omnivore"), 
             c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
             c("H-Frugivore", "Herbivore"), 
             c("H-Nectarivore", "Herbivore"), 
