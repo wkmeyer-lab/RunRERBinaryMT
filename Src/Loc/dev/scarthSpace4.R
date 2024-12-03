@@ -13,6 +13,16 @@ palette(c( "darkgreen", "darkblue", "black", "red"))
 library(RERconverge)
 # -------------------
 
+testTree = readRDS("Output/CategoricalMobivoreTree/CategoricalMobivoreTreeCategoricalTree.rds")
+testTree
+
+
+categoricalTree$tip.label[!categoricalTree$tip.label %in% testTree$tip.label]
+testTree$tip.label[!testTree$tip.label %in% categoricalTree$tip.label]
+length(commonSpeciesFilter)
+
+commonPhenotypeVector[names(commonPhenotypeVector) %in% "Platypus"]
+
 prunedTree$edge.length
 
 mainTrees2 = readRDS("Data/zoonomiaAllMammalsTrees.rds")

@@ -3,6 +3,8 @@
 library(RERconverge)
 library("tools")
 source("Src/Reu/cmdArgImport.R")
+library(xlsx)
+
 
 # -- Usage:
 # This script is used to generate enrichment values from a correlation file. Can include permulation p values if provided. 
@@ -196,6 +198,8 @@ for(i in 1:length(subdirectoryValueList)){
   #save the enrichment output
   enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
   saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
+  enrichmentCsvName = enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichments.xslx", sep= "") #make a filename based on the prefix and geneset
+  write.xlsx(enrichmentResult, file=enrichmentCsvName, sheetName=names(enrichmentListName), row.names=FALSE, append = T)
   }
 }
 # --- Visualize the enrichment ----
