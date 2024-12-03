@@ -8,14 +8,29 @@ palette(c("yellow", "darkgreen", "darkblue", "lightblue", "black", "pink", "red"
 palette(c( "darkgreen", "darkblue", "lightblue", "black", "red"))
 palette(c( "darkgreen", "darkblue", "lightblue", "black", "pink", "red"))
 palette(c( "darkgreen", "darkblue", "black", "red"))
+palette(c(  "red", "darkgreen", "black"))
+
 
 
 library(RERconverge)
 # -------------------
 
 testTree = readRDS("Output/CategoricalMobivoreTree/CategoricalMobivoreTreeCategoricalTree.rds")
-testTree
+table(testTree$edge.length)
 
+
+demoTree = readRDS
+mainTrees$masterTree$tip.label[mainTrees$masterTree$tip.label %in% "vs_OrnAna3"]
+
+mainTrees$masterTree$edge.length[1:length(mainTrees$masterTree$edge.length)] = 1
+
+
+testMain = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+testMain$master
+
+grep("Ana", mainTrees$masterTree$tip.label)
+
+phenotypeVector = readRDS(phenotypeVectorFilename)
 
 categoricalTree$tip.label[!categoricalTree$tip.label %in% testTree$tip.label]
 testTree$tip.label[!testTree$tip.label %in% categoricalTree$tip.label]
