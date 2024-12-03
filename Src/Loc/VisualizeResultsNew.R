@@ -45,6 +45,7 @@ args = c('r=MaturityLifespanPercent', 'p=B', 'g=T', 'f=Output/MaturityLifespanPe
 
 
 args = c('r=LiverExpression2', 'p=F', 'g=F')
+args = c('r=CategoricalMobivoreTree', 'p=F', 'g=T', 's=c("Omnivore-Vertivore", "Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
 
 # --- Standard start-up code ---
 args = commandArgs(trailingOnly = TRUE)
