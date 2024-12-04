@@ -13,11 +13,86 @@ palette(c(  "red", "darkgreen", "black"))
 
 
 library(RERconverge)
+# -------------------------
+
+source("Src/Reu/autoPruner.R")
+pruningProtectionSpecies = NA
+if(!is.na(pruningPrefrenceColumn)){
+  if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
+    pruningProtection = T
+  }else{ 
+    pruningProtection = F
+  }
+  
+  pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
+  pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
+}
+allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
+
+workingTree = mainTrees$masterTree
+workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
+
+fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
+fewGeneSpecies = fewGeneSpecies[- which(fewGeneSpecies %in% allProtectedSpecies)]
+workingTree = drop.tip(workingTree, fewGeneSpecies)
+
+pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
+pdf(pruningFilename, width = 16, height = length(workingTree$tip.label)/10)
+prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
+if(!pruningProtection){
+  prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+}
+dev.off()
+masterTree = workingTree
+returnEdgeTable = F
+prunedSpecies = speciesFilter[!speciesFilter %in% prunedTree$tip.label]
+speciesFilter = speciesFilter[-which(speciesFilter %in% prunedSpecies)]
+
+autopruner(mainTrees$masterTree)
+
+
+max(workingTree$edge.length)
+trimmedTree$edge
+
+plotTree(trimmedTree)
+
+# -------------------
+
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
+phenotypeVector = readRDS(phenotypeVectorFilename)
+
+lowCategoryGeneDropper = function(mainTrees, phenotypeVector){
+  genesToDrop = vector()
+  for(i in 1:length(mainTrees$trees)){
+    currentTree = mainTrees$trees[[i]]
+    currentTreeName = names(mainTrees$trees[i])
+    currentTips = currentTree$tip.label
+    
+    phenotypedTips = currentTips[which(currentTips %in% names(phenotypeVector))]
+    
+    phenotypeValues = phenotypeVector[match(phenotypedTips, names(phenotypeVector))]
+    phenotypeNumbers = table(phenotypeValues)
+    if(any(phenotypeNumbers <3)){
+      message(currentTreeName)
+      print(phenotypeNumbers)
+      genesToDrop = append(genesToDrop, currentTreeName)
+    }
+  }
+  return(genesToDrop)
+}  
+
+lowCategoryGeneDropper(mainTrees, phenotypeVector)
+
 # -------------------
 
 testTree = readRDS("Output/CategoricalMobivoreTree/CategoricalMobivoreTreeCategoricalTree.rds")
 table(testTree$edge.length)
 
+
+REROne = readRDS("Output/CategoricalMobivoreTree/CategoricalMobivoreTreeRERFile-Other.rds")
+RERTwo = readRDS("Output/CategoricalMobivoreTree/CategoricalMobivoreTreeRERFileOLd.rds")
+
+all.equal(REROne, RERTwo)
 
 demoTree = readRDS
 mainTrees$masterTree$tip.label[mainTrees$masterTree$tip.label %in% "vs_OrnAna3"]
