@@ -251,7 +251,7 @@ args = c('r=CategoricalCarnivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=
           )', 
          'v=T', 't=ER', 'n=ZoonomiaTip')
 
-args = c('r=CategoricalMobivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
+args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
          'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
               "O-For Examination", "O-Scavenger", 
               "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
@@ -295,7 +295,7 @@ args = c('r=CategoricalMobivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=D
           "vs_HLeryPat1", "vs_HLverMon1", "geunonClade", "vs_HLtheGel1", 
           "vs_HLpapAnu5", "vs_manLeu1", "DrillMandrill", "vs_cerAty1", 
           "LionClade", "DolphinClade", "HarborSealGreySeal", 
-          "vs_HLtraJav1", "PumaClade", "vs_mm10"
+          "vs_HLtraJav1", "PumaClade", "vs_mm10", "vs_HLmarMar1", "marmotClade"
          )')
 
 
@@ -565,7 +565,7 @@ commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLoca
 # - Categorical Tree - 
 treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
 pdf(treeImageFilename, height = length(phenotypeVector)/18)                     #make a pdf to store the plot, sized based on tree size
-  char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
+  commonCategoricalTree = char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
   
   categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
 dev.off()                                                                       #save the plot to the pdf
