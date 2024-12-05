@@ -276,7 +276,27 @@ args = c('r=CategoricalMobivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=D
             c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
             c("O-Generalist", "Omnivore")
           )', 
-         'v=F', 't=ER', 'n=ZoonomiaTip', 'z=0.01', 'y=c("vs_HLornAna3", "vs_HLtacAcu1", "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1")')
+         'v=F', 't=ER', 'n=ZoonomiaTip', 'z=0.01',
+         'y=c(
+          "vs_HLornAna3", "vs_HLtacAcu1", "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1", 
+          "vs_HLmyrTri1", "vs_HLchoDid1", "vs_HLchoHof3", "vs_HLproCap3", 
+          "vs_HLpanLeo1", "vs_HLpanOnc1", "vs_HLpumCon1", "vs_HLursThi1", 
+          "vs_ursMar1", "vs_HLursArc1", "vs_lepWed1", "vs_HLailMel2", 
+          "vs_HLmirAng2", "vs_HlphoVit1", "vs_HLeriBar1", 
+          "vs_HLodoRos1", "vs_HLcalUrs1", "vs_HLzalCal1", 
+          "vs_HLmelCap1", "vs_HLgulGul1", "vs_HLneoVis1", 
+          "vs_HLpteBra1", "vs_HLlutLut1", "vs_enhLutKen1", 
+          "vs_HLlycPic2", "vs_HLgloMel1", "vs_HLpepEle1", 
+          "vs_HLturTru3", "vs_orcOrc1", "vs_HLescRob1", 
+          "vs_HLbalEde1", "vs_HLmegNov1", "vs_HLcynGun1", 
+          "vs_HLmerUng1", "vs_HLeulMon1", "vs_HLeulFul1", 
+          "vs_eulMac1", "vs_HLeulFla1", "vs_ponAbe3", 
+          "vs_panTro6", "LangurClade", "vs_HLallNig1", 
+          "vs_HLeryPat1", "vs_HLverMon1", "geunonClade", "vs_HLtheGel1", 
+          "vs_HLpapAnu5", "vs_manLeu1", "DrillMandrill", "vs_cerAty1", 
+          "LionClade", "DolphinClade", "HarborSealGreySeal", 
+          "vs_HLtraJav1", "PumaClade", "vs_mm10"
+         )')
 
 
 
