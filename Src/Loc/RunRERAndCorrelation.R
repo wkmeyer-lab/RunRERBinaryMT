@@ -1,5 +1,7 @@
 # -- Libraries 
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #DO NOT RUN LOCALLY. add Cluster path to custom libraries to searched locations
+clusterRun = F
+clusterRun = T
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
 
 library(RERconverge)
 library(tools)
@@ -42,11 +44,12 @@ args = c('r=CIvAllZoonomia', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies
 
 args = c("r=CVHNew", 'm=data/RemadeTreesAllZoonomiaSpecies.rds', "s=b")
 args = c("r=CategoricalMobivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
-args = c("r=CategoricalMobivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
 args = c("r=CategoricalCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
+args = c("r=CategoricalInsVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
+
 
 # --- Standard start-up code ---
-args = commandArgs(trailingOnly = TRUE)
+if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
   #File Prefix
   if(!is.na(cmdArgImport('r'))){
@@ -153,10 +156,10 @@ validMetrics = c("diff", "mean", "last")
 
 # -- Read in the trees --
 #MainTrees
-if(file_ext(mainTreesLocation) == "rds"){                                       #if the tree is an RDS file
-  mainTrees = readRDS(mainTreesLocation)                                        #Read as RDS
-}else{                                                                          #Otherwise
-  mainTrees = readTrees(mainTreesLocation)                                      #read as text
+if(file_ext(mainTreesLocation) == "rds"){
+  if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
+}else{
+  if(!exists("mainTrees")){mainTrees = readTrees(mainTreesLocation)} 
 }
 #Phenotype tree
 if(file_ext(phenotypeTreeLocation) == "rds"){                                   #if the tree is an RDS file

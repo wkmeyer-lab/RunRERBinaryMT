@@ -13,6 +13,86 @@ palette(c(  "red", "darkgreen", "black"))
 
 
 library(RERconverge)
+# ---------------------------------------
+mainTrees
+length(phenotypeVector)
+
+manualAnnotsTrimmed = manualAnnots
+
+manualAnnotsTrimmed = manualAnnotsTrimmed[-!which(manualAnnots$ZoonomiaTip %in% names(phenotypeVector))]
+
+testTree = readRDS(categoricalTreeFilename)
+length(testTree$tip.label)
+
+# ----------------------------
+lowCategoryGeneDropper(mainTrees, phenotypeVector)
+
+# ----------------------------
+categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = 400, min.pos = 2) #Calculate with categorical, min 2 species per category 
+overalCategorical = categoricalCorrelation[[1]]                               #select the results relating to overall difference between all categories
+correlation = overalCategorical                                               # and classify it as the main correlation file
+
+#process the pairwise outputs
+pairwiseCategorical = categoricalCorrelation[[2]]                             #select the group of pairwise comparisons
+
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #select the phenotype vector based on prefix
+phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
+categories = map_to_state_space(phenotypeVector)                              #and use it to connect branch lengths to phenotype name
+categoryNames = categories$name2index                                         #store the length-phenotype connection
+
+pairwiseTableNames = names(pairwiseCategorical)                               #Prepare to repalce the number-number titles with phenotype-phenotype titles
+for(i in 1:length(categoryNames)){                                            #for each phenotype
+  pairwiseTableNames= gsub(i, names(categoryNames)[i], pairwiseTableNames)                        #replace the number with the phenotype name  
+}
+names(pairwiseCategorical) = pairwiseTableNames                               #update the dataframe titles
+
+pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile", sep= "") #make a name for the pairwise comparisons based on prefix
+write.csv(pairwiseCategorical, file= paste(pairwiseCorrelationFileName, ".csv", sep=""), row.names = T, quote = F) #save the correlations as a csv
+saveRDS(pairwiseCategorical, paste(pairwiseCorrelationFileName, ".rds", sep="")) #and as an rds 
+
+combinedCategoricalCorrelationFilename = pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "CombinedCategoricalCorrelationFile", sep= "") # make this file for later functions that want it in combo
+saveRDS(categoricalCorrelation, paste(combinedCategoricalCorrelationFilename, ".rds", sep="")) #and as an rds 
+
+#save the outputs to subdirectories 
+outputSubdirectoryNoslash = paste(outputFolderName, "Overall", sep = "")
+if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+  dir.create(outputSubdirectoryNoslash)
+}
+outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+
+correlationsOverallFilename = paste(outputSubdirectory, filePrefix, "OverallCorrelationFile.rds", sep= "")
+saveRDS(categoricalCorrelation[[1]], correlationsOverallFilename)
+
+for(i in 1:length(pairwiseTableNames)){
+  pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
+  
+  outputSubdirectoryNoslash = paste(outputFolderName, pairwiseTableNames[i], sep = "")
+  if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+    dir.create(outputSubdirectoryNoslash)
+  }
+  outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+  
+  correlationsPairFilename = paste(outputSubdirectory, filePrefix, pairwiseTableNames[i], "CorrelationFile",".rds", sep= "")
+  saveRDS(categoricalCorrelation[[2]][[i]], correlationsPairFilename)
+}
+
+
+
+
+
+# -----------------------
+
+report = mainTrees$report
+view(report)
+
+test = hist(rowSums(report))
+
+length(which(rowSums(report)<400))
+
+?hist()
+
+
+
 # -------------------------
 
 mainTrees$masterTree$edge.length[1:length(mainTrees$masterTree$edge.length)] = 1
@@ -147,48 +227,6 @@ stableCommonMainTrees = stableMaintrees
 stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
 
 # --------------------------
-source("Src/Reu/autoPruner.R")
-pruningProtectionSpecies = NA
-if(!is.na(pruningPrefrenceColumn)){
-  if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
-    pruningProtection = T
-  }else{ 
-    pruningProtection = F
-  }
-  
-  pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
-  pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
-}
-allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
-
-workingTree = mainTrees$masterTree
-workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
-
-fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
-fewGeneSpecies = fewGeneSpecies[- which(fewGeneSpecies %in% allProtectedSpecies)]
-workingTree = drop.tip(workingTree, fewGeneSpecies)
-
-pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
-pdf(pruningFilename, width = 16, height = length(workingTree$tip.label)/10)
-prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
-if(!pruningProtection){
-  prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
-}
-dev.off()
-masterTree = workingTree
-returnEdgeTable = F
-prunedSpecies = speciesFilter[!speciesFilter %in% prunedTree$tip.label]
-speciesFilter = speciesFilter[-which(speciesFilter %in% prunedSpecies)]
-
-autopruner(mainTrees$masterTree)
-
-
-max(workingTree$edge.length)
-trimmedTree$edge
-
-plotTree(trimmedTree)
-
-# -------------------
 
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
 phenotypeVector = readRDS(phenotypeVectorFilename)
