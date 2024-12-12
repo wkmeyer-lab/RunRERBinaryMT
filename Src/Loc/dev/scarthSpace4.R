@@ -14,15 +14,12 @@ palette(c(  "red", "darkgreen", "black"))
 
 library(RERconverge)
 # ---------------------------------------
-mainTrees
-length(phenotypeVector)
-
 manualAnnotsTrimmed = manualAnnots
+which(manualAnnots$ZoonomiaTip %in% names(phenotypeVector))
+manualAnnotsTrimmed = manualAnnotsTrimmed[which(manualAnnots$ZoonomiaTip %in% names(phenotypeVector)), ]
 
-manualAnnotsTrimmed = manualAnnotsTrimmed[-!which(manualAnnots$ZoonomiaTip %in% names(phenotypeVector))]
+table(manualAnnotsTrimmed$MSWC_Family)
 
-testTree = readRDS(categoricalTreeFilename)
-length(testTree$tip.label)
 
 # ----------------------------
 lowCategoryGeneDropper(mainTrees, phenotypeVector)
@@ -210,10 +207,16 @@ commonCategoricalTree$tip.label[which(duplicated(commonCategoricalTree$tip.label
 
 manualAnnots$CommonName[which(duplicated(manualAnnots$CommonName))]
 
+commonCategoricalTree = ZoonomTreeNameToCommon(categoricalTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+stableMaintrees = readRDS(mainTreesLocation)
+stableCommonMainTrees = stableMaintrees
+stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+
 ?plotTreeCategorical
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
+
 plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableMaintrees$masterTree)
 
-plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
 
 
 plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree, node_states = states)
@@ -221,10 +224,6 @@ plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), ma
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree, node_states = states)
 
 
-commonCategoricalTree = ZoonomTreeNameToCommon(categoricalTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
-stableMaintrees = readRDS(mainTreesLocation)
-stableCommonMainTrees = stableMaintrees
-stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
 
 # --------------------------
 
