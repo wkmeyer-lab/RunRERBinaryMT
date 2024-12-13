@@ -279,7 +279,14 @@ args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 
           "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "gundiGuineaPigClade",
           "vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1", "Bovidae",
           "vs_HLhydIne1", "vs_HLmunMun1", "Cervidae",
-          "vs_HLtraKan1", "mouseDeerOtherIsKept"
+          "vs_HLtraKan1", "mouseDeerOtherIsKept",
+          "vs_HLmurAurFea1", "outerVespert",
+          "vs_HLmyoLuc1", "Nearctic",
+          "vs_myoDav1", "Myotis",
+          "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "Vespertilioninae",
+          "vs_HLmacSob1", "FoxLongTounge",
+          "vs_HLeidHel2", "outerPeropodidae",
+          "vs_HLeonSpe1", "Roussetinae"
          )')
 
 

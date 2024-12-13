@@ -14,12 +14,16 @@ palette(c(  "red", "darkgreen", "black"))
 
 library(RERconverge)
 # ---------------------------------------
+length(phenotypeVector)
+
+
+
+#-------------------------------------------
 manualAnnotsTrimmed = manualAnnots
 which(manualAnnots$ZoonomiaTip %in% names(phenotypeVector))
 manualAnnotsTrimmed = manualAnnotsTrimmed[which(manualAnnots$ZoonomiaTip %in% names(phenotypeVector)), ]
 
 table(manualAnnotsTrimmed$MSWC_Family)
-
 
 # ----------------------------
 lowCategoryGeneDropper(mainTrees, phenotypeVector)

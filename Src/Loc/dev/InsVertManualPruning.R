@@ -171,5 +171,70 @@ familySize[order(familySize, decreasing = T)]
 #Sciuridae         
 #Transitions, is good. 
 
+# ------- Vespertilionidae ------
 
-#
+prunedTree = testTree
+
+prunedTree$node.label
+plot(prunedTree, show.node.label = T)
+grep("Chirop", prunedTree$node.label)
+prunedTree$node.label[142]
+batTree = extract.clade(prunedTree, which(prunedTree$node.label == "Chiroptera_-bats-")+length(prunedTree$tip.label))
+plot(batTree, show.node.label = T)
+grep("Vespert", prunedTree$node.label)
+prunedTree$node.label[145]
+
+insectTree = extract.clade(prunedTree, which(prunedTree$node.label == "Vespertilionidae_sensu_lato")+length(prunedTree$tip.label))
+plot(insectTree, show.node.label = T)
+autopruner(insectTree, dropPercent = 1, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
+autopruner(insectTree, dropPercent = 1, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, tipsToKeep = c("vs_HLmyoLuc1", "vs_eptFus1"))
+
+insectBatsToKeep = c(
+  "vs_HLminSch1", "outerVespert", 
+  "vs_HLmyoSep1", "Nearctic",
+  "vs_HLmyoMyo6", "Myotis",
+  "vs_eptFus1", "Vespertilioninae",
+)
+insectBatsToDrop = c(
+  "vs_HLmurAurFea1", "outerVespert",
+  "vs_HLmyoLuc1", "Nearctic",
+  "vs_myoDav1", "Myotis",
+  "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "Vespertilioninae",
+)
+
+
+# ------- Pteropodidae ------
+
+#Pteropodidae       
+#NEEDS WORK, no transitions. 
+
+prunedTree$node.label
+plot(prunedTree, show.node.label = T)
+fruitTree = prunedTree
+
+grep("Chirop", prunedTree$node.label)
+prunedTree$node.label[142]
+batTree = extract.clade(prunedTree, which(prunedTree$node.label == "Chiroptera_-bats-")+length(prunedTree$tip.label))
+plot(batTree, show.node.label = T)
+grep("Yin", prunedTree$node.label)
+prunedTree$node.label[164]
+
+
+
+fruitTree = extract.clade(prunedTree, which(prunedTree$node.label == "Yinpterochiroptera_-fruit_bats+rhino+hippo+mega-")+length(prunedTree$tip.label))
+fruitTree = extract.clade(prunedTree, which(prunedTree$node.label == "Pteropodidae_-fruit_bats-")+length(prunedTree$tip.label))
+
+plot(fruitTree, show.node.label = T)
+autopruner(fruitTree, dropPercent = 1, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
+
+
+fruitBatsToKeep = c(
+    "vs_HLpteGig1", "FoxLongTounge", 
+    "vs_HLcynBra1", "outerPeropodidae",
+    "vs_HLrouLes1", "Roussetinae",
+  )
+fruitBatsToDrop = c(
+  "vs_HLmacSob1", "FoxLongTounge",
+  "vs_HLeidHel2", "outerPeropodidae",
+  "vs_HLeonSpe1", "Roussetinae",
+)
