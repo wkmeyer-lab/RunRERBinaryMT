@@ -11,6 +11,8 @@ palette(c( "darkgreen", "darkblue", "black", "red"))
 palette(c(  "red", "darkgreen", "black"))
 
 
+palette(c( "darkgreen", "black", "darkblue", "red"))
+
 
 library(RERconverge)
 # ---------------------------------------
@@ -266,7 +268,18 @@ lowCategoryGeneDropper = function(mainTrees, phenotypeVector){
 lowCategoryGeneDropper(mainTrees, phenotypeVector)
 
 # -------------------
+ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+commonRERs = RERObject
 
+colnames(commonRERs) = ZonomNameConvertVectorCommon(colnames(commonRERs), annotationLocation = spreadSheetLocation, tipCol = nameColumn)
+
+plotRers(commonRERs, "ECI2", pathsObject)
+
+?plotRers
+
+
+
+# -----------------
 testTree = readRDS("Output/CategoricalMobivoreTree/CategoricalMobivoreTreeCategoricalTree.rds")
 table(testTree$edge.length)
 

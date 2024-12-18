@@ -178,7 +178,7 @@ if(file_ext(phenotypeTreeLocation) == "rds"){                                   
 }
 
 #Species filter
-if(all(speciesFilter == NULL)){ # If the species filter is meant to be empty, that is, all of the species should be used
+if(all(is.null(speciesFilter))){ # If the species filter is meant to be empty, that is, all of the species should be used
   speciesFilter = mainTrees$masterTree$tip.label #include all of the species on the tree in the filter 
 }
 
