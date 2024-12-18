@@ -90,6 +90,15 @@ test = hist(rowSums(report))
 
 length(which(rowSums(report)<400))
 
+colnames(report) %in% names(phenotypeVector)
+reportPruned = report[,colnames(report) %in% names(phenotypeVector)]
+
+ncol(reportPruned)
+colnames(reportPruned) %in% names(phenotypeVector)
+
+test = hist(rowSums(reportPruned))
+length(which(rowSums(reportPruned)<170))
+
 ?hist()
 
 

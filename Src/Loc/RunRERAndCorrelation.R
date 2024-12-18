@@ -20,6 +20,7 @@ library(data.table)
 # f = speciesFilterText                                                        This can be used to manually specify a species filer; leave blank for automatic
 # s = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the type of phenotype being supplied
 # c = < "diff" or "mean" or "last" >                                           This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# l = <min.sp value>                                                           This sets the min.sp value to be used in the correlation. 
 
 #----------------
 args = c('r=CVO', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=b') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
@@ -46,6 +47,7 @@ args = c("r=CVHNew", 'm=data/RemadeTreesAllZoonomiaSpecies.rds', "s=b")
 args = c("r=CategoricalMobivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
 args = c("r=CategoricalCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
 args = c("r=CategoricalInsVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
+args = c("r=CategoricalInsVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 
 
 # --- Standard start-up code ---
@@ -86,6 +88,7 @@ speciesFilter = NULL
 phenotypeStyle = "continuous"
 continousMetric = "diff"
 validMetrics = c("diff", "mean", "last")
+minSpValue = 10
 
 { # Bracket used for collapsing purposes
 
@@ -150,6 +153,12 @@ validMetrics = c("diff", "mean", "last")
       message("No continuous metric specified, using diff")
     }
   }
+  #min.sp Value
+  if(!is.na(cmdArgImport('l'))){
+    minSpValue = cmdArgImport('l')
+  }else{
+    message("min.sp not specified, using 10")
+  }
 }
 
 #                   ------- Code Body -------- 
@@ -208,7 +217,7 @@ if(!file.exists(paste(pathsFileName)) | forceUpdate){                           
 correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "") #Make a correlation filename based on the prefix
 
 if(phenotypeStyle == "Binary"){                                                 #If binary
-  correlation = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =10)#Correlate with binary phenotype
+  correlation = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =minSpValue)#Correlate with binary phenotype
   
   #Generate a phenotype vector 
   fgEdgeObjects = phenotypeTree$edge[which(phenotypeTree$edge.length>=1) ,]                                        #Make an object of the edges in the foreground. This is used as opposed to just referencing the tree directly to allow for "walking" in the final loop of the code
@@ -222,10 +231,10 @@ if(phenotypeStyle == "Binary"){                                                 
   saveRDS(phenotypeVector, file = phenotypeVectorFilename)
   
 }else if(phenotypeStyle == "Continuous"){                                        #if continuous
-  correlation = correlateWithContinuousPhenotype(RERObject, pathsObject)
+  correlation = correlateWithContinuousPhenotype(RERObject, pathsObject, min.sp = minSpValue)
   
 } else if(phenotypeStyle == "Categorical"){                                     #if categorical
-  categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = 10, min.pos = 2) #Calculate with categorical, min 2 species per category 
+  categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = minSpValue, min.pos = 2) #Calculate with categorical, min 2 species per category 
   overalCategorical = categoricalCorrelation[[1]]                               #select the results relating to overall difference between all categories
   correlation = overalCategorical                                               # and classify it as the main correlation file
   

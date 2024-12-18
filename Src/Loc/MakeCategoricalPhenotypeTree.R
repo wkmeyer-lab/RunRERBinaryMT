@@ -264,7 +264,7 @@ args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 
           "vs_HLmelCap1", "vs_HLgulGul1", "vs_HLneoVis1", 
           "vs_HLpteBra1", "vs_HLlutLut1", "vs_enhLutKen1", 
           "vs_HLlycPic2", "vs_HLgloMel1", "vs_HLpepEle1", 
-          "vs_HLturAdu1", "DolphinClade", "vs_orcOrc1", "vs_HLescRob1", 
+          "vs_HLturAdu1", "DolphinClade", "vs_orcOrc1", "vs_HLescRob1", "vs_HLlniGeo1", "amazonRiverDolphinFromYeast",
           "vs_HLbalEde1", "vs_HLmegNov1", "vs_HLcynGun1", 
           "vs_HLmerUng1", "vs_HLeulMon1", "vs_HLeulFul1", 
           "vs_eulMac1", "vs_HLeulFla1", "vs_ponAbe3", 
@@ -580,7 +580,7 @@ commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLoca
 
 # - Categorical Tree - 
 treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
-pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 14)                     #make a pdf to store the plot, sized based on tree size
+pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
   commonCategoricalTree = char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
   
   categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
