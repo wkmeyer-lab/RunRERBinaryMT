@@ -198,7 +198,7 @@ for(i in 1:length(subdirectoryValueList)){
   #save the enrichment output
   enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
   saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
-  enrichmentCsvName = enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichments.xslx", sep= "") #make a filename based on the prefix and geneset
+  enrichmentCsvName = enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
   write.xlsx(enrichmentResult, file=enrichmentCsvName, sheetName=names(enrichmentListName), row.names=FALSE, append = T)
   }
 }
