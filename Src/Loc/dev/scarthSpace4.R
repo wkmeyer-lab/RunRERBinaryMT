@@ -15,6 +15,258 @@ palette(c( "darkgreen", "black", "darkblue", "red"))
 
 
 library(RERconverge)
+# ---------------------------------------
+length(phenotypeVector)
+
+
+
+#-------------------------------------------
+manualAnnotsTrimmed = manualAnnots
+which(manualAnnots$ZoonomiaTip %in% names(phenotypeVector))
+manualAnnotsTrimmed = manualAnnotsTrimmed[which(manualAnnots$ZoonomiaTip %in% names(phenotypeVector)), ]
+
+table(manualAnnotsTrimmed$MSWC_Family)
+
+# ----------------------------
+lowCategoryGeneDropper(mainTrees, phenotypeVector)
+
+# ----------------------------
+categoricalCorrelation = correlateWithCategoricalPhenotype(RERObject, pathsObject, min.sp = 400, min.pos = 2) #Calculate with categorical, min 2 species per category 
+overalCategorical = categoricalCorrelation[[1]]                               #select the results relating to overall difference between all categories
+correlation = overalCategorical                                               # and classify it as the main correlation file
+
+#process the pairwise outputs
+pairwiseCategorical = categoricalCorrelation[[2]]                             #select the group of pairwise comparisons
+
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #select the phenotype vector based on prefix
+phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
+categories = map_to_state_space(phenotypeVector)                              #and use it to connect branch lengths to phenotype name
+categoryNames = categories$name2index                                         #store the length-phenotype connection
+
+pairwiseTableNames = names(pairwiseCategorical)                               #Prepare to repalce the number-number titles with phenotype-phenotype titles
+for(i in 1:length(categoryNames)){                                            #for each phenotype
+  pairwiseTableNames= gsub(i, names(categoryNames)[i], pairwiseTableNames)                        #replace the number with the phenotype name  
+}
+names(pairwiseCategorical) = pairwiseTableNames                               #update the dataframe titles
+
+pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile", sep= "") #make a name for the pairwise comparisons based on prefix
+write.csv(pairwiseCategorical, file= paste(pairwiseCorrelationFileName, ".csv", sep=""), row.names = T, quote = F) #save the correlations as a csv
+saveRDS(pairwiseCategorical, paste(pairwiseCorrelationFileName, ".rds", sep="")) #and as an rds 
+
+combinedCategoricalCorrelationFilename = pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "CombinedCategoricalCorrelationFile", sep= "") # make this file for later functions that want it in combo
+saveRDS(categoricalCorrelation, paste(combinedCategoricalCorrelationFilename, ".rds", sep="")) #and as an rds 
+
+#save the outputs to subdirectories 
+outputSubdirectoryNoslash = paste(outputFolderName, "Overall", sep = "")
+if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+  dir.create(outputSubdirectoryNoslash)
+}
+outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+
+correlationsOverallFilename = paste(outputSubdirectory, filePrefix, "OverallCorrelationFile.rds", sep= "")
+saveRDS(categoricalCorrelation[[1]], correlationsOverallFilename)
+
+for(i in 1:length(pairwiseTableNames)){
+  pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
+  
+  outputSubdirectoryNoslash = paste(outputFolderName, pairwiseTableNames[i], sep = "")
+  if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+    dir.create(outputSubdirectoryNoslash)
+  }
+  outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+  
+  correlationsPairFilename = paste(outputSubdirectory, filePrefix, pairwiseTableNames[i], "CorrelationFile",".rds", sep= "")
+  saveRDS(categoricalCorrelation[[2]][[i]], correlationsPairFilename)
+}
+
+
+
+
+
+# -----------------------
+
+report = mainTrees$report
+view(report)
+
+test = hist(rowSums(report))
+
+length(which(rowSums(report)<400))
+
+colnames(report) %in% names(phenotypeVector)
+reportPruned = report[,colnames(report) %in% names(phenotypeVector)]
+
+ncol(reportPruned)
+colnames(reportPruned) %in% names(phenotypeVector)
+
+test = hist(rowSums(reportPruned))
+length(which(rowSums(reportPruned)<170))
+
+?hist()
+
+
+
+# -------------------------
+
+mainTrees$masterTree$edge.length[1:length(mainTrees$masterTree$edge.length)] = 1
+
+char2TreeCategoricalStates = function (tipvals, treesObj, useSpecies = NULL, model = "ER", 
+          root_prior = "auto", plot = FALSE, anctrait = NULL) 
+{
+  mastertree = treesObj$masterTree
+  if (!is.null(useSpecies)) {
+    sp.miss = setdiff(mastertree$tip.label, useSpecies)
+    if (length(sp.miss) > 0) {
+      message(paste0("Species from master tree not present in useSpecies: ", 
+                     paste(sp.miss, collapse = ",")))
+    }
+    useSpecies = intersect(mastertree$tip.label, useSpecies)
+    mastertree = pruneTree(mastertree, useSpecies)
+    mastertree = unroot(mastertree)
+  }
+  else {
+    mastertree = pruneTree(mastertree, intersect(mastertree$tip.label, 
+                                                 names(tipvals)))
+    mastertree = unroot(mastertree)
+  }
+  if (is.null(anctrait)) {
+    tipvals <- tipvals[mastertree$tip.label]
+    intlabels <- map_to_state_space(tipvals)
+    print("The integer labels corresponding to each category are:")
+    print(intlabels$name2index)
+    ancliks = getAncLiks(mastertree, intlabels$mapped_states, 
+                         rate_model = model, root_prior = root_prior)
+    states = rep(0, nrow(ancliks))
+    for (i in 1:length(states)) {
+      states[i] = which.max(ancliks[i, ])
+    }
+    states = c(intlabels$mapped_states, states)
+    tree = mastertree
+    tree$edge.length = states[tree$edge[, 2]]
+    if (length(unique(tipvals)) == 2) {
+      if (sum(!unique(tipvals) %in% c(TRUE, FALSE)) > 0) {
+        message("Returning categorical tree for binary phenotype because phenotype values are not TRUE/FALSE")
+      }
+      else {
+        tree$edge.length = ifelse(tree$edge.length == 
+                                    2, 1, 0)
+        print("There are only 2 categories: returning a binary phenotype tree.")
+        if (plot) {
+          plotTree(tree)
+        }
+        return(tree)
+      }
+    }
+    if (plot) {
+      plotTreeCategorical(tree, category_names = intlabels$state_names, 
+                          master = mastertree, node_states = states)
+    }
+    return(states)
+    return(tree)
+  }
+  else {
+    if (length(unique(tipvals)) <= 2) {
+      fgspecs <- names(tipvals)[tipvals != anctrait]
+      res <- foreground2Tree(fgspecs, treesObj, plotTree = plot, 
+                             clade = "terminal", useSpecies = useSpecies)
+      print("There are only 2 categories: returning a binary phenotype tree.")
+      if (plot) {
+        plotTree(res)
+      }
+      return(res)
+    }
+    else {
+      tipvals <- tipvals[mastertree$tip.label]
+      intlabels <- map_to_state_space(tipvals)
+      j <- which(intlabels$state_names == anctrait)
+      if (length(j) < 1) {
+        warning("The ancestral trait provided must match one of the traits in the phenotype vector.")
+      }
+      res = mastertree
+      res$edge.length <- rep(j, length(res$edge.length))
+      traits <- intlabels$state_names
+      for (trait in traits) {
+        if (trait == anctrait) {
+          next
+        }
+        i <- which(intlabels$state_names == trait)
+        res$edge.length[nameEdges(res) %in% names(tipvals)[tipvals == 
+                                                             trait]] = i
+      }
+      names(res$edge.length) = nameEdges(res)
+      if (plot) {
+        states = res$edge.length[order(res$edge[, 2])]
+        states = c(j, states)
+        plotTreeCategorical(res, category_names = traits, 
+                            master = treesObj$masterTree, node_states = states)
+      }
+      print("Category names are mapped to integers as follows:")
+      print(intlabels$name2index)
+      return(res)
+    }
+  }
+}
+
+commonStates = char2TreeCategoricalStates(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
+states = char2TreeCategoricalStates(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
+
+categoricalTree
+commonCategoricalTree
+
+length(speciesFilter)
+length(commonSpeciesFilter)
+
+all.equal(categoricalTree$edge.length, commonCategoricalTree$edge.length)
+all.equal(states, commonStates)
+
+commonCategoricalTree$tip.label[which(duplicated(commonCategoricalTree$tip.label))]
+
+manualAnnots$CommonName[which(duplicated(manualAnnots$CommonName))]
+
+commonCategoricalTree = ZoonomTreeNameToCommon(categoricalTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+stableMaintrees = readRDS(mainTreesLocation)
+stableCommonMainTrees = stableMaintrees
+stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+
+?plotTreeCategorical
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
+
+plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableMaintrees$masterTree)
+
+
+
+plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree, node_states = states)
+
+plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree, node_states = states)
+
+
+
+# --------------------------
+
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
+phenotypeVector = readRDS(phenotypeVectorFilename)
+
+lowCategoryGeneDropper = function(mainTrees, phenotypeVector){
+  genesToDrop = vector()
+  for(i in 1:length(mainTrees$trees)){
+    currentTree = mainTrees$trees[[i]]
+    currentTreeName = names(mainTrees$trees[i])
+    currentTips = currentTree$tip.label
+    
+    phenotypedTips = currentTips[which(currentTips %in% names(phenotypeVector))]
+    
+    phenotypeValues = phenotypeVector[match(phenotypedTips, names(phenotypeVector))]
+    phenotypeNumbers = table(phenotypeValues)
+    if(any(phenotypeNumbers <3)){
+      message(currentTreeName)
+      print(phenotypeNumbers)
+      genesToDrop = append(genesToDrop, currentTreeName)
+    }
+  }
+  return(genesToDrop)
+}  
+
+lowCategoryGeneDropper(mainTrees, phenotypeVector)
+
 # -------------------
 ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
 commonRERs = RERObject
@@ -31,6 +283,11 @@ plotRers(commonRERs, "ECI2", pathsObject)
 testTree = readRDS("Output/CategoricalMobivoreTree/CategoricalMobivoreTreeCategoricalTree.rds")
 table(testTree$edge.length)
 
+
+REROne = readRDS("Output/CategoricalMobivoreTree/CategoricalMobivoreTreeRERFile-Other.rds")
+RERTwo = readRDS("Output/CategoricalMobivoreTree/CategoricalMobivoreTreeRERFileOLd.rds")
+
+all.equal(REROne, RERTwo)
 
 demoTree = readRDS
 mainTrees$masterTree$tip.label[mainTrees$masterTree$tip.label %in% "vs_OrnAna3"]

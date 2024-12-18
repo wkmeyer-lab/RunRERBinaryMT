@@ -2,16 +2,22 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 
 
 
-autopruner= function(masterTree, dropPercent = NA, dropValue = 0.01, tipsToKeep = NA, returnEdgeTable = F, procedurePlot = F, nameConversionColumn = NA, nameConversionData = "Data/mergedData.csv", preDroppedTips = NA, originalTree = NA){
+autopruner= function(masterTree, dropPercent = NA, dropValue = 0.01, tipsToKeep = NA, returnEdgeTable = F, procedurePlot = F, nameConversionColumn = NA, nameConversionData = "Data/mergedData.csv", preDroppedTips = NA, originalTree = NA, mainTreesObject = mainTrees){
   if(all(is.na(originalTree))){originalTree = masterTree}
   
+  report= mainTreesObject$report
+  speciesGeneNumber = colSums(report)
+  
   # -- determine the branch length cutoff -- 
+  if(is.character(dropPercent)){dropPercent = as.numeric(dropPercent)}
+  if(is.character(dropValue)){dropValue = as.numeric(dropValue)}
   if(!is.na(dropPercent)){
     if(dropPercent > 1){dropPercent = dropPercent/100}
     lengthCutoff = quantile(masterTree$edge.length, dropPercent)  
   }else{
     lengthCutoff = dropValue
   }
+  print(lengthCutoff)
   
   # -- Make a table of the terminal edges-- 
   trimmedTree = masterTree 
@@ -46,7 +52,9 @@ autopruner= function(masterTree, dropPercent = NA, dropValue = 0.01, tipsToKeep 
       }else{
         message(paste("Pruning", shortestTerminalBranch$edgeTip, " -- length:", shortestTerminalBranch$edgeLength))
         i = 1
-        droppedTips = append(droppedTips, shortestTerminalBranch$edgeTip)
+        tipDropped = shortestTerminalBranch$edgeTip
+        names(tipDropped) = shortestTerminalBranch$edgeLength
+        droppedTips = append(droppedTips, tipDropped)
         selectingBranch = F
       }
     }
@@ -73,12 +81,24 @@ autopruner= function(masterTree, dropPercent = NA, dropValue = 0.01, tipsToKeep 
   message(paste("Dropped tips:"))
   message((paste(droppedTips, collaspe = ", ", sep="")))  
   
-  if(!is.na(nameConversionColumn)){tipDropPlot(nameConversionColumn, nameConversionData, originalTree, trimmedTree, droppedTips, skippedTips, preDroppedTips, message = T)}
-  
-  par(mfrow = c(1,2))
-  plotTreeHighlightBranches(originalTree, hlspecies = droppedTips, hlcols = "red")
-  plot.phylo(trimmedTree)
-  par(mfrow = c(1,1))
+  if(length(droppedTips > 0)){
+    if(!is.na(nameConversionColumn)){
+      droppedCommonTips = ZonomNameConvertVectorCommon(droppedTips, annotationLocation = nameConversionData, tipColumn = nameConversionColumn)
+      droppedTable = data.frame(droppedTips, droppedCommonTips, names(droppedTips), speciesGeneNumber[match(droppedTips,  names(speciesGeneNumber))], match(droppedTips,  originalTree$tip.label))
+      names(droppedTable) = c("Dropped Tip", "Common Name", "Branch Length", "Num Genes", "Tip Position")
+      tipDropPlot(nameConversionColumn, nameConversionData, originalTree, trimmedTree, droppedTips, skippedTips, preDroppedTips, message = T)
+    }else{
+      droppedTable = data.frame(droppedTips, names(droppedTips), speciesGeneNumber[match(droppedTips,  names(speciesGeneNumber))], match(droppedTips,  originalTree$tip.label))
+      names(droppedTable) = c("Dropped Tip", "Branch Length", "Num Genes", "Tip Position")
+    }
+    droppedTable = droppedTable[order(droppedTable$`Tip Position`),]
+    print(droppedTable)
+    
+    par(mfrow = c(1,2))
+    plotTreeHighlightBranches(originalTree, hlspecies = droppedTips, hlcols = "red")
+    plot.phylo(trimmedTree)
+    par(mfrow = c(1,1))
+  }
   
   droppedTips = append(droppedTips, preDroppedTips)
   droppedTips <<- droppedTips

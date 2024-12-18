@@ -26,8 +26,10 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
 # x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
 # y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
+# p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
 
 #----------------
+{
 args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
 args = c('r=BinaryCVHApplesToApples', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Herbivore")', 'u=list(c("Carnivore","_Carnivore"), c("Piscivore", "_Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
 args = c('r=CategoricalER5Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER')
@@ -65,7 +67,8 @@ args = c('r=ZoonomiaCategoricalRefrenceTree', 'm=data/RemadeTreesAllZoonomiaSpec
 args = c('r=HillerCategoricalRefrenceTree', 'm=data/NewHillerMainTrees.rds', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification.Clean', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist", "Planktivore")', 'u=list(c("Generalist", "Omnivore"), c("Omnivore-IH", "Omnivore"), c("Omnivore", "_Omnivore"))', 'o=list(c("Piscivore", "Carnivore"), c("Planktivore", "Carnivore"), c("Insectivore", "Carnivore"), c("Piscivore", "Insectivore"))','v=T', 't=ER', 'n=HillerName', 's=NoAoudad')
 
 args = c('r=TrueCategoricalRefrenceTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification.Clean', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist", "Planktivore")', 'u=list(c("Generalist", "Omnivore"), c("Omnivore-IH", "Omnivore"), c("Omnivore", "_Omnivore"))', 'o=list(c("Piscivore", "Carnivore"), c("Planktivore", "Carnivore"), c("Insectivore", "Carnivore"), c("Piscivore", "Insectivore"))','v=T', 't=ER', 'n=Zoonomia')
-
+}
+{
 args = c('r=TrueCategoricalRefrenceTreeComplex', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90', 
           'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
               "O-For Examination", "O-Scavenger", 
@@ -197,33 +200,6 @@ args = c('r=CategoricalMobivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=D
           )', 
          'v=T', 't=ER', 'n=ZoonomiaTip')
 
-args = c('r=CategoricalInsvertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
-         'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
-              "O-For Examination", "O-Scavenger", 
-              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
-              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
-              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
-              "O-Generalist", 
-              "C-InsVertivore-Mixed", "C-InsVertivore-Piscivore", "C-InsVertivore-Insectivore","C-InsVertivore-Carnivore",
-              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
-            )', 
-         'u=list(
-            c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
-            c("C-Herpetivore", "Vertivore"),
-            c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
-            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
-            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
-            c("C-InsVertivore-Mixed", "Omnivore"), 
-            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
-            c("H-Frugivore", "Herbivore"), 
-            c("H-Nectarivore", "Herbivore"), 
-            c("H-High-sugar-plants-Eater", "Herbivore"),
-            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
-            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
-            c("O-Generalist", "Omnivore")
-          )', 
-         'v=T', 't=ER', 'n=ZoonomiaTip')
-
 args = c('r=CategoricalCarnivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
          'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
               "O-For Examination", "O-Scavenger", 
@@ -250,6 +226,68 @@ args = c('r=CategoricalCarnivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=
             c("O-Generalist", "Omnivore")
           )', 
          'v=T', 't=ER', 'n=ZoonomiaTip')
+}
+args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
+         'c=c(
+              "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "C-InsVertivore-Mixed", "C-InsVertivore-Piscivore", "C-InsVertivore-Insectivore","C-InsVertivore-Carnivore",
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+         'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
+            c("C-InsVertivore-Mixed", "Omnivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Herbivore"), 
+            c("H-Nectarivore", "Herbivore"), 
+            c("H-High-sugar-plants-Eater", "Herbivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Omnivore")
+          )', 
+         'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01',
+         'y=c(
+          "vs_HLornAna3", "vs_HLtacAcu1", "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1", 
+          "vs_HLmyrTri1", "vs_HLchoDid1", "vs_HLchoHof3", "vs_HLproCap3", 
+          "vs_HLpanLeo1", "LionClade", "vs_HLpanOnc1", "vs_HLaciJub2", "CheetahClade", "vs_HLursThi1", 
+          "vs_ursMar1", "vs_HLursArc1", "vs_lepWed1", "vs_HLailMel2", 
+          "vs_HLmirAng2", "vs_HLphoVit1", "HarborSealGreySealClade", "vs_HLeriBar1", 
+          "vs_HLodoRos1", "vs_HLcalUrs1", "vs_HLzalCal1", 
+          "vs_HLmelCap1", "vs_HLgulGul1", "vs_HLneoVis1", 
+          "vs_HLpteBra1", "vs_HLlutLut1", "vs_enhLutKen1", 
+          "vs_HLlycPic2", "vs_HLgloMel1", "vs_HLpepEle1", 
+          "vs_HLturAdu1", "DolphinClade", "vs_orcOrc1", "vs_HLescRob1", "vs_HLlniGeo1", "amazonRiverDolphinFromYeast",
+          "vs_HLbalEde1", "vs_HLmegNov1", "vs_HLcynGun1", 
+          "vs_HLmerUng1", "vs_HLeulMon1", "vs_HLeulFul1", 
+          "vs_eulMac1", "vs_HLeulFla1", "vs_ponAbe3", 
+          "vs_panTro6", "vs_HLrhiRox2", "LangurClade", "vs_HLallNig1", 
+          "vs_HLeryPat1", "vs_chlSab2", "geunonClade", "vs_HLtheGel1", 
+          "vs_HLpapAnu5", "vs_HLmanSph1", "DrillMandrillClade", "vs_cerAty1", 
+          "vs_HLtraJav1", "vs_mm10", "vs_HLmarFla1", "marmotClade"
+         )',
+         'p=c(
+          "vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1", "voleClade",
+          "vs_HLmusSpi1", "vs_HLmusCar1", "vs_HLmasCou1", "vs_HLmusPah1", "mouseClade",
+          "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "gundiGuineaPigClade",
+          "vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1", "Bovidae",
+          "vs_HLhydIne1", "vs_HLmunMun1", "Cervidae",
+          "vs_HLtraKan1", "mouseDeerOtherIsKept",
+          "vs_HLmurAurFea1", "outerVespert",
+          "vs_HLmyoLuc1", "Nearctic",
+          "vs_myoDav1", "Myotis",
+          "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "Vespertilioninae",
+          "vs_HLmacSob1", "FoxLongTounge",
+          "vs_HLeidHel2", "outerPeropodidae",
+          "vs_HLeonSpe1", "Roussetinae"
+         )')
 
 
 # --- Standard start-up code ---
@@ -296,9 +334,11 @@ ancestralTrait = NULL
 substitutions = NULL
 nameColumn = "tipName"
 usingPruning = F
+usingAutoPruning = F
 manualPruningProtections = NULL
 pruningPrefrenceColumn = NA
 pruningProtection = F
+manualPrunedSpecies = NULL
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -378,6 +418,7 @@ pruningProtection = F
   #Pruning cutoff
   if(!is.na(cmdArgImport('z'))){
     usingPruning = T
+    usingAutoPruning = T
     pruningCutoff = cmdArgImport('z')
   }else{
     message("Pruning Cutoff not specified, not pruning tree.")
@@ -395,6 +436,14 @@ pruningProtection = F
     manualPruningProtections = cmdArgImport('y')
   }else{
     if(usingPruning){message("No manually protected species specified")}
+  }
+
+  #ManualPruningSpecies
+  if(!all(is.na(cmdArgImport('p')))){
+    manualPruningSpecies = cmdArgImport('p')
+    usingPruning = T
+  }else{
+    if(usingPruning){message("No manually pruned species specified")}
   }
 
 
@@ -443,39 +492,53 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   }
   relevantSpecies = relevantSpecies[!relevantSpecies[[nameColumn]] %in% "", ]          #remove any species without an FA name (not on the master tree)
   speciesFilter = relevantSpecies[[nameColumn]]                                       #make a list of the master tree tip labels of the included species
-
   if(usingPruning){
-    source("Src/Reu/autoPruner.R")
-    pruningProtectionSpecies = NA
-    if(!is.na(pruningPrefrenceColumn)){
-      if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
-        pruningProtection = T
-      }else{ 
-        pruningProtection = F
+    if(usingAutoPruning){
+      source("Src/Reu/autoPruner.R")
+      pruningProtectionSpecies = NULL
+      if(!is.na(pruningPrefrenceColumn)){
+        if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
+          pruningProtection = T
+        }else{ 
+          pruningProtection = F
+        }
+        
+        pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
+        pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
       }
+      allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
       
-      pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
-      pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
+      workingTree = mainTrees$masterTree
+      workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
+      
+      fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
+      fewGeneSpecies = fewGeneSpecies[- which(fewGeneSpecies %in% allProtectedSpecies)]
+      workingTree = drop.tip(workingTree, fewGeneSpecies)
+      names(fewGeneSpecies)[1:length(fewGeneSpecies)] = "fewGenes"
+      
+      pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
+      pdf(pruningFilename, width = 16, height = length(workingTree$tip.label)/8)
+      prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = allProtectedSpecies, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
+      if(!pruningProtection){
+        prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+      }
+      dev.off()
     }
-    allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
-    
-    workingTree = mainTrees$masterTree
-    workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
-    
-    fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
-    fewGeneSpecies = fewGeneSpecies[- which(fewGeneSpecies %in% allProtectedSpecies)]
-    workingTree = drop.tip(workingTree, fewGeneSpecies)
-    
-    pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
-    pdf(pruningFilename, width = 16, height = length(workingTree$tip.label)/10)
-    prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
-    if(!pruningProtection){
-      prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+    if(!is.null(all(manualPruningSpecies))){
+      prunedTree = drop.tip(prunedTree, manualPruningSpecies)
+      names(manualPruningSpecies)[1:length(manualPruningSpecies)] = "manualDrop"
+      droppedTips = append(droppedTips, manualPruningSpecies)
     }
-    dev.off()
+    
     
     prunedSpecies = speciesFilter[!speciesFilter %in% prunedTree$tip.label]
     speciesFilter = speciesFilter[-which(speciesFilter %in% prunedSpecies)]
+    
+    prunedSpeciesFilename = paste(outputFolderName, filePrefix, "prunedSpecies.rds",sep="")
+    saveRDS(droppedTips, prunedSpeciesFilename)
+    prunedSpeciesTextFilename = file(paste(outputFolderName, filePrefix, "prunedSpecies.txt",sep=""))
+    writeLines(print(droppedTips),prunedSpeciesTextFilename)
+    close(prunedSpeciesTextFilename)
   }
   
   
@@ -491,6 +554,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
 }
 
 # - Phenotype Vector - 
+relevantSpecies = relevantSpecies[relevantSpecies[[nameColumn]] %in% speciesFilter, ] 
 speciesNames = relevantSpecies[[nameColumn]]                                         #Exract the tip name of each species
 speciesCategories = relevantSpecies[[annotColumn]]                              #extract the category of each species (in same order)
 
@@ -516,8 +580,8 @@ commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLoca
 
 # - Categorical Tree - 
 treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
-pdf(treeImageFilename, height = length(phenotypeVector)/18)                     #make a pdf to store the plot, sized based on tree size
-  char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
+pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
+  commonCategoricalTree = char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
   
   categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
 dev.off()                                                                       #save the plot to the pdf
