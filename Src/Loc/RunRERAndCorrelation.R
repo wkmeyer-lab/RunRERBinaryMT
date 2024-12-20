@@ -48,6 +48,7 @@ args = c("r=CategoricalMobivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g
 args = c("r=CategoricalCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
 args = c("r=CategoricalInsVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
 args = c("r=CategoricalInsVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+args = c("r=CategoricalPrunedCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 
 
 # --- Standard start-up code ---
@@ -189,6 +190,7 @@ if(all(is.null(speciesFilter))){ # If the species filter is meant to be empty, t
 RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")       #Set a filename for the RERs based on the prefix
 
 if(!file.exists(paste(RERFileName)) | forceUpdate){                             #if it does not exist, or update is forced 
+  gc()
   RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F)  #Calculate the RERs
   saveRDS(RERObject, file = RERFileName)                                        #Save them
 }else{                                                                          #Otherwise

@@ -19,6 +19,7 @@ library(RERconverge)
 length(phenotypeVector)
 
 
+?correlateWithCategoricalPhenotype
 
 #-------------------------------------------
 manualAnnotsTrimmed = manualAnnots
@@ -223,6 +224,8 @@ commonCategoricalTree$tip.label[which(duplicated(commonCategoricalTree$tip.label
 manualAnnots$CommonName[which(duplicated(manualAnnots$CommonName))]
 
 commonCategoricalTree = ZoonomTreeNameToCommon(categoricalTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+stableMaintrees = mainTrees
+mainTrees$masterTree$edge.length[1:length(mainTrees$masterTree$edge.length)] = 1
 stableMaintrees = readRDS(mainTreesLocation)
 stableCommonMainTrees = stableMaintrees
 stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
@@ -234,9 +237,9 @@ plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "
 
 
 
-plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree, node_states = states)
+plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
 
-plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree, node_states = states)
+plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
 
 
 
