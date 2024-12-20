@@ -90,7 +90,7 @@ onlyCalulateValue = FALSE
   if(!is.na(cmdArgImport('t'))){
     permulationPrefix = cmdArgImport('t')
   }else{
-    message("No filename prefix used, using 'PermulationsData'.")
+    message("No filename prefix used, using no prefix.")
   }
   
   #Metacombination 
