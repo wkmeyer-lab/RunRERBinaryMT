@@ -12,6 +12,7 @@ palette(c(  "red", "darkgreen", "black"))
 
 
 palette(c( "darkgreen", "black", "darkblue", "red"))
+palette(c("black", "darkblue"))
 
 
 library(RERconverge)
@@ -20,6 +21,90 @@ length(phenotypeVector)
 
 
 ?correlateWithCategoricalPhenotype
+# -----------------------------------------
+stableMaintrees = mainTrees
+stableMaintrees = readRDS(mainTreesLocation)
+
+mainTrees$masterTree$edge.length[1:length(mainTrees$masterTree$edge.length)] = 1
+
+stableCommonMainTrees = stableMaintrees
+stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+
+?plotTreeCategorical
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
+
+plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableMaintrees$masterTree)
+
+
+
+plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
+
+plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
+#-----------------------------------
+#----------------------------------------
+
+InsectivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreEnrichment-GO_Biological_Process_2023.rds")
+VertivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreEnrichment-GO_Biological_Process_2023.rds")
+CarnivoreGoData = readRDS("Output/CategoricalPrunedCarnivoryTree/Carnivore-Herbivore/CategoricalPrunedCarnivoreTreeCarnivore-HerbivoreEnrichment-GO_Biological_Process_2023.rds")
+
+
+#----------------------------------------
+library(ggvenn)
+InsectivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreEnrichment-GO_Biological_Process_2023.rds")[[1]]
+VertivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreEnrichment-GO_Biological_Process_2023.rds")[[1]]
+CarnivoreGoData = readRDS("Output/CategoricalPrunedCarnivoreTree/Carnivore-Herbivore/CategoricalPrunedCarnivoreTreeCarnivore-HerbivoreEnrichment-GO_Biological_Process_2023.rds")[[1]]
+
+InsectivoreGoData = InsectivoreGoData[order(InsectivoreGoData$p.adj),]
+VertivoreGoData = VertivoreGoData[order(VertivoreGoData$p.adj),]
+CarnivoreGoData = CarnivoreGoData[order(CarnivoreGoData$p.adj),]
+
+
+signficiantInsectivore = InsectivoreGoData[which(InsectivoreGoData$pval <0.05),]
+signficiantVertivore = VertivoreGoData[which(VertivoreGoData$pval <0.05),]
+signficiantCarnivore = CarnivoreGoData[which(CarnivoreGoData$pval <0.05),]
+
+vennData = list(
+  Insectivore = rownames(signficiantInsectivore),
+  Vertivore = rownames(signficiantVertivore),
+  Carnivore = rownames(signficiantCarnivore)
+)
+
+signficianterInsectivore = InsectivoreGoData[which(InsectivoreGoData$p.adj <0.05),]
+signficianterVertivore = VertivoreGoData[which(VertivoreGoData$p.adj <0.05),]
+signficianterCarnivore = CarnivoreGoData[which(CarnivoreGoData$p.adj <0.05),]
+
+topInsectivore = InsectivoreGoData[1:100,]
+topVertivore = VertivoreGoData[1:100,]
+topCarnivore = CarnivoreGoData[1:100,]
+
+vennData = list(
+  Insectivore = rownames(topInsectivore),
+  Vertivore = rownames(topVertivore),
+  Carnivore = rownames(topCarnivore)
+)
+ggvenn(vennData, fill_color = c("blue", "red", "pink"))
+
+
+# --------
+
+InsectivoreGeneData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreCorrelationFile.rds")
+VertivoreGeneData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreCorrelationFile.rds")
+CarnivoreGeneData = readRDS("Output/CategoricalPrunedCarnivoreTree/Carnivore-Herbivore/CategoricalPrunedCarnivoreTreeCarnivore-HerbivoreCorrelationFile.rds")
+
+InsectivoreGeneData = InsectivoreGeneData[order(InsectivoreGeneData$p.adj),]
+VertivoreGeneData = VertivoreGeneData[order(VertivoreGeneData$p.adj),]
+CarnivoreGeneData = CarnivoreGeneData[order(CarnivoreGeneData$p.adj),]
+
+sigInsectGenes = InsectivoreGeneData[which(InsectivoreGeneData$p.adj <0.05),]
+sigVertGenes = VertivoreGeneData[which(VertivoreGeneData$p.adj <0.05),]
+sigCarnGenes = CarnivoreGeneData[which(CarnivoreGeneData$p.adj <0.05),]
+
+geneVennData = list(
+  Insectivore = rownames(sigInsectGenes),
+  Vertivore = rownames(sigVertGenes),
+  Carnivore = rownames(sigCarnGenes)
+)
+ggvenn(geneVennData, fill_color = c("blue", "red", "pink"))
 
 #-------------------------------------------
 manualAnnotsTrimmed = manualAnnots
