@@ -211,7 +211,9 @@ for(i in 1:length(subdirectoryValueList)){
   saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
   enrichmentCsvName = enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
   gc()
-  write.xlsx(enrichmentResult, file=enrichmentCsvName, sheetName=names(enrichmentListName), row.names=FALSE, append = T)
+  if(!i == 0){ #stops from writing two copies of the same sheet when no subdirectories. 
+    write.xlsx(enrichmentResult, file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T, append = T)
+  }
   }
 }
 # --- Visualize the enrichment ----
