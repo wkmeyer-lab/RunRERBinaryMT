@@ -51,9 +51,9 @@ args = c("r=CategoricalCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=
 args = c("r=CategoricalInsVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
 args = c("r=CategoricalInsVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 args = c("r=CategoricalPrunedCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=CategoricalBinaryInsectivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+args = c("r=CategoricalBinaryInsectivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=50")
 args = c("r=CategoricalBinaryVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=CategoricalBinaryHerbivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+args = c("r=CategoricalBinaryHerbivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=50")
 args = c("r=CategoricalBinaryOmnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 
 # --- Standard start-up code ---

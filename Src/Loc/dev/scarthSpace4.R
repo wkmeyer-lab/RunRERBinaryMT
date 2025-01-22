@@ -14,6 +14,9 @@ palette(c(  "red", "darkgreen", "black"))
 palette(c( "darkgreen", "black", "darkblue", "red"))
 palette(c("black", "darkblue"))
 
+palette(c( "darkgreen", "darkblue", "black", "red"))
+palette(c( "darkgreen", "blue", "pink", "red"))
+
 
 library(RERconverge)
 # ---------------------------------------
@@ -41,6 +44,13 @@ plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), ma
 
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
 #-----------------------------------
+
+InsectivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreEnrichment-GO_Biological_Process_2023.rds")
+write.csv(InsectivoreGoData, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreEnrichment-GO_Biological_Process_2023.csv")
+
+?correlateWithBinaryPhenotype
+install.packages()
+
 #----------------------------------------
 
 InsectivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreEnrichment-GO_Biological_Process_2023.rds")

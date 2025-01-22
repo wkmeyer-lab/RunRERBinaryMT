@@ -55,6 +55,10 @@ args = c('r=CategoricalCarnivoreTree', 'p=F', 'g=T', 's=c("Carnivore-Herbivore",
 args = c('r=CategoricalInsVertivoreTree', 'p=F', 'g=T', 's=c("Omnivore-Vertivore", "Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
 args = c('r=CategoricalPrunedCarnivoreTree', 'p=F', 'g=T', 's=c("Carnivore-Herbivore", "Carnivore-Omnivore", "Herbivore-Omnivore", "Overall")' )
 
+args = c('r=CategoricalBinaryInsectivoreTree', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("Background-Insectivore", "Overall")' )
+args = c('r=CategoricalBinaryVertivoreTree', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("Background-Vertivore", "Overall")' )
+args = c('r=CategoricalBinaryHerbivoreTree', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("Background-Herbivore", "Overall")' )
+args = c('r=CategoricalBinaryOmnivoreTree', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("Background-Omnivore", "Overall")' )
 
 
 # --- Standard start-up code ---
