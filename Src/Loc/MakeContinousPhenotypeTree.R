@@ -1,5 +1,7 @@
 # -- Libraries 
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+clusterRun = F
+clusterRun = T
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
@@ -16,16 +18,18 @@ source("Src/Reu/ZonomNameConvertVector.R")
 # d = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
 # a = "annotCollumn"                                     This is the column in the manual annotations spreadsheet to use
 # s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
-# c = < "Diff" or "mean" or "last" >                                           This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# c = < "Diff" or "mean" or "last" >                     This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
 
 
 #----------------
 args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=MaturityPercentage','v=T')
+args = c('r=MaturityLogRaw', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=logCombinedMaturity','v=T', 'n=FaName')
 
 
 
 # --- Standard start-up code ---
-args = commandArgs(trailingOnly = TRUE)
+if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
   #File Prefix
   if(!is.na(cmdArgImport('r'))){
@@ -63,6 +67,9 @@ annotColumn = NULL
 categoryList = NULL
 useScreen = F
 screenColumn = NULL
+nameColumn = "FaName"
+continousMetric = "diff"
+validMetrics= c("diff", "mean", "last")
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -108,6 +115,12 @@ screenColumn = NULL
   }else{                                                                        #If a continuous phenotype, report using Diff
       message("No continuous metric specified, using Diff")
   }
+  #Name Column
+  if(!is.na(cmdArgImport('n'))){
+    nameColumn = cmdArgImport('n')
+  }else{
+    message("Name Column not specified, using 'tipName'.")
+  }
 }
 
 
@@ -152,10 +165,10 @@ saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        
 
 # - Make common name versions of objects (used in visualization) - 
 commonMainTrees = mainTrees
-commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation)
+commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
 commonPhenotypeVector = phenotypeVector
-names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), manualAnnotLocation = spreadSheetLocation)
-commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, manualAnnotLocation = spreadSheetLocation)
+names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipCol= nameColumn)
+commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipCol= nameColumn)
 
 commonPhenotypeVectorFilename = paste(outputFolderName, filePrefix, "ContinuousCommonPhenotypeVector.rds",sep="") #make a filename based on the prefix
 saveRDS(commonPhenotypeVector, commonPhenotypeVectorFilename)
