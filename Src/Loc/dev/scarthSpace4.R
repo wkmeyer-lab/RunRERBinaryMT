@@ -45,6 +45,20 @@ plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), ma
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
 #-----------------------------------
 
+maturityRER = readRDS("Output/MaturityLifespanPercent/MaturityLifespanPercentRERFile.rds")
+maturityPath = readRDS("Output/MaturityLifespanPercent/MaturityLifespanPercentContinuousPathsFile.rds")
+maturityMaintrees= readRDS("data/newHillerMainTrees.rds")
+
+commonMaturityRER = maturityRER
+colnames(commonMaturityRER)
+colnames(commonMaturityRER) = ZonomNameConvertVectorCommon(colnames(commonMaturityRER), tipColumn = "ZoonomiaName")
+
+returnRersAsTree(maturityMaintrees, maturityRER, "NDRG4", maturityPath)
+plotRers(commonMaturityRER, "NDRG4", phenv = maturityPath)
+
+
+#-----------------------------------
+
 InsectivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreEnrichment-GO_Biological_Process_2023.rds")
 write.csv(InsectivoreGoData, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreEnrichment-GO_Biological_Process_2023.csv")
 
