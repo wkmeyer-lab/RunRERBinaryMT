@@ -1,121 +1,121 @@
-FaName,Zoonomia,CommonName,scientific,phenotype,Binomial,BinomialPretty,PantheriaMaturity,pantheriaMaxAge,lifeHistoriesMaturity,lifeHistoryMaxAge,anAgeMaturity,anAgeMaxAge,combinedMaturity,MaximumAge,MaturityPercentage,elifeLongevity,L3,ELL,logCombinedMaturity
-cavPor3,vs_cavPor3,Domestic guinea pig,cavia_porcellus,Herbivore,cavia_porcellus,Cavia porcellus,68.59,NA,67.5,NA,66,4380,66,4380,0.015068493,4380,-0.683669949,-0.069198494,1.819543936
-perManBai1,vs_HLperManBai2,Deer mouse,peromyscus_maniculatus_bairdii,Omnivore,peromyscus_maniculatus,Peromyscus maniculatus,48.05,NA,77.4,3000,49,3029.5,49,3029.5,0.016174286,NA,NA,NA,1.69019608
-HLdipOrd2,vs_dipOrd2,Ord Kangaroo Rat,dipodomys_ordii,Insectivore/herbivore,dipodomys_ordii,Dipodomys ordii,86.77,NA,77.7,3540,61,3613.5,61,3613.5,0.01688114,NA,NA,NA,1.785329835
-myoLuc2,vs_HLmyoLuc1,Microbat,myotis_lucifugus,Insectivore,myotis_lucifugus,Myotis lucifugus,280.6,NA,NA,NA,210,12410,210,12410,0.016921837,12410,-0.667962426,1.613960625,2.322219295
-HLmerUng1,vs_HLmerUng1,Jird,meriones_unguiculatus,Herbivore,meriones_unguiculatus,Meriones unguiculatus,56.5,12240,79.2,720,43,2299.5,43,2299.5,0.018699717,NA,NA,NA,1.633468456
-hetGla2,vs_hetGla2,Naked mole-rat,heterocephalus_glaber,Herbivore,heterocephalus_glaber,Heterocephalus glaber,NA,NA,225,5760,228,11315,228,11315,0.020150243,11315,-0.499710445,1.295025108,2.357934847
-micOch1,vs_micOch1,Prairie vole,microtus_ochrogaster,Herbivore,microtus_ochrogaster,Microtus ochrogaster,36.19,NA,46.8,1050,47,1934.5,47,1934.5,0.024295684,1934.5,-1.914364112,-0.171557637,1.672097858
-felCat8,vs_felCat9,Cat,felis_catus,Carnivore,felis_catus,Felis catus,296.98,NA,NA,NA,289,10950,289,10950,0.026392694,NA,NA,NA,2.460897843
-HLdesRot1,vs_HLdesRot2,Common Vampire Bat,desmodus_rotundus,Hematophagy,desmodus_rotundus,Desmodus rotundus,NA,NA,NA,NA,285,10658,285,10658,0.026740477,NA,NA,NA,2.45484486
-mesAur1,vs_mesAur1,Golden hamster,mesocricetus_auratus,Omnivore,mesocricetus_auratus,Mesocricetus auratus,50.97,NA,46.2,1080,48,1423.5,48,1423.5,0.033719705,1423.5,-1.9768849,-0.609389126,1.681241237
-susScr11,vs_susScr11,Pig,sus_scrofa,Generalist,sus_scrofa,Sus scrofa,350.76,NA,293.1,7560,334,9855,334,9855,0.033891426,NA,NA,NA,2.523746467
-octDeg1,vs_octDeg1,Brush-tailed rat,octodon_degus,Herbivore,octodon_degus,Octodon degus,187.19,NA,327,2550,182,5110,182,5110,0.035616438,5110,-0.777803382,0.276392496,2.260071388
-micMur3,vs_micMur3,Mouse Lemur,microcebus_murinus,Omnivore,microcebus_murinus,Microcebus murinus,355.53,1080,387,5580,243,6643,243,6643,0.036579858,NA,NA,NA,2.385606274
-HLodoVir1,vs_HLodoVir3,White-tailed Deer,odocoileus_virginianus,Herbivore,odocoileus_virginianus,Odocoileus virginianus,365,NA,272.7,8280,309,8395,309,8395,0.036807624,NA,NA,NA,2.489958479
-chiLan1,vs_chiLan1,Chinchilla,chinchilla_lanigera,Herbivore,chinchilla_lanigera,Chinchilla lanigera,222.33,6480,193.5,NA,240,6278,240,6278,0.038228735,6278,-0.414336444,0.248720735,2.380211242
-bubBub1,vs_HLbubBub2,Asian Water Buffalo,bubalus_bubalis,Herbivore,bubalus_bubalis,Bubalus bubalis,755.15,7092,596.4,10440,502,12738.5,502,12738.5,0.039408094,NA,NA,NA,2.700703717
-HLequAsi1,vs_HLequAsiAsi2,Wild Donkey,equus_asinus,Herbivore,equus_asinus,Equus asinus,742.46,NA,684,16920,708,17155,708,17155,0.041270767,NA,NA,NA,2.850033258
-mm10,vs_HLammLer1,Aoudad,ammotragus_lervia,Herbivore,ammotragus_lervia,Ammotragus lervia,507.09,1080,446.7,7530,335,7920.5,335,7920.5,0.04229531,1460,-2.273868258,-0.271106215,2.525044807
-rouAeg1,vs_HLrouAeg4,Rousette Fruit Bats,rousettus_aegyptiacus,Herbivore,rousettus_aegyptiacus,Rousettus aegyptiacus,315.68,NA,NA,NA,365,8358.5,365,8358.5,0.043668122,NA,NA,NA,2.562292864
-HLequCab3,vs_equCab3,Horse,equus_caballus,Herbivore,equus_caballus,Equus caballus,834.72,NA,NA,NA,914,20805,914,20805,0.043931747,NA,NA,NA,2.960946196
-HLmanJav1,vs_HLmanJav2,Sunda pangolin,manis_javanica,Insectivore,manis_javanica,Manis javanica,755.15,16920,NA,NA,NA,NA,755.15,16920,0.044630615,NA,NA,NA,2.878033227
-dasNov3,vs_dasNov3,Armadillo,dasypus_novemcinctus,Insectivore/Carnivore,dasypus_novemcinctus,Dasypus novemcinctus,511.16,NA,399.9,8040,365,8139.5,365,8139.5,0.044843049,8139.5,0.21496263,0.043019004,2.562292864
-vicPac2,vs_vicPac2,Alpaca,vicugna_pacos,Herbivore,vicugna_pacos,Vicugna pacos,NA,NA,NA,NA,432,9417,432,9417,0.045874482,9417,0.80489186,-0.309094554,2.635483747
-HLchoHof2,NA,Two-Toed Sloth,choloepus_hoffmanni,Herbivore,choloepus_hoffmanni,Choloepus hoffmanni,1473.2,NA,903.6,11550,730,14965,730,14965,0.048780488,NA,NA,NA,2.86332286
-triMan1,vs_triMan1,Manatee,trichechus_manatus,Herbivore,trichechus_manatus,Trichechus manatus,1887.88,NA,1479.3,15840,1278,25185,1278,25185,0.050744491,23725,1.878869931,0.12421879,3.106530854
-manPen1,vs_HLmanPen2,Chinese pangolin,manis_pentadactyla,Insectivore,manis_pentadactyla,Manis pentadactyla,755.15,14400,NA,NA,755,NA,755,14400,0.052430556,NA,NA,NA,2.877946952
-echTel2,NA,Tenrec,echinops_telfairi,Ambiguous,echinops_telfairi,Echinops telfairi,278.42,NA,249.6,4680,365,6935,365,6935,0.052631579,6935,-0.58057187,0.577313337,2.562292864
-HLcapHir2,vs_HLcapHir2,Domestic goat,capra_hircus,Herbivore,capra_hircus,Capra hircus,498.97,NA,480,7470,406,7592,406,7592,0.053477345,NA,NA,NA,2.608526034
-calJac3,vs_HLcalJac4,Marmoset,callithrix_jacchus,Omnivore,callithrix_jacchus,Callithrix jacchus,455.99,NA,489.9,4320,477,8322,477,8322,0.057317952,8322,-0.363987275,0.658139907,2.678518379
-eriEur2,vs_eriEur2,Hedgehog,erinaceus_europaeus,Generalist,erinaceus_europaeus,Erinaceus europaeus,265.8,6048,324,2880,253,4270.5,253,4270.5,0.059243648,4270.5,-0.698530672,-0.095637324,2.403120521
-HLaciJub1,vs_HLaciJub2,Cheetah,acinonyx_jubatus,Carnivore,acinonyx_jubatus,Acinonyx jubatus,741.97,NA,762.3,6840,456,7482.5,456,7482.5,0.060942198,NA,NA,NA,2.658964843
-rn6,vs_HLratNor7,Rat,rattus_norvegicus,Generalist,rattus_norvegicus,Rattus norvegicus,55.23,NA,66.6,NA,90,1387,90,1387,0.064888248,NA,NA,NA,1.954242509
-monDom5,NA,Opossum,monodelphis_domestica,Omnivore,monodelphis_domestica,Monodelphis domestica,162.11,NA,NA,NA,122,1861.5,122,1861.5,0.065538544,1861.5,-1.758082729,-0.390586955,2.086359831
-HLoviAri4,vs_HLoviAri5,Domestic sheep,ovis_aries,Herbivore,ovis_aries,Ovis aries,831.62,NA,546.9,NA,548,8322,548,8322,0.065849555,NA,NA,NA,2.738780558
-ornAna2,NA,Platypus,ornithorhynchus_anatinus,Insectivore/Carnivore,ornithorhynchus_anatinus,Ornithorhynchus anatinus,742.46,NA,NA,NA,548,8249,548,8249,0.066432295,NA,NA,NA,2.738780558
-oryAfe1,NA,Aardvark,orycteropus_afer_afer,Insectivore,orycteropus_afer,Orycteropus afer,755.15,5700,780,8640,730,10877,730,10877,0.067114094,10877,0.916074904,-0.185159862,2.86332286
-HLcerEla1,NA,NA,cervus_elaphus_hippelaphus,NA,cervus_elaphus,Cervus elaphus,659.91,6444,850.8,9720,852,11497.5,852,11497.5,0.074103066,NA,NA,NA,2.930439595
-bisBis1,vs_bisBis1,American Bison,bison_bison_bison,Herbivore,bison_bison,Bison bison,921.77,NA,883.5,9000,912,12227.5,912,12227.5,0.074585974,NA,NA,NA,2.959994838
-HLcasCan1,vs_HLcasCan3,Beaver,castor_canadensis,Herbivore,castor_canadensis,Castor canadensis,663.02,NA,648,NA,639,8541,639,8541,0.074815595,NA,NA,NA,2.805500858
-bosTau8,vs_bosTau9,Cow,bos_taurus,Herbivore,bos_taurus,Bos taurus,755.15,NA,NA,NA,548,7300,548,7300,0.075068493,NA,NA,NA,2.738780558
-cebCap1,vs_cebCap1,Ring-tailed Monkey,cebus_capucinus_imitator,Omnivore/Generalist,cebus_capucinus,Cebus capucinus,2134.73,8280,1440,19800,1505,19710,1505,19710,0.076357179,NA,NA,NA,3.1775365
-musFur1,vs_HLmusFur2,Ferret,mustela_putorius_furo,Carnivore,mustela_putorius,Mustela putorius,308.5,NA,300,5040,312,4051.5,312,4051.5,0.077008515,4051.5,-0.72674359,-0.153299244,2.494154594
-eptFus1,vs_eptFus1,Big brown bat,eptesicus_fuscus,Insectivore,eptesicus_fuscus,Eptesicus fuscus,395.29,NA,NA,NA,547,6935,547,6935,0.07887527,6935,-0.980635609,0.977377076,2.737987326
-HLailFul1,vs_HLailFul2,Red Panda ,ailurus_fulgens,Omnivore,ailurus_fulgens,Ailurus fulgens,604.05,1440,585.3,6300,550,6935,550,6935,0.079307859,NA,NA,NA,2.740362689
-HLphaCin1,NA,Koala,phascolarctos_cinereus,Herbivore,phascolarctos_cinereus,Phascolarctos cinereus,834.72,NA,NA,NA,646,8066.5,646,8066.5,0.080084299,NA,NA,NA,2.810232518
-macNem1,vs_macNem1,Southern Pig-tailed Macaca,macaca_nemestrina,Omnivore,macaca_nemestrina,Macaca nemestrina,1427.17,NA,1309.2,9480,1125,13724,1125,13724,0.081973186,NA,NA,NA,3.051152522
-otoGar3,vs_otoGar3,Bushbaby,otolemur_garnettii,Herbivore,otolemur_garnettii,Otolemur garnettii,592.15,25560,584.4,6480,600,7300,600,7300,0.082191781,6679.5,-0.226738845,0.162246761,2.77815125
-rheMac8,vs_rheMac10,Rhesus Macaca,macaca_mulatta,Omnivore,macaca_mulatta,Macaca mulatta,1101.07,8580,1232.4,7770,1231,14600,1231,14600,0.084315068,NA,NA,NA,3.090258053
-macFas5,vs_HLmacFas6,Crab-eating macaque,macaca_fascicularis,Omnivore,macaca_fascicularis,Macaca fascicularis,1319.5,7200,1306.8,13350,1238,14235,1238,14235,0.086968739,14235,0.699200721,0.47060615,3.092720645
-canFam3,vs_canFam4,Dog,canis_lupus_familiaris,Carnivore,canis_lupus,Canis lupus,679.37,10620,661.2,5760,669,7519,669,7519,0.088974598,7519,0.456947365,-0.328316304,2.825426118
-manLeu1,vs_manLeu1,Drill,mandrillus_leucophaeus,Omnivore,mandrillus_leucophaeus,Mandrillus leucophaeus,1745.96,NA,1705.5,10290,1277,14235,1277,14235,0.089708465,NA,NA,NA,3.106190897
-HLproCap2,vs_HLproCap3,Hydrax,procavia_capensis,Herbivore,procavia_capensis,Procavia capensis,487.07,6120,665.4,3960,500,5402,500,5402,0.092558312,NA,NA,NA,2.698970004
-HLoviCan1,vs_HLoviCan1,Bighorn sheep,ovis_canadensis,Herbivore,ovis_canadensis,Ovis canadensis,761.25,NA,692.1,7200,707,7519,707,7519,0.094028461,NA,NA,NA,2.849419414
-HLpanPar1,vs_HLpanPar1,Leopard,panthera_pardus,Carnivore,panthera_pardus,Panthera pardus,810.68,NA,1023,8280,937,9964.5,937,9964.5,0.09403382,NA,NA,NA,2.971739591
-saiBol1,vs_HLsaiBol1,Squirrel monkey,saimiri_boliviensis,Omnivore,saimiri_boliviensis,Saimiri boliviensis,NA,NA,NA,NA,1091,11059.5,1091,11059.5,0.098648221,11059.5,0.038994418,0.719063433,3.037824751
-HLcamBac1,vs_HLcamBac1,Bactrian Camel,camelus_bactrianus,Omnivore,camelus_bactrianus,Camelus bactrianus,1330.6,NA,1260,NA,1278,12921,1278,12921,0.098908753,NA,NA,NA,3.106530854
-cerSim1,vs_HLcerSimCot1,White rhinoceros (Chad),ceratotherium_simum_cottoni,Herbivore,ceratotherium_simum,Ceratotherium simum,2741.23,NA,1997.1,18000,1643,16425,1643,16425,0.100030441,16425,1.950827302,-0.547587866,3.215637563
-HLlycPic1,vs_HLlycPic3,African Hunting Dog ,lycaon_pictus,Carnivore,lycaon_pictus,Lycaon pictus,817.15,NA,757.5,6120,639,6205,639,6205,0.102981467,NA,NA,NA,2.805500858
-HLcamDro1,vs_HLcamDro2,One-hump Camel,camelus_dromedarius,Omnivore,camelus_dromedarius,Camelus dromedarius,1947.94,14400,1389,14400,1095,10366,1095,10366,0.105633803,NA,NA,NA,3.039414119
-hg38,REFERENCE,Human,homo_sapiens,Generalist,homo_sapiens,Homo sapiens,5582.93,NA,NA,NA,4745,44712.5,4745,44712.5,0.106122449,NA,NA,NA,3.676236217
-HLbalMys1,NA,Bowhead whale,balaena_mysticetus,Planktivore,balaena_mysticetus,Balaena mysticetus,6041.21,5796,6300,36000,8212,77015,8212,77015,0.106628579,NA,NA,NA,3.914448941
-ursMar1,vs_ursMar1,Polar Bear,ursus_maritimus,Carnivore,ursus_maritimus,Ursus maritimus,1850.26,NA,1656.6,16200,1734,15987,1734,15987,0.108463126,NA,NA,NA,3.239049093
-phyCat1,NA,Sperm whale,physeter_catodon,Piscivore,physeter_catodon,Physeter catodon,3935.04,6480,3100.8,27720,NA,NA,3100.8,27720,0.111861472,NA,NA,NA,3.491473755
-HLdelLeu1,vs_HLdelLeu2,Beluga Whale,delphinapterus_leucas,Piscivore,delphinapterus_leucas,Delphinapterus leucas,2104.57,NA,1686.3,10800,1644,14600,1644,14600,0.11260274,NA,NA,NA,3.215901813
-HLmarMar1,vs_HLmarMar1,Marmot,marmota_marmota_marmota,Insectivore/herbivore,marmota_marmota,Marmota marmota,827.69,NA,900,5400,730,6351,730,6351,0.114942529,NA,NA,NA,2.86332286
-HLorcOrc1,vs_orcOrc1,Killer whale,orcinus_orca,Carnivore/Piscivore,orcinus_orca,Orcinus orca,4989.76,NA,4146.6,32400,3780,32850,3780,32850,0.115068493,NA,NA,NA,3.5774918
-odoRosDiv1,vs_HLodoRos1,Pacific walrus,odobenus_rosmarus_divergens,Piscivore,odobenus_rosmarus,Odobenus rosmarus,2315.02,5940,1564.2,14400,1745,NA,1745,14400,0.121180556,NA,NA,NA,3.241795431
-jacJac1,vs_jacJac1,Lesser Egyptian jerboa,jaculus_jaculus,Herbivore,jaculus_jaculus,Jaculus jaculus,240.52,NA,322.2,2250,327,2664.5,327,2664.5,0.122724714,2664.5,-1.591306439,0.027656436,2.514547753
-speTri2,vs_speTri2,Ground Squirrel ,ictidomys_tridecemlineatus,Omnivore,ictidomys_tridecemlineatus,Ictidomys tridecemlineatus,NA,NA,NA,NA,354,2883.5,354,2883.5,0.12276747,2591.5,-1.437928618,-0.171036666,2.549003262
-colAng1,vs_colAng1,Black-and-white Colobus Monkey,colobus_angolensis_palliatus,Herbivore,colobus_angolensis,Colobus angolensis,NA,NA,NA,NA,1642,12884.5,1642,12884.5,0.127439947,NA,NA,NA,3.215373153
-gorGor5,vs_gorGor6,Gorilla,gorilla_gorilla_gorilla,Herbivore,gorilla_gorilla,Gorilla gorilla,3353.12,NA,2679.9,14160,2829,21936.5,2829,21936.5,0.128963144,NA,NA,NA,3.451632947
-panTig1,vs_panTig1,Tiger,panthera_tigris_altaica,Carnivore,panthera_tigris,Panthera tigris,1522.5,NA,1233.6,9450,1268,9599.5,1268,9599.5,0.132090213,NA,NA,NA,3.103119254
-ochPri3,vs_ochPri3,Pika,ochotona_princeps,Herbivore,ochotona_princeps,Ochotona princeps,374.39,NA,342.6,2520,347,2555,347,2555,0.135812133,2555,-1.509286851,-0.12281705,2.540329475
-panTro5,vs_panTro6,Chimp,pan_troglodytes,Omnivore,pan_troglodytes,Pan troglodytes,3897.96,NA,3956.1,21780,3376,24820,3376,24820,0.136019339,NA,NA,NA,3.528402438
-cerAty1,vs_cerAty1,Sooty Mangabey,cercocebus_atys,Omnivore,cercocebus_atys,Cercocebus atys,1321.67,9108,NA,NA,NA,NA,1321.67,9108,0.145110892,NA,NA,NA,3.121123032
-balAcu1,vs_balAcu1,Minke Whale,balaenoptera_acutorostrata_scammoni,Carnivore/Planktivore,balaenoptera_acutorostrata,Balaenoptera acutorostrata,2680.62,NA,2961.9,16920,2740,18250,2740,18250,0.150136986,NA,NA,NA,3.437750563
-HLturTru3,vs_HLturTru4,Bottle-nose Dolphin,tursiops_truncatus,Piscivore,tursiops_truncatus,Tursiops truncatus,3354.8,3240,2922.3,17640,2831,18834,2831,18834,0.150313263,NA,NA,NA,3.451939869
-lepWed1,vs_lepWed1,Weddell seal,leptonychotes_weddellii,Piscivore,leptonychotes_weddellii,Leptonychotes weddellii,1587.55,NA,1455.3,9000,1365,NA,1365,9000,0.151666667,10950,1.302204641,-0.560378219,3.135132651
-oryCun2,vs_HLoryCunCun4,Rabbit,oryctolagus_cuniculus,Herbivore,oryctolagus_cuniculus,Oryctolagus cuniculus,185.61,NA,153.9,3600,730,4745,730,4745,0.153846154,3285,-0.742290201,-0.479858244,2.86332286
-sarHar1,NA,Tasmanian devil,sarcophilus_harrisii,Omnivore,sarcophilus_harrisii,Sarcophilus harrisii,777.31,NA,NA,NA,730,4745,730,4745,0.153846154,4745,-0.192694902,-0.429604258,2.86332286
-panPan2,vs_panPan3,Bonobo,pan_paniscus,Omnivore,pan_paniscus,Pan paniscus,5465.72,NA,3240,NA,3194,20075,3194,20075,0.159103362,NA,NA,NA,3.504334912
-nasLar1,vs_nasLar1,Proboscis Monkey,nasalis_larvatus,Herbivore,nasalis_larvatus,Nasalis larvatus,1894.11,5461.2,1620,8280,1460,9161.5,1460,9161.5,0.15936255,NA,NA,NA,3.164352856
-ailMel1,vs_HLailMel2,Panda,ailuropoda_melanoleuca,Omnivore,ailuropoda_melanoleuca,Ailuropoda melanoleuca,2413.02,5400,2317.8,12240,2192,13432,2192,13432,0.163192376,13432,1.218848079,-0.143757506,3.34084055
-loxAfr3,vs_HLloxAfr4,Elephant,loxodonta_africana,Herbivore,loxodonta_africana,Loxodonta africana,4977.64,6300,4425.3,25200,4018,23725,4018,23725,0.169357218,23725,2.404225801,-0.40113708,3.604009932
-sorAra2,vs_sorAra2,Shrew,sorex_araneus,Omnivore,sorex_araneus,Sorex araneus,312.9,NA,321.3,720,198,1168,198,1168,0.169520548,1168,-2.615936534,-0.293039789,2.29666519
-nomLeu3,vs_HLnomLeu4,Gibbon,nomascus_leucogenys,Herbivore,nomascus_leucogenys,Nomascus leucogenys,NA,NA,NA,NA,3069,16096.5,3069,16096.5,0.190662566,16096.5,0.788032691,0.582251175,3.486996888
-conCri1,vs_conCri1,Star-nosed mole,condylura_cristata,Carnivore,condylura_cristata,Condylura cristata,304.16,8280,300,NA,304,912.5,304,912.5,0.333150685,912.5,-2.46425653,-0.847409112,2.482873584
-lipVex1,vs_lipVex1,Chinese River Dolphin,lipotes_vexillifer,Piscivore,lipotes_vexillifer,Lipotes vexillifer,3367.31,NA,2880,8640,2920,8760,2920,8760,0.333333333,NA,NA,NA,3.465382851
-ponAbe2,vs_ponAbe3,Orangutan,pongo_abelii,Omnivore,pongo_abelii,Pongo abelii,NA,NA,NA,NA,NA,NA,NA,NA,NA,21535,1.487155861,0.357947046,NA
-papAnu3,vs_HLpapAnu5,Olive Baboon,papio_anubis,Generalist,papio_anubis,Papio anubis,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-chlSab2,vs_chlSab2,Green monkey,chlorocebus_sabaeus,Omnivore,chlorocebus_sabaeus,Chlorocebus sabaeus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-rhiRox1,vs_HLrhiRox2,Snub-nosed Langur ,rhinopithecus_roxellana,Herbivore,rhinopithecus_roxellana,Rhinopithecus roxellana,NA,NA,NA,NA,NA,10767.5,NA,10767.5,NA,NA,NA,NA,NA
-rhiBie1,vs_rhiBie1,Snub-nosed Langur ,rhinopithecus_bieti,Herbivore,rhinopithecus_bieti,Rhinopithecus bieti,755.15,NA,NA,NA,755,NA,755,NA,NA,NA,NA,NA,2.877946952
-HLpilTep1,vs_HLpilTep2,Red Colobus Monkey,piliocolobus_tephrosceles,Herbivore,piliocolobus_tephrosceles,Piliocolobus tephrosceles,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-aotNan1,vs_aotNan1,Night Monkey,aotus_nancymaae,Omnivore,aotus_nancymaae,Aotus nancymaae,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-tarSyr2,NA,Philippine tarsier,carlito_syrichta,Insectivore,carlito_syrichta,Carlito syrichta,NA,NA,NA,NA,NA,5840,NA,5840,NA,NA,NA,NA,NA
-proCoq1,vs_proCoq1,Sifakas,propithecus_coquereli,Herbivore,propithecus_coquereli,Propithecus coquereli,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-galVar1,NA,Sunda flying lemur,galeopterus_variegatus,Herbivore,galeopterus_variegatus,Galeopterus variegatus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-tupChi1,vs_tupChi1,Chinese tree shrew,tupaia_chinensis,Ambiguous,tupaia_chinensis,Tupaia chinensis,NA,NA,NA,NA,NA,NA,NA,NA,NA,4051.5,-0.998477173,0.118434339,NA
-criGri1,vs_HLcriGri3,Chinese hamster,cricetulus_griseus,Herbivore,cricetulus_griseus,Cricetulus griseus,NA,NA,NA,NA,NA,NA,NA,NA,NA,1934.5,-1.929523359,-0.156398389,NA
-HLmusCar1,vs_HLmusCar1,Ryukyu mouse,mus_caroli,Generalist,mus_caroli,Mus caroli,NA,NA,NA,NA,53,NA,53,NA,NA,NA,NA,NA,1.72427587
-HLmusPah1,vs_HLmusPah1,Gairdner's shrewmouse,mus_pahari,Generalist,mus_pahari,Mus pahari,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-nanGal1,vs_nanGal1,Mediterranean Blind Mole-rats,nannospalax_galili,Herbivore,nannospalax_galili,Nannospalax galili,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-HLfukDam1,vs_HLfukDam2,Damara mole rat,fukomys_damarensis,Insectivore/Herbivore,fukomys_damarensis,Fukomys damarensis,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-HLcamFer2,vs_HLcamFer3,Ferus Camel,camelus_ferus,Omnivore,camelus_ferus,Camelus ferus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-HLbosInd1,vs_HLbosInd2,Zebu,bos_indicus,Herbivore,bos_indicus,Bos indicus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-bosMut1,vs_HLbosMut2,Yak,bos_mutus,Herbivore,bos_mutus,Bos mutus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-panHod1,vs_panHod1,Tibetan antelope,pantholops_hodgsonii,Herbivore,pantholops_hodgsonii,Pantholops hodgsonii,NA,NA,NA,NA,NA,NA,NA,NA,NA,3650,-0.09675236,-0.953527249,NA
-equPrz1,vs_equPrz1,Przewalskii Horse,equus_przewalskii,Herbivore,equus_przewalskii,Equus przewalskii,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-HLenhLut1,NA,NA,NA,NA,NA_NA,NA NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-neoSch1,vs_neoSch1,Hawaiian Monk Seal,neomonachus_schauinslandi,Piscivore,neomonachus_schauinslandi,Neomonachus schauinslandi,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-pteAle1,vs_pteAle1,Black flying-fox,pteropus_alecto,Herbivore,pteropus_alecto,Pteropus alecto,NA,NA,NA,NA,NA,7409.5,NA,7409.5,NA,7190.5,-0.294891036,0.350650394,NA
-HLpteVam2,vs_HLpteVam2,Megabat,pteropus_vampyrus,Herbivore,pteropus_vampyrus,Pteropus vampyrus,NA,NA,NA,NA,NA,7628.5,NA,7628.5,NA,NA,NA,NA,NA
-HLrhiSin1,vs_HLrhiSin1,Horseshoe Bats,rhinolophus_sinicus,Insectivore,rhinolophus_sinicus,Rhinolophus sinicus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-HLhipArm1,vs_HLhipArm1,Old World Leaf-nosed Bats,hipposideros_armiger,Insectivore,hipposideros_armiger,Hipposideros armiger,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-myoDav1,vs_myoDav1,David's myotis bat,myotis_davidii,Insectivore,myotis_davidii,Myotis davidii,NA,NA,NA,NA,NA,NA,NA,NA,NA,8760,-1.075498273,1.453322846,NA
-myoBra1,vs_myoBra1,Brandt's bat,myotis_brandtii,Insectivore,myotis_brandtii,Myotis brandtii,NA,NA,NA,NA,NA,14965,NA,14965,NA,NA,NA,NA,NA
-HLminNat1,vs_HLminNat1,Long-winged bats,miniopterus_natalensis,Insectivore,miniopterus_natalensis,Miniopterus natalensis,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-chrAsi1,vs_chrAsi1,Cape golden mole,chrysochloris_asiatica,Insectivore,chrysochloris_asiatica,Chrysochloris asiatica,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-eleEdw1,vs_eleEdw1,Cape elephant shrew,elephantulus_edwardii,Insectivore,elephantulus_edwardii,Elephantulus edwardii,NA,NA,NA,NA,NA,NA,NA,NA,NA,3193.75,-1.462065071,0.193963018,NA
+FaName,Zoonomia,CommonName,scientific,phenotype,Binomial,BinomialPretty,PantheriaMaturity,pantheriaMaxAge,lifeHistoriesMaturity,lifeHistoryMaxAge,anAgeMaturity,anAgeMaxAge,combinedMaturity,MaximumAge,MaturityPercentage,elifeLongevity,L3,ELL,logCombinedMaturity,arcsignPercentage,
+cavPor3,vs_cavPor3,Domestic guinea pig,cavia_porcellus,Herbivore,cavia_porcellus,Cavia porcellus,68.59,NA,67.5,NA,66,4380,66,4380,0.015068493,4380,-0.683669949,-0.069198494,1.819543936,0.015069063,-5.70299E-07
+perManBai1,vs_HLperManBai2,Deer mouse,peromyscus_maniculatus_bairdii,Omnivore,peromyscus_maniculatus,Peromyscus maniculatus,48.05,NA,77.4,3000,49,3029.5,49,3029.5,0.016174286,NA,NA,NA,1.69019608,0.016174991,-7.05302E-07
+HLdipOrd2,vs_dipOrd2,Ord Kangaroo Rat,dipodomys_ordii,Insectivore/herbivore,dipodomys_ordii,Dipodomys ordii,86.77,NA,77.7,3540,61,3613.5,61,3613.5,0.01688114,NA,NA,NA,1.785329835,0.016881942,-8.01881E-07
+myoLuc2,vs_HLmyoLuc1,Microbat,myotis_lucifugus,Insectivore,myotis_lucifugus,Myotis lucifugus,280.6,NA,NA,NA,210,12410,210,12410,0.016921837,12410,-0.667962426,1.613960625,2.322219295,0.016922645,-8.07695E-07
+HLmerUng1,vs_HLmerUng1,Jird,meriones_unguiculatus,Herbivore,meriones_unguiculatus,Meriones unguiculatus,56.5,12240,79.2,720,43,2299.5,43,2299.5,0.018699717,NA,NA,NA,1.633468456,0.018700807,-1.08999E-06
+hetGla2,vs_hetGla2,Naked mole-rat,heterocephalus_glaber,Herbivore,heterocephalus_glaber,Heterocephalus glaber,NA,NA,225,5760,228,11315,228,11315,0.020150243,11315,-0.499710445,1.295025108,2.357934847,0.020151607,-1.36386E-06
+micOch1,vs_micOch1,Prairie vole,microtus_ochrogaster,Herbivore,microtus_ochrogaster,Microtus ochrogaster,36.19,NA,46.8,1050,47,1934.5,47,1934.5,0.024295684,1934.5,-1.914364112,-0.171557637,1.672097858,0.024298075,-2.39085E-06
+felCat8,vs_felCat9,Cat,felis_catus,Carnivore,felis_catus,Felis catus,296.98,NA,NA,NA,289,10950,289,10950,0.026392694,NA,NA,NA,2.460897843,0.026395759,-3.06504E-06
+HLdesRot1,vs_HLdesRot2,Common Vampire Bat,desmodus_rotundus,Hematophagy,desmodus_rotundus,Desmodus rotundus,NA,NA,NA,NA,285,10658,285,10658,0.026740477,NA,NA,NA,2.45484486,0.026743665,-3.18784E-06
+mesAur1,vs_mesAur1,Golden hamster,mesocricetus_auratus,Omnivore,mesocricetus_auratus,Mesocricetus auratus,50.97,NA,46.2,1080,48,1423.5,48,1423.5,0.033719705,1423.5,-1.9768849,-0.609389126,1.681241237,0.033726098,-6.39326E-06
+susScr11,vs_susScr11,Pig,sus_scrofa,Generalist,sus_scrofa,Sus scrofa,350.76,NA,293.1,7560,334,9855,334,9855,0.033891426,NA,NA,NA,2.523746467,0.033897917,-6.49147E-06
+octDeg1,vs_octDeg1,Brush-tailed rat,octodon_degus,Herbivore,octodon_degus,Octodon degus,187.19,NA,327,2550,182,5110,182,5110,0.035616438,5110,-0.777803382,0.276392496,2.260071388,0.035623972,-7.53439E-06
+micMur3,vs_micMur3,Mouse Lemur,microcebus_murinus,Omnivore,microcebus_murinus,Microcebus murinus,355.53,1080,387,5580,243,6643,243,6643,0.036579858,NA,NA,NA,2.385606274,0.036588021,-8.16275E-06
+HLodoVir1,vs_HLodoVir3,White-tailed Deer,odocoileus_virginianus,Herbivore,odocoileus_virginianus,Odocoileus virginianus,365,NA,272.7,8280,309,8395,309,8395,0.036807624,NA,NA,NA,2.489958479,0.03681594,-8.31624E-06
+chiLan1,vs_chiLan1,Chinchilla,chinchilla_lanigera,Herbivore,chinchilla_lanigera,Chinchilla lanigera,222.33,6480,193.5,NA,240,6278,240,6278,0.038228735,6278,-0.414336444,0.248720735,2.380211242,0.038238053,-9.31761E-06
+bubBub1,vs_HLbubBub2,Asian Water Buffalo,bubalus_bubalis,Herbivore,bubalus_bubalis,Bubalus bubalis,755.15,7092,596.4,10440,502,12738.5,502,12738.5,0.039408094,NA,NA,NA,2.700703717,0.039418301,-1.02072E-05
+HLequAsi1,vs_HLequAsiAsi2,Wild Donkey,equus_asinus,Herbivore,equus_asinus,Equus asinus,742.46,NA,684,16920,708,17155,708,17155,0.041270767,NA,NA,NA,2.850033258,0.041282492,-1.17249E-05
+mm10,vs_HLammLer1,Aoudad,ammotragus_lervia,Herbivore,ammotragus_lervia,Ammotragus lervia,507.09,1080,446.7,7530,335,7920.5,335,7920.5,0.04229531,1460,-2.273868258,-0.271106215,2.525044807,0.04230793,-1.26205E-05
+rouAeg1,vs_HLrouAeg4,Rousette Fruit Bats,rousettus_aegyptiacus,Herbivore,rousettus_aegyptiacus,Rousettus aegyptiacus,315.68,NA,NA,NA,365,8358.5,365,8358.5,0.043668122,NA,NA,NA,2.562292864,0.043682012,-1.38904E-05
+HLequCab3,vs_equCab3,Horse,equus_caballus,Herbivore,equus_caballus,Equus caballus,834.72,NA,NA,NA,914,20805,914,20805,0.043931747,NA,NA,NA,2.960946196,0.043945891,-1.41437E-05
+HLmanJav1,vs_HLmanJav2,Sunda pangolin,manis_javanica,Insectivore,manis_javanica,Manis javanica,755.15,16920,NA,NA,NA,NA,755.15,16920,0.044630615,NA,NA,NA,2.878033227,0.044645445,-1.48299E-05
+dasNov3,vs_dasNov3,Armadillo,dasypus_novemcinctus,Insectivore/Carnivore,dasypus_novemcinctus,Dasypus novemcinctus,511.16,NA,399.9,8040,365,8139.5,365,8139.5,0.044843049,8139.5,0.21496263,0.043019004,2.562292864,0.044858092,-1.50428E-05
+vicPac2,vs_vicPac2,Alpaca,vicugna_pacos,Herbivore,vicugna_pacos,Vicugna pacos,NA,NA,NA,NA,432,9417,432,9417,0.045874482,9417,0.80489186,-0.309094554,2.635483747,0.045890587,-1.61055E-05
+HLchoHof2,NA,Two-Toed Sloth,choloepus_hoffmanni,Herbivore,choloepus_hoffmanni,Choloepus hoffmanni,1473.2,NA,903.6,11550,730,14965,730,14965,0.048780488,NA,NA,NA,2.86332286,0.048799855,-1.93666E-05
+triMan1,vs_triMan1,Manatee,trichechus_manatus,Herbivore,trichechus_manatus,Trichechus manatus,1887.88,NA,1479.3,15840,1278,25185,1278,25185,0.050744491,23725,1.878869931,0.12421879,3.106530854,0.050766294,-2.18031E-05
+manPen1,vs_HLmanPen2,Chinese pangolin,manis_pentadactyla,Insectivore,manis_pentadactyla,Manis pentadactyla,755.15,14400,NA,NA,755,NA,755,14400,0.052430556,NA,NA,NA,2.877946952,0.052454607,-2.40514E-05
+echTel2,NA,Tenrec,echinops_telfairi,Ambiguous,echinops_telfairi,Echinops telfairi,278.42,NA,249.6,4680,365,6935,365,6935,0.052631579,6935,-0.58057187,0.577313337,2.562292864,0.052655908,-2.43293E-05
+HLcapHir2,vs_HLcapHir2,Domestic goat,capra_hircus,Herbivore,capra_hircus,Capra hircus,498.97,NA,480,7470,406,7592,406,7592,0.053477345,NA,NA,NA,2.608526034,0.053502867,-2.55222E-05
+calJac3,vs_HLcalJac4,Marmoset,callithrix_jacchus,Omnivore,callithrix_jacchus,Callithrix jacchus,455.99,NA,489.9,4320,477,8322,477,8322,0.057317952,8322,-0.363987275,0.658139907,2.678518379,0.057349383,-3.14314E-05
+eriEur2,vs_eriEur2,Hedgehog,erinaceus_europaeus,Generalist,erinaceus_europaeus,Erinaceus europaeus,265.8,6048,324,2880,253,4270.5,253,4270.5,0.059243648,4270.5,-0.698530672,-0.095637324,2.403120521,0.059278359,-3.47105E-05
+HLaciJub1,vs_HLaciJub2,Cheetah,acinonyx_jubatus,Carnivore,acinonyx_jubatus,Acinonyx jubatus,741.97,NA,762.3,6840,456,7482.5,456,7482.5,0.060942198,NA,NA,NA,2.658964843,0.060979984,-3.77859E-05
+rn6,vs_HLratNor7,Rat,rattus_norvegicus,Generalist,rattus_norvegicus,Rattus norvegicus,55.23,NA,66.6,NA,90,1387,90,1387,0.064888248,NA,NA,NA,1.954242509,0.06493387,-4.56217E-05
+monDom5,NA,Opossum,monodelphis_domestica,Omnivore,monodelphis_domestica,Monodelphis domestica,162.11,NA,NA,NA,122,1861.5,122,1861.5,0.065538544,1861.5,-1.758082729,-0.390586955,2.086359831,0.065585553,-4.70089E-05
+HLoviAri4,vs_HLoviAri5,Domestic sheep,ovis_aries,Herbivore,ovis_aries,Ovis aries,831.62,NA,546.9,NA,548,8322,548,8322,0.065849555,NA,NA,NA,2.738780558,0.065897237,-4.76822E-05
+ornAna2,NA,Platypus,ornithorhynchus_anatinus,Insectivore/Carnivore,ornithorhynchus_anatinus,Ornithorhynchus anatinus,742.46,NA,NA,NA,548,8249,548,8249,0.066432295,NA,NA,NA,2.738780558,0.066481256,-4.8961E-05
+oryAfe1,NA,Aardvark,orycteropus_afer_afer,Insectivore,orycteropus_afer,Orycteropus afer,755.15,5700,780,8640,730,10877,730,10877,0.067114094,10877,0.916074904,-0.185159862,2.86332286,0.06716458,-5.04861E-05
+HLcerEla1,NA,NA,cervus_elaphus_hippelaphus,NA,cervus_elaphus,Cervus elaphus,659.91,6444,850.8,9720,852,11497.5,852,11497.5,0.074103066,NA,NA,NA,2.930439595,0.074171054,-6.79881E-05
+bisBis1,vs_bisBis1,American Bison,bison_bison_bison,Herbivore,bison_bison,Bison bison,921.77,NA,883.5,9000,912,12227.5,912,12227.5,0.074585974,NA,NA,NA,2.959994838,0.074655302,-6.93282E-05
+HLcasCan1,vs_HLcasCan3,Beaver,castor_canadensis,Herbivore,castor_canadensis,Castor canadensis,663.02,NA,648,NA,639,8541,639,8541,0.074815595,NA,NA,NA,2.805500858,0.074885567,-6.99715E-05
+bosTau8,vs_bosTau9,Cow,bos_taurus,Herbivore,bos_taurus,Bos taurus,755.15,NA,NA,NA,548,7300,548,7300,0.075068493,NA,NA,NA,2.738780558,0.075139178,-7.06847E-05
+cebCap1,vs_cebCap1,Ring-tailed Monkey,cebus_capucinus_imitator,Omnivore/Generalist,cebus_capucinus,Cebus capucinus,2134.73,8280,1440,19800,1505,19710,1505,19710,0.076357179,NA,NA,NA,3.1775365,0.076431573,-7.43944E-05
+musFur1,vs_HLmusFur2,Ferret,mustela_putorius_furo,Carnivore,mustela_putorius,Mustela putorius,308.5,NA,300,5040,312,4051.5,312,4051.5,0.077008515,4051.5,-0.72674359,-0.153299244,2.494154594,0.077084833,-7.63179E-05
+eptFus1,vs_eptFus1,Big brown bat,eptesicus_fuscus,Insectivore,eptesicus_fuscus,Eptesicus fuscus,395.29,NA,NA,NA,547,6935,547,6935,0.07887527,6935,-0.980635609,0.977377076,2.737987326,0.078957284,-8.20144E-05
+HLailFul1,vs_HLailFul2,Red Panda ,ailurus_fulgens,Omnivore,ailurus_fulgens,Ailurus fulgens,604.05,1440,585.3,6300,550,6935,550,6935,0.079307859,NA,NA,NA,2.740362689,0.079391233,-8.33738E-05
+HLphaCin1,NA,Koala,phascolarctos_cinereus,Herbivore,phascolarctos_cinereus,Phascolarctos cinereus,834.72,NA,NA,NA,646,8066.5,646,8066.5,0.080084299,NA,NA,NA,2.810232518,0.08017015,-8.58514E-05
+macNem1,vs_macNem1,Southern Pig-tailed Macaca,macaca_nemestrina,Omnivore,macaca_nemestrina,Macaca nemestrina,1427.17,NA,1309.2,9480,1125,13724,1125,13724,0.081973186,NA,NA,NA,3.051152522,0.082065269,-9.20833E-05
+otoGar3,vs_otoGar3,Bushbaby,otolemur_garnettii,Herbivore,otolemur_garnettii,Otolemur garnettii,592.15,25560,584.4,6480,600,7300,600,7300,0.082191781,6679.5,-0.226738845,0.162246761,2.77815125,0.082284604,-9.28234E-05
+rheMac8,vs_rheMac10,Rhesus Macaca,macaca_mulatta,Omnivore,macaca_mulatta,Macaca mulatta,1101.07,8580,1232.4,7770,1231,14600,1231,14600,0.084315068,NA,NA,NA,3.090258053,0.084415289,-0.000100221
+macFas5,vs_HLmacFas6,Crab-eating macaque,macaca_fascicularis,Omnivore,macaca_fascicularis,Macaca fascicularis,1319.5,7200,1306.8,13350,1238,14235,1238,14235,0.086968739,14235,0.699200721,0.47060615,3.092720645,0.087078746,-0.000110007
+canFam3,vs_canFam4,Dog,canis_lupus_familiaris,Carnivore,canis_lupus,Canis lupus,679.37,10620,661.2,5760,669,7519,669,7519,0.088974598,7519,0.456947365,-0.328316304,2.825426118,0.089092412,-0.000117814
+manLeu1,vs_manLeu1,Drill,mandrillus_leucophaeus,Omnivore,mandrillus_leucophaeus,Mandrillus leucophaeus,1745.96,NA,1705.5,10290,1277,14235,1277,14235,0.089708465,NA,NA,NA,3.106190897,0.089829226,-0.000120761
+HLproCap2,vs_HLproCap3,Hydrax,procavia_capensis,Herbivore,procavia_capensis,Procavia capensis,487.07,6120,665.4,3960,500,5402,500,5402,0.092558312,NA,NA,NA,2.698970004,0.092690983,-0.000132671
+HLoviCan1,vs_HLoviCan1,Bighorn sheep,ovis_canadensis,Herbivore,ovis_canadensis,Ovis canadensis,761.25,NA,692.1,7200,707,7519,707,7519,0.094028461,NA,NA,NA,2.849419414,0.094167572,-0.000139111
+HLpanPar1,vs_HLpanPar1,Leopard,panthera_pardus,Carnivore,panthera_pardus,Panthera pardus,810.68,NA,1023,8280,937,9964.5,937,9964.5,0.09403382,NA,NA,NA,2.971739591,0.094172954,-0.000139134
+saiBol1,vs_HLsaiBol1,Squirrel monkey,saimiri_boliviensis,Omnivore,saimiri_boliviensis,Saimiri boliviensis,NA,NA,NA,NA,1091,11059.5,1091,11059.5,0.098648221,11059.5,0.038994418,0.719063433,3.037824751,0.098808924,-0.000160703
+HLcamBac1,vs_HLcamBac1,Bactrian Camel,camelus_bactrianus,Omnivore,camelus_bactrianus,Camelus bactrianus,1330.6,NA,1260,NA,1278,12921,1278,12921,0.098908753,NA,NA,NA,3.106530854,0.099070737,-0.000161984
+cerSim1,vs_HLcerSimCot1,White rhinoceros (Chad),ceratotherium_simum_cottoni,Herbivore,ceratotherium_simum,Ceratotherium simum,2741.23,NA,1997.1,18000,1643,16425,1643,16425,0.100030441,16425,1.950827302,-0.547587866,3.215637563,0.100198016,-0.000167575
+HLlycPic1,vs_HLlycPic3,African Hunting Dog ,lycaon_pictus,Carnivore,lycaon_pictus,Lycaon pictus,817.15,NA,757.5,6120,639,6205,639,6205,0.102981467,NA,NA,NA,2.805500858,0.103164364,-0.000182897
+HLcamDro1,vs_HLcamDro2,One-hump Camel,camelus_dromedarius,Omnivore,camelus_dromedarius,Camelus dromedarius,1947.94,14400,1389,14400,1095,10366,1095,10366,0.105633803,NA,NA,NA,3.039414119,0.105831249,-0.000197446
+hg38,REFERENCE,Human,homo_sapiens,Generalist,homo_sapiens,Homo sapiens,5582.93,NA,NA,NA,4745,44712.5,4745,44712.5,0.106122449,NA,NA,NA,3.676236217,0.106322657,-0.000200208
+HLbalMys1,NA,Bowhead whale,balaena_mysticetus,Planktivore,balaena_mysticetus,Balaena mysticetus,6041.21,5796,6300,36000,8212,77015,8212,77015,0.106628579,NA,NA,NA,3.914448941,0.106831675,-0.000203096
+ursMar1,vs_ursMar1,Polar Bear,ursus_maritimus,Carnivore,ursus_maritimus,Ursus maritimus,1850.26,NA,1656.6,16200,1734,15987,1734,15987,0.108463126,NA,NA,NA,3.239049093,0.108676924,-0.000213798
+phyCat1,NA,Sperm whale,physeter_catodon,Piscivore,physeter_catodon,Physeter catodon,3935.04,6480,3100.8,27720,NA,NA,3100.8,27720,0.111861472,NA,NA,NA,3.491473755,0.112096082,-0.00023461
+HLdelLeu1,vs_HLdelLeu2,Beluga Whale,delphinapterus_leucas,Piscivore,delphinapterus_leucas,Delphinapterus leucas,2104.57,NA,1686.3,10800,1644,14600,1644,14600,0.11260274,NA,NA,NA,3.215901813,0.112842063,-0.000239323
+HLmarMar1,vs_HLmarMar1,Marmot,marmota_marmota_marmota,Insectivore/herbivore,marmota_marmota,Marmota marmota,827.69,NA,900,5400,730,6351,730,6351,0.114942529,NA,NA,NA,2.86332286,0.115197145,-0.000254616
+HLorcOrc1,vs_orcOrc1,Killer whale,orcinus_orca,Carnivore/Piscivore,orcinus_orca,Orcinus orca,4989.76,NA,4146.6,32400,3780,32850,3780,32850,0.115068493,NA,NA,NA,3.5774918,0.11532395,-0.000255457
+odoRosDiv1,vs_HLodoRos1,Pacific walrus,odobenus_rosmarus_divergens,Piscivore,odobenus_rosmarus,Odobenus rosmarus,2315.02,5940,1564.2,14400,1745,NA,1745,14400,0.121180556,NA,NA,NA,3.241795431,0.121479117,-0.000298561
+jacJac1,vs_jacJac1,Lesser Egyptian jerboa,jaculus_jaculus,Herbivore,jaculus_jaculus,Jaculus jaculus,240.52,NA,322.2,2250,327,2664.5,327,2664.5,0.122724714,2664.5,-1.591306439,0.027656436,2.514547753,0.123034888,-0.000310174
+speTri2,vs_speTri2,Ground Squirrel ,ictidomys_tridecemlineatus,Omnivore,ictidomys_tridecemlineatus,Ictidomys tridecemlineatus,NA,NA,NA,NA,354,2883.5,354,2883.5,0.12276747,2591.5,-1.437928618,-0.171036666,2.549003262,0.123077969,-0.000310499
+colAng1,vs_colAng1,Black-and-white Colobus Monkey,colobus_angolensis_palliatus,Herbivore,colobus_angolensis,Colobus angolensis,NA,NA,NA,NA,1642,12884.5,1642,12884.5,0.127439947,NA,NA,NA,3.215373153,0.12778745,-0.000347503
+gorGor5,vs_gorGor6,Gorilla,gorilla_gorilla_gorilla,Herbivore,gorilla_gorilla,Gorilla gorilla,3353.12,NA,2679.9,14160,2829,21936.5,2829,21936.5,0.128963144,NA,NA,NA,3.451632947,0.129323321,-0.000360177
+panTig1,vs_panTig1,Tiger,panthera_tigris_altaica,Carnivore,panthera_tigris,Panthera tigris,1522.5,NA,1233.6,9450,1268,9599.5,1268,9599.5,0.132090213,NA,NA,NA,3.103119254,0.132477375,-0.000387162
+ochPri3,vs_ochPri3,Pika,ochotona_princeps,Herbivore,ochotona_princeps,Ochotona princeps,374.39,NA,342.6,2520,347,2555,347,2555,0.135812133,2555,-1.509286851,-0.12281705,2.540329475,0.136233145,-0.000421012
+panTro5,vs_panTro6,Chimp,pan_troglodytes,Omnivore,pan_troglodytes,Pan troglodytes,3897.96,NA,3956.1,21780,3376,24820,3376,24820,0.136019339,NA,NA,NA,3.528402438,0.136442291,-0.000422952
+cerAty1,vs_cerAty1,Sooty Mangabey,cercocebus_atys,Omnivore,cercocebus_atys,Cercocebus atys,1321.67,9108,NA,NA,NA,NA,1321.67,9108,0.145110892,NA,NA,NA,3.121123032,0.14562505,-0.000514158
+balAcu1,vs_balAcu1,Minke Whale,balaenoptera_acutorostrata_scammoni,Carnivore/Planktivore,balaenoptera_acutorostrata,Balaenoptera acutorostrata,2680.62,NA,2961.9,16920,2740,18250,2740,18250,0.150136986,NA,NA,NA,3.437750563,0.150706828,-0.000569842
+HLturTru3,vs_HLturTru4,Bottle-nose Dolphin,tursiops_truncatus,Piscivore,tursiops_truncatus,Tursiops truncatus,3354.8,3240,2922.3,17640,2831,18834,2831,18834,0.150313263,NA,NA,NA,3.451939869,0.150885128,-0.000571865
+lepWed1,vs_lepWed1,Weddell seal,leptonychotes_weddellii,Piscivore,leptonychotes_weddellii,Leptonychotes weddellii,1587.55,NA,1455.3,9000,1365,NA,1365,9000,0.151666667,10950,1.302204641,-0.560378219,3.135132651,0.152254229,-0.000587562
+oryCun2,vs_HLoryCunCun4,Rabbit,oryctolagus_cuniculus,Herbivore,oryctolagus_cuniculus,Oryctolagus cuniculus,185.61,NA,153.9,3600,730,4745,730,4745,0.153846154,3285,-0.742290201,-0.479858244,2.86332286,0.154459599,-0.000613445
+sarHar1,NA,Tasmanian devil,sarcophilus_harrisii,Omnivore,sarcophilus_harrisii,Sarcophilus harrisii,777.31,NA,NA,NA,730,4745,730,4745,0.153846154,4745,-0.192694902,-0.429604258,2.86332286,0.154459599,-0.000613445
+panPan2,vs_panPan3,Bonobo,pan_paniscus,Omnivore,pan_paniscus,Pan paniscus,5465.72,NA,3240,NA,3194,20075,3194,20075,0.159103362,NA,NA,NA,3.504334912,0.15978238,-0.000679018
+nasLar1,vs_nasLar1,Proboscis Monkey,nasalis_larvatus,Herbivore,nasalis_larvatus,Nasalis larvatus,1894.11,5461.2,1620,8280,1460,9161.5,1460,9161.5,0.15936255,NA,NA,NA,3.164352856,0.160044917,-0.000682367
+ailMel1,vs_HLailMel2,Panda,ailuropoda_melanoleuca,Omnivore,ailuropoda_melanoleuca,Ailuropoda melanoleuca,2413.02,5400,2317.8,12240,2192,13432,2192,13432,0.163192376,13432,1.218848079,-0.143757506,3.34084055,0.163925547,-0.000733171
+loxAfr3,vs_HLloxAfr4,Elephant,loxodonta_africana,Herbivore,loxodonta_africana,Loxodonta africana,4977.64,6300,4425.3,25200,4018,23725,4018,23725,0.169357218,23725,2.404225801,-0.40113708,3.604009932,0.170177429,-0.000820211
+sorAra2,vs_sorAra2,Shrew,sorex_araneus,Omnivore,sorex_araneus,Sorex araneus,312.9,NA,321.3,720,198,1168,198,1168,0.169520548,1168,-2.615936534,-0.293039789,2.29666519,0.170343156,-0.000822608
+nomLeu3,vs_HLnomLeu4,Gibbon,nomascus_leucogenys,Herbivore,nomascus_leucogenys,Nomascus leucogenys,NA,NA,NA,NA,3069,16096.5,3069,16096.5,0.190662566,16096.5,0.788032691,0.582251175,3.486996888,0.19183705,-0.001174484
+conCri1,vs_conCri1,Star-nosed mole,condylura_cristata,Carnivore,condylura_cristata,Condylura cristata,304.16,8280,300,NA,304,912.5,304,912.5,0.333150685,912.5,-2.46425653,-0.847409112,2.482873584,0.339643188,-0.006492503
+lipVex1,vs_lipVex1,Chinese River Dolphin,lipotes_vexillifer,Piscivore,lipotes_vexillifer,Lipotes vexillifer,3367.31,NA,2880,8640,2920,8760,2920,8760,0.333333333,NA,NA,NA,3.465382851,0.339836909,-0.006503576
+ponAbe2,vs_ponAbe3,Orangutan,pongo_abelii,Omnivore,pongo_abelii,Pongo abelii,NA,NA,NA,NA,NA,NA,NA,NA,NA,21535,1.487155861,0.357947046,NA,,
+papAnu3,vs_HLpapAnu5,Olive Baboon,papio_anubis,Generalist,papio_anubis,Papio anubis,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+chlSab2,vs_chlSab2,Green monkey,chlorocebus_sabaeus,Omnivore,chlorocebus_sabaeus,Chlorocebus sabaeus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+rhiRox1,vs_HLrhiRox2,Snub-nosed Langur ,rhinopithecus_roxellana,Herbivore,rhinopithecus_roxellana,Rhinopithecus roxellana,NA,NA,NA,NA,NA,10767.5,NA,10767.5,NA,NA,NA,NA,NA,,
+rhiBie1,vs_rhiBie1,Snub-nosed Langur ,rhinopithecus_bieti,Herbivore,rhinopithecus_bieti,Rhinopithecus bieti,755.15,NA,NA,NA,755,NA,755,NA,NA,NA,NA,NA,2.877946952,,
+HLpilTep1,vs_HLpilTep2,Red Colobus Monkey,piliocolobus_tephrosceles,Herbivore,piliocolobus_tephrosceles,Piliocolobus tephrosceles,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+aotNan1,vs_aotNan1,Night Monkey,aotus_nancymaae,Omnivore,aotus_nancymaae,Aotus nancymaae,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+tarSyr2,NA,Philippine tarsier,carlito_syrichta,Insectivore,carlito_syrichta,Carlito syrichta,NA,NA,NA,NA,NA,5840,NA,5840,NA,NA,NA,NA,NA,,
+proCoq1,vs_proCoq1,Sifakas,propithecus_coquereli,Herbivore,propithecus_coquereli,Propithecus coquereli,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+galVar1,NA,Sunda flying lemur,galeopterus_variegatus,Herbivore,galeopterus_variegatus,Galeopterus variegatus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+tupChi1,vs_tupChi1,Chinese tree shrew,tupaia_chinensis,Ambiguous,tupaia_chinensis,Tupaia chinensis,NA,NA,NA,NA,NA,NA,NA,NA,NA,4051.5,-0.998477173,0.118434339,NA,,
+criGri1,vs_HLcriGri3,Chinese hamster,cricetulus_griseus,Herbivore,cricetulus_griseus,Cricetulus griseus,NA,NA,NA,NA,NA,NA,NA,NA,NA,1934.5,-1.929523359,-0.156398389,NA,,
+HLmusCar1,vs_HLmusCar1,Ryukyu mouse,mus_caroli,Generalist,mus_caroli,Mus caroli,NA,NA,NA,NA,53,NA,53,NA,NA,NA,NA,NA,1.72427587,,
+HLmusPah1,vs_HLmusPah1,Gairdner's shrewmouse,mus_pahari,Generalist,mus_pahari,Mus pahari,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+nanGal1,vs_nanGal1,Mediterranean Blind Mole-rats,nannospalax_galili,Herbivore,nannospalax_galili,Nannospalax galili,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+HLfukDam1,vs_HLfukDam2,Damara mole rat,fukomys_damarensis,Insectivore/Herbivore,fukomys_damarensis,Fukomys damarensis,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+HLcamFer2,vs_HLcamFer3,Ferus Camel,camelus_ferus,Omnivore,camelus_ferus,Camelus ferus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+HLbosInd1,vs_HLbosInd2,Zebu,bos_indicus,Herbivore,bos_indicus,Bos indicus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+bosMut1,vs_HLbosMut2,Yak,bos_mutus,Herbivore,bos_mutus,Bos mutus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+panHod1,vs_panHod1,Tibetan antelope,pantholops_hodgsonii,Herbivore,pantholops_hodgsonii,Pantholops hodgsonii,NA,NA,NA,NA,NA,NA,NA,NA,NA,3650,-0.09675236,-0.953527249,NA,,
+equPrz1,vs_equPrz1,Przewalskii Horse,equus_przewalskii,Herbivore,equus_przewalskii,Equus przewalskii,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+HLenhLut1,NA,NA,NA,NA,NA_NA,NA NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+neoSch1,vs_neoSch1,Hawaiian Monk Seal,neomonachus_schauinslandi,Piscivore,neomonachus_schauinslandi,Neomonachus schauinslandi,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+pteAle1,vs_pteAle1,Black flying-fox,pteropus_alecto,Herbivore,pteropus_alecto,Pteropus alecto,NA,NA,NA,NA,NA,7409.5,NA,7409.5,NA,7190.5,-0.294891036,0.350650394,NA,,
+HLpteVam2,vs_HLpteVam2,Megabat,pteropus_vampyrus,Herbivore,pteropus_vampyrus,Pteropus vampyrus,NA,NA,NA,NA,NA,7628.5,NA,7628.5,NA,NA,NA,NA,NA,,
+HLrhiSin1,vs_HLrhiSin1,Horseshoe Bats,rhinolophus_sinicus,Insectivore,rhinolophus_sinicus,Rhinolophus sinicus,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+HLhipArm1,vs_HLhipArm1,Old World Leaf-nosed Bats,hipposideros_armiger,Insectivore,hipposideros_armiger,Hipposideros armiger,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+myoDav1,vs_myoDav1,David's myotis bat,myotis_davidii,Insectivore,myotis_davidii,Myotis davidii,NA,NA,NA,NA,NA,NA,NA,NA,NA,8760,-1.075498273,1.453322846,NA,,
+myoBra1,vs_myoBra1,Brandt's bat,myotis_brandtii,Insectivore,myotis_brandtii,Myotis brandtii,NA,NA,NA,NA,NA,14965,NA,14965,NA,NA,NA,NA,NA,,
+HLminNat1,vs_HLminNat1,Long-winged bats,miniopterus_natalensis,Insectivore,miniopterus_natalensis,Miniopterus natalensis,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+chrAsi1,vs_chrAsi1,Cape golden mole,chrysochloris_asiatica,Insectivore,chrysochloris_asiatica,Chrysochloris asiatica,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,,
+eleEdw1,vs_eleEdw1,Cape elephant shrew,elephantulus_edwardii,Insectivore,elephantulus_edwardii,Elephantulus edwardii,NA,NA,NA,NA,NA,NA,NA,NA,NA,3193.75,-1.462065071,0.193963018,NA,,
