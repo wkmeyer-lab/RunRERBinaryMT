@@ -57,6 +57,9 @@ args = c("r=CategoricalBinaryVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds
 args = c("r=CategoricalBinaryHerbivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=50")
 args = c("r=CategoricalBinaryOmnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 
+args = c("r=CategoricalNoMegabranchInsvertTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+args = c("r=CategoricalDownsampledInsvertTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes

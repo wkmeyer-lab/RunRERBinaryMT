@@ -14,7 +14,7 @@ palette(c(  "red", "darkgreen", "black"))
 palette(c( "darkgreen", "black", "darkblue", "red"))
 palette(c("black", "darkblue"))
 
-palette(c( "darkgreen", "darkblue", "black", "red"))
+palette(c( "darkgreen", "darkblue", "black", "red", "gray"))
 palette(c( "darkgreen", "blue", "pink", "red"))
 
 
@@ -26,6 +26,7 @@ length(phenotypeVector)
 ?correlateWithCategoricalPhenotype
 # -----------------------------------------
 stableMaintrees = mainTrees
+mainTrees = stableMaintrees
 stableMaintrees = readRDS(mainTreesLocation)
 
 mainTrees$masterTree$edge.length[1:length(mainTrees$masterTree$edge.length)] = 1
@@ -34,16 +35,135 @@ stableCommonMainTrees = stableMaintrees
 stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
 
 ?plotTreeCategorical
+pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)     
 plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
 
 plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableMaintrees$masterTree)
-
+dev.off()  
 
 
 plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
 
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
 #-----------------------------------
+
+
+# ---- Compare the ranking of the downsampled and non-downsampled results ---- 
+
+mainIhCorrels = readRDS("Output/CategoricalInsvertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreCorrelationFile.rds")
+mainVhCorrels = readRDS("Output/CategoricalInsvertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreCorrelationFile.rds")
+
+downIhCorrels = readRDS("Output/CategoricalDownsampledInsvertTree/Herbivore-Insectivore/CategoricalDownsampledInsVertTreeHerbivore-InsectivoreCorrelationFile.rds")
+downVhCorrels = readRDS("Output/CategoricalDownsampledInsvertTree/Herbivore-Vertivore/CategoricalDownsampledInsVertTreeHerbivore-VertivoreCorrelationFile.rds")
+
+halfIhCorrels = readRDS("Output/CategoricalNoMegabranchInsvertTree/Herbivore-Insectivore/CategoricalNoMegabranchInsvertTreeHerbivore-InsectivoreCorrelationFile.rds")
+halfVhCorrels = readRDS("Output/CategoricalNoMegabranchInsvertTree/Herbivore-Vertivore/CategoricalNoMegabranchInsvertTreeHerbivore-VertivoreCorrelationFile.rds")
+
+
+mainIhCorrels$order = rep(1:nrow(mainIhCorrels))
+mainVhCorrels$order = rep(1:nrow(mainVhCorrels))
+downIhCorrels$order = rep(1:nrow(downIhCorrels))
+downVhCorrels$order = rep(1:nrow(downVhCorrels))
+halfIhCorrels$order = rep(1:nrow(halfIhCorrels))
+halfVhCorrels$order = rep(1:nrow(halfVhCorrels))
+
+
+mainIhCorrels = mainIhCorrels[order(mainIhCorrels$p.adj),]
+mainVhCorrels = mainVhCorrels[order(mainVhCorrels$p.adj),]
+downIhCorrels = downIhCorrels[order(downIhCorrels$p.adj),]
+downVhCorrels = downVhCorrels[order(downVhCorrels$p.adj),]
+halfIhCorrels = halfIhCorrels[order(halfIhCorrels$p.adj),]
+halfVhCorrels = halfVhCorrels[order(halfVhCorrels$p.adj),]
+
+mainIhCorrels$rank = rep(1:nrow(mainIhCorrels))
+mainVhCorrels$rank = rep(1:nrow(mainVhCorrels))
+downIhCorrels$rank = rep(1:nrow(downIhCorrels))
+downVhCorrels$rank = rep(1:nrow(downVhCorrels))
+halfIhCorrels$rank = rep(1:nrow(halfIhCorrels))
+halfVhCorrels$rank = rep(1:nrow(halfVhCorrels))
+
+mainIhCorrels = mainIhCorrels[order(mainIhCorrels$order),]
+colnames(mainIhCorrels) = paste0("mih", colnames(mainIhCorrels))
+mainVhCorrels = mainVhCorrels[order(mainVhCorrels$order),]
+colnames(mainVhCorrels) = paste0("mvh", colnames(mainVhCorrels))
+downIhCorrels = downIhCorrels[order(downIhCorrels$order),]
+colnames(downIhCorrels) = paste0("dih", colnames(downIhCorrels))
+downVhCorrels = downVhCorrels[order(downVhCorrels$order),]
+colnames(downVhCorrels) = paste0("dvh", colnames(downVhCorrels))
+halfIhCorrels = halfIhCorrels[order(halfIhCorrels$order),]
+colnames(halfIhCorrels) = paste0("hih", colnames(halfIhCorrels))
+halfVhCorrels = halfVhCorrels[order(halfVhCorrels$order),]
+colnames(halfVhCorrels) = paste0("hvh", colnames(halfVhCorrels))
+
+combinedData = cbind(mainIhCorrels, mainVhCorrels, downIhCorrels, downVhCorrels, halfIhCorrels, halfVhCorrels)
+
+
+plot(combinedData$mihrank, combinedData$dihrank)
+plot(combinedData$mvhrank, combinedData$dvhrank)
+plot(combinedData$hvhrank, combinedData$dvhrank)
+
+plot(combinedData$mihp.adj, combinedData$dihp.adj)
+plot(combinedData$mvhp.adj, combinedData$dvhp.adj)
+plot(combinedData$hvhp.adj, combinedData$dvhp.adj)
+
+
+# --- Check downsampling RERS are equal ---- 
+
+mainRERs = readRDS("Output/CategoricalInsvertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
+halfDownRERs = readRDS("Output/CategoricalNoMegabranchInsvertTree/CategoricalNoMegabranchInsvertTreeRERFile.rds")
+downRERs = readRDS("Output/CategoricalDownsampledInsvertTree/CategoricalDownsampledInsvertTreeRERFile.rds")
+
+all.equal(mainRERs, halfDownRERs)
+all.equal(downRERs, halfDownRERs)
+
+mainFilter = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeSpeciesFilterJanThirty.rds")
+halfdownFilter = readRDS("Output/CategoricalNoMegabranchInsvertTree/CategoricalNoMegabranchInsvertTreeSpeciesFilter.rds")
+downFilter = readRDS("Output/CategoricalDownsampledInsvertTree/CategoricalDownsampledInsvertTreeSpeciesFilter.rds")
+
+mainFilterOld = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeSpeciesFilter.rds")
+
+mainFilter
+halfdownFilter
+downFilter
+all.equal(halfdownFilter, downFilter)
+
+all.equal(mainFilter, downFilter)
+all.equal(mainFilter, mainFilterOld)
+
+# ---- Make phylogeneticaly matching downsampled trees ----
+insVertTree = readRDS("Output/CategoricalInsvertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+insVertPhenv = readRDS("Output/CategoricalInsvertivoreTree/CategoricalInsVertivoreTreeCategoricalPhenotypeVector.rds")
+table(insVertTree$edge.length)
+table(insVertPhenv)
+
+pdf(height = length(phenotypeVector)/5, width = 10)  
+plot(commonCategoricalTree)
+edgelabels(col = "darkgreen", frame = "none")
+dev.off()
+
+noMegaBranchesTree = insVertTree
+noMegaBranchesTree$edge.length[c(1,2,367)] = NA
+
+categoricalTree$edge.length[c(1,2,367)] = 5
+commonCategoricalTree$edge.length[c(1,2,367)] = 5
+
+pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
+paths = tree2Paths(categoricalTree, mainTrees, useSpecies = speciesFilter, categorical = T)
+#char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
+saveRDS(paths, file = pathsFilename)
+
+?tree2Paths
+categoricalTree$edge.length[c(389,388, 370, 366, 365, 359, 351, 352, 350, 347, 339, 337, 110, 336, 335, 334)] = 5
+categoricalTree$edge.length[c(1,2,367, 364, 360, 358, 342, 343, 344, 345, 346, 348, 329, 330, 331, 332, 333, 338, 145, 3, 147)] = 5
+
+
+
+commonCategoricalTree$edge.length[c(389,388, 370, 366, 365, 359, 351, 352, 350, 347, 339, 337, 110, 336, 335, 334)] = 5
+commonCategoricalTree$edge.length[c(1,2,367, 364, 360, 358, 342, 343, 344, 345, 346, 348, 329, 330, 331, 332, 333, 338, 145, 3, 147)] = 5
+
+
+
+#-------------------
 
 maturityRER = readRDS("Output/MaturityLifespanPercent/MaturityLifespanPercentRERFile.rds")
 maturityPath = readRDS("Output/MaturityLifespanPercent/MaturityLifespanPercentContinuousPathsFile.rds")
@@ -55,6 +175,7 @@ colnames(commonMaturityRER) = ZonomNameConvertVectorCommon(colnames(commonMaturi
 
 returnRersAsTree(maturityMaintrees, maturityRER, "NDRG4", maturityPath)
 plotRers(commonMaturityRER, "NDRG4", phenv = maturityPath)
+
 
 
 #-----------------------------------
