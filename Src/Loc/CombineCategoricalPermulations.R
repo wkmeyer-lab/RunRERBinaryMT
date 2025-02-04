@@ -174,8 +174,12 @@ if(!onlyCalulateValue){
   
   # -- Do all subsequent combinations (loop) --
   
+  iteratingPermulationsData = NULL #make a dummy variable to be removed on first instance of loop 
+  
   if((startValue+2) < (startValue+permulationNumberValue-1)){                     #Sanity check that there are additional combinations to loop through
     for(i in (startValue+2):(startValue+permulationNumberValue-1)){
+      rm(iteratingPermulationsData)
+      gc()
       tryCatch({
       message(i)
       iteratingPermulationsFilename = paste(basePermulationsFilename, i, ".rds", sep="")
