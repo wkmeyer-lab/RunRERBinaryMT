@@ -42,7 +42,7 @@ ARG5=$9
 cd $ALIGNMENTPATH
 
 count=$(find | grep $GENENAME |wc -l)
-if[$count -gt 1]; then
+if [ $count -gt 1 ]; then
         cd $FILTEREDPATH
         FASTAFILEBASE=$(find | grep $GENENAME)
         FASTAFILEBASE="${FASTAFILEBASE:2:-11}"
