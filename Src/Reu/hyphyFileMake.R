@@ -1,9 +1,10 @@
 clusterRun = F
 clusterRun = T
 if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-library(seqinr)
+#library(seqinr)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/paths2Tree.R")
+source("Src/Reu/customSeqinrFunctions.R")
 
 # -- Command arguments list
 # r = filePrefix                                                               This is a prefix used to organize and separate files by analysis run. Always required. 
@@ -180,38 +181,6 @@ fastaTipHeaders = fastaTipHeaders[-fastaToDrop]
 names(fasta) = fastaTipHeaders
 
 #Write output file
-
-write.fastaToVar = function (sequences, names, file.out, open = "w", nbchar = 60, as.string = FALSE) #A modification of write.fasta from seqinr which writes to a variable instead of a file
-{
-  outfile <- textConnection(file.out, open = open)
-  write.oneseq <- function(sequence, name, nbchar, as.string) {
-    writeLines(paste(">", name, sep = ""), outfile)
-    if (as.string) 
-      sequence <- s2c(sequence)
-    l <- length(sequence)
-    q <- floor(l/nbchar)
-    r <- l - nbchar * q
-    if (q > 0) {
-      sapply(seq_len(q), function(x) writeLines(c2s(sequence[(nbchar * 
-                                                                (x - 1) + 1):(nbchar * x)]), outfile))
-    }
-    if (r > 0) {
-      writeLines(c2s(sequence[(nbchar * q + 1):l]), outfile)
-    }
-  }
-  if (!is.list(sequences)) {
-    write.oneseq(sequence = sequences, name = names, nbchar = nbchar, 
-                 as.string = as.string)
-  }
-  else {
-    n.seq <- length(sequences)
-    sapply(seq_len(n.seq), function(x) write.oneseq(sequence = as.character(sequences[[x]]), 
-                                                    name = names[x], nbchar = nbchar, as.string = as.string))
-  }
-  close(outfile)
-}
-
-
 write.fastaToVar(fasta, names = names(fasta), file.out = "fastaLinesVar")
 treeOut = write.tree(phenMasterTree)
 
@@ -220,3 +189,5 @@ combinedContent = c(fastaLinesVar, treeOut)
 fastaOutputFilename = paste0(outputHyphyFolderName, filePrefix, geneName, "HyphyInputFile.fna")
 writeLines(combinedContent, fastaOutputFilename)
 writeLines(combinedContent, "Results/TempHyphyInputFile.fna")
+
+
