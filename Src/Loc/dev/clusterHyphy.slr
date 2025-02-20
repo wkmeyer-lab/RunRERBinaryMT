@@ -18,7 +18,7 @@
 
 
 ALIGNMENTPATH="/share/ceph/wym219group/shared/data/filtered_alignments"
-FILTEREDPATH ="/share/ceph/wym219group/shared/data/fixed_filtered_translated_alignments"
+FILTEREDPATH="/share/ceph/wym219group/shared/data/fixed_filtered_translated_alignments"
 echo AlignmentPath: $ALIGNMENTPATH
 
 PROJECTNAME=$1 #This is the first input after the submission script name
@@ -42,21 +42,23 @@ ARG5=$9
 cd $ALIGNMENTPATH
 
 count=$(find | grep $GENENAME |wc -l)
+echo count: $count
 if [ $count -gt 1 ]; then
         cd $FILTEREDPATH
         FASTAFILEBASE=$(find | grep $GENENAME)
+        echo FASTAFILEBASE: $FASTAFILEBASE
         FASTAFILEBASE="${FASTAFILEBASE:2:-11}"
         FASTAFILE="${FASTAFILEBASE}.filt.fa"
         #code
 else
         FASTAFILE=$(find | grep $GENENAME)
-                FASTAFILE="${FASTAFILE:2}"
+        FASTAFILE="${FASTAFILE:2}"
 fi
 echo "Fasta file is:"
 echo $FASTAFILE
 
-
-FASTAFILEPATH="${ALIGNMENTPATH}${FASTAFILE}"
+FASTAFILEPATH="${ALIGNMENTPATH}/${FASTAFILE}"
+echo "Fasta file path is:"
 echo $FASTAFILEPATH
 
 #Generate the hyphy input file
