@@ -121,9 +121,9 @@ masterTree$node.label = NULL
 if(useManualTree){
   phenotypeTree = readRDS(phenotypeTreeLocation)
 }else{
-  pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
-  pathsObject = readRDS(pathsFilename)
-  pathsTree = paths2Tree(mainTrees, pathsObject, index)
+  #pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
+  #pathsObject = readRDS(pathsFilename)
+  #pathsTree = paths2Tree(mainTrees, pathsObject, index)
   #paths tree actually currently being unused because of how the master tree phenotype matching works. Because it's relying on the trees beingthe same shape and therefore having matching node numbers, I can't use the paths -- or, at least, it's very messy to try, so I'm not.
   
   phenotypeTreeCategoricalLocation = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
