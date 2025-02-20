@@ -2,6 +2,7 @@ clusterRun = F
 clusterRun = T
 if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
 #library(seqinr)
+library(RERconverge)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/paths2Tree.R")
 source("Src/Reu/customSeqinrFunctions.R")
