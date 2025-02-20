@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#SBATCH -p lts
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -t 10
+#SBATCH -J genericrscript
+#SBATCH -o /share/ceph/wym219group/shared/erroutfiles/michaelTene/%j.%N.out
+#SBATCH --open-mode=append
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=mit221@lehigh.edu
+
+#The lines above are slurm inputs. Anything else starting with a # is a comment.
+
+#Usage:
+#Cd to the project's main directory
+#sbatch runRERmt.slr <Project name> <Target Gene> <ForegroundPathValue> <Argument 1> <Argument 2> <etc.>
+
+
+ALIGNMENTPATH="/share/ceph/wym219group/shared/data/filtered_alignments"
+
+PROJECTNAME=$1 #This is the first input after the submission script name
+FILEPREFIX=$2
+GENENAME=$3
+FOREGROUNDPATHVALUE=$4
+
+#Collect additional Arguments
+ARG1=$5
+ARG2=$6
+ARG3=$7
+ARG4=$8
+ARG5=$9
+
+#Find the fasta alignment file for that gene
+cd $ALIGNMENTPATH
+
+FASTAFILE=$find | grep $GENENAME | head -n 1
+FASTAFILE="${FASTAFILE:2}"
+FASTAFILE="${ALIGNMENTPATH}${FASTAFILE}"
+
+#Generate the hyphy input file
+cd /share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME
+
+module load r
+R --no-save --args g=$GENENAME a=$FASTAFILE r=$FILEPREFIX $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Reu/hyphyFileMake.R
+HYPHYINPUTFILENAME="${FILEPREFIX}${GENENAME}HyphyInputFile.fna"
+
+# Run hyphy itself
+cd ./Output/$FILEPREFIX/Hyphy
+
+module load hyphy
+hyphy absrel $HYPHYINPUTFILENAME --branches $FOREGROUNDPATHVALUE
