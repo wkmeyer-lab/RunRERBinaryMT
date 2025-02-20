@@ -4,7 +4,7 @@
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -t 10
-#SBATCH -J genericrscript
+#SBATCH -J clusterHyphy
 #SBATCH -o /share/ceph/wym219group/shared/erroutfiles/michaelTene/%j.%N.out
 #SBATCH --open-mode=append
 #SBATCH --mail-type=ALL
