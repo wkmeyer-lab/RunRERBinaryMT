@@ -147,7 +147,6 @@ phenMasterTree = drop.tip(phenMasterTree, phenMasterTree$tip.label[!phenMasterTr
 #add category as label to nodes
 allLabels = rep("", (length(phenMasterTree$tip.label)+phenMasterTree$Nnode))
 for(i in 1:length(allLabels)){
-  message(i)
   parentEdge = which(phenMasterTree$edge[,2]==i)
   if(!length(parentEdge)==0){
     allLabels[i] = parentEdge
