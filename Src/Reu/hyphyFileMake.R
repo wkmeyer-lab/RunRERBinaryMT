@@ -166,6 +166,7 @@ phenMasterTree$node.label = paste0("{", internalLabels, "}")
 
 
 # - Read Fasta file - 
+message(fastaLocation)
 fasta = read.fasta(fastaLocation)
 
 fastaTipHeaders = names(fasta)
