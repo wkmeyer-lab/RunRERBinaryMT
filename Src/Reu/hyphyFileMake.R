@@ -1,7 +1,7 @@
 clusterRun = F
 clusterRun = T
 if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-#library(seqinr)
+library(seqinr)
 library(RERconverge)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/paths2Tree.R")
@@ -19,7 +19,7 @@ source("Src/Reu/customSeqinrFunctions.R")
 
 #Argument sets
 #geneName = "EHHADH"; fileprefix = "CategoricalInsVertivoreTree"; useManualTree = F; fastaLocation = "Results/ENST00000231887.EHHADH.filt.fa"; mainTreesLocation = 'data/zoonomiaAllMammalsTrees.rds'; foregroundCategory = "1"; phenotypeTreeLocation = "Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds"
-
+args = c("g=EHHADH", "r=CategoricalInsVertivoreTree", "a=Results/ENST00000231887.EHHADH.filt.fa")
 
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
