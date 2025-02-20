@@ -36,14 +36,14 @@ cd $ALIGNMENTPATH
 
 FASTAFILE=$find | grep $GENENAME | head -n 1
 FASTAFILE="${FASTAFILE:2}"
-FASTAFILE="${ALIGNMENTPATH}${FASTAFILE}"
-echo $FASTAFILE
+FASTAFILEPATH="${ALIGNMENTPATH}${FASTAFILE}"
+echo $FASTAFILEPATH
 
 #Generate the hyphy input file
 cd /share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME
 
 module load r
-R --no-save --args g=$GENENAME a=$FASTAFILE r=$FILEPREFIX $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Reu/hyphyFileMake.R
+R --no-save --args g=$GENENAME a=$FASTAFILEPATH r=$FILEPREFIX $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Reu/hyphyFileMake.R
 HYPHYINPUTFILENAME="${FILEPREFIX}${GENENAME}HyphyInputFile.fna"
 
 # Run hyphy itself
