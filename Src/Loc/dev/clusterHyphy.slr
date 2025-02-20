@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -p lts
+#SBATCH -p rapids
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -t 10
@@ -18,11 +18,18 @@
 
 
 ALIGNMENTPATH="/share/ceph/wym219group/shared/data/filtered_alignments"
+FILTEREDPATH ="/share/ceph/wym219group/shared/data/fixed_filtered_translated_alignments"
+echo AlignmentPath: $ALIGNMENTPATH
 
 PROJECTNAME=$1 #This is the first input after the submission script name
 FILEPREFIX=$2
 GENENAME=$3
 FOREGROUNDPATHVALUE=$4
+
+echo ProjectName: $PROJECTNAME
+echo FilePrefix: $FILEPREFIX
+echo GeneName: $GENENAME
+echo ForegroundValue: $FOREGROUNDPATHVALUE
 
 #Collect additional Arguments
 ARG1=$5
@@ -34,8 +41,21 @@ ARG5=$9
 #Find the fasta alignment file for that gene
 cd $ALIGNMENTPATH
 
-FASTAFILE=$find | grep $GENENAME | head -n 1
-FASTAFILE="${FASTAFILE:2}"
+count=$(find | grep $GENENAME |wc -l)
+if[$count -gt 1]; then
+        cd $FILTEREDPATH
+        FASTAFILEBASE=$(find | grep $GENENAME)
+        FASTAFILEBASE="${FASTAFILEBASE:2:-11}"
+        FASTAFILE="${FASTAFILEBASE}.filt.fa"
+        #code
+else
+        FASTAFILE=$(find | grep $GENENAME)
+                FASTAFILE="${FASTAFILE:2}"
+fi
+echo "Fasta file is:"
+echo $FASTAFILE
+
+
 FASTAFILEPATH="${ALIGNMENTPATH}${FASTAFILE}"
 echo $FASTAFILEPATH
 
