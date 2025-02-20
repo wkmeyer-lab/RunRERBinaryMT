@@ -14,6 +14,11 @@ source("Src/Reu/paths2Tree.R")
 # a = fastafileLocation                                                        This is the location of the fasta alignment
 # f = foregroundBranchIndicator                                                This converts a specific path value to "FOREGROUND" in the tree output
 
+
+#Argument sets
+#geneName = "EHHADH"; fileprefix = "CategoricalInsVertivoreTree"; useManualTree = F; fastaLocation = "Results/ENST00000231887.EHHADH.filt.fa"; mainTreesLocation = 'data/zoonomiaAllMammalsTrees.rds'; foregroundCategory = "1"; phenotypeTreeLocation = "Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds"
+
+
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -103,20 +108,6 @@ foregroundCategory = "dshakgldskagkjshadgkhalgh" #this is a random string which 
   }
 
 }
-
-
-
-
-
-
-geneName = "EHHADH"
-fileprefix = "CategoricalInsVertivoreTree"
-useManualTree = F
-fastaLocation = "Results/ENST00000231887.EHHADH.filt.fa"
-mainTreesLocation = 'data/zoonomiaAllMammalsTrees.rds'
-foregroundCategory = "1"
-phenotypeTreeLocation = "Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds"
-
 
 
 
@@ -229,21 +220,3 @@ combinedContent = c(fastaLinesVar, treeOut)
 fastaOutputFilename = paste0(outputHyphyFolderName, filePrefix, geneName, "HyphyInputFile.fna")
 writeLines(combinedContent, fastaOutputFilename)
 writeLines(combinedContent, "Results/TempHyphyInputFile.fna")
-
-
-
-
-
-
-
-txt_conn <- textConnection("output", "w")
-
-# Use cat() or write() to write to the connection
-cat("This is a simulated file write.\n", file = txt_conn)
-cat("Another line here.\n", file = txt_conn)
-
-# Close the connection
-close(txt_conn)
-
-# View the "file" contents
-cat(output)
