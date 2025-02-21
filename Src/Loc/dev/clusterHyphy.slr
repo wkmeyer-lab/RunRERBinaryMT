@@ -14,7 +14,7 @@
 
 #Usage:
 #Cd to the project's main directory
-#sbatch runRERmt.slr <Project name> <File Prefix> <Target Gene> <ForegroundPathValue> <Argument 1> <Argument 2> <etc.>
+#sbatch runRERmt.slr <Project name> <Hyphy Tool Name> <File Prefix> <Target Gene> <ForegroundPathValue> <Argument 1> <Argument 2> <etc.>
 
 
 ALIGNMENTPATH="/share/ceph/wym219group/shared/data/filtered_alignments"
