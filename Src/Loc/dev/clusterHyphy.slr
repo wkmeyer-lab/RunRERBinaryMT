@@ -75,3 +75,5 @@ OUTPUTFILENAME="${FILEPREFIX}-Hyphy-${TOOLNAME}-${GENENAME}-Foreground_${FOREGRO
 
 module load hyphy
 hyphy $TOOLNAME $HYPHYINPUTFILENAME --branches $FOREGROUNDPATHVALUE --output $OUTPUTFILENAME
+
+R --no-save --args g=$GENENAME f=$FOREGROUNDPATHVALUE r=$FILEPREFIX t=$TOOLNAME </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Reu/ExtractHyphyPvalues.R
