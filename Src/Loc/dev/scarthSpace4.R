@@ -48,6 +48,35 @@ plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), ma
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
 #-----------------------------------
 
+source("Src/Reu/treeColorPlots.R")
+
+treeColorByLabel(phenMasterTree)
+nodelabels(frame="none")
+
+# -----------------------------
+
+
+
+
+
+
+
+
+library(jsonlite)
+
+
+hyphyOutput = fromJSON("Output/CategoricalInsvertivoreTree/Hyphy/CategoricalInsVertivoreTree-Hyphy-absrel-EHHADH-Foreground_2.json", flatten = T)
+
+branchData = hyphyOutput$`branch attributes`$`0`
+
+
+jsonData = as.data.frame(hyphyOutput$`branch attributes`$`0`)
+
+
+
+
+write.csv(hyphyOutput, file = "Results/test.csv")
+
 # --- making nexus trees of genes of interest ------
 
 EHHADHTree = mainTrees$trees$EHHADH
