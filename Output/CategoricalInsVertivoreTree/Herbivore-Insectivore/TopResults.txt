@@ -1,3 +1,4 @@
+pValue 0.05 cutoff is gene 104 
 Top Herbivore > Insectivore
 	Top  Herbivore > Insectivore Genes
 		BPIFB1
@@ -131,7 +132,7 @@ Insectivore > Herbivore pathways
 		TRIO
 		AP2A2
 		TLN1
-Herbivore>Insectivore Tissues
+Herbivore > Insectivore Tissues
 	Liver
 		SERPINA1
 		ALB
@@ -167,7 +168,7 @@ Herbivore>Insectivore Tissues
 		PRSS45P
 		TLE6
 	-- Significance Threshold --
-Insectivore>Herbivore Tissues
+Insectivore > Herbivore Tissues
 	Cerebellum
 		POLE
 		MAPK8IP2

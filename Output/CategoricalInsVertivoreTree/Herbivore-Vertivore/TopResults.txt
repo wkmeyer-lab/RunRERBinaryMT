@@ -1,0 +1,55 @@
+pValue 0.05 cutoff is gene 35
+Top Herbivore > Vertivore
+	Top Herbivore > Vertivore genes
+		AFP
+		PRSS55
+		SLC22A16
+		BPIFB1
+		RIOX1
+		MBD1
+		NOL9
+		IL1RL2
+		C1orf141
+		HIRA
+		SPINT4
+		C9orf135
+		TRPV1
+		HSD17B2
+		NCAN
+		KIF4A
+		ZNF445
+		ADAM2
+Top Vertivore > Herbivore
+	Top Vertivore > Herbivore Genes
+		PGBD1
+		MINAR1
+		MYH13
+		IQGAP3
+		CRTC2
+		DYNC2H1
+		ATP8B2
+		TENM3
+		CEMIP
+		CAPN8
+		PIGM
+		IQANK1
+		TACR2
+		BNC1
+		KIAA0753
+		OR6B1
+		CLU
+Herbivore > Vertivore pathways
+	Steroid Metabolic Process
+		HSD17B2
+		HSD11B1
+	KEGG_STEROID_HORMONE_BIOSYNTHESIS
+		HSD17B2
+		HSD11B1
+		AKR1D1
+	-- Significance Threshold --
+Vertivore > Herbivore pathways
+	-- Significance Threshold --
+Herbivore > Vertivore Tissues
+	-- Significance Threshold --
+Vertivore > Herbivore Tissues
+	-- Significance Threshold --

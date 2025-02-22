@@ -1,0 +1,25 @@
+pValue 0.05 cutoff is gene 11
+Top Insectivore > Vertivore
+	Top Insectivore > Vertivore genes
+		FAM205C
+		SHISA5
+Top Vertivore > Insectivore
+	Top Vertivore > Insectivore genes	
+		CEP126
+		STAMBPL1
+		RABEP1
+		CRTC2
+		DYNC2H1
+		MINK1
+		DNAH9
+		SLC2A10
+		ATP8B2
+		USP45
+Insectivore > Vertivore pathways
+	-- Significance Threshold --
+Vertivore > Insectivore pathways
+	-- Significance Threshold --
+Insectivore > Vertivore Tissues
+	-- Significance Threshold --
+Vertivore > Insectivore Tissues
+	-- Significance Threshold --
