@@ -46,6 +46,71 @@ dev.off()
 plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
 
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
+
+# ------ plot RERs of CategoricalINsvertivore to check rho direction meaning 
+library(RERconverge)
+RERobject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
+pathsObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+phenotypeSet = c("Herbivore", "Insectivore", "Omnivore", "Vertivore")
+colorset = c( "darkgreen", "darkblue", "black", "red")
+
+?plotRers
+plotRers(RERobject, "BPIFB1", pathsObject)
+
+source("Src/Reu/rerViolinPlot.R")
+rerViolinPlot(mainTrees, RERobject, pathsObject, phenotypeSet , geneOfInterest = "BPIFB1", colorScale = colorset)
+rerViolinPlot()
+
+# -- extract genes from top results -- 
+
+
+lines <- readLines("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/TopResults.txt")
+
+# Filter lines that start with two tab characters
+filtered_lines <- grep("^\\t\\t", lines, value = TRUE)
+
+# Print or save the filtered lines
+print(filtered_lines)
+
+genesToRun = unique(filtered_lines)
+genesToRun = gsub("\t", "", genesToRun)
+HIgenesToRun = genesToRun
+
+writeLines(genesToRun, "Results/hyphyGenesToRun.txt")
+
+parseTopResultFileToGenes = function(file){
+  lines <- readLines(file)
+  
+  # Filter lines that start with two tab characters
+  filtered_lines <- grep("^\\t\\t", lines, value = TRUE)
+  
+  # Print or save the filtered lines
+  #print(filtered_lines)
+  
+  genesToRun = unique(filtered_lines)
+  genesToRun = gsub("\t", "", genesToRun)
+  genesToRun
+}
+
+HItopResults = "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/TopResults.txt"
+HVtopResults = "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/TopResults.txt"
+IVtopResults = "Output/CategoricalInsVertivoreTree/Insectivore-Vertivore/TopResults.txt"
+
+testOut = parseTopResultFileToGenes(HItopResults)
+
+HVgenesToRun = parseTopResultFileToGenes(HVtopResults)
+IVgenesToRun = parseTopResultFileToGenes(IVtopResults)
+
+VgenesToRun = append(HVgenesToRun, IVgenesToRun)
+VgenesToRun[duplicated(VgenesToRun)]
+VgenesToRun = unique(VgenesToRun)
+
+VOonlyGenes = VgenesToRun[VgenesToRun %in% HIgenesToRun]
+writeLines(VOonlyGenes, "Results/hyphyGenesToRunVO.txt")
+
+HVOonlyGenes = VgenesToRun[!VgenesToRun %in% HIgenesToRun]
+writeLines(HVOonlyGenes, "Results/hyphyGenesToRunHVO.txt")
 #-----------------------------------
 
 source("Src/Reu/treeColorPlots.R")
@@ -53,29 +118,6 @@ source("Src/Reu/treeColorPlots.R")
 treeColorByLabel(phenMasterTree)
 nodelabels(frame="none")
 
-# -----------------------------
-
-
-
-
-
-
-
-
-library(jsonlite)
-
-
-hyphyOutput = fromJSON("Output/CategoricalInsvertivoreTree/Hyphy/CategoricalInsVertivoreTree-Hyphy-absrel-EHHADH-Foreground_2.json", flatten = T)
-
-branchData = hyphyOutput$`branch attributes`$`0`
-
-
-jsonData = as.data.frame(hyphyOutput$`branch attributes`$`0`)
-
-
-
-
-write.csv(hyphyOutput, file = "Results/test.csv")
 
 # --- making nexus trees of genes of interest ------
 
