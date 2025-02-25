@@ -1,0 +1,205 @@
+pValue 0.05 cutoff is gene 104 
+Top Herbivore > Insectivore
+	Top  Herbivore > Insectivore Genes
+		BPIFB1
+		CPB1
+		PGC
+		TRPM6
+		SLCA12
+		PTGFR
+		DHDH
+		NAGLU
+		ADGRF1
+		TET1
+Top Insectivore > Herbivore
+	Top Insectivore > Herbivore Genes
+		JAKMIP1
+		TULP4
+		ADCY1
+		CAMK2B
+		MYH13
+		TRPM5
+		EP400
+		VAX2
+		PLEKHF1
+		SORCS1
+Herbivore > Insectivore pathways
+	tRNA Methylation 
+		TARBP1
+	Fatty Acid Catabolism
+		EHHADH
+		ACAA2
+		ACADM
+		ACAD11
+		ECI2
+	Alpha Amino Acid Catabolism
+		ALDH4A1
+		TAT
+	Mitochondrial Gene Expression
+		PTCD3
+		TEFM
+	NADH Dehydrogenase Complex Assembly
+		ECSIT
+		FOXRED1
+		NDUFA9
+	RNA Methylation
+		TARBP1
+		TRMT9B
+	Fatty Acid Beta−Oxidation (same significant genes as FA catabolism)
+	Mitochondrial Respiratory Chain Complex (same significant genes)
+	Non−Motile Cilium Assembly (no significant genes)
+	Steroid Metabolic Process
+		CYP2R1
+		CYP1A1
+		CYP26C1
+	Cilium Organization
+		TCTN1
+		CCDC66
+		CFAP43
+	Monocarboxylic Acid Transport
+		SLC5A12
+		SLC16A5
+	Mitochondrial Translation (same significant genes)
+	tRNA Modification (same significant genes)
+	Protein Glycosylation
+		TET1
+		B3GNT4
+	-- Significance threshold --
+	Double−Strand Break Repair (no significant genes)
+	Cilium Assembly (same significant genes)
+	Monocarboxylic Acid Catabolic Process (same significant genes)
+	Fatty Acid Oxidation (same significant genes)
+	Bile Acid And Bile Salt Transport (no significant genes)
+	Double−Strand Break Repair Via Homologous 
+		FANCM
+		WRN
+	Recombinational Repair (no significant genes)
+	Fatty Acid Metabolic Process
+		ABCB11
+		CYP1A1
+		ACADM
+		CPT1C
+	Negative Regulation Of Fatty Acid Biosynthesis (no significant genes)
+	Fat−Soluble Vitamin Metabolic Process
+		CYP2R1
+		CYP1A1
+Insectivore > Herbivore pathways 
+	Chemical Synaptic Transmission
+		GABRR1
+		STXBP1
+		GABRB3
+		RIMBP2
+	Regulation Of Synaptic Transmission, Glu
+		DGKI
+		PTK2B
+		MAPK8IP2
+		SHANK3
+		CACNG3
+		STY1
+	Modulation Of Chemical Synaptic Transmission
+		TRIO
+		PTEN
+		GRID
+	Positive Regulation Of Synaptic Transmission (same significant genes)
+	-- Significance Threshold --
+	Cell Junction Assembly (some but not complete overlap)
+		SDK1
+		TLN1
+		SHANK3
+		PTEN
+		SHANK2
+	Nervous System Development
+		VAX2
+		ADGRB1
+		SH3GL3
+		SCIN
+		CNTN4
+		SDK1
+	Muscle Contraction
+		MYH13
+		TACR2
+		MYH2
+	Anterograde Trans−Synaptic Signaling (same significant genes)
+	Signal Release From Synapse (same significant genes)
+	Central Nervous System Development (same significant genes)
+	Glutamate Receptor Signaling Pathway (same significant genes)
+	Positive Regulation Of Synaptic Transmission (same significant genes)
+	REACTOME_NERVOUS_SYSTEM_DEVELOPMENT
+		COL6A2
+		KRT20
+		DOCK1
+		COL6A1
+		TRIO
+		AP2A2
+		TLN1
+Herbivore > Insectivore Tissues
+	Liver
+		SERPINA1
+		ALB
+		ACY1
+		PBLD
+		IDO2
+		ABCB11
+	Testis (skipped)
+	Pancreas
+		CPB1
+		CTRC
+		TMED6
+		PNLIP
+		PLA2G1B
+	Cortex kidney
+		SLC5A12
+		CUBN
+		CLDN16
+		TMEM52B
+		ENAM
+	EBV.lymphocyte
+		UHRF1
+		TMEM121L
+		SPCL1
+		CRYZ
+		ACADM
+		ATAD5
+	Thyroid
+		PLA2R1
+		PRTG
+		SLC12A8
+		ADO2
+		PRSS45P
+		TLE6
+	-- Significance Threshold --
+Insectivore > Herbivore Tissues
+	Cerebellum
+		POLE
+		MAPK8IP2
+		OTUD7A
+		CDR2L
+	Brodmann.area.9
+		TMEM132D
+		GABRB3
+		CACNG3
+	Cerebellar.hemisphere
+		ADCY1
+		CAMK2B
+		VAX2
+		STXBP1
+		NBEA
+		RNF165
+	Skeletal Muscle
+		CAND2
+		KLHL30
+		NEB
+		MYH2
+		FSD2
+	Suprapubic skin
+		BNC1
+		TMPRSS11G
+		PARD6G
+		KRT80
+	Leg.skin (Some but not all overlap with above)
+		TRIM29
+		TREX2
+	-- Significance Threshold -- 
+	Hypothalamus
+		MC4R
+		PIRT

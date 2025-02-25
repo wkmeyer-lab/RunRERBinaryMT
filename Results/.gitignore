@@ -4,3 +4,6 @@ DomesticationManualFGTree.rds
 CategoricalPermulationsTimes.rds
 NewZoonomiaMasterTreePrunedToAlignmentSpeciesOldNoPlatypus.nwk
 allZoonomiaAlignmentTips.rds
+outFasta.fa
+masterTreeOut.tree
+hyphyOutput.fna

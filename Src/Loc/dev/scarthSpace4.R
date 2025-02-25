@@ -16,7 +16,8 @@ palette(c("black", "darkblue"))
 
 palette(c( "darkgreen", "darkblue", "black", "red", "gray"))
 palette(c( "darkgreen", "blue", "pink", "red"))
-
+palette(c( "darkgreen", "blue", "purple", "red"))
+palette(c( "gray", "darkblue", "darkgreen",  "black", "red"))
 
 library(RERconverge)
 source("Src/Reu/ZoonomTreeNameToCommon.R")
@@ -46,12 +47,316 @@ dev.off()
 plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
 
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
+
+# ------ plot RERs of CategoricalINsvertivore to check rho direction meaning 
+library(RERconverge)
+RERobject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
+pathsObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+phenotypeSet = c("Herbivore", "Insectivore", "Omnivore", "Vertivore")
+colorset = c( "darkgreen", "darkblue", "black", "red")
+
+?plotRers
+plotRers(RERobject, "BPIFB1", pathsObject)
+
+source("Src/Reu/rerViolinPlot.R")
+rerViolinPlot(mainTrees, RERobject, pathsObject, phenotypeSet , geneOfInterest = "BPIFB1", colorScale = colorset)
+rerViolinPlot()
+
+# -- extract genes from top results -- 
+
+
+lines <- readLines("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/TopResults.txt")
+
+# Filter lines that start with two tab characters
+filtered_lines <- grep("^\\t\\t", lines, value = TRUE)
+
+# Print or save the filtered lines
+print(filtered_lines)
+
+genesToRun = unique(filtered_lines)
+genesToRun = gsub("\t", "", genesToRun)
+HIgenesToRun = genesToRun
+
+writeLines(genesToRun, "Results/hyphyGenesToRun.txt")
+
+parseTopResultFileToGenes = function(file){
+  lines <- readLines(file)
+  
+  # Filter lines that start with two tab characters
+  filtered_lines <- grep("^\\t\\t", lines, value = TRUE)
+  
+  # Print or save the filtered lines
+  #print(filtered_lines)
+  
+  genesToRun = unique(filtered_lines)
+  genesToRun = gsub("\t", "", genesToRun)
+  genesToRun
+}
+
+HItopResults = "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/TopResults.txt"
+HVtopResults = "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/TopResults.txt"
+IVtopResults = "Output/CategoricalInsVertivoreTree/Insectivore-Vertivore/TopResults.txt"
+
+testOut = parseTopResultFileToGenes(HItopResults)
+
+HVgenesToRun = parseTopResultFileToGenes(HVtopResults)
+IVgenesToRun = parseTopResultFileToGenes(IVtopResults)
+
+VgenesToRun = append(HVgenesToRun, IVgenesToRun)
+VgenesToRun[duplicated(VgenesToRun)]
+VgenesToRun = unique(VgenesToRun)
+
+VOonlyGenes = VgenesToRun[VgenesToRun %in% HIgenesToRun]
+writeLines(VOonlyGenes, "Results/hyphyGenesToRunVO.txt")
+
+HVOonlyGenes = VgenesToRun[!VgenesToRun %in% HIgenesToRun]
+writeLines(HVOonlyGenes, "Results/hyphyGenesToRunHVO.txt")
 #-----------------------------------
 
+<<<<<<< HEAD
 # -- exmaining the maturity results ---
 ??rer
 rerTree = returnRersAsTree(mainTrees, RERObject, index = "PTCD1", phenv = pathsObject)
 treePlotRers(mainTrees, RERObject, index = "PTCD1", phenv = pathsObject, type = "color")
+=======
+source("Src/Reu/treeColorPlots.R")
+
+treeColorByLabel(phenMasterTree)
+nodelabels(frame="none")
+
+
+# --- making nexus trees of genes of interest ------
+
+EHHADHTree = mainTrees$trees$EHHADH
+
+write.nexus(EHHADHTree, "Results/EHHADHTree.nex")
+write.tree(EHHADHTree, "Results/EHHADHTree.tree")
+writeNexus(EHHADHTree, "Results/EHHADHTree.nex")
+EHHADHTree$node.label = NULL
+
+masterTree = mainTrees$masterTree
+writeNexus(EHHADHTree, "Results/masterTree.nex")
+
+?writeNexus
+
+
+# ----- Trim fasta file to master tree ------
+
+fasta = read_fasta("Results/ENST00000231887.EHHADH.filt.fa")
+
+fastaTipHeaders = fasta$headers
+fastaTipHeaders = sub("\\t.*", "", fastaTipHeaders)
+fastaTipHeaders[fastaTipHeaders == "REFERENCE"] = "vs_hg38"
+
+which(!fastaTipHeaders %in% masterTree$tip.label)
+
+fasta$headers = fasta$headers[-which(!fastaTipHeaders %in% masterTree$tip.label)]
+fasta$sequences = fasta$sequences[-which(!fastaTipHeaders %in% masterTree$tip.label)]
+
+read.dna("Results/ENST00000231887.EHHADH.filt.fa")
+# -------- Redo with new package ---- 
+
+
+??fasta
+library(seqinr)
+fastaLocation = "Results/ENST00000231887.EHHADH.filt.fa"
+mainTreesLocation = 'data/zoonomiaAllMammalsTrees.rds'
+
+fasta = read.fasta(fastaLocation)
+
+fastaTipHeaders = names(fasta)
+fastaTipHeaders = sub("\\t.*", "", fastaTipHeaders)
+fastaTipHeaders[fastaTipHeaders == "REFERENCE"] = "vs_hg38"
+
+if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
+masterTree = mainTrees$masterTree
+noDataTips = masterTree$tip.label[!masterTree$tip.label %in% fastaTipHeaders]
+masterTree = drop.tip(masterTree, noDataTips)
+masterTree$node.label = NULL
+
+
+fastaToDrop = which(!fastaTipHeaders %in% masterTree$tip.label)
+
+fasta = fasta[-fastaToDrop]
+fastaTipHeaders = fastaTipHeaders[-fastaToDrop]
+
+names(fasta) = fastaTipHeaders
+
+write.fasta(fasta, names = names(fasta), file.out = "Results/outFasta.fa")
+writeNexus(masterTree, "Results/masterTreeOut.nex")
+write.tree(masterTree, "Results/masterTreeOut.tree")
+
+
+masterTree$tip.label[order(masterTree$tip.label)]
+fastaTipHeaders[order(fastaTipHeaders)]
+
+#
+masterTree2 = mainTrees$masterTree
+masterTree2$tip.label
+masterTree2$node.label = NULL
+
+write.tree(masterTree2, "Results/fullMasterTreeOut.tree")
+
+
+phenotypeTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+masterTree2$tip.label
+phenotypeTree$tip.label
+
+phenMasterTree = masterTree2
+phenMasterTree = drop.tip(phenMasterTree, phenMasterTree$tip.label[!phenMasterTree$tip.label %in% phenotypeTree$tip.label])
+
+# ---- Remake file creation code from start cleanly -------
+library(seqinr)
+fastaLocation = "Results/ENST00000231887.EHHADH.filt.fa"
+mainTreesLocation = 'data/zoonomiaAllMammalsTrees.rds'
+foregroundCategory = "1"
+
+useManualTree = F
+filePrefix = "CategoricalInsVertivoreTree"
+index = "EHHADH"
+phenotypeTreeLocation = "Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds"
+
+
+
+
+if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
+masterTree = mainTrees$masterTree
+masterTree$node.label = NULL
+
+if(useManualTree){
+  phenotypeTree = readRDS(phenotypeTreeLocation)
+}else{
+  source("Src/Reu/paths2Tree.R")
+  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+  pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
+  
+  pathsObject = readRDS(pathsFilename)
+  pathsTree = paths2Tree(mainTrees, pathsObject, index)
+  #paths tree actually currently being unused because of how the master tree phenotype matching works. Because it's relying on the trees beingthe same shape and therefore having matching node numbers, I can't use the paths -- or, at least, it's very messy to try, so I'm not.
+  
+  
+  phenotypeTreeCategoricalLocation = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+  phenotypeTreeBinaryLocation = paste(outputFolderName, filePrefix, "BinaryTree.rds", sep="") #make a filename based on the prefix
+  if(file.exists(phenotypeTreeCategoricalLocation)){
+    fullPhenotypeTree = readRDS(phenotypeTreeCategoricalLocation)
+  }else if(file.exists(phenotypeTreeBinaryLocation)){
+    fullPhenotypeTree = readRDS(phenotypeTreeBinaryLocation)
+  }else{
+    stop("The prefix has neither a categorical or binary phenotype tree")
+  }
+    
+}
+phenotypeTree = fullPhenotypeTree
+
+
+phenMasterTree = masterTree
+phenMasterTree = drop.tip(phenMasterTree, phenMasterTree$tip.label[!phenMasterTree$tip.label %in% fullPhenotypeTree$tip.label])
+phenMasterTree = drop.tip(phenMasterTree, phenMasterTree$tip.label[!phenMasterTree$tip.label %in% phenotypeTree$tip.label])
+
+#add category as label to nodes
+allLabels = rep("", (length(phenMasterTree$tip.label)+phenMasterTree$Nnode))
+for(i in 1:length(allLabels)){
+  message(i)
+  parentEdge = which(phenMasterTree$edge[,2]==i)
+  if(!length(parentEdge)==0){
+    allLabels[i] = parentEdge
+    allLabels[i] = phenotypeTree$edge.length[parentEdge]
+    }
+}
+
+allLabels[which(allLabels == foregroundCategory)] = "Foreground"
+
+tipLabels = allLabels[c(1:length(phenotypeTree$tip.label))]
+originalTipValues = phenMasterTree$tip.label
+phenMasterTree$tip.label = paste0(phenMasterTree$tip.label, "{", tipLabels, "}")
+internalLabels = allLabels[-c(1:length(phenotypeTree$tip.label))]
+phenMasterTree$node.label = paste0("{", internalLabels, "}")
+
+
+
+# - Read Fasta file - 
+fasta = read.fasta(fastaLocation)
+
+fastaTipHeaders = names(fasta)
+fastaTipHeaders = sub("\\t.*", "", fastaTipHeaders)
+fastaTipHeaders[fastaTipHeaders == "REFERENCE"] = "vs_hg38"
+
+# trim files to match eachother 
+noDataTips = phenMasterTree$tip.label[!originalTipValues %in% fastaTipHeaders]
+phenMasterTree = drop.tip(phenMasterTree, noDataTips)
+
+fastaToDrop = which(!fastaTipHeaders %in% originalTipValues)
+fasta = fasta[-fastaToDrop]
+fastaTipHeaders = fastaTipHeaders[-fastaToDrop]
+names(fasta) = fastaTipHeaders
+
+#Write output file
+write.fasta(fasta, names = names(fasta), file.out = "Results/outFasta.fa")
+write.tree(phenMasterTree, "Results/masterTreeOut.tree")
+
+fastaOut = readLines("Results/outFasta.fa")
+treeOut = readLines("Results/masterTreeOut.tree")
+combinedContent = c(fastaOut, treeOut)
+writeLines(combinedContent, "Results/hyphyOutput.fna")
+
+# ------------------------------------------
+treeColorPlot(phenMasterTree)
+treeColorByLabel(phenMasterTree)
+prunedPaths = drop.tip(pathsTree, pathsTree$tip.label[!pathsTree$tip.label %in% substr(phenMasterTree$tip.label, 1, nchar(phenMasterTree$tip.label)-3)])
+
+treeColorByLabel(prunedPaths)
+treeColorPlot(prunedPaths)
+plot.phylo(prunedPaths)
+prunedPaths$edge.length
+
+fasta = fasta[1:74]
+
+#
+
+
+
+
+#
+?correlateWithContinuousPhenotype
+
+pathsVector = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+??paths
+tree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+treesObj = mainTrees
+categorical = T
+tree2Paths
+useSpecies = NULL
+source("Src/Reu/RERConvergeFunctions.R")
+
+
+
+?RERconverge
+?plotTreeCategorical()
+?treePlotNew
+?plotTreeHighlightBranches()
+
+
+pathsVector
+length(pathsVector)
+rerObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
+ncol(rerObject)
+
+rerObjectTrimmed = (rerObject[1:2,])
+
+test = rbind(pathsVector, pathsVector)
+
+returnRersAsTree(mainTrees, test, 2)
+returnRersAsTree(mainTrees, pathsVector, 1)
+
+for(i in 1:10){
+ outname = paste0("path", i)
+ outPath = paths2Tree(mainTrees, pathsVector, i)
+ assign(outname, outPath)
+}
+all.equal(path1, path2)
+
+# -------------------------------
 
 categoricalTree = readRDS()
 
