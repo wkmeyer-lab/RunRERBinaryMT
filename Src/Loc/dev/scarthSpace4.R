@@ -19,6 +19,7 @@ palette(c( "darkgreen", "blue", "pink", "red"))
 
 
 library(RERconverge)
+source("Src/Reu/ZoonomTreeNameToCommon.R")
 # ---------------------------------------
 length(phenotypeVector)
 
@@ -47,7 +48,111 @@ plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), ma
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
 #-----------------------------------
 
+# -- exmaining the maturity results ---
+??rer
+rerTree = returnRersAsTree(mainTrees, RERObject, index = "PTCD1", phenv = pathsObject)
+treePlotRers(mainTrees, RERObject, index = "PTCD1", phenv = pathsObject, type = "color")
 
+categoricalTree = readRDS()
+
+??paths
+??tree
+
+rawMaturityVector = readRDS("Output/MaturityLogRaw/MaturityLogRawContinuousPhenotypeVector.rds")
+percentMaturityVector = readRDS("Output/MaturityLifespanPercent/MaturityLifespanPercentContinuousPhenotypeVector.rds")
+rawPaths = readRDS("Output/MaturityLogRaw/MaturityLogRawContinuousPathsFile.rds")
+percentPaths = readRDS("Output/MaturityLifespanPercent/MaturityLifespanPercentContinuousPathsFile.rds")
+
+percentRERs = readRDS("Output/MaturityLifespanPercent/MaturityLifespanPercentRERFile.rds")
+rawMatRers = readRDS("Output/MaturityLogRaw/MaturityLogRawRERFile.rds")
+all.equal(percentRERs, rawMatRers)
+
+
+
+commonRERs = RERObject
+colnames(commonRERs) = ZonomNameConvertVectorCommon(colnames(commonRERs), annotationLocation = spreadSheetLocation, tipCol = nameColumn)
+
+targetGene = "PTCD1"
+targetGene = "ACOT8"
+
+targetGene = "RPS8"
+targetGene = "RPS3"
+targetGene = "RPS17"
+targetGene = "RPL27"
+
+targetGene = "ZIC1"
+targetGene = "GTSF1"
+targetGene = "OR51E1"
+
+which(colnames(commonRERs) == "Chinese River Dolphin")
+
+
+testMat = commonRERs[1:2, 1:3]
+
+testDropRER = commonRERs[,-which(colnames(commonRERs) %in% c("Chinese River Dolphin", "Star-nosed mole", "Beaver"))]
+testDropPaths = pathsObject[-which(colnames(commonRERs) %in% c("Chinese River Dolphin", "Star-nosed mole","Beaver"))]
+
+testDropRER = commonRERs[,-which(colnames(commonRERs) %in% c("Chinese River Dolphin", "Star-nosed mole"))]
+testDropPaths = pathsObject[-which(colnames(commonRERs) %in% c("Chinese River Dolphin", "Star-nosed mole"))]
+
+
+commonRERs[which(rownames(commonRERs) == "GTSF1"),][order(commonRERs[which(rownames(commonRERs) == "GTSF1"),])]
+{
+x=pathsObject
+y=commonRERs[targetGene,]
+names(y)==namePathsWSpecies(mainTrees$masterTree)
+
+plot(x,y, cex.axis=1, cex.lab=1, cex.main=1, xlab="Maturity Percentage Change",
+     ylab="Evolutionary Rate", main=paste("Gene",targetGene,"Pearson Correlation"),
+     pch=19, cex=1)
+text(x,y, labels=names(y), pos=4)
+abline(lm(y~x), col='red',lwd=3)
+} # plot with percentage labels
+
+{
+  x=pathsObject
+  y=commonRERs[targetGene,]
+  names(y)==namePathsWSpecies(mainTrees$masterTree)
+  
+  plot(x,y, cex.axis=1, cex.lab=1, cex.main=1, xlab="Maturity Raw Change",
+       ylab="Evolutionary Rate", main=paste("Gene",targetGene,"Pearson Correlation"),
+       pch=19, cex=1, ylim=c(-1, 3))
+  text(x,y, labels=names(y), pos=4)
+  abline(lm(y~x), col='red',lwd=3)
+} #plot with Raw labels
+m <- lm(y ~ x)
+
+
+{
+  x=testDropPaths
+  y=testDropRER[targetGene,]
+  names(y)==namePathsWSpecies(mainTrees$masterTree)
+  
+  plot(x,y, cex.axis=1, cex.lab=1, cex.main=1, xlab="Maturity Raw Change",
+       ylab="Evolutionary Rate", main=paste("Gene",targetGene,"Pearson Correlation"),
+       pch=19, cex=1, ylim=c(-1, 3))
+  text(x,y, labels=names(y), pos=4)
+  abline(lm(y~x), col='red',lwd=3)
+} #plot with Raw labels
+m <- lm(y ~ x)
+
+eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
+                 list(a = format(unname(coef(m)[1]), digits = 2),
+                      b = format(unname(coef(m)[2]), digits = 2),
+                      r2 = format(summary(m)$r.squared, digits = 3)))
+as.character(as.expression(eq));
+
+{
+x=rawPaths
+y=percentPaths
+names(y)==namePathsWSpecies(mainTrees$masterTree)
+
+plot(x,y, cex.axis=1, cex.lab=1, cex.main=1, xlab="Lifespan Percent Change",
+     ylab="Log Raw change", main=paste("Comparission of percentage and raw change"),
+     pch=19, cex=1)
+text(x,y, labels=names(y), pos=4)
+abline(lm(y~x), col='red',lwd=3)
+}
 # ---- Compare the ranking of the downsampled and non-downsampled results ---- 
 
 mainIhCorrels = readRDS("Output/CategoricalInsvertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreCorrelationFile.rds")
@@ -101,6 +206,7 @@ combinedData = cbind(mainIhCorrels, mainVhCorrels, downIhCorrels, downVhCorrels,
 plot(combinedData$mihrank, combinedData$dihrank)
 plot(combinedData$mvhrank, combinedData$dvhrank)
 plot(combinedData$hvhrank, combinedData$dvhrank)
+plot(combinedData$mvhrank, combinedData$hvhrank)
 
 plot(combinedData$mihp.adj, combinedData$dihp.adj)
 plot(combinedData$mvhp.adj, combinedData$dvhp.adj)
@@ -136,16 +242,16 @@ insVertPhenv = readRDS("Output/CategoricalInsvertivoreTree/CategoricalInsVertivo
 table(insVertTree$edge.length)
 table(insVertPhenv)
 
-pdf(height = length(phenotypeVector)/5, width = 10)  
-plot(commonCategoricalTree)
+pdf(height = 18, width = 10)  
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
 edgelabels(col = "darkgreen", frame = "none")
 dev.off()
 
 noMegaBranchesTree = insVertTree
 noMegaBranchesTree$edge.length[c(1,2,367)] = NA
 
-categoricalTree$edge.length[c(1,2,367)] = 5
-commonCategoricalTree$edge.length[c(1,2,367)] = 5
+categoricalTree$edge.length[c(1,2)] = 5
+commonCategoricalTree$edge.length[c(1,2)] = 5
 
 pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
 paths = tree2Paths(categoricalTree, mainTrees, useSpecies = speciesFilter, categorical = T)
@@ -154,12 +260,12 @@ saveRDS(paths, file = pathsFilename)
 
 ?tree2Paths
 categoricalTree$edge.length[c(389,388, 370, 366, 365, 359, 351, 352, 350, 347, 339, 337, 110, 336, 335, 334)] = 5
-categoricalTree$edge.length[c(1,2,367, 364, 360, 358, 342, 343, 344, 345, 346, 348, 329, 330, 331, 332, 333, 338, 145, 3, 147)] = 5
+categoricalTree$edge.length[c(1,2, 364, 360, 358, 342, 343, 344, 345, 346, 348, 329, 330, 331, 332, 333, 338, 145, 3, 147)] = 5
 
 
 
 commonCategoricalTree$edge.length[c(389,388, 370, 366, 365, 359, 351, 352, 350, 347, 339, 337, 110, 336, 335, 334)] = 5
-commonCategoricalTree$edge.length[c(1,2,367, 364, 360, 358, 342, 343, 344, 345, 346, 348, 329, 330, 331, 332, 333, 338, 145, 3, 147)] = 5
+commonCategoricalTree$edge.length[c(1,2, 364, 360, 358, 342, 343, 344, 345, 346, 348, 329, 330, 331, 332, 333, 338, 145, 3, 147)] = 5
 
 
 
