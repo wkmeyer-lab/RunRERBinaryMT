@@ -177,6 +177,8 @@ saveRDS(commonPhenotypeVector, commonPhenotypeVectorFilename)
 
 #No visualized tree is created for continuous traits due to the negative branches lengths involved in continuous edge values. If desired to be made, this code could be referenced from MakeCategoricalPhenotypeTree.R
 
+
+
 # - Paths - 
 pathsFilename = paste(outputFolderName, filePrefix, "ContinuousPathsFile.rds", sep= "") #make a filename based on the prefix
 paths = char2Paths(phenotypeVector, mainTrees, metric = continousMetric) #make a path based on the phenotype vector
