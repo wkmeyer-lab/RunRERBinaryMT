@@ -48,6 +48,29 @@ plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), ma
 
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
 
+# --- make plots to demonstrate binary trees --- 
+
+mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
+mainCategoricalTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+
+plotTreeCategorical(mainCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
+stableCommonMainTrees = stableMaintrees
+stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+
+commonCategoricalTree = ZoonomTreeNameToCommon(mainCategoricalTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+phenotypeVector = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPhenotypeVector.rds")
+pdf("Results/BinaryDemoTrees.pdf", height = length(phenotypeVector)/18, width = 10)     
+palette(c( "darkgreen", "gray", "gray", "gray"))
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
+palette(c( "gray", "darkblue", "gray", "gray"))
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
+palette(c( "gray", "gray", "black", "gray"))
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
+palette(c( "gray", "gray", "gray", "red"))
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
+dev.off()
+
+
 # ------ plot RERs of CategoricalINsvertivore to check rho direction meaning 
 library(RERconverge)
 RERobject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
