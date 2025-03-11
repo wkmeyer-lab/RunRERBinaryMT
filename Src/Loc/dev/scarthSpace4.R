@@ -57,6 +57,168 @@ library(GOSemSim)
 
 
 
+
+# ----- Hyphy and other analysis work --- 
+
+#------- getting the Rho values of gene across mutliple analyses --- 
+HerbInsCorrelations = readRDS("Output/CategoricalInsvertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreCorrelationFile.rds")
+binaryInsCorrelations = readRDS("Output/CategoricalBinaryInsectivoreTree/Background-Insectivore/CategoricalBinaryInsectivoreTreeBackground-InsectivoreCorrelationFile.rds")
+binaryHerbCorrelations = readRDS("Output/CategoricalBinaryHerbivoreTree/Background-Herbivore/CategoricalBinaryHerbivoreTreeBackground-HerbivoreCorrelationFile.rds")
+
+colnames(HerbInsCorrelations) = paste0("HI_", colnames(HerbInsCorrelations))
+colnames(binaryInsCorrelations) = paste0("BI_", colnames(binaryInsCorrelations))
+colnames(binaryHerbCorrelations) = paste0("BH_", colnames(binaryHerbCorrelations))
+
+combinedData = cbind(HerbInsCorrelations, binaryInsCorrelations, binaryHerbCorrelations)
+
+rhoVals = combinedData[,c(1,4,7)]
+
+geneOfInterest = "SDK1"
+
+rhoVals[which(rownames(rhoVals) == geneOfInterest),]
+
+
+# --- getting number of significant genes in each comparison 
+
+HiGeneData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreCorrelationFile.rds")
+HvGeneData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreCorrelationFile.rds")
+HoGeneData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Omnivore/CategoricalInsVertivoreTreeHerbivore-OmnivoreCorrelationFile.rds")
+IoGeneData = readRDS("Output/CategoricalInsVertivoreTree/Insectivore-Omnivore/CategoricalInsVertivoreTreeInsectivore-OmnivoreCorrelationFile.rds")
+IvGeneData = readRDS("Output/CategoricalInsVertivoreTree/Insectivore-Vertivore/CategoricalInsVertivoreTreeInsectivore-VertivoreCorrelationFile.rds")
+OvGeneData = readRDS("Output/CategoricalInsVertivoreTree/Omnivore-Vertivore/CategoricalInsVertivoreTreeOmnivore-VertivoreCorrelationFile.rds")
+DhiGeneData = readRDS("Output/CategoricalDownsampledInsvertTree/Herbivore-Insectivore/CategoricalDownsampledInsvertTreeHerbivore-InsectivoreCorrelationFile.rds")
+
+arrangeData = function(data, prefix){
+  data$index = 1:nrow(data)
+  data= data[order(data$p.adj),]
+  data$rank = 1:nrow(data)
+  data= data[order(data$index),]
+  data$index=NULL
+  colnames(data) = paste0(prefix, colnames(data))
+  return(data)
+}
+
+HiGeneData = arrangeData(HiGeneData, "Hi_")
+HvGeneData = arrangeData(HvGeneData, "Hv_")
+HoGeneData = arrangeData(HoGeneData, "Ho_")
+IoGeneData = arrangeData(IoGeneData, "Io_")
+IvGeneData = arrangeData(IvGeneData, "Iv_")
+OvGeneData = arrangeData(OvGeneData, "Ov_")
+DhiGeneData = arrangeData(DhiGeneData, "Dhi_")
+
+
+combinedData = cbind(HiGeneData, HvGeneData, HoGeneData, IoGeneData, IvGeneData, OvGeneData, DhiGeneData)
+combinedData$index = 1:nrow(combinedData)
+
+
+combinedDataPval = combinedData[,c(2,6,10,14,18,22,26)]
+combinedDataPadjVal = combinedData[,c(3,7,11,15,19,23,27)]
+
+
+
+length(which(combinedDataPval$Dhi_p.adj < 0.05))
+
+apply(combinedDataPval, MARGIN = 2, mean)
+
+apply(combinedDataPval, 2, function(column) length(which(column < 0.02)))
+
+colnames(combinedDataPval) = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Herbivore-Omnivore", "Insectivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Downsampled Insectivore-Herbivore")
+
+colnames(combinedDataPval) = c("H-I", "H-V", "H-O", "I-O", "I-V", "O-V", "Downsampled H-I")
+combinedDataPval$`Downsampled H-I` = NULL
+
+colnames(combinedDataPadjVal) = c("H-I", "H-V", "H-O", "I-O", "I-V", "O-V", "Downsampled H-I")
+combinedDataPadjVal$`Downsampled H-I` = NULL
+sigGenesData =data.frame(category = colnames(combinedDataPadjVal), value = apply(combinedDataPadjVal, 2, function(column) length(which(column < 0.02)))) 
+
+
+library(ggplot2)
+library(ggpattern)
+
+ggplot(sigGenesData, aes(x = category, y = value, fill = category, pattern)) +
+  geom_bar(stat = "identity", color = "black", show.legend = FALSE) +  # Base bar color
+  geom_bar_pattern(
+    stat = "identity",
+    pattern = "stripe",  # Options: "stripe", "crosshatch", "dots", etc.
+    pattern_density = 0.25,
+    pattern_fill = c("darkblue", "red", "black","black", "red", "red"),  # Pattern color
+    aes(pattern = Category),  # Apply pattern per category
+    show.legend = FALSE
+  ) +
+  theme_minimal() +
+  labs(title = "Significant Genes per Pairwise Analysis",
+       x = "Category", y = "Number of significant genes") +
+  scale_fill_manual(values = c("darkgreen", "darkgreen", "darkgreen", "darkblue", "darkblue", "black"))+
+  scale_pattern_fill_manual(values = c("darkblue", "black", "red", "black", "red", "red"))
+
+
+
+
+?barplot
+geom_ba
+CarnivoreGeneData = readRDS("Output/CategoricalPrunedCarnivoreTree/Carnivore-Herbivore/CategoricalPrunedCarnivoreTreeCarnivore-HerbivoreCorrelationFile.rds")
+
+
+InsectivoreGeneData$index = 1:nrow(InsectivoreGeneData)
+VertivoreGeneData$index = 1:nrow(VertivoreGeneData)
+CarnivoreGeneData$index = 1:nrow(CarnivoreGeneData)
+
+InsectivoreGeneData = InsectivoreGeneData[order(InsectivoreGeneData$p.adj),]
+VertivoreGeneData = VertivoreGeneData[order(VertivoreGeneData$p.adj),]
+CarnivoreGeneData = CarnivoreGeneData[order(CarnivoreGeneData$p.adj),]
+
+InsectivoreGeneData$rank = 1:nrow(InsectivoreGeneData)
+VertivoreGeneData$rank = 1:nrow(VertivoreGeneData)
+CarnivoreGeneData$rank = 1:nrow(CarnivoreGeneData)
+
+InsectivoreGeneData = InsectivoreGeneData[order(InsectivoreGeneData$index),]
+VertivoreGeneData = VertivoreGeneData[order(VertivoreGeneData$index),]
+CarnivoreGeneData = CarnivoreGeneData[order(CarnivoreGeneData$index),]
+
+colnames(InsectivoreGeneData) = paste0("I_", colnames(InsectivoreGeneData))
+colnames(VertivoreGeneData) = paste0("V_", colnames(VertivoreGeneData))
+colnames(CarnivoreGeneData) = paste0("C_", colnames(CarnivoreGeneData))
+
+combinedData = cbind(InsectivoreGeneData, VertivoreGeneData, CarnivoreGeneData)
+
+
+# --------- Combine the Hyphy results ----
+
+hyphyDir = "Output/CategoricalInsVertivoreTree/Hyphy"
+
+
+
+csvFileList = list.files(path = hyphyDir, pattern = "\\.csv$")
+phenotypeList = c("H", "I", "O", "V" )
+mainRowList = NULL
+
+
+baseOutput = read.csv(paste0(hyphyDir, "/",csvFileList[1]), row.names = 1)
+baseOutput = baseOutput[,2,drop=F]
+
+library(stringr)
+for(i in csvFileList){
+  currentFileName = i 
+  geneName = unlist(strsplit(currentFileName, "-"))[4]
+  foreGroundNum = sub(".*_(.*?)\\..*", "\\1", currentFileName)[1]
+  
+  print(currentFileName)
+  
+  inputFile = read.csv(paste0(hyphyDir, "/",currentFileName), row.names = 1)
+  inputSelected = inputFile[,2,drop=F]
+  colnames(inputSelected) = paste0(geneName, "_", phenotypeList[foreGroundNum], "_correctedPValue")
+  
+  baseOutput = merge(baseOutput, inputSelected, by = 0, all = TRUE)
+
+
+
+
+  
+}
+?merge
+
+write.csv(baseOutput, "Output/CategoricalInsvertivoreTree/Hyphy/CombineHyphy.csv")
+
 # --- make plots to demonstrate binary trees --- 
 
 mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
@@ -78,6 +240,7 @@ plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivo
 palette(c( "gray", "gray", "gray", "red"))
 plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
 dev.off()
+>>>>>>> e351e1d507f8477f5cbd8472529b54741c5a48c4
 
 
 # ------ plot RERs of CategoricalINsvertivore to check rho direction meaning 
@@ -146,12 +309,12 @@ HVOonlyGenes = VgenesToRun[!VgenesToRun %in% HIgenesToRun]
 writeLines(HVOonlyGenes, "Results/hyphyGenesToRunHVO.txt")
 #-----------------------------------
 
-<<<<<<< HEAD
+
 # -- exmaining the maturity results ---
 ??rer
 rerTree = returnRersAsTree(mainTrees, RERObject, index = "PTCD1", phenv = pathsObject)
 treePlotRers(mainTrees, RERObject, index = "PTCD1", phenv = pathsObject, type = "color")
-=======
+
 source("Src/Reu/treeColorPlots.R")
 
 treeColorByLabel(phenMasterTree)
@@ -651,10 +814,15 @@ signficiantInsectivore = InsectivoreGoData[which(InsectivoreGoData$pval <0.05),]
 signficiantVertivore = VertivoreGoData[which(VertivoreGoData$pval <0.05),]
 signficiantCarnivore = CarnivoreGoData[which(CarnivoreGoData$pval <0.05),]
 
+
+valuedInsectivore = InsectivoreGoData[which(InsectivoreGoData$pval <1),]
+valuedVertivore = VertivoreGoData[which(VertivoreGoData$pval <1),]
+valuedCarnivore = CarnivoreGoData[which(CarnivoreGoData$pval <1),]
+
 vennData = list(
-  Insectivore = rownames(signficiantInsectivore),
-  Vertivore = rownames(signficiantVertivore),
-  Carnivore = rownames(signficiantCarnivore)
+  Insectivore = rownames(valuedInsectivore),
+  Vertivore = rownames(valuedVertivore),
+  Carnivore = rownames(valuedCarnivore)
 )
 
 signficianterInsectivore = InsectivoreGoData[which(InsectivoreGoData$p.adj <0.05),]
@@ -679,10 +847,99 @@ InsectivoreGeneData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Inse
 VertivoreGeneData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreCorrelationFile.rds")
 CarnivoreGeneData = readRDS("Output/CategoricalPrunedCarnivoreTree/Carnivore-Herbivore/CategoricalPrunedCarnivoreTreeCarnivore-HerbivoreCorrelationFile.rds")
 
+InsectivoreGeneData$index = 1:nrow(InsectivoreGeneData)
+VertivoreGeneData$index = 1:nrow(VertivoreGeneData)
+CarnivoreGeneData$index = 1:nrow(CarnivoreGeneData)
+
 InsectivoreGeneData = InsectivoreGeneData[order(InsectivoreGeneData$p.adj),]
 VertivoreGeneData = VertivoreGeneData[order(VertivoreGeneData$p.adj),]
 CarnivoreGeneData = CarnivoreGeneData[order(CarnivoreGeneData$p.adj),]
 
+InsectivoreGeneData$rank = 1:nrow(InsectivoreGeneData)
+VertivoreGeneData$rank = 1:nrow(VertivoreGeneData)
+CarnivoreGeneData$rank = 1:nrow(CarnivoreGeneData)
+
+InsectivoreGeneData = InsectivoreGeneData[order(InsectivoreGeneData$index),]
+VertivoreGeneData = VertivoreGeneData[order(VertivoreGeneData$index),]
+CarnivoreGeneData = CarnivoreGeneData[order(CarnivoreGeneData$index),]
+
+colnames(InsectivoreGeneData) = paste0("I_", colnames(InsectivoreGeneData))
+colnames(VertivoreGeneData) = paste0("V_", colnames(VertivoreGeneData))
+colnames(CarnivoreGeneData) = paste0("C_", colnames(CarnivoreGeneData))
+
+combinedData = cbind(InsectivoreGeneData, VertivoreGeneData, CarnivoreGeneData)
+combinedData$V_index = NULL
+combinedData$C_index = NULL
+
+combinedData = combinedData[order(combinedData$I_p.adj),]
+
+
+equationLinePlot = function(data, xIn, yIn){
+ linearModel = lm(yIn ~ xIn, data = data) 
+  
+ equation = paste0("y=", round(coef(linearModel)[2], 2), "*x", round(coef(linearModel)[1], 2))
+ rSquared = paste("R² =", round(summary(linearModel)$r.squared, 2))
+ 
+  ggplot(data, aes(x = xIn, y = yIn)) + 
+    geom_point()+
+    geom_smooth(method = "lm")  
+}
+
+equationLinePlot(combinedData, "I_Rho", "C_Rho")
+
+linearModel = lm(I_Rho ~ C_Rho, data = combinedData) 
+
+library(gridExtra)
+
+
+
+linearModel = lm(-C_Rho ~ I_Rho, data = combinedData) 
+equation = paste0("y=", round(coef(linearModel)[2], 2), "*x", round(coef(linearModel)[1], 2))
+rSquared = paste("R² =", round(summary(linearModel)$r.squared, 2))
+plot1 = ggplot(combinedData, aes(x = I_Rho, y = -C_Rho)) + 
+  geom_point()+
+  geom_smooth(method = "lm")+
+  annotate("text", x = 3, y = 9, label = paste(equation, rSquared, sep = "\n"), color = "blue", size = 10)+
+  theme_minimal()
+
+linearModel = lm(-C_Rho ~ V_Rho, data = combinedData) 
+equation = paste0("y=", round(coef(linearModel)[2], 2), "*x", round(coef(linearModel)[1], 2))
+rSquared = paste("R² =", round(summary(linearModel)$r.squared, 2))
+plot2 = ggplot(combinedData, aes(x = V_Rho, y = -C_Rho)) + 
+  geom_point()+
+  geom_smooth(method = "lm")+
+  annotate("text", x = 3, y = 9, label = paste(equation, rSquared, sep = "\n"), color = "blue", size = 10)+
+  theme_minimal()
+
+
+grid.arrange(plot1, plot2, ncol =2)
+
+
+
+?lm
+
+library(ggplot2)
+ggplot(combinedData, aes(x = I_Rho, y = -C_Rho)) + 
+  geom_point()+
+  geom_smooth(method = "lm")
+
+
+plot(combinedData$I_Rho, combinedData$V_Rho)
+plot(-combinedData$C_Rho, combinedData$I_Rho)
+plot(-combinedData$C_Rho, combinedData$V_Rho)
+
+
+
+
+plot(combinedData$I_rank, combinedData$V_rank, xlim = c(0,3500), ylim = c(0,3500))
+plot(combinedData$`I_rank`, combinedData$`C_rank`, xlim = c(0,4000), ylim = c(0,4000))
+plot(combinedData$`V_rank`, combinedData$`C_rank`, xlim = c(0,4000), ylim = c(0,4000))
+plot(combinedData$V_index, combinedData$V_p.adj)
+hist(combinedData$V_p.adj)
+length(combinedData$V_p.adj[which(combinedData$V_p.adj < 1)])
+length(combinedData$I_p.adj[which(combinedData$I_p.adj < 1)])
+
+?cbind
 sigInsectGenes = InsectivoreGeneData[which(InsectivoreGeneData$p.adj <0.05),]
 sigVertGenes = VertivoreGeneData[which(VertivoreGeneData$p.adj <0.05),]
 sigCarnGenes = CarnivoreGeneData[which(CarnivoreGeneData$p.adj <0.05),]
@@ -693,6 +950,37 @@ geneVennData = list(
   Carnivore = rownames(sigCarnGenes)
 )
 ggvenn(geneVennData, fill_color = c("blue", "red", "pink"))
+
+valuedInsectGenes = combinedData[which(combinedData$I_p.adj <1),]
+valuedVertGenes = combinedData[which(combinedData$V_p.adj <1),]
+valuedCarnGenes = combinedData[which(combinedData$C_p.adj <1),]
+
+geneVennData = list(
+  Insectivore = rownames(valuedInsectGenes),
+  Vertivore = rownames(valuedVertGenes),
+  Carnivore = rownames(valuedCarnGenes)
+)
+
+ggvenn(geneVennData, fill_color = c("blue", "red", "pink"))
+# ---------------------------
+library(RERconverge)
+RERobject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
+pathsObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+phenotypeSet = c("Herbivore", "Insectivore", "Omnivore", "Vertivore")
+phenotypeSet = c(" Herbivore", " Insectivore", "Omnivore", " Vertivore")
+colorset = c( "darkgreen", "darkblue", "red", "black")
+
+plotRers(RERobject, "BPIFB1", pathsObject)
+
+source("Src/Reu/rerViolinPlot.R")
+rerViolinPlot(mainTrees, RERobject, pathsObject, phenotypeSet , geneOfInterest = "SLC14A2", colorScale = colorset)
+
+
+
+
+
+
 
 #-------------------------------------------
 manualAnnotsTrimmed = manualAnnots

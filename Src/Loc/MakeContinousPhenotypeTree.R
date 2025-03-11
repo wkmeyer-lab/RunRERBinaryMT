@@ -25,6 +25,7 @@ source("Src/Reu/ZonomNameConvertVector.R")
 #----------------
 args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=MaturityPercentage','v=T')
 args = c('r=MaturityLogRaw', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=logCombinedMaturity','v=T', 'n=FaName')
+args = c('r=PankajBodyszie', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=combinedBodysize','v=T', 'n=FaName')
 
 
 

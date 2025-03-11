@@ -1,4 +1,4 @@
-ZonomNameConvertVectorCommon = function(namesVector, common = T, manualAnnotLocation = "Data/manualAnnotationsSheet.csv"){
+ZonomNameConvertVectorCommonMid = function(namesVector, common = T, manualAnnotLocation = "Data/manualAnnotationsSheet.csv"){
   names = namesVector                                                    #make a vector of the names
   manualAnnot = read.csv(manualAnnotLocation)                     #improt manual annots file
   for(i in 1:length(names)){                                                    #for each name: 
