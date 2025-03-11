@@ -47,6 +47,15 @@ dev.off()
 plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
 
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
+# ----------- 
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("GOSemSim")
+library(GOSemSim)
+
+
+
 
 # --- make plots to demonstrate binary trees --- 
 
