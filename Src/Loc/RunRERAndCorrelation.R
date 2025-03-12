@@ -41,6 +41,7 @@ args = c('r=NewHillerTestSupraPrimates', 'm=data/newHillerMainTrees.rds', 'v=T',
 
 args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 's=c','v=F')
 args = c('r=MaturityLogRaw', 'm=data/newHillerMainTrees.rds', 's=c','v=F')
+args = c('r=PankajBodysize', 'm=data/newHillerMainTrees.rds', 's=c','v=F')
 args = c('r=CVHNew', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies.rds')
 args = c('r=CIvAllZoonomia', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies.rds')
 
