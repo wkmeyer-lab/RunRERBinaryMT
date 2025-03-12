@@ -45,6 +45,7 @@ args = c('r=NewHillerTestSupraPrimates', 'p=F', 's=c("0-1", "Overall")')
 
 args = c('r=MaturityLifespanPercent', 'p=B', 'g=T', 'f=Output/MaturityLifespanPercent/MaturityLifespanPercentPermulationPValue.rds')
 args = c('r=MaturityLogRaw', 'p=F', 'g=T')
+args = c('r=PankajBodysize', 'p=F', 'g=T')
 
 
 args = c('r=LiverExpression2', 'p=F', 'g=F')
@@ -353,8 +354,8 @@ for(j in 1:length(subdirectoryValueList)){
       dataHead = setData[1:length,]
       dataHead$gene.vals= strsplit(dataHead$gene.vals, ",")
       for(i in 1:length){
-        genesetlist = dataHead$gene.vals[[i]][1:6]
-        genesetlistsingle = paste(genesetlist[1], genesetlist[2], genesetlist[3], genesetlist[4], genesetlist[5],genesetlist[6])
+        genesetlist = dataHead$gene.vals[[i]][1:7]
+        genesetlistsingle = paste(genesetlist[1], genesetlist[2], genesetlist[3], genesetlist[4], genesetlist[5],genesetlist[6],genesetlist[7])
         dataHead$gene.vals[i] = genesetlistsingle
       }
       dataFront = dataHead[,c(1,4)]
