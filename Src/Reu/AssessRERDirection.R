@@ -1,0 +1,98 @@
+library(RERconverge)
+# ----------- Defaults for testing ----------
+#mainPrefix = "CategoricalInsVertivoreTree"
+#mainPairwise = "Herbivore-Insectivore"
+#binaryPrefixOne = "CategoricalBinaryHerbivoreTree"
+#binaryPrefixTwo = "CategoricalBinaryInsectivoreTree"
+#binaryPhenOne = "Herbivore"
+#binaryPhenTwo = "Insectivore"
+#strictBoth = F
+
+AssessRERDirection = function(mainPrefix, mainPairwise, binaryPrefixOne, binaryPhenOne, binaryPrefixTwo, binaryPhenTwo, strictBoth = F){
+  # -- handle pairwises without spaces pre-included --
+  if(!grepl(" ", mainPairwise)){
+    mainPairwise <- gsub("-", " - ", mainPairwise)
+  }
+    
+  # ---- load the relevant files -----
+  mainCorrelationLocation = paste0("Output/",mainPrefix, "/", mainPrefix, "PairwiseCorrelationFile.rds")
+  mainCorrelationCombined = readRDS(mainCorrelationLocation)
+  pairwisePostion = which(names(mainCorrelationCombined) == mainPairwise)
+  mainCorrelation = mainCorrelationCombined[[pairwisePostion]]
+  rm(mainCorrelationCombined)
+  rm(pairwisePostion)
+  
+  binaryOneCorrelationLocation = paste0("Output/",binaryPrefixOne, "/", binaryPrefixOne, "PairwiseCorrelationFile.rds")
+  binaryOneCorrelationCombined = readRDS(binaryOneCorrelationLocation)
+  binaryOneCorrelation = binaryOneCorrelationCombined[[1]]
+  rm(binaryOneCorrelationCombined)
+  
+  binaryTwoCorrelationLocation = paste0("Output/",binaryPrefixTwo, "/", binaryPrefixTwo, "PairwiseCorrelationFile.rds")
+  binaryTwoCorrelationCombined = readRDS(binaryTwoCorrelationLocation)
+  binaryTwoCorrelation = binaryTwoCorrelationCombined[[1]]
+  rm(binaryTwoCorrelationCombined)
+  
+  
+  # ----- check that all genes are identical -- 
+  if(!all.equal(rownames(mainCorrelation), rownames(binaryOneCorrelation)) && all.equal(rownames(mainCorrelation), rownames(binaryTwoCorrelation))){
+    stop("The genes in the supplied correlations do not match. Aborting.")
+  }
+  
+  colnames(mainCorrelation) = paste0("main_",colnames(mainCorrelation))
+  colnames(binaryOneCorrelation) = paste0(binaryPhenOne,"_",colnames(binaryOneCorrelation))
+  colnames(binaryTwoCorrelation) = paste0(binaryPhenTwo,"_",colnames(binaryTwoCorrelation))
+  
+  combinedCorrelations = cbind(mainCorrelation, binaryOneCorrelation, binaryTwoCorrelation)
+  combinedCorrelations = combinedCorrelations[,c(1,4,7,2,5,8,3,6,9)]
+  
+  combinedCorrelations$directionality = rep(NA, nrow(combinedCorrelations))
+  combinedCorrelations$directionNumeric = rep(0, nrow(combinedCorrelations))
+  
+  for(i in 1:nrow(combinedCorrelations)){
+    workingRow = combinedCorrelations[i,]
+    if(any(is.na(workingRow[c(1,2,3)]))){
+      combinedCorrelations$directionality[i] = "MissingData"
+      combinedCorrelations$directionNumeric[i] = 5
+      next
+    }
+    mainRho = abs(workingRow[1])
+    binOneRho = abs(workingRow[2])
+    binTwoRho = abs(workingRow[3])
+    binSumRho = binOneRho + binTwoRho
+
+    if(strictBoth){
+      if(binOneRho > 1.5*binTwoRho){
+        combinedCorrelations$directionality[i] = binaryPhenOne
+        combinedCorrelations$directionNumeric[i] = 1
+      }else if(binTwoRho > 1.5* binOneRho){
+        combinedCorrelations$directionality[i] = binaryPhenTwo
+        combinedCorrelations$directionNumeric[i] = 2
+      }else if(mainRho > binSumRho){
+        combinedCorrelations$directionality[i] = "DoubleBoth"
+        combinedCorrelations$directionNumeric[i] = 4
+      }else if(mainRho > binOneRho && mainRho > binTwoRho){
+        combinedCorrelations$directionality[i] = "Both"
+        combinedCorrelations$directionNumeric[i] = 3
+      }else{
+        combinedCorrelations$directionality[i] = "Unclear"
+      }
+    }else{    
+      if(mainRho > binSumRho){
+        combinedCorrelations$directionality[i] = "DoubleBoth"
+        combinedCorrelations$directionNumeric[i] = 4
+      }else if(mainRho > binOneRho && mainRho > binTwoRho){
+        combinedCorrelations$directionality[i] = "Both"
+        combinedCorrelations$directionNumeric[i] = 3
+      }else if(binOneRho > 1.5*binTwoRho){
+        combinedCorrelations$directionality[i] = binaryPhenOne
+        combinedCorrelations$directionNumeric[i] = 1
+      }else if(binTwoRho > 1.5* binOneRho){
+        combinedCorrelations$directionality[i] = binaryPhenTwo
+        combinedCorrelations$directionNumeric[i] = 2
+      }else{
+        combinedCorrelations$directionality[i] = "Unclear"
+      }
+    }
+  }
+  combinedCorrelations
+}

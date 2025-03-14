@@ -47,7 +47,22 @@ dev.off()
 plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
 
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
-# ----------- 
+
+#------ Run directionality assessment code --- 
+
+directionalityTable = AssessRERDirection("CategoricalInsVertivoreTree", "Herbivore-Insectivore", "CategoricalBinaryHerbivoreTree", "Herbivore", "CategoricalBinaryInsectivoreTree", "Insectivore")
+
+write.csv(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreDirectionalityTable.csv")
+saveRDS(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreDirectionalityTable.rds")
+
+
+GODirecitonality = AssessGoCategoryDirection("CategoricalInsVertivoreTree", "Herbivore-Insectivore", "KeggReactome", 0.1, 1, F)
+View(GODirecitonality)
+write.csv(GODirecitonality, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreGoDirectionalityTable.csv")
+
+
+
+# -----------
 if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
