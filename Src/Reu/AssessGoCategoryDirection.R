@@ -53,11 +53,11 @@ AssessGoCategoryDirection = function(prefix, pairwise, GoSet, GenePValueCutoff =
     numberOfBothGenes = length(which(relevantDirectionality$directionNumeric %in% c(3,4)))
     numberOfStrictGenes = length(which(relevantDirectionality$directionNumeric == 4))
     print(rownames(GoData)[i])
-    print(directionalitySummary)
     directionalitySummary = data.frame(numberofTotalGenes, numberOfUnclearGenes, numberOfOneGenes, numberOfTwoGenes, numberOfBothGenes, numberOfStrictGenes)
+    print(directionalitySummary)
     
     GoDirection = "Unclear"
-    GODirectionNumeric = 0 
+    GoDirectionNumeric = 0 
     if(useStrictBoth){
       usedBothGenes = numberOfStrictGenes
     }else{

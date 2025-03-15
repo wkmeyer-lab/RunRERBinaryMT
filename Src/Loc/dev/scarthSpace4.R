@@ -61,6 +61,63 @@ View(GODirecitonality)
 write.csv(GODirecitonality, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreGoDirectionalityTable.csv")
 
 
+#--- split GO directionality into positive and negative
+
+GODirecitonality = read.csv("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreGoDirectionalityTable.csv")
+
+
+GoDirectionalityPositive = GODirecitonality[which(GODirecitonality$stat > 0),]
+GoDirectionalityNegative = GODirecitonality[which(GODirecitonality$stat < 0),]
+
+GODirecitonalityPositiveColored = GODirecitonality
+GODirecitonalityPositiveColored$p.adj[GODirecitonalityPositiveColored$stat < 0] = 0.11
+GODirecitonalityPositiveColored$pval[GODirecitonalityPositiveColored$stat < 0] = 0.11
+write.table(GODirecitonalityPositiveColored, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/cytoscape/CategoricalInsVertivoreTreeHerbivore-InsectivoreGoDirectionalityPositiveColoredTable.txt", sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+
+
+
+write.csv(GoDirectionalityPositive, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreGoDirectionalityPositiveTable.csv", row.names = F)
+write.csv(GoDirectionalityNegative, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreGoDirectionalityNegativeTable.csv", row.names = F)
+write.csv(GODirecitonalityPositiveColored, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreGoDirectionalityPositiveColoredTable.csv", row.names = F)
+
+
+
+# ---- Convert a directionality table ot cytoscape format 
+
+GODirecitonality
+
+GOCytoscape = GODirecitonality[,c(1,7,3,4,2,6)]
+colnames(GOCytoscape) = c("GO.ID", "Description", "p.adj", "DriverPackagedAsQval", "Phenotype", "Gene.vals")
+GOCytoscape$Phenotype = sign(GOCytoscape$Phenotype)
+GOCytoscape$Phenotype[GOCytoscape$Phenotype == 1] = "+1"
+write.table(GOCytoscape, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/cytoscape/CytoscapeInput.txt", sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+readLines("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/cytoscape/KeggReactome.gmt")
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("GSEABase")
+library(GSEABase)
+gmtData = getGmt("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/cytoscape/KeggReactome.gmt")
+
+which(names(gmtData) %in% GoDirectionalityPositive$X)
+gmtList = as.list(gmtData)
+
+gmtData[which(names(gmtData) %in% GoDirectionalityPositive$X)]
+
+
+gmtNames = names(gmtData)
+gmtDriver = rep(NA, length(gmtNames))
+gmtUpdate = data.frame(gmtNames, gmtDriver)
+gmtDirections = GODirecitonality$Directionality[match(gmtNames, GODirecitonality$X)]
+write.csv(gmtDirections, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/cytoscape/gmtDirectionColumn.csv")
+
+
+gmtNames[1]
+length(GODirecitonality$X)
+
+?match
 
 # -----------
 if (!require("BiocManager", quietly = TRUE))
