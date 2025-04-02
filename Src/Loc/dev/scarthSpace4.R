@@ -1,8 +1,5 @@
 a = b #this is to prevent accidental full runs
 
-# This is a comment to demo github 
-
-
 palette(c("yellowgreen", "darkgray", "yellow", "darkgreen", "darkblue", "lightblue", "gold", "black", "pink", "red"))
 palette(c("yellowgreen", "yellow", "darkgreen", "darkblue", "lightblue", "gold", "black", "pink", "red"))
 
@@ -84,6 +81,8 @@ rerTree2 = drop.tip(rerTree, rerTree$tip.label[which(!rerTree$tip.label %in% spe
 plot.phylo(rerTree2)
 rerTree2$edge.length
 
+plot(phenMasterTree)
+
 # --- SDS and SDSL tree analysis 
 
 source("Src/Reu/paths2Tree.R")
@@ -118,6 +117,60 @@ plot(mainTrees$trees$SDSL)
 
 rerTree
 
+
+
+index = geneName
+if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
+masterTree = mainTrees$masterTree
+masterTree$node.label = NULL
+
+if(useManualTree){
+  phenotypeTree = readRDS(phenotypeTreeLocation)
+}else{
+  #pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
+  #pathsObject = readRDS(pathsFilename)
+  #pathsTree = paths2Tree(mainTrees, pathsObject, index)
+  #paths tree actually currently being unused because of how the master tree phenotype matching works. Because it's relying on the trees beingthe same shape and therefore having matching node numbers, I can't use the paths -- or, at least, it's very messy to try, so I'm not.
+  
+  phenotypeTreeCategoricalLocation = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+  phenotypeTreeBinaryLocation = paste(outputFolderName, filePrefix, "BinaryTree.rds", sep="") #make a filename based on the prefix
+  if(file.exists(phenotypeTreeCategoricalLocation)){
+    fullPhenotypeTree = readRDS(phenotypeTreeCategoricalLocation)
+  }else if(file.exists(phenotypeTreeBinaryLocation)){
+    fullPhenotypeTree = readRDS(phenotypeTreeBinaryLocation)
+  }else{
+    stop("The prefix has neither a categorical or binary phenotype tree")
+  }
+  
+}
+phenotypeTree = fullPhenotypeTree
+
+
+phenMasterTree = masterTree
+phenMasterTree = drop.tip(phenMasterTree, phenMasterTree$tip.label[!phenMasterTree$tip.label %in% phenotypeTree$tip.label])
+
+#add category as label to nodes
+allLabels = rep("", (length(phenMasterTree$tip.label)+phenMasterTree$Nnode))
+for(i in 1:length(allLabels)){
+  parentEdge = which(phenMasterTree$edge[,2]==i)
+  if(!length(parentEdge)==0){
+    allLabels[i] = parentEdge
+    allLabels[i] = phenotypeTree$edge.length[parentEdge]
+  }
+}
+
+allLabels[which(allLabels == foregroundCategory)] = "Foreground"
+
+tipLabels = allLabels[c(1:length(phenotypeTree$tip.label))]
+originalTipValues = phenMasterTree$tip.label
+phenMasterTree$tip.label = paste0(phenMasterTree$tip.label, "{", tipLabels, "}")
+internalLabels = allLabels[-c(1:length(phenotypeTree$tip.label))]
+phenMasterTree$node.label = paste0("{", internalLabels, "}")
+
+
+source("Src/Reu/treeColorPlots.R")
+treeColorByLabel(phenMasterTree)
+edgcols[is.na(edgcols)] = "gray"
 
 #------ Run directionality assessment code --- 
 
