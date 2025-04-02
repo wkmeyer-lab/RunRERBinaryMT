@@ -6,6 +6,7 @@ library(RERconverge)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/paths2Tree.R")
 source("Src/Reu/customSeqinrFunctions.R")
+source("Src/Reu/makePhenMasterTree.R")
 
 # -- Command arguments list
 # r = filePrefix                                                               This is a prefix used to organize and separate files by analysis run. Always required. 

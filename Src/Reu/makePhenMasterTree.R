@@ -1,9 +1,6 @@
 makePhenMasterTree = function(geneName, filePrefix, convertToCommon = F, tipCol = "tipName", manualPhenotypeTreeLocation = NULL){
   useManualTree = F
   if(!is.null(manualPhenotypeTreeLocation)){useManualTree = T}
-  startingPalette = palette()
-  bufferedPalette = append("white", startingPalette)
-  palette(bufferedPalette)
   outputFolderName = paste("Output/",filePrefix,"/", sep = "")
   
     
@@ -59,8 +56,6 @@ makePhenMasterTree = function(geneName, filePrefix, convertToCommon = F, tipCol 
   phenMasterTree$tip.label = paste0(phenMasterTree$tip.label, "{", tipLabels, "}")
   internalLabels = allLabels[-c(1:length(phenotypeTree$tip.label))]
   phenMasterTree$node.label = paste0("{", internalLabels, "}")
-  palette(startingPalette)
-  
   phenMasterTree
 
 }

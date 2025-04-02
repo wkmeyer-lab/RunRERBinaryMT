@@ -1,4 +1,7 @@
 treeColorPlot = function(trgene, rer.cex = 0.7, tip.cex = 0.7, nalab = "NA"){
+  startingPalette = palette()
+  bufferedPalette = append("white", startingPalette)
+  palette(bufferedPalette)
   par(mar = c(1, 1, 1, 0))
   edgcols <- rep("black", nrow(trgene$edge))
   edgwds <- rep(1, nrow(trgene$edge))
@@ -35,7 +38,7 @@ treeColorByLabel = function(phenMasterTree){
     edgcols[parentEdges] <- palette()[i]
     #print(edgcols)
   }
-  edgcols[is.na(edgcols)] = "gray"
+  palette(startingPalette)
   plot = plot.phylo(phenMasterTree, font = 2, edge.color = edgcols, cex = 0.7, tip.color = tipcols)
   
 }
