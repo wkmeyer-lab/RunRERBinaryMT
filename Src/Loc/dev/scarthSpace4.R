@@ -21,6 +21,7 @@ palette(c( "gray", "darkblue", "darkgreen",  "black", "red"))
 
 library(RERconverge)
 source("Src/Reu/ZoonomTreeNameToCommon.R")
+library(data.table)
 # ---------------------------------------
 length(phenotypeVector)
 
@@ -47,6 +48,73 @@ dev.off()
 plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
 
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
+
+# ---- Exmaine SDS and SDSL RER plots
+
+library(RERconverge)
+RERobject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
+commonRERS = RERobject
+colnames(commonRERS) = ZonomNameConvertVectorCommon(colnames(commonRERS), tipColumn = "ZoonomiaTip" )
+
+pathsObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+phenotypeSet = c("Herbivore", "Insectivore", "Omnivore", "Vertivore")
+palette(c( "darkgreen", "darkblue", "black", "red"))
+
+?plotRers
+plotRers(RERobject, "BPIFB1", pathsObject)
+
+source("Src/Reu/rerViolinPlot.R")
+rerViolinPlot(mainTrees, RERobject, pathsObject, phenotypeSet , geneOfInterest = "SDS", colorScale = colorset)
+
+colorset = palette(c( "darkgreen", "darkblue", "white", "red"))
+plotRers(commonRERS, "SDS", pathsObject)
+plotRers(commonRERS, "SDSL", pathsObject)
+
+speciesFilter = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeSpeciesFilter.rds")
+
+?returnRersAsTree
+rerTree = returnRersAsTree(mainTrees, commonRERS, "SDS", pathsObject)
+
+rerTree2 = drop.tip(rerTree, rerTree$tip.label[which(!rerTree$tip.label %in% speciesFilter)])
+
+plot.phylo(rerTree2)
+rerTree2$edge.length
+
+# --- SDS and SDSL tree analysis 
+
+source("Src/Reu/paths2Tree.R")
+colorset = palette(c( "darkgreen", "darkblue", "black", "red"))
+pathTree = paths2Tree(mainTrees, pathsObject, "SDS")
+
+which(pathTree$tip.label %in% speciesFilter)
+
+pathTree2 = drop.tip(pathTree, pathTree$tip.label[which(!pathTree$tip.label %in% speciesFilter)])
+
+plot.phylo(pathTree2)
+
+trgene = pathTree2
+phenv = pathsObject
+{
+  par(mar = c(1, 1, 1, 0))
+  edgcols <- rep("black", nrow(trgene$edge))
+  edgwds <- rep(1, nrow(trgene$edge))
+  plot.phylo(trgene, font = 2, edge.color = edgcols, edge.width = edgwds, 
+             cex = tip.cex)
+  rerlab <- round(rertree, 3)
+  rerlab[is.na(rerlab)] <- nalab
+  edgelabels(rerlab, bg = NULL, adj = c(0.5, 0.9), col = edgcols, 
+             frame = "none", cex = rer.cex, font = 2)
+}
+
+plot(mainTrees$trees$SDS)
+SDSPruned = drop.tip(mainTrees$trees$SDS, mainTrees$trees$SDS$tip.label[which(!mainTrees$trees$SDS$tip.label %in% speciesFilter)])
+SDSPrunedCommon = ZoonomTreeNameToCommon(SDSPruned, tipCol = "ZoonomiaTip")
+plot(SDSPruned)
+plot(mainTrees$trees$SDSL)
+
+rerTree
+
 
 #------ Run directionality assessment code --- 
 
@@ -312,7 +380,6 @@ plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivo
 palette(c( "gray", "gray", "gray", "red"))
 plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
 dev.off()
->>>>>>> e351e1d507f8477f5cbd8472529b54741c5a48c4
 
 
 # ------ plot RERs of CategoricalINsvertivore to check rho direction meaning 
@@ -877,14 +944,20 @@ InsectivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Insect
 VertivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreEnrichment-GO_Biological_Process_2023.rds")[[1]]
 CarnivoreGoData = readRDS("Output/CategoricalPrunedCarnivoreTree/Carnivore-Herbivore/CategoricalPrunedCarnivoreTreeCarnivore-HerbivoreEnrichment-GO_Biological_Process_2023.rds")[[1]]
 
+InsectivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreEnrichment-KeggReactome.rds")[[1]]
+VertivoreGoData = readRDS("Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreEnrichment-KeggReactome.rds")[[1]]
+CarnivoreGoData = readRDS("Output/CategoricalPrunedCarnivoreTree/Carnivore-Herbivore/CategoricalPrunedCarnivoreTreeCarnivore-HerbivoreEnrichment-KeggReactome.rds")[[1]]
+
+
+
 InsectivoreGoData = InsectivoreGoData[order(InsectivoreGoData$p.adj),]
 VertivoreGoData = VertivoreGoData[order(VertivoreGoData$p.adj),]
 CarnivoreGoData = CarnivoreGoData[order(CarnivoreGoData$p.adj),]
 
 
-signficiantInsectivore = InsectivoreGoData[which(InsectivoreGoData$pval <0.05),]
-signficiantVertivore = VertivoreGoData[which(VertivoreGoData$pval <0.05),]
-signficiantCarnivore = CarnivoreGoData[which(CarnivoreGoData$pval <0.05),]
+signficiantInsectivore = InsectivoreGoData[which(InsectivoreGoData$p.adj <0.05),]
+signficiantVertivore = VertivoreGoData[which(VertivoreGoData$p.adj <0.05),]
+signficiantCarnivore = CarnivoreGoData[which(CarnivoreGoData$p.adj <0.05),]
 
 
 valuedInsectivore = InsectivoreGoData[which(InsectivoreGoData$pval <1),]
@@ -906,11 +979,11 @@ topVertivore = VertivoreGoData[1:100,]
 topCarnivore = CarnivoreGoData[1:100,]
 
 vennData = list(
-  Insectivore = rownames(topInsectivore),
-  Vertivore = rownames(topVertivore),
-  Carnivore = rownames(topCarnivore)
+  Insectivore = rownames(signficiantInsectivore),
+  Vertivore = rownames(signficiantVertivore),
+  Carnivore = rownames(signficiantCarnivore)
 )
-ggvenn(vennData, fill_color = c("blue", "red", "pink"))
+ggvenn(vennData, fill_color = c("blue", "red", "orange"))
 
 
 # --------
@@ -1021,7 +1094,10 @@ geneVennData = list(
   Vertivore = rownames(sigVertGenes),
   Carnivore = rownames(sigCarnGenes)
 )
-ggvenn(geneVennData, fill_color = c("blue", "red", "pink"))
+ggvenn(geneVennData, fill_color = c("blue", "red", "orange"))
+require(venneuler)
+v <- venneuler(c(Insectivore=194, Vertivore=145, Carnviore=598, "Insectivore&Vertivore"=0, "Insectivore&Carnviore"=294, "Vertivore&Carnviore"=125, "Carnviore&Vertivore&Insectivore"=75))
+plot(v)
 
 valuedInsectGenes = combinedData[which(combinedData$I_p.adj <1),]
 valuedVertGenes = combinedData[which(combinedData$V_p.adj <1),]
