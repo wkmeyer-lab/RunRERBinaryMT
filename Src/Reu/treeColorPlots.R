@@ -35,6 +35,7 @@ treeColorByLabel = function(phenMasterTree){
     edgcols[parentEdges] <- palette()[i]
     #print(edgcols)
   }
+  edgcols[is.na(edgcols)] = "gray"
   plot = plot.phylo(phenMasterTree, font = 2, edge.color = edgcols, cex = 0.7, tip.color = tipcols)
   
 }
