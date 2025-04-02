@@ -1,4 +1,4 @@
-makePhenMasterTree = function(geneName, filePrefix, convertToCommon = F, tipCol = "tipName", manualPhenotypeTreeLocation = NULL){
+makePhenMasterTree = function(geneName, filePrefix, convertToCommon = F, tipCol = "tipName", manualPhenotypeTreeLocation = NULL, foregroundCategory = NULL){
   useManualTree = F
   if(!is.null(manualPhenotypeTreeLocation)){useManualTree = T}
   outputFolderName = paste("Output/",filePrefix,"/", sep = "")

@@ -118,12 +118,16 @@ plot(mainTrees$trees$SDSL)
 
 # --- SDS and SDSL tree analysis 
 source("Src/Reu/treeColorPlots.R")
+source("Src/Reu/makePhenMasterTree.R")
 palette(c( "darkgreen", "darkblue", "black", "red"))
 palette(c( "darkblue", "darkgreen", "black", "red"))
 
 testPhenMaster = makePhenMasterTree("SDS", "CategoricalInsVertivoreTree", convertToCommon = T, tipCol = "ZoonomiaTip")
 
+pdf("Results/SDSTree.pdf", height = 20, width = 10)
+png("Results/SDSTree.png", height = 1800, width = 900)
 treeColorByLabel(testPhenMaster)
+dev.off()
 
 palette(c( "darkgreen", "darkblue", "black", "red"))
 plotRers(commonRERS, "SDS", pathsObject)
