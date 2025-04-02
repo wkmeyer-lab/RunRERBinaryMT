@@ -1,5 +1,8 @@
 a = b #this is to prevent accidental full runs
 
+# This is a comment to demo github 
+
+
 palette(c("yellowgreen", "darkgray", "yellow", "darkgreen", "darkblue", "lightblue", "gold", "black", "pink", "red"))
 palette(c("yellowgreen", "yellow", "darkgreen", "darkblue", "lightblue", "gold", "black", "pink", "red"))
 
