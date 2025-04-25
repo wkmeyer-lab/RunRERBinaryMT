@@ -75,6 +75,7 @@ speciesFilter = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertiv
 
 ?returnRersAsTree
 rerTree = returnRersAsTree(mainTrees, commonRERS, "SDS", pathsObject)
+rerTree = returnRersAsTree(mainTrees, RERobject, "SDS", pathsObject)
 
 rerTree2 = drop.tip(rerTree, rerTree$tip.label[which(!rerTree$tip.label %in% speciesFilter)])
 
@@ -122,7 +123,7 @@ source("Src/Reu/makePhenMasterTree.R")
 palette(c( "darkgreen", "darkblue", "black", "red"))
 palette(c( "darkblue", "darkgreen", "black", "red"))
 
-testPhenMaster = makePhenMasterTree("SDS", "CategoricalInsVertivoreTree", convertToCommon = T, tipCol = "ZoonomiaTip")
+testPhenMaster = makePhenMasterTree("SDS", "CategoricalInsVertivoreTree", convertToCommon = F, tipCol = "ZoonomiaTip")
 
 pdf("Results/SDSTree.pdf", height = 20, width = 10)
 png("Results/SDSTree.png", height = 1800, width = 900)
@@ -132,6 +133,39 @@ dev.off()
 palette(c( "darkgreen", "darkblue", "black", "red"))
 plotRers(commonRERS, "SDS", pathsObject)
 plotRers(commonRERS, "SDSL", pathsObject)
+
+carnivoraTips = c("vs_HLcryFer2", "cs_HLhyaHya1", "vs_HLpanOnc1", "vs_HLpanLeo1", "vs_HLaclJub2", "vs_ursMar1", "vs_lepWed1", "vs_HLphoVit1", "vs_HLcalUrs1", "vs_HLzalCal1", "vs_HLtaxTax1", "vs_HLneoVis1", "vs_HLmusPut1", "vs_HLpteBra1", "vs_HLlonCan1", "vs_HLlutLut1", "vs_HLvulVul1", "vs_HLlycPlc2")
+rodentiaTips = c("vs_ochPri3", "vs_HLlepTim1", "vs_HLmusAve1", "vs_HLgilGil1", "vs_HLsciCar1", "vs_HLmarFla1", "vs_HLcynGun1", "vs_HLaplRuf1", "vs_HLpedCap1", "vs_jacJac1", "vs_HLrhlPru1", "vs_HLneoLep1", "vs_mesAur1", "vs_HLondZib1", "vs_HLmicAgr2", "vs_HLarvNll1", "vs_HLpsaObe1", "vs_HLrhoOpl1", "vs_HLcasCan3", "vs_HLperLonPac1", "vs_HLcteGun1", "vs_HLmyoCoy1", "vs_HLhydHyd1", "vs_HLcavTsc1")
+
+
+library(seqinr)
+SDSFasta = read.fasta("Results/ENST00000257549.SDS.filt.fa")
+SDSLFasta = read.fasta("Results/ENST00000403593.SDSL.filt.fa")
+sub("\\t.*", "", names(SDSFasta))
+SDSCanivoraFasta = SDSFasta[which(sub("\\t.*", "", names(SDSFasta)) %in% carnivoraTips)]
+SDSRondentiaFasta = SDSFasta[which(sub("\\t.*", "", names(SDSFasta)) %in% rodentiaTips)]
+
+SDSLCanivoraFasta = SDSLFasta[which(sub("\\t.*", "", names(SDSLFasta)) %in% carnivoraTips)]
+SDSLRondentiaFasta = SDSLFasta[which(sub("\\t.*", "", names(SDSLFasta)) %in% rodentiaTips)]
+
+write.fasta(SDSCanivoraFasta, sub("\\t.*", "", names(SDSCanivoraFasta)), "Results/SDSCanivoraFasta.fasta")
+write.fasta(SDSRondentiaFasta, sub("\\t.*", "", names(SDSRondentiaFasta)), "Results/SDSRondentiaFasta.fasta")
+write.fasta(SDSLCanivoraFasta, sub("\\t.*", "", names(SDSLCanivoraFasta)), "Results/SDSLCanivoraFasta.fasta")
+write.fasta(SDSLRondentiaFasta, sub("\\t.*", "", names(SDSLRondentiaFasta)), "Results/SDSLRondentiaFasta.fasta")
+
+mainTrees$trees$SDS
+
+CarnivoraSDSTree = drop.tip(mainTrees$trees$SDS, mainTrees$trees$SDS$tip.label[which(!mainTrees$trees$SDS$tip.label %in% carnivoraTips)])
+CarnivoraSDSLTree = drop.tip(mainTrees$trees$SDSL, mainTrees$trees$SDSL$tip.label[which(!mainTrees$trees$SDSL$tip.label %in% carnivoraTips)])
+
+RodentiaTree = drop.tip(mainTrees$trees$SDS, mainTrees$trees$SDS$tip.label[which(!mainTrees$trees$SDS$tip.label %in% rodentiaTips)])
+
+
+CarnivoraSDSTree = drop.tip(CarnivoraSDSTree, "vs_HLtaxTax1")
+
+write.tree(CarnivoraSDSTree, "Results/CarnivoraSDSTree.txt")
+write.tree(RodentiaTree)
+
 
 #------ Run directionality assessment code --- 
 
