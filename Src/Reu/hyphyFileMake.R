@@ -126,6 +126,8 @@ phenMasterTree = makePhenMasterTree(geneName, filePrefix, manualPhenotypeTreeLoc
 # - Read Fasta file - 
 message(fastaLocation)
 fasta = read.fasta(fastaLocation)
+lowQuailtyAlignment = grep("!", fasta)
+fasta = fasta[-lowQuailtyAlignment]
 
 fastaTipHeaders = names(fasta)
 fastaTipHeaders = sub("\\t.*", "", fastaTipHeaders)
@@ -142,7 +144,6 @@ names(fasta) = fastaTipHeaders
 
 #Write output file
 write.fastaToVar(fasta, names = names(fasta), file.out = "fastaLinesVar")
-fastaLinesVar = gsub("!", "", fastaLinesVar) #this removes ! found in some alignment files which breaks hyphy
 treeOut = write.tree(phenMasterTree)
 
 combinedContent = c(fastaLinesVar, treeOut)
