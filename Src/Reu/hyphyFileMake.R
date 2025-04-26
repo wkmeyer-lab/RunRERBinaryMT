@@ -71,7 +71,7 @@ fastaLocation = NULL
 
 if(!clusterRun){mainTreesLocation = '../RunRER/Data/zoonomiaAllMammalsTrees.rds'  #This targets the runRERBInary version of the data by default, regardless of if being run in a separate project or not. 
 }
-if(clusterRun){mainTreesLocation = '../RunRER/Data/zoonomiaAllMammalsTrees.rds'  #This targets the runRERBInary version of the data by default, regardless of if being run in a separate project or not. 
+if(clusterRun){mainTreesLocation = '../RunRERBinaryMT/Data/zoonomiaAllMammalsTrees.rds'  #This targets the runRERBInary version of the data by default, regardless of if being run in a separate project or not. 
 }
 
 useManualTree = F
