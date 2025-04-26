@@ -22,6 +22,7 @@ source("Src/Reu/makePhenMasterTree.R")
 #geneName = "EHHADH"; fileprefix = "CategoricalInsVertivoreTree"; useManualTree = F; fastaLocation = "Results/ENST00000231887.EHHADH.filt.fa"; mainTreesLocation = 'data/zoonomiaAllMammalsTrees.rds'; foregroundCategory = "1"; phenotypeTreeLocation = "Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds"
 args = c("g=EHHADH", "r=CategoricalInsVertivoreTree", "a=Results/ENST00000231887.EHHADH.filt.fa")
 args = c("g=SDS", "r=CategoricalInsVertivoreTree", "a=Results/ENST00000231887.EHHADH.filt.fa")
+args = c("g=EHHADH", "r=CategoricalInsVertivoreTree", "a=Results/ENST00000231887.EHHADHTEST.filt.fa")
 
 
 # --- Standard start-up code ---
@@ -68,7 +69,10 @@ geneName = NULL
 fileprefix = NULL
 fastaLocation = NULL
 
-mainTreesLocation = '../RunRERBinaryMT/Data/zoonomiaAllMammalsTrees.rds'  #This targets the runRERBInary version of the data by default, regardless of if being run in a separate project or not. 
+if(!clusterRun){mainTreesLocation = '../RunRER/Data/zoonomiaAllMammalsTrees.rds'  #This targets the runRERBInary version of the data by default, regardless of if being run in a separate project or not. 
+}
+if(clusterRun){mainTreesLocation = '../RunRER/Data/zoonomiaAllMammalsTrees.rds'  #This targets the runRERBInary version of the data by default, regardless of if being run in a separate project or not. 
+}
 
 useManualTree = F
 phenotypeTreeLocation = NULL
@@ -138,6 +142,7 @@ names(fasta) = fastaTipHeaders
 
 #Write output file
 write.fastaToVar(fasta, names = names(fasta), file.out = "fastaLinesVar")
+fastaLinesVar = gsub("!", "", fastaLinesVar) #this removes ! found in some alignment files which breaks hyphy
 treeOut = write.tree(phenMasterTree)
 
 combinedContent = c(fastaLinesVar, treeOut)
