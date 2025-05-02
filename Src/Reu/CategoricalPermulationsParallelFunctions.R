@@ -56,12 +56,12 @@ CategoricalCalculatePermulationPValues = function(realCors, intermediateList, st
   Ppvals = intermediateList[[4]]
   message("Obtaining permulations p-values")
   N = nrow(realCors[[1]]) #
-  #if(start = 1){ #Only do this if start = 1, because otherwise it's already made and you'll overwrite the old script's results 
+  if(start = 1){ #Only do this if start = 1, because otherwise it's already made and you'll overwrite the old script's results 
     realCors[[1]]$permP = rep(NA, N) #Make a column for permP values in all of the dataframes 
     for (j in 1:length(realCors[[2]])) {
       realCors[[2]][[j]]$permP = rep(NA, N) #Make a column for permP values in all of the dataframes 
     }
-  #}
+  }
   
   #Start updating the correlations
   if(is.null(end)){ #if no end specified
