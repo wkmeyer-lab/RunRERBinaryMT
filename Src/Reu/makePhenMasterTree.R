@@ -48,6 +48,7 @@ makePhenMasterTree = function(geneName, filePrefix, convertToCommon = F, tipCol 
   
   tipLabels = allLabels[c(1:length(phenotypeTree$tip.label))]
   originalTipValues = phenMasterTree$tip.label
+  originalTipValues <<- phenMasterTree$tip.label
   if(convertToCommon){
     source("Src/Reu/ZoonomTreeNameToCommon.R")
     phenMasterTree$tip.label = ZonomNameConvertVectorCommon(phenMasterTree$tip.label, tipColumn = tipCol)

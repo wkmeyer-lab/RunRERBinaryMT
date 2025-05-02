@@ -172,6 +172,9 @@ if(!onlyCalulateValue){
   firstCombinationTime = firstCombinationEnd - firstCombinationStart
   message("Initial permulation combination time: ", firstCombinationTime, attr(firstCombinationTime, "units"))
   
+  
+  rm(firstPermulationsData)
+  rm(secondPermulationsData)
   # -- Do all subsequent combinations (loop) --
   
   iteratingPermulationsData = NULL #make a dummy variable to be removed on first instance of loop 
