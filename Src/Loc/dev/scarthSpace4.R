@@ -58,6 +58,7 @@ colnames(commonRERS) = ZonomNameConvertVectorCommon(colnames(commonRERS), tipCol
 
 pathsObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
 mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+phenotypeSet = c("Herbivore", "Insectivore", "Omnivore")
 phenotypeSet = c("Herbivore", "Insectivore", "Omnivore", "Vertivore")
 palette(c( "darkgreen", "darkblue", "black", "red"))
 
@@ -66,6 +67,12 @@ plotRers(RERobject, "BPIFB1", pathsObject)
 
 source("Src/Reu/rerViolinPlot.R")
 rerViolinPlot(mainTrees, RERobject, pathsObject, phenotypeSet , geneOfInterest = "SDS", colorScale = colorset)
+
+
+rerViolinPlot(mainTrees, RERobject, pathsObject, phenotypeSet , geneOfInterest = "STXBP1", colorScale = colorset)
+rerViolinPlot(mainTrees, RERobject, pathsObject, phenotypeSet , geneOfInterest = "GABRB3", colorScale = colorset)
+rerViolinPlot(mainTrees, RERobject, pathsObject, phenotypeSet , geneOfInterest = "ALDH4A1", colorScale = colorset)
+
 
 colorset = palette(c( "darkgreen", "darkblue", "white", "red"))
 plotRers(commonRERS, "SDS", pathsObject)
