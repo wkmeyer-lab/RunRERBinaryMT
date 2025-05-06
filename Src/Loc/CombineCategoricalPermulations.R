@@ -195,7 +195,16 @@ if(!onlyCalulateValue){
         iteratingPermulationLoadTime = iteratingPermulationLoadEnd - iteratingPermulationStart
         message("Iterating permulation load time: ", iteratingPermulationLoadTime, attr(iteratingPermulationLoadTime, "units"))
         
-        combinedPermulationsData = combineCategoricalPermulationIntermediates(combinedPermulationsData, iteratingPermulationsData)
+        #Moving this function into the main code body to save on memory use 
+        #combinedPermulationsData = combineCategoricalPermulationIntermediates(combinedPermulationsData, iteratingPermulationsData)
+        combinedPermulationsData[[1]] = cbind(combinedPermulationsData[[1]], iteratingPermulationsData[[1]])
+        for(i in 1:length(combinedPermulationsData[[2]])){
+          combinedPermulationsData[[2]][[i]] = cbind(combinedPermulationsData[[2]][[i]], iteratingPermulationsData[[2]][[i]])
+        }
+        combinedPermulationsData[[3]] = cbind(combinedPermulationsData[[3]], iteratingPermulationsData[[3]])
+        for(i in 1:length(combinedPermulationsData[[4]])){
+          combinedPermulationsData[[4]][[i]] = cbind(combinedPermulationsData[[4]][[i]], iteratingPermulationsData[[4]][[i]])
+        }
         iteratingPermulationCombineEnd = Sys.time()
         iteratingPermulationCombineTime = iteratingPermulationCombineEnd - iteratingPermulationLoadEnd
         message("Iterating permulation combination time: ", iteratingPermulationCombineTime, attr(iteratingPermulationCombineTime, "units"))
