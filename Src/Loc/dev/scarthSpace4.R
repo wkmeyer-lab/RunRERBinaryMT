@@ -238,6 +238,23 @@ length(GODirecitonality$X)
 
 ?match
 
+
+
+# --- run directionality for Herbivore-Vertivore -----
+source("Src/Reu/AssessRERDirection.R")
+source("Src/Reu/AssessGoCategoryDirection.R")
+directionalityTable = AssessRERDirection("CategoricalInsVertivoreTree", "Herbivore-Vertivore", "CategoricalBinaryHerbivoreTree", "Herbivore", "CategoricalBinaryVertivoreTree", "Vertivore")
+
+write.csv(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDirectionalityTable.csv")
+saveRDS(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDirectionalityTable.rds")
+
+
+GODirecitonality = AssessGoCategoryDirection("CategoricalInsVertivoreTree", "Herbivore-Vertivore", "KeggReactome", 0.1, 1, F)
+View(GODirecitonality)
+write.csv(GODirecitonality, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreGoDirectionalityTable.csv")
+
+
+
 # -----------
 if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
