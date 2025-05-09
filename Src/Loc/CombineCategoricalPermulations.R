@@ -171,7 +171,7 @@ if(!onlyCalulateValue){
   firstCombinationEnd = Sys.time()
   firstCombinationTime = firstCombinationEnd - firstCombinationStart
   message("Initial permulation combination time: ", firstCombinationTime, attr(firstCombinationTime, "units"))
-  
+  message("Initial permulation combination end time:", Sys.time())
   
   rm(firstPermulationsData)
   rm(secondPermulationsData)
@@ -193,16 +193,28 @@ if(!onlyCalulateValue){
         iteratingPermulationsData = readRDS(iteratingPermulationsFilename)
         iteratingPermulationLoadEnd= Sys.time()
         iteratingPermulationLoadTime = iteratingPermulationLoadEnd - iteratingPermulationStart
+        message("Iterating permulation load end time:", Sys.time())
         message("Iterating permulation load time: ", iteratingPermulationLoadTime, attr(iteratingPermulationLoadTime, "units"))
         
-        combinedPermulationsData = combineCategoricalPermulationIntermediates(combinedPermulationsData, iteratingPermulationsData)
+        #Moving this function into the main code body to save on memory use 
+        #combinedPermulationsData = combineCategoricalPermulationIntermediates(combinedPermulationsData, iteratingPermulationsData)
+        combinedPermulationsData[[1]] = cbind(combinedPermulationsData[[1]], iteratingPermulationsData[[1]])
+        for(j in 1:length(combinedPermulationsData[[2]])){
+          combinedPermulationsData[[2]][[j]] = cbind(combinedPermulationsData[[2]][[j]], iteratingPermulationsData[[2]][[j]])
+        }
+        combinedPermulationsData[[3]] = cbind(combinedPermulationsData[[3]], iteratingPermulationsData[[3]])
+        for(j in 1:length(combinedPermulationsData[[4]])){
+          combinedPermulationsData[[4]][[j]] = cbind(combinedPermulationsData[[4]][[j]], iteratingPermulationsData[[4]][[j]])
+        }
         iteratingPermulationCombineEnd = Sys.time()
         iteratingPermulationCombineTime = iteratingPermulationCombineEnd - iteratingPermulationLoadEnd
+        message("Iterating permulation combination end time:", Sys.time())
         message("Iterating permulation combination time: ", iteratingPermulationCombineTime, attr(iteratingPermulationCombineTime, "units"))
         
         rm(iteratingPermulationsData)
         iteratingPermulationRemoveEnd = Sys.time()
         iteratingPermulationRemoveTime = iteratingPermulationRemoveEnd - iteratingPermulationCombineEnd
+        message("Iterating permulation removal end time:", Sys.time())
         message("Iterating permulation removal time: ", iteratingPermulationRemoveTime, attr(iteratingPermulationRemoveTime, "units"))
         
         message("Added file ", i, " to combination.")
