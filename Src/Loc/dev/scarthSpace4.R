@@ -49,6 +49,59 @@ plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), ma
 
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
 
+# ----- Determine gene in both H-V and H-I 
+
+RERResults = readRDS("Output/CategoricalInsvertivoreTree/CategoricalInsVertivoreTreePairwiseCorrelationFile.rds")
+
+HICorrelations = RERResults$`Herbivore - Insectivore`
+HVCorrelations = RERResults$`Herbivore - Vertivore`
+HOCorrelations = RERResults$`Herbivore - Omnivore`
+
+
+HISignificantGenes = rownames(HICorrelations)[which(HICorrelations$p.adj < 0.05)]
+HVSignificantGenes = rownames(HVCorrelations)[which(HVCorrelations$p.adj < 0.05)]
+HOSignificantGenes = rownames(HOCorrelations)[which(HOCorrelations$p.adj < 0.05)]
+
+sharedGenes = HISignificantGenes[which(HISignificantGenes %in% HVSignificantGenes)]
+
+triSharedGenes = HOSignificantGenes[which(HOSignificantGenes %in% sharedGenes)]
+
+
+HIDrivingData = readRDS("Output/CategoricalInsvertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreDirectionalityTable.rds")
+HIDrivingData[which(rownames(HIDrivingData) %in% sharedGenes),]
+
+
+HVDrivingData = read.csv("Output/CategoricalInsvertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDirectionalityTable.csv")
+rownames(HVDrivingData) = HVDrivingData$X
+HVDrivingData[which(rownames(HVDrivingData) %in% sharedGenes),]
+
+CombinedDrivingData = HIDrivingData
+colnames(CombinedDrivingData)[10] = "HIDirectionality"
+colnames(CombinedDrivingData)[11] = "HIDirectionalityNumeric"
+CombinedDrivingData = cbind(CombinedDrivingData, HVDrivingData[,c(11,12)])
+colnames(CombinedDrivingData)[12] = "HVDirectionality"
+colnames(CombinedDrivingData)[13] = "HVDirectionalityNumeric"
+
+all.equal(rownames(HVDrivingData), rownames(HIDrivingData))
+
+
+SharedCombinedDrivingData = CombinedDrivingData[which(rownames(CombinedDrivingData) %in% sharedGenes),]
+
+nrow(SharedCombinedDrivingData[which(SharedCombinedDrivingData$HIDirectionality == "Herbivore" & SharedCombinedDrivingData$HVDirectionality =="Herbivore"),])
+nrow(SharedCombinedDrivingData[which(SharedCombinedDrivingData$HIDirectionality == "Herbivore" | SharedCombinedDrivingData$HVDirectionality =="Herbivore"),])
+
+
+HISharedDriving = HIDrivingData[which(rownames(HIDrivingData) %in% sharedGenes),]
+HVSharedDriving = HVDrivingData[which(rownames(HVDrivingData) %in% sharedGenes),]
+
+rownames(HISharedDriving[which(HISharedDriving$directionality == "Herbivore"),])
+rownames(HVSharedDriving[which(HVSharedDriving$directionality == "Herbivore"),])
+
+
+
+length(which(rownames(HISharedDriving[which(HISharedDriving$directionality == "Herbivore"),]) %in% rownames(HVSharedDriving[which(HVSharedDriving$directionality == "Herbivore"),])))
+
+
 # ---- Exmaine SDS and SDSL RER plots
 
 library(RERconverge)
