@@ -136,7 +136,7 @@ tip_data$uuid[tip_data$uuid == "NULL"] = NULL
 ggTreeOut = ggtree(commonCategoricalTree, layout = "circular") +scale_color_manual(values=palette()) 
 ggTreeOut = ggTreeOut %<+% edge + aes(color=CategorylengthChar)
 ggTreeOut = ggTreeOut %<+% tip_data 
-ggTreeOut = ggTreeOut + geom_tiplab(geom = "phylopic", aes(image = uuid))
+#ggTreeOut = ggTreeOut + geom_tiplab(geom = "phylopic", aes(image = uuid))
 #ggTreeOut + geom_phylopic(aes(uuid = uuid), color = "black", alpha = 1, size = 0.08)
 
 pdf()
