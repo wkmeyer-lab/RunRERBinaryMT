@@ -253,7 +253,7 @@ args = c('r=CategoricalCarnivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=
           )', 
          'v=T', 't=ER', 'n=ZoonomiaTip')
 }
-args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
+args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01',
          'c=c(
               "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
               "O-For Examination", "O-Scavenger", 
@@ -279,7 +279,6 @@ args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 
             c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
             c("O-Generalist", "Omnivore")
           )', 
-         'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01',
          'y=c(
           "vs_HLornAna3", "vs_HLtacAcu1", "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1", 
           "vs_HLmyrTri1", "vs_HLchoDid1", "vs_HLchoHof3", "vs_HLproCap3", 
@@ -314,7 +313,7 @@ args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 
           "vs_HLeidHel2", "outerPeropodidae",
           "vs_HLeonSpe1", "Roussetinae"
          )')
-
+{
 args = c('r=CategoricalPrunedCarnivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
          'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
               "O-For Examination", "O-Scavenger", 
@@ -375,6 +374,7 @@ args = c('r=CategoricalPrunedCarnivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds
           "vs_HLeidHel2", "outerPeropodidae",
           "vs_HLeonSpe1", "Roussetinae"
          )')
+}
 {
 args = c('r=CategoricalBinaryInsectivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
          'c=c(
@@ -625,7 +625,7 @@ args = c('r=CategoricalBinaryInsectivoreTree', 'm=data/zoonomiaAllMammalsTrees.r
           "vs_HLeonSpe1", "Roussetinae"
          )')
 }
-
+{
 args = c('r=CategoricalNoMegabranchInsvertTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
          'c=c(
               "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
@@ -810,7 +810,7 @@ args = c('r=CategoricalDownsampledInsvertTree', 'm=data/zoonomiaAllMammalsTrees.
           "vs_HLeidHel2", "outerPeropodidae",
           "vs_HLeonSpe1", "Roussetinae"
          )')
-
+}
 
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
@@ -1104,12 +1104,20 @@ commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLoca
 treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
 pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
   commonCategoricalTree = char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = T)
-  
+
   categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = T) #use the phenotype vector to make a tree
 dev.off()                                                                       #save the plot to the pdf
  
+scientificCategoricalTree = ZoonomTreeNameToCommon(commonCategoricalTree, manualAnnotLocation = spreadSheetLocation, tipCol = "CommonName", scientific = T, scientificCol = "Scientific_Binomial", plot = F)
+
 categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
 saveRDS(categoricalTree, categoricalTreeFilename)                               #save the tree
+categoricalCommonTreeFilename = paste(outputFolderName, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
+saveRDS(commonCategoricalTree, categoricalCommonTreeFilename)
+scientificCategoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalScientificTree.rds", sep="") #make a filename based on the prefix
+saveRDS(scientificCategoricalTree, scientificCategoricalTreeFilename)
+
+
 
 # - Paths - 
 pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix

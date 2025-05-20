@@ -38,12 +38,14 @@ stableCommonMainTrees = stableMaintrees
 stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
 
 ?plotTreeCategorical
-pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)     
+pdf(treeImageFilename, height = length(phenotypeVector)/14, width = 10)     
 plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
 
 plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableMaintrees$masterTree)
 dev.off()  
 
+categoricalCommonTreeFilename = paste(outputFolderName, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
+saveRDS(commonCategoricalTree, categoricalCommonTreeFilename)
 
 plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
 
