@@ -1,3 +1,5 @@
+# Fixes before publication: Automatic number of geneset detection 
+
 # -- Libraries 
 clusterRun = F
 clusterRun = T
@@ -63,6 +65,8 @@ args = c('r=CategoricalBinaryHerbivoreTree', 'm=c("Data/MGI_Mammalian_Phenotype_
 args = c('r=CategoricalBinaryOmnivoreTree', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("Background-Omnivore", "Overall")' )
 
 args = c('r=CategoricalDownsampledInsvertTree', 'p=F', 'g=T', 's=c("Omnivore-Vertivore", "Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
+
+args = c('r=CategoricalInsVertivoreTree', 'p=F', 'g=T', 's=c("Omnivore-Vertivore", "Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
 
 
 # --- Standard start-up code ---
@@ -434,7 +438,7 @@ for(j in 1:length(subdirectoryValueList)){
     #  enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
     #}
     enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, ncol = 1, nrow = 5)
-    enrichmentPlots= plot_grid(genesetPlot3, genesetPlot2, genesetPlot1, genesetPlot4, genesetPlot5, ncol = 1, nrow = 5)
+    enrichmentPlots= plot_grid(genesetPlot3, genesetPlot2, genesetPlot1, genesetPlot4, genesetPlot5, genesetPlot6, ncol = 1, nrow = 6)
     enrichmentRows = pmax(length(enrichmentRange), enrichmentRange)
   }
   
