@@ -2,6 +2,9 @@ library(ggtree)
 library(ggimage)
 library(rphylopic)
 library(RERconverge)
+library(utils)
+library(tidytree)
+library(ape)
 source("Src/Reu/ZoonomTreeNameToCommon.R")
 source("Src/Reu/cmdArgImport.R")
 {
@@ -14,6 +17,15 @@ source("Src/Reu/cmdArgImport.R")
 }
 
 args =c("r=CategoricalInsVertivoreTree")
+
+
+
+palette(c( "darkgreen", "darkblue", "black", "red", "purple"))
+CategoryReplacements = c("Herbivore", "Invertivore", "Omnivore", "Vertivore")
+mainTreesLocation = "data/zoonomiaAllMammalsTrees.rds"
+spreadSheetLocation = "Data/mergedData.csv"
+nameColumn = "ZoonomiaTip"
+legendText = "Diet"
 
 {  # Bracket used for collapsing purposes
   #File Prefix
@@ -44,11 +56,7 @@ args =c("r=CategoricalInsVertivoreTree")
 }
 
 
-palette(c( "darkgreen", "darkblue", "black", "red"))
-CategoryReplacements = c("Herbivore", "Invertivore", "Omnivore", "Vertivore")
-mainTreesLocation = "data/zoonomiaAllMammalsTrees.rds"
-spreadSheetLocation = "Data/mergedData.csv"
-nameColumn = "ZoonomiaTip"
+
 
 if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
 commonMainTrees = mainTrees
@@ -87,7 +95,7 @@ uuidList = NULL
 missingPictures = NA
 
 uuidListFilename =  paste(outputFolderName, filePrefix, "UuidList.rds", sep="") #make a filename based on the prefix
-if(!uuidListFilename | forceUpdate){                             #if it does not exist, or update is forced 
+if(!file.exists(uuidListFilename) | forceUpdate){                             #if it does not exist, or update is forced 
   inTips = scientificCategoricalTree$tip.label
   for(i in 1:length(inTips)){
     print(i)
@@ -122,7 +130,7 @@ if(!uuidListFilename | forceUpdate){                             #if it does not
 uuidList[uuidList == "NULL"] = get_uuid("tardigrades")
 uuidList[21] = get_uuid("tardigrades")
 
-uuidList[uuidList == "NULL"] = NULL
+#uuidList[uuidList == "NULL"] = NULL
 
 tip_data = data.frame(
   scientificlabel = scientificCategoricalTree$tip.label,
@@ -136,31 +144,158 @@ tip_data$uuid[tip_data$uuid == "NULL"] = NULL
 ggTreeOut = ggtree(commonCategoricalTree, layout = "circular") +scale_color_manual(values=palette()) 
 ggTreeOut = ggTreeOut %<+% edge + aes(color=CategorylengthChar)
 ggTreeOut = ggTreeOut %<+% tip_data 
+ggTreeOut$data$label = paste(ggTreeOut$data$label, "-", ggTreeOut$data$node, sep="")
+ggTreeOut = ggTreeOut + geom_tiplab()
 #ggTreeOut = ggTreeOut + geom_tiplab(geom = "phylopic", aes(image = uuid))
 #ggTreeOut + geom_phylopic(aes(uuid = uuid), color = "black", alpha = 1, size = 0.08)
-
-pdf()
 ggTreeOut
-dev.off()
+
+
 
 {
   collapsedClades = data.frame()
   collapsedClades[1,] = NA
   
-  
-  
-  collapsedClades$Cats = MRCA(commonCategoricalTree, c("Jaguar", "Lion", "Cheetah"))
+  #collapsedClades$Monotreme = MRCA(commonCategoricalTree, c(1,2))
+  collapsedClades$Opossums = MRCA(commonCategoricalTree, c(3,4,5))
+  collapsedClades$Koala = MRCA(commonCategoricalTree, c(8,9))
+  collapsedClades$Kangaroos = MRCA(commonCategoricalTree, c(10,11,12,13))
+  collapsedClades$Anteaters = MRCA(commonCategoricalTree, c(23,24))
+  collapsedClades$Sloths = MRCA(commonCategoricalTree, c(25,26))
+  collapsedClades$Elephant= MRCA(commonCategoricalTree, c(19,20,21))
+  collapsedClades$Aardvark = MRCA(commonCategoricalTree, c(14,15,16,17,18))
+  collapsedClades$Strepsirrhini = MRCA(commonCategoricalTree, c(27,28,29,30,31,32,33,34,35,36,37))
+  collapsedClades$Atelidae = MRCA(commonCategoricalTree, c(38,39,40,41,42,43))
+  collapsedClades$Chimpanze = MRCA(commonCategoricalTree, c(44:55))
+  collapsedClades$Hares = MRCA(commonCategoricalTree, c(56,57))
+  collapsedClades$Squirrels = MRCA(commonCategoricalTree, c(58:66))
+  collapsedClades$Capybara = MRCA(commonCategoricalTree, c(67:70))
+  collapsedClades$Beaver = MRCA(commonCategoricalTree, c(72:74))
+  collapsedClades$Jerboa = MRCA(commonCategoricalTree, c(75:77))
+  collapsedClades$Deomyinae = MRCA(commonCategoricalTree, c(90:97))
+  collapsedClades$Vole = MRCA(commonCategoricalTree, c(86:89))
+  collapsedClades$Neotominae = MRCA(commonCategoricalTree, c(80:85))
+  collapsedClades$Hedgehogs = MRCA(commonCategoricalTree, c(99,100))
+  collapsedClades$Mole = MRCA(commonCategoricalTree, c(101:104))
+  collapsedClades$`Flying Fox` = MRCA(commonCategoricalTree, c(105:107))
+  collapsedClades$Rhinolophidae = MRCA(commonCategoricalTree, c(108:113))
+  collapsedClades$`Big Brown Bat` = MRCA(commonCategoricalTree, c(125:129))
+  collapsedClades$Phyllostomidae = MRCA(commonCategoricalTree, c(121:124))
+  #collapsedClades$Noctilio = MRCA(commonCategoricalTree, c(114))
+  collapsedClades$Horse = MRCA(commonCategoricalTree, c(168:170))
+  collapsedClades$Pig = MRCA(commonCategoricalTree, c(172:173))
+  collapsedClades$Bison = MRCA(commonCategoricalTree, c(194:196))
+  collapsedClades$`Humpback Whale` = MRCA(commonCategoricalTree, c(175:178))
+  collapsedClades$`Dolphin` = MRCA(commonCategoricalTree, c(179:186))
+  collapsedClades$`Pangolin` = MRCA(commonCategoricalTree, c(130:131))
+  collapsedClades$`Lion` = MRCA(commonCategoricalTree, c(137:139))
+  collapsedClades$`Meerkat` = MRCA(commonCategoricalTree, c(135:136))
+  collapsedClades$`Dog` = MRCA(commonCategoricalTree, c(140:141))
+  collapsedClades$`Brown Bear` = MRCA(commonCategoricalTree, c(142:144))
+  collapsedClades$`Walrus` = MRCA(commonCategoricalTree, c(146:149))
+  collapsedClades$`Elephant Seal` = MRCA(commonCategoricalTree, c(150:153))
+  collapsedClades$`Procyon lotor` = MRCA(commonCategoricalTree, c(156:158))
+  collapsedClades$`Otter` = MRCA(commonCategoricalTree, c(162:166))
+  collapsedClades$`Tasmanian Devil` = MRCA(commonCategoricalTree, c(6:7))
+
+  #collapsedClades$Cats = MRCA(commonCategoricalTree, c("Jaguar", "Lion", "Cheetah"))
 }
 
-ggTreeClades = ggtree(commonCategoricalTree, layout = "circular") +scale_color_manual(values=palette())
-ggTreeClades = ggTreeClades %<+% edge + aes(color=CategorylengthChar)
 
+cladeUuids = NA
+for(i in 1:length(names(collapsedClades))){
+  message(i)
+  message(autocomplete_name(names(collapsedClades)[i])[1,2])
+  cladeUuids[i] = get_uuid(autocomplete_name(names(collapsedClades)[i])[1,2])
+}
+
+clades = data.frame(
+  node = unlist(as.vector(collapsedClades[1,])),
+  cladelabel = names(collapsedClades),
+  phylopic = cladeUuids,
+  uuid = cladeUuids
+)
+
+clades$x_new = NA
+clades$y_new = NA
+baseOffset = 0.04
+for(i in 1:nrow(clades)){
+  cladeNode = clades$node[i]
+  
+  message(clades$cladelabel[i])
+  message(cladeNode)
+
+  coords = ggTreeClades$data[ggTreeClades$data$node == cladeNode, ]
+  
+  #Determine the longest branch length from the MRCA node, based on the longest tip species 
+  tipDescendants = Descendants(commonCategoricalTree, cladeNode, type = "tip")[[1]]
+  totalDistances = NULL
+  
+  for(j in 1:length(tipDescendants)){
+    totalLength = 0 
+    currentAncestor = tipDescendants[j]
+    message("Child path:", j)
+    while(currentAncestor != cladeNode){
+      message(paste("processing Node:", currentAncestor))
+      currentLength = commonCategoricalTree$edge.length[which(commonCategoricalTree$edge[, 2] == currentAncestor)]
+      message(paste("Length:", currentLength))
+      if(currentLength > totalLength/100){totalLength = totalLength + currentLength}; message("adding")
+      message(paste("Total Length:", totalLength))
+      currentAncestor = Ancestors(commonCategoricalTree, currentAncestor, "parent")
+      if(length(currentAncestor) == 0){break}
+    }
+    message(paste("Total Length:", totalLength))
+    message("-")
+    totalDistances = append(totalDistances, totalLength)
+    
+  }
+  maxLength = max(totalDistances)
+
+  message(paste("Max Length:", maxLength))
+  x_new = coords$x + maxLength + baseOffset
+  y_new = coords$y
+  clades$x_new[i] = x_new
+  clades$y_new[i] = y_new
+  message(x_new)
+  message(y_new)
+  message("------")
+  
+}
+
+
+ggTreeClades = ggtree(commonCategoricalTree, layout = "circular") +scale_color_manual(values=palette()) 
+ggTreeClades = ggTreeClades %<+% edge + aes(color=CategorylengthChar) +labs(color = legendText)
+ggTreeClades = ggTreeClades %<+% tip_data 
+ggTreeClades$data$label = paste(ggTreeClades$data$label, "-", ggTreeClades$data$node, sep="")
+
+ggTreeClades= ggTreeClades %<+% clades
 
 for(i in 1:ncol(collapsedClades)){
   #ggTreeClades = ggTreeClades + geom_cladelabel(collapsedClades[1,i], names(collapsedClades)[i])
-  ggTreeClades = ggTreeClades + geom_cladelabel(collapsedClades[1,i], NA, color = "gray", barsize = 1)
+  #ggTreeClades = ggTreeClades + geom_cladelabel(collapsedClades[1,i], label = phylopiclist[i], color = "darkgray", barsize = 1, geom = "label", parse = T)
+  ggTreeClades = ggTreeClades + geom_cladelabel(collapsedClades[1,i], label = NA, color = "darkgray", barsize = 1, geom = "label", parse = T)
 }
-ggTreeClades
+
+
+
+# This outputs the phylopic onto the MRCA node, now I just need to figure out how to do the radial offset, will do that tomorrow
+pdf()
+ggTreeClades + geom_phylopic(data = ggTreeClades$data, aes(image = phylopic, x = x_new, y= y_new),size = 0.02)
+dev.off()
+
+
+
+
+
+#
+
+
+
+
+
+
+
+
 
 
 ?geom_cladelabel
