@@ -16,16 +16,11 @@ source("Src/Reu/cmdArgImport.R")
   parent.tbl_tree <- utils::getFromNamespace("parent.tbl_tree", "tidytree")
 }
 
-args =c("r=CategoricalInsVertivoreTree")
+args =c("r=CategoricalInsVertivoreTree", 'p=c("darkgreen", "darkblue", "black", "red")', 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet" )
 
 
 
-palette(c( "darkgreen", "darkblue", "black", "red", "purple"))
-CategoryReplacements = c("Herbivore", "Invertivore", "Omnivore", "Vertivore")
-mainTreesLocation = "data/zoonomiaAllMammalsTrees.rds"
-spreadSheetLocation = "Data/mergedData.csv"
-nameColumn = "ZoonomiaTip"
-legendText = "Diet"
+
 
 {  # Bracket used for collapsing purposes
   #File Prefix
@@ -55,6 +50,59 @@ legendText = "Diet"
   }
 }
 
+# -- Arugment imports --- 
+mainTreesLocation = "Data/zoonomiaAllMammalsTrees.rds"
+palette(c( "darkgreen", "darkblue", "black", "red"))
+spreadSheetLocation = "Data/mergedData.csv"
+nameColumn = "tipName"
+CategoryReplacements = NULL
+legendText = NA
+
+#MainTrees Location
+if(!is.na(cmdArgImport('m'))){
+  mainTreesLocation = cmdArgImport('m')
+}else{
+  message("No maintrees arg, using Data/zoonomiaAllMammalsTrees.rds")
+}
+
+#Pallette
+if(!is.na(cmdArgImport('p'))){
+  palletteValues = cmdArgImport('p')
+  pallette(palletteValues)
+}else{
+  message("No Palette Provided, using: darkgreen, darkblue, black, red")
+}
+
+#spreadsheet File
+if(!is.na(cmdArgImport('d'))){
+  spreadSheetLocation = cmdArgImport('d')
+}else{
+  message("Using Data/mergedData.csv spreadsheet")
+}
+
+#Name Column
+if(!is.na(cmdArgImport('n'))){
+  nameColumn = cmdArgImport('n')
+}else{
+  message("Name Column not specified, using 'tipName'.")
+}
+
+#Category replacements 
+if(!is.na(cmdArgImport('c'))){
+  CategoryReplacements = cmdArgImport('c')
+}else{
+  message("No category replacements provided, using category branch lengths as labels")
+}
+
+#legend Label
+if(!is.na(cmdArgImport('l'))){
+  legendText = cmdArgImport('l')
+}else{
+  message("No legendText provided, legend will be unlabeled")
+}
+
+
+
 
 
 
@@ -79,10 +127,11 @@ edge=data.frame(commonCategoricalTree$edge, edge_num=1:nrow(commonCategoricalTre
 colnames(edge)=c("parent", "node", "edge_num")
 edge$Categorylength = commonCategoricalTree$edge.length
 edge$CategorylengthChar = as.character(edge$Categorylength)
-for(i in 1:length(unique(edge$CategorylengthChar))){
-  edge$CategorylengthChar[edge$CategorylengthChar == i] = CategoryReplacements[i]
+if(!is.null(CategoryReplacements)){
+  for(i in 1:length(unique(edge$CategorylengthChar))){
+    edge$CategorylengthChar[edge$CategorylengthChar == i] = CategoryReplacements[i]
+  }
 }
-
 
 commonCategoricalTree$edge.length = commonMasterTrimmed$edge.length
 scientificCategoricalTree$edge.length = scientificMasterTrimmed$edge.length
@@ -148,7 +197,7 @@ ggTreeOut$data$label = paste(ggTreeOut$data$label, "-", ggTreeOut$data$node, sep
 ggTreeOut = ggTreeOut + geom_tiplab()
 #ggTreeOut = ggTreeOut + geom_tiplab(geom = "phylopic", aes(image = uuid))
 #ggTreeOut + geom_phylopic(aes(uuid = uuid), color = "black", alpha = 1, size = 0.08)
-ggTreeOut
+#ggTreeOut
 
 
 
@@ -156,7 +205,7 @@ ggTreeOut
   collapsedClades = data.frame()
   collapsedClades[1,] = NA
   
-  #collapsedClades$Monotreme = MRCA(commonCategoricalTree, c(1,2))
+  #collapsedClades$Platypus = MRCA(commonCategoricalTree, c(1,2))
   collapsedClades$Opossums = MRCA(commonCategoricalTree, c(3,4,5))
   collapsedClades$Koala = MRCA(commonCategoricalTree, c(8,9))
   collapsedClades$Kangaroos = MRCA(commonCategoricalTree, c(10,11,12,13))
