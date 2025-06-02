@@ -21,7 +21,7 @@ args =c("r=CategoricalInsVertivoreTree", 'p=c("darkgreen", "darkblue", "black", 
 
 
 
-
+# -- Standard Startup code -- 
 {  # Bracket used for collapsing purposes
   #File Prefix
   if(!is.na(cmdArgImport('r'))){
@@ -50,57 +50,58 @@ args =c("r=CategoricalInsVertivoreTree", 'p=c("darkgreen", "darkblue", "black", 
   }
 }
 
-# -- Arugment imports --- 
-mainTreesLocation = "Data/zoonomiaAllMammalsTrees.rds"
-palette(c( "darkgreen", "darkblue", "black", "red"))
-spreadSheetLocation = "Data/mergedData.csv"
-nameColumn = "tipName"
-CategoryReplacements = NULL
-legendText = NA
-
-#MainTrees Location
-if(!is.na(cmdArgImport('m'))){
-  mainTreesLocation = cmdArgImport('m')
-}else{
-  message("No maintrees arg, using Data/zoonomiaAllMammalsTrees.rds")
+# -- Argument imports --- 
+{
+  mainTreesLocation = "Data/zoonomiaAllMammalsTrees.rds"
+  palette(c( "darkgreen", "darkblue", "black", "red"))
+  spreadSheetLocation = "Data/mergedData.csv"
+  nameColumn = "tipName"
+  CategoryReplacements = NULL
+  legendText = NA
+  
+  #MainTrees Location
+  if(!is.na(cmdArgImport('m'))){
+    mainTreesLocation = cmdArgImport('m')
+  }else{
+    message("No maintrees arg, using Data/zoonomiaAllMammalsTrees.rds")
+  }
+  
+  #Pallette
+  if(!all(is.na(cmdArgImport('p')))){
+    paletteValues = cmdArgImport('p')
+    palette(palletteValues)
+  }else{
+    message("No Palette Provided, using: darkgreen, darkblue, black, red")
+  }
+  
+  #spreadsheet File
+  if(!is.na(cmdArgImport('d'))){
+    spreadSheetLocation = cmdArgImport('d')
+  }else{
+    message("Using Data/mergedData.csv spreadsheet")
+  }
+  
+  #Name Column
+  if(!is.na(cmdArgImport('n'))){
+    nameColumn = cmdArgImport('n')
+  }else{
+    message("Name Column not specified, using 'tipName'.")
+  }
+  
+  #Category replacements 
+  if(!all(is.na(cmdArgImport('c')))){
+    CategoryReplacements = cmdArgImport('c')
+  }else{
+    message("No category replacements provided, using category branch lengths as labels")
+  }
+  
+  #legend Label
+  if(!is.na(cmdArgImport('l'))){
+    legendText = cmdArgImport('l')
+  }else{
+    message("No legendText provided, legend will be unlabeled")
+  }
 }
-
-#Pallette
-if(!is.na(cmdArgImport('p'))){
-  palletteValues = cmdArgImport('p')
-  pallette(palletteValues)
-}else{
-  message("No Palette Provided, using: darkgreen, darkblue, black, red")
-}
-
-#spreadsheet File
-if(!is.na(cmdArgImport('d'))){
-  spreadSheetLocation = cmdArgImport('d')
-}else{
-  message("Using Data/mergedData.csv spreadsheet")
-}
-
-#Name Column
-if(!is.na(cmdArgImport('n'))){
-  nameColumn = cmdArgImport('n')
-}else{
-  message("Name Column not specified, using 'tipName'.")
-}
-
-#Category replacements 
-if(!is.na(cmdArgImport('c'))){
-  CategoryReplacements = cmdArgImport('c')
-}else{
-  message("No category replacements provided, using category branch lengths as labels")
-}
-
-#legend Label
-if(!is.na(cmdArgImport('l'))){
-  legendText = cmdArgImport('l')
-}else{
-  message("No legendText provided, legend will be unlabeled")
-}
-
 
 
 
@@ -197,7 +198,7 @@ ggTreeOut$data$label = paste(ggTreeOut$data$label, "-", ggTreeOut$data$node, sep
 ggTreeOut = ggTreeOut + geom_tiplab()
 #ggTreeOut = ggTreeOut + geom_tiplab(geom = "phylopic", aes(image = uuid))
 #ggTreeOut + geom_phylopic(aes(uuid = uuid), color = "black", alpha = 1, size = 0.08)
-#ggTreeOut
+ggTreeOut
 
 
 
@@ -205,7 +206,7 @@ ggTreeOut = ggTreeOut + geom_tiplab()
   collapsedClades = data.frame()
   collapsedClades[1,] = NA
   
-  #collapsedClades$Platypus = MRCA(commonCategoricalTree, c(1,2))
+  collapsedClades$Platypus = MRCA(commonCategoricalTree, c(1))
   collapsedClades$Opossums = MRCA(commonCategoricalTree, c(3,4,5))
   collapsedClades$Koala = MRCA(commonCategoricalTree, c(8,9))
   collapsedClades$Kangaroos = MRCA(commonCategoricalTree, c(10,11,12,13))
@@ -224,27 +225,27 @@ ggTreeOut = ggTreeOut + geom_tiplab()
   collapsedClades$Deomyinae = MRCA(commonCategoricalTree, c(90:97))
   collapsedClades$Vole = MRCA(commonCategoricalTree, c(86:89))
   collapsedClades$Neotominae = MRCA(commonCategoricalTree, c(80:85))
-  collapsedClades$Hedgehogs = MRCA(commonCategoricalTree, c(99,100))
-  collapsedClades$Mole = MRCA(commonCategoricalTree, c(101:104))
+  collapsedClades$`African Hedgehogs` = MRCA(commonCategoricalTree, c(99,100))
+  collapsedClades$`Talpa europaea` = MRCA(commonCategoricalTree, c(101:104))
   collapsedClades$`Flying Fox` = MRCA(commonCategoricalTree, c(105:107))
   collapsedClades$Rhinolophidae = MRCA(commonCategoricalTree, c(108:113))
   collapsedClades$`Big Brown Bat` = MRCA(commonCategoricalTree, c(125:129))
   collapsedClades$Phyllostomidae = MRCA(commonCategoricalTree, c(121:124))
-  #collapsedClades$Noctilio = MRCA(commonCategoricalTree, c(114))
+  collapsedClades$Noctilio = MRCA(commonCategoricalTree, c(114))
   collapsedClades$Horse = MRCA(commonCategoricalTree, c(168:170))
   collapsedClades$Pig = MRCA(commonCategoricalTree, c(172:173))
-  collapsedClades$Bison = MRCA(commonCategoricalTree, c(194:196))
+  collapsedClades$`bos bison` = MRCA(commonCategoricalTree, c(194:196))
   collapsedClades$`Humpback Whale` = MRCA(commonCategoricalTree, c(175:178))
-  collapsedClades$`Dolphin` = MRCA(commonCategoricalTree, c(179:186))
+  collapsedClades$`Dolphins` = MRCA(commonCategoricalTree, c(182:186))
   collapsedClades$`Pangolin` = MRCA(commonCategoricalTree, c(130:131))
   collapsedClades$`Lion` = MRCA(commonCategoricalTree, c(137:139))
   collapsedClades$`Meerkat` = MRCA(commonCategoricalTree, c(135:136))
   collapsedClades$`Dog` = MRCA(commonCategoricalTree, c(140:141))
   collapsedClades$`Brown Bear` = MRCA(commonCategoricalTree, c(142:144))
-  collapsedClades$`Walrus` = MRCA(commonCategoricalTree, c(146:149))
-  collapsedClades$`Elephant Seal` = MRCA(commonCategoricalTree, c(150:153))
+  collapsedClades$`Odobenus rosmarus` = MRCA(commonCategoricalTree, c(146:149))
+  collapsedClades$`Phocidae` = MRCA(commonCategoricalTree, c(150:153))
   collapsedClades$`Procyon lotor` = MRCA(commonCategoricalTree, c(156:158))
-  collapsedClades$`Otter` = MRCA(commonCategoricalTree, c(162:166))
+  collapsedClades$`Lontra provocax` = MRCA(commonCategoricalTree, c(162:166))
   collapsedClades$`Tasmanian Devil` = MRCA(commonCategoricalTree, c(6:7))
 
   #collapsedClades$Cats = MRCA(commonCategoricalTree, c("Jaguar", "Lion", "Cheetah"))
@@ -254,15 +255,21 @@ ggTreeOut = ggTreeOut + geom_tiplab()
 cladeUuids = NA
 for(i in 1:length(names(collapsedClades))){
   message(i)
-  message(autocomplete_name(names(collapsedClades)[i])[1,2])
-  cladeUuids[i] = get_uuid(autocomplete_name(names(collapsedClades)[i])[1,2])
+  autoName = autocomplete_name(names(collapsedClades)[i])[1,2]
+  message(autoName)
+  cladeUuids[i] = get_uuid(autoName)
 }
+
+#make the ggtree object temporarily for refrencing in later code
+ggTreeClades = ggtree(commonCategoricalTree, layout = "circular") +scale_color_manual(values=palette()) 
+
 
 clades = data.frame(
   node = unlist(as.vector(collapsedClades[1,])),
   cladelabel = names(collapsedClades),
-  phylopic = cladeUuids,
-  uuid = cladeUuids
+  uuid = cladeUuids,
+  phylopic = cladeUuids
+  
 )
 
 clades$x_new = NA
@@ -326,10 +333,11 @@ for(i in 1:ncol(collapsedClades)){
 }
 
 
-
-# This outputs the phylopic onto the MRCA node, now I just need to figure out how to do the radial offset, will do that tomorrow
-pdf()
-ggTreeClades + geom_phylopic(data = ggTreeClades$data, aes(image = phylopic, x = x_new, y= y_new),size = 0.02)
+#output the tree
+treeOutputLocation = paste0(outputFolderName, filePrefix, "RadialDisplayTree.pdf")
+pdf(treeOutputLocation)
+#ggTreeClades + rphylopic::geom_phylopic(data = ggTreeClades$data, aes(uuid = phylopic, x = x_new, y= y_new),size = 0.02)
+ggTreeClades + ggimage:: geom_phylopic(data = ggTreeClades$data, aes(image = phylopic, x = x_new, y= y_new),size = 0.02)
 dev.off()
 
 
