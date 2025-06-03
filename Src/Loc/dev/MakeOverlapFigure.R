@@ -8,7 +8,8 @@ clusterRun = T
 # -- Making new venn diagrams -- 
 significanceCutoff = 0.05
 prefix = "CategoricalInsvertivoreTree"
-pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore")
+pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore")
+geneSet = "KeggReactome"
 
 args = c("r=CategoricalInsvertivoreTree")
 
@@ -50,6 +51,7 @@ correlationResults = readRDS(pairwiseCorrelationFileName)
 
 combinedResults = NA
 combinedDrivers = NA
+combinedBinaries = NA
 
 for(i in 1:length(pairwiseSets)){
   currentSet = pairwiseSets[i]
@@ -58,45 +60,38 @@ for(i in 1:length(pairwiseSets)){
   which(names(correlationResults) == correlationSubsetName) 
   
   currentResults = correlationResults[[i]]
-  names(currentResults) = paste0(correlationPrefix, "-", names(currentResults))
+  currentResults$significant = currentResults$p.adj < significanceCutoff
   
+  
+  names(currentResults) = paste0(correlationPrefix, "-", names(currentResults))
   combinedResults = cbind(combinedResults, currentResults)
   
-  driverFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet, "DirectionalityTable.rds")
+  driverFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet, "DriverTable.rds")
   if(file.exists(driverFilename)){
     driverTable = readRDS(driverFilename)
     driverTable = driverTable[,-grep("main", names(driverTable))]
-    names(driverTable)[which(names(driverTable) == "directionality")] = paste0(correlationPrefix, "-", "directionality")
-    names(driverTable)[which(names(driverTable) == "directionNumeric")] = paste0(correlationPrefix, "-", "directionalityNumeric")    
+    names(driverTable)[which(names(driverTable) == "Driver")] = paste0(correlationPrefix, "-", "Driver")
+    names(driverTable)[which(names(driverTable) == "DriverNumeric")] = paste0(correlationPrefix, "-", "DriverNumeric")    
     
-    combinedDrivers = cbind(combinedDrivers, driverTable)
+    combinedDrivers = cbind(combinedDrivers, driverTable[,grep(paste0(correlationPrefix,"-"), names(driverTable))])
+    combinedBinaries = cbind(combinedBinaries, driverTable[,-grep(paste0(correlationPrefix,"-"), names(driverTable))])
+    rm(driverTable)
   }
-  
+  rm(currentResults)
+
 }
 combinedResults = combinedResults[,-1]
 combinedDrivers = combinedDrivers[,-1]
+combinedBinaries = combinedBinaries[,-1]
+combinedBinaries = combinedBinaries[,-grep(".1", names(combinedBinaries))]
 
 combinedResults = cbind(combinedResults, combinedDrivers)
+combinedResults = cbind(combinedResults, combinedBinaries)
+rm(combinedDrivers); rm(combinedBinaries)
 
 
 
 
-HICorrelations = RERResults$`Herbivore - Insectivore`
-HICorrelations$gene = rownames(HICorrelations)
-HVCorrelations = RERResults$`Herbivore - Vertivore`
-HOCorrelations = RERResults$`Herbivore - Omnivore`
-
-HIDrivingData = readRDS("Output/CategoricalInsvertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-InsectivoreDirectionalityTable.rds")
-HIDrivingData$gene = rownames(HIDrivingData)
-HVDrivingData = readRDS("Output/CategoricalInsvertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDriverTable.rds")
-
-CombinedRERData = merge(HICorrelations, HIDrivingData) 
-?merge
-
-
-HISignificantGenes = rownames(HICorrelations)[which(HICorrelations$p.adj < significanceCutoff)]
-HVSignificantGenes = rownames(HVCorrelations)[which(HVCorrelations$p.adj < significanceCutoff)]
-HOSignificantGenes = rownames(HOCorrelations)[which(HOCorrelations$p.adj < significanceCutoff)]
 
 
 

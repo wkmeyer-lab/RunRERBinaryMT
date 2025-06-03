@@ -1,7 +1,6 @@
 clusterRun = F
 clusterRun = T
 if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-
 library(RERconverge)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/AssessRERDriver.R")
@@ -48,6 +47,8 @@ if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 }
 
 args = c("r=CategoricalInsVertivoreTree", "c=c('Herbivore', 'Vertivore')", "g=KeggReactome")
+args = c("r=CategoricalInsVertivoreTree", "c=c('Herbivore', 'Insectivore')", "g=KeggReactome")
+
 
 # -- Argument imports -- 
 categories = NULL
