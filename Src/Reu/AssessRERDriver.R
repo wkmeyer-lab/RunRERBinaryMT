@@ -8,7 +8,7 @@ library(RERconverge)
 #binaryPhenTwo = "Insectivore"
 #strictBoth = F
 
-AssessRERDirection = function(mainPrefix, mainPairwise, binaryPrefixOne, binaryPhenOne, binaryPrefixTwo, binaryPhenTwo, strictBoth = F){
+AssessRERDriver = function(mainPrefix, mainPairwise, binaryPrefixOne, binaryPhenOne, binaryPrefixTwo, binaryPhenTwo, strictBoth = F){
   # -- handle pairwises without spaces pre-included --
   if(!grepl(" ", mainPairwise)){
     mainPairwise <- gsub("-", " - ", mainPairwise)
@@ -45,14 +45,14 @@ AssessRERDirection = function(mainPrefix, mainPairwise, binaryPrefixOne, binaryP
   combinedCorrelations = cbind(mainCorrelation, binaryOneCorrelation, binaryTwoCorrelation)
   combinedCorrelations = combinedCorrelations[,c(1,4,7,2,5,8,3,6,9)]
   
-  combinedCorrelations$directionality = rep(NA, nrow(combinedCorrelations))
-  combinedCorrelations$directionNumeric = rep(0, nrow(combinedCorrelations))
+  combinedCorrelations$Driver = rep(NA, nrow(combinedCorrelations))
+  combinedCorrelations$DriverNumeric = rep(0, nrow(combinedCorrelations))
   
   for(i in 1:nrow(combinedCorrelations)){
     workingRow = combinedCorrelations[i,]
     if(any(is.na(workingRow[c(1,2,3)]))){
-      combinedCorrelations$directionality[i] = "MissingData"
-      combinedCorrelations$directionNumeric[i] = 5
+      combinedCorrelations$Driver[i] = "MissingData"
+      combinedCorrelations$DriverNumeric[i] = 5
       next
     }
     mainRho = abs(workingRow[1])
@@ -62,35 +62,35 @@ AssessRERDirection = function(mainPrefix, mainPairwise, binaryPrefixOne, binaryP
 
     if(strictBoth){
       if(binOneRho > 1.5*binTwoRho){
-        combinedCorrelations$directionality[i] = binaryPhenOne
-        combinedCorrelations$directionNumeric[i] = 1
+        combinedCorrelations$Driver[i] = binaryPhenOne
+        combinedCorrelations$DriverNumeric[i] = 1
       }else if(binTwoRho > 1.5* binOneRho){
-        combinedCorrelations$directionality[i] = binaryPhenTwo
-        combinedCorrelations$directionNumeric[i] = 2
+        combinedCorrelations$Driver[i] = binaryPhenTwo
+        combinedCorrelations$DriverNumeric[i] = 2
       }else if(mainRho > binSumRho){
-        combinedCorrelations$directionality[i] = "DoubleBoth"
-        combinedCorrelations$directionNumeric[i] = 4
+        combinedCorrelations$Driver[i] = "DoubleBoth"
+        combinedCorrelations$DriverNumeric[i] = 4
       }else if(mainRho > binOneRho && mainRho > binTwoRho){
-        combinedCorrelations$directionality[i] = "Both"
-        combinedCorrelations$directionNumeric[i] = 3
+        combinedCorrelations$Driver[i] = "Both"
+        combinedCorrelations$DriverNumeric[i] = 3
       }else{
-        combinedCorrelations$directionality[i] = "Unclear"
+        combinedCorrelations$Driver[i] = "Unclear"
       }
     }else{    
       if(mainRho > binSumRho){
-        combinedCorrelations$directionality[i] = "DoubleBoth"
-        combinedCorrelations$directionNumeric[i] = 4
+        combinedCorrelations$Driver[i] = "DoubleBoth"
+        combinedCorrelations$DriverNumeric[i] = 4
       }else if(mainRho > binOneRho && mainRho > binTwoRho){
-        combinedCorrelations$directionality[i] = "Both"
-        combinedCorrelations$directionNumeric[i] = 3
+        combinedCorrelations$Driver[i] = "Both"
+        combinedCorrelations$DriverNumeric[i] = 3
       }else if(binOneRho > 1.5*binTwoRho){
-        combinedCorrelations$directionality[i] = binaryPhenOne
-        combinedCorrelations$directionNumeric[i] = 1
+        combinedCorrelations$Driver[i] = binaryPhenOne
+        combinedCorrelations$DriverNumeric[i] = 1
       }else if(binTwoRho > 1.5* binOneRho){
-        combinedCorrelations$directionality[i] = binaryPhenTwo
-        combinedCorrelations$directionNumeric[i] = 2
+        combinedCorrelations$Driver[i] = binaryPhenTwo
+        combinedCorrelations$DriverNumeric[i] = 2
       }else{
-        combinedCorrelations$directionality[i] = "Unclear"
+        combinedCorrelations$Driver[i] = "Unclear"
       }
     }
   }

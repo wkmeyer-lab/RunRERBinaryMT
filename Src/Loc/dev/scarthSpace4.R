@@ -302,18 +302,28 @@ length(GODirecitonality$X)
 
 
 
-# --- run directionality for Herbivore-Vertivore -----
+# --- run Driver for Herbivore-Vertivore -----
 source("Src/Reu/AssessRERDirection.R")
 source("Src/Reu/AssessGoCategoryDirection.R")
 directionalityTable = AssessRERDirection("CategoricalInsVertivoreTree", "Herbivore-Vertivore", "CategoricalBinaryHerbivoreTree", "Herbivore", "CategoricalBinaryVertivoreTree", "Vertivore")
 
-write.csv(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDirectionalityTable.csv")
-saveRDS(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDirectionalityTable.rds")
-
-
+write.csv(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDriverTable.csv")
+saveRDS(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDriverTable.rds")
 GODirecitonality = AssessGoCategoryDirection("CategoricalInsVertivoreTree", "Herbivore-Vertivore", "KeggReactome", 0.1, 1, F)
-View(GODirecitonality)
-write.csv(GODirecitonality, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreGoDirectionalityTable.csv")
+write.csv(GODirecitonality, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreGoDriverTable.csv")
+saveRDS(GODirecitonality, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreGoDriverTable.rds")
+
+
+# --- run Driver for Herbivore-Insectivore -----
+directionalityTable = AssessRERDirection("CategoricalInsVertivoreTree", "Herbivore-Insectivore", "CategoricalBinaryHerbivoreTree", "Herbivore", "CategoricalBinaryInsectivoreTree", "Insectivore")
+
+write.csv(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDriverTable.csv")
+saveRDS(directionalityTable, "Output/CategoricalInsVertivoreTree/Herbivore-Insectivore/CategoricalInsVertivoreTreeHerbivore-VertivoreDriverTable.rds")
+GODirecitonality = AssessGoCategoryDirection("CategoricalInsVertivoreTree", "Herbivore-Vertivore", "KeggReactome", 0.1, 1, F)
+write.csv(GODirecitonality, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreGoDriverTable.csv")
+saveRDS(GODirecitonality, "Output/CategoricalInsVertivoreTree/Herbivore-Vertivore/CategoricalInsVertivoreTreeHerbivore-VertivoreGoDriverTable.rds")
+
+
 
 
 

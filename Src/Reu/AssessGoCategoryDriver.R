@@ -6,14 +6,14 @@ GoCategoryCutoff = 0.05
 useStrictBoth = F
 
 # ---- Read in files --- 
-AssessGoCategoryDirection = function(prefix, pairwise, GoSet, GenePValueCutoff = 0.1, GoCategoryCutoff = 0.05, useStrictBoth = F){
+AssessGoCategoryDriver = function(prefix, pairwise, GoSet, GenePValueCutoff = 0.1, GoCategoryCutoff = 0.05, useStrictBoth = F){
   if(!is.null(pairwise)){
-    directionailtyTableFileLoaction = paste0("Output/",prefix,"/", pairwise, "/", prefix, pairwise,"DirectionalityTable.csv")
+    DriverailtyTableFileLoaction = paste0("Output/",prefix,"/", pairwise, "/", prefix, pairwise,"DriverTable.csv")
   }else{
-    directionailtyTableFileLoaction = paste0("Output/",prefix,"/", prefix, "DirectionalityTable.csv")
+    DriverailtyTableFileLoaction = paste0("Output/",prefix,"/", prefix, "DriverTable.csv")
   }
-  directionalityTable = read.csv(directionailtyTableFileLoaction)
-  directionalityTable= directionalityTable[order(directionalityTable$main_p.adj),]
+  DriverTable = read.csv(DriverailtyTableFileLoaction)
+  DriverTable= DriverTable[order(DriverTable$main_p.adj),]
   
     
   if(!is.null(pairwise)){
@@ -26,14 +26,14 @@ AssessGoCategoryDirection = function(prefix, pairwise, GoSet, GenePValueCutoff =
   GoData = GoData[which(GoData$p.adj < GoCategoryCutoff), ] #trim GoData to categories below cutoff
   
   # -- determine phenotype mappings --
-  phenOneName = directionalityTable$directionality[which(directionalityTable$directionNumeric == 1)[1]]
-  phenTwoName = directionalityTable$directionality[which(directionalityTable$directionNumeric == 2)[1]]
+  phenOneName = DriverTable$driver[which(DriverTable$DriverNumeric == 1)[1]]
+  phenTwoName = DriverTable$driver[which(DriverTable$DriverNumeric == 2)[1]]
   
-  significantGenes = directionalityTable[which(directionalityTable$main_p.adj < GenePValueCutoff),1]
+  significantGenes = DriverTable[which(DriverTable$main_p.adj < GenePValueCutoff),1]
   
   i = 1
-  GoData$Directionality = rep(NA, nrow(GoData))
-  GoData$DirectionalityNumeric = rep(NA, nrow(GoData))
+  GoData$Driver = rep(NA, nrow(GoData))
+  GoData$DriverNumeric = rep(NA, nrow(GoData))
   for(i in 1:nrow(GoData)){
     currentGeneset = GoData[i,]
     genesInSet = currentGeneset$gene.vals
@@ -44,20 +44,20 @@ AssessGoCategoryDirection = function(prefix, pairwise, GoSet, GenePValueCutoff =
     names(genes) = positions
   
     relevantGenes = genes[genes %in% significantGenes]
-    relevantDirectionality = directionalityTable[which(directionalityTable$X %in% relevantGenes),]
+    relevantDriver = DriverTable[which(DriverTable$X %in% relevantGenes),]
     
-    numberofTotalGenes = nrow(relevantDirectionality)
-    numberOfUnclearGenes = length(which(relevantDirectionality$directionNumeric == 0))
-    numberOfOneGenes = length(which(relevantDirectionality$directionNumeric == 1))
-    numberOfTwoGenes = length(which(relevantDirectionality$directionNumeric == 2))
-    numberOfBothGenes = length(which(relevantDirectionality$directionNumeric %in% c(3,4)))
-    numberOfStrictGenes = length(which(relevantDirectionality$directionNumeric == 4))
+    numberofTotalGenes = nrow(relevantDriver)
+    numberOfUnclearGenes = length(which(relevantDriver$DriverNumeric == 0))
+    numberOfOneGenes = length(which(relevantDriver$DriverNumeric == 1))
+    numberOfTwoGenes = length(which(relevantDriver$DriverNumeric == 2))
+    numberOfBothGenes = length(which(relevantDriver$DriverNumeric %in% c(3,4)))
+    numberOfStrictGenes = length(which(relevantDriver$DriverNumeric == 4))
     print(rownames(GoData)[i])
-    directionalitySummary = data.frame(numberofTotalGenes, numberOfUnclearGenes, numberOfOneGenes, numberOfTwoGenes, numberOfBothGenes, numberOfStrictGenes)
-    print(directionalitySummary)
+    DriverSummary = data.frame(numberofTotalGenes, numberOfUnclearGenes, numberOfOneGenes, numberOfTwoGenes, numberOfBothGenes, numberOfStrictGenes)
+    print(DriverSummary)
     
-    GoDirection = "Unclear"
-    GoDirectionNumeric = 0 
+    GoDriver = "Unclear"
+    GoDriverNumeric = 0 
     if(useStrictBoth){
       usedBothGenes = numberOfStrictGenes
     }else{
@@ -65,21 +65,21 @@ AssessGoCategoryDirection = function(prefix, pairwise, GoSet, GenePValueCutoff =
     }
     
     if(usedBothGenes > 0.75*numberofTotalGenes){
-      GoDirection = "Both"
-      GoDirectionNumeric = 3
+      GoDriver = "Both"
+      GoDriverNumeric = 3
     }else if(numberOfOneGenes > 0.5*numberofTotalGenes | numberOfOneGenes+usedBothGenes > 0.75*numberofTotalGenes) {
-      GoDirection = phenOneName
-      GoDirectionNumeric = 1
+      GoDriver = phenOneName
+      GoDriverNumeric = 1
     }else if(numberOfTwoGenes > 0.5*numberofTotalGenes| numberOfTwoGenes+usedBothGenes > 0.75*numberofTotalGenes) {
-      GoDirection = phenTwoName
-      GoDirectionNumeric = 2
+      GoDriver = phenTwoName
+      GoDriverNumeric = 2
     }else if(numberOfOneGenes+numberOfTwoGenes > 0.75*numberofTotalGenes) {
-      GoDirection = "MixOfBoth"
-      GoDirectionNumeric = 4
+      GoDriver = "MixOfBoth"
+      GoDriverNumeric = 4
     }
     
-    GoData$Directionality[i] = GoDirection
-    GoData$DirectionalityNumeric[i] = GoDirectionNumeric
+    GoData$Driver[i] = GoDriver
+    GoData$DriverNumeric[i] = GoDriverNumeric
   }
   GoData
 }
@@ -374,9 +374,9 @@ goCatgeories = c("KEGG_ABC_TRANSPORTERS","KEGG_ADHERENS_JUNCTION"
 ,"REACTOME_VITAMINS"
 ,"REACTOME_VITAMIN_D_CALCIFEROL_METABOLISM"
 ,"REACTOME_VOLTAGE_GATED_POTASSIUM_CHANNELS")
-currentOutput = GODirecitonality[(rownames(GODirecitonality) %in% goCatgeories),]
+#currentOutput = GODirecitonality[(rownames(GODirecitonality) %in% goCatgeories),]
 
-currentOutput = currentOutput[order(rownames(currentOutput)),]
-View(currentOutput)
+#currentOutput = currentOutput[order(rownames(currentOutput)),]
+#View(currentOutput)
 
-write.csv(currentOutput, "Results/temp.csv")
+#write.csv(currentOutput, "Results/temp.csv")
