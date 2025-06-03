@@ -8,12 +8,12 @@ useStrictBoth = F
 # ---- Read in files --- 
 AssessGoCategoryDriver = function(prefix, pairwise, GoSet, GenePValueCutoff = 0.1, GoCategoryCutoff = 0.05, useStrictBoth = F){
   if(!is.null(pairwise)){
-    DriverailtyTableFileLoaction = paste0("Output/",prefix,"/", pairwise, "/", prefix, pairwise,"DriverTable.csv")
+    directionailtyTableFileLoaction = paste0("Output/",prefix,"/", pairwise, "/", prefix, pairwise,"DriverTable.csv")
   }else{
-    DriverailtyTableFileLoaction = paste0("Output/",prefix,"/", prefix, "DriverTable.csv")
+    directionailtyTableFileLoaction = paste0("Output/",prefix,"/", prefix, "DriverTable.csv")
   }
-  DriverTable = read.csv(DriverailtyTableFileLoaction)
-  DriverTable= DriverTable[order(DriverTable$main_p.adj),]
+  directionalityTable = read.csv(directionailtyTableFileLoaction)
+  directionalityTable= directionalityTable[order(directionalityTable$main_p.adj),]
   
     
   if(!is.null(pairwise)){
@@ -26,10 +26,10 @@ AssessGoCategoryDriver = function(prefix, pairwise, GoSet, GenePValueCutoff = 0.
   GoData = GoData[which(GoData$p.adj < GoCategoryCutoff), ] #trim GoData to categories below cutoff
   
   # -- determine phenotype mappings --
-  phenOneName = DriverTable$driver[which(DriverTable$DriverNumeric == 1)[1]]
-  phenTwoName = DriverTable$driver[which(DriverTable$DriverNumeric == 2)[1]]
+  phenOneName = directionalityTable$directionality[which(directionalityTable$directionNumeric == 1)[1]]
+  phenTwoName = directionalityTable$directionality[which(directionalityTable$directionNumeric == 2)[1]]
   
-  significantGenes = DriverTable[which(DriverTable$main_p.adj < GenePValueCutoff),1]
+  significantGenes = directionalityTable[which(directionalityTable$main_p.adj < GenePValueCutoff),1]
   
   i = 1
   GoData$Driver = rep(NA, nrow(GoData))
@@ -44,20 +44,20 @@ AssessGoCategoryDriver = function(prefix, pairwise, GoSet, GenePValueCutoff = 0.
     names(genes) = positions
   
     relevantGenes = genes[genes %in% significantGenes]
-    relevantDriver = DriverTable[which(DriverTable$X %in% relevantGenes),]
+    relevantDirectionality = directionalityTable[which(directionalityTable$X %in% relevantGenes),]
     
-    numberofTotalGenes = nrow(relevantDriver)
-    numberOfUnclearGenes = length(which(relevantDriver$DriverNumeric == 0))
-    numberOfOneGenes = length(which(relevantDriver$DriverNumeric == 1))
-    numberOfTwoGenes = length(which(relevantDriver$DriverNumeric == 2))
-    numberOfBothGenes = length(which(relevantDriver$DriverNumeric %in% c(3,4)))
-    numberOfStrictGenes = length(which(relevantDriver$DriverNumeric == 4))
+    numberofTotalGenes = nrow(relevantDirectionality)
+    numberOfUnclearGenes = length(which(relevantDirectionality$directionNumeric == 0))
+    numberOfOneGenes = length(which(relevantDirectionality$directionNumeric == 1))
+    numberOfTwoGenes = length(which(relevantDirectionality$directionNumeric == 2))
+    numberOfBothGenes = length(which(relevantDirectionality$directionNumeric %in% c(3,4)))
+    numberOfStrictGenes = length(which(relevantDirectionality$directionNumeric == 4))
     print(rownames(GoData)[i])
-    DriverSummary = data.frame(numberofTotalGenes, numberOfUnclearGenes, numberOfOneGenes, numberOfTwoGenes, numberOfBothGenes, numberOfStrictGenes)
-    print(DriverSummary)
+    directionalitySummary = data.frame(numberofTotalGenes, numberOfUnclearGenes, numberOfOneGenes, numberOfTwoGenes, numberOfBothGenes, numberOfStrictGenes)
+    print(directionalitySummary)
     
-    GoDriver = "Unclear"
-    GoDriverNumeric = 0 
+    GoDirection = "Unclear"
+    GoDirectionNumeric = 0 
     if(useStrictBoth){
       usedBothGenes = numberOfStrictGenes
     }else{
@@ -65,21 +65,21 @@ AssessGoCategoryDriver = function(prefix, pairwise, GoSet, GenePValueCutoff = 0.
     }
     
     if(usedBothGenes > 0.75*numberofTotalGenes){
-      GoDriver = "Both"
-      GoDriverNumeric = 3
+      GoDirection = "Both"
+      GoDirectionNumeric = 3
     }else if(numberOfOneGenes > 0.5*numberofTotalGenes | numberOfOneGenes+usedBothGenes > 0.75*numberofTotalGenes) {
-      GoDriver = phenOneName
-      GoDriverNumeric = 1
+      GoDirection = phenOneName
+      GoDirectionNumeric = 1
     }else if(numberOfTwoGenes > 0.5*numberofTotalGenes| numberOfTwoGenes+usedBothGenes > 0.75*numberofTotalGenes) {
-      GoDriver = phenTwoName
-      GoDriverNumeric = 2
+      GoDirection = phenTwoName
+      GoDirectionNumeric = 2
     }else if(numberOfOneGenes+numberOfTwoGenes > 0.75*numberofTotalGenes) {
-      GoDriver = "MixOfBoth"
-      GoDriverNumeric = 4
+      GoDirection = "MixOfBoth"
+      GoDirectionNumeric = 4
     }
     
-    GoData$Driver[i] = GoDriver
-    GoData$DriverNumeric[i] = GoDriverNumeric
+    GoData$Driver[i] = GoDirection
+    GoData$DriverNumeric[i] = GoDirectionNumeric
   }
   GoData
 }
