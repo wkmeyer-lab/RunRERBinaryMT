@@ -1,5 +1,7 @@
 library(RERconverge)
 library(ggvenn)
+library(stats)
+library(combinat)
 source("Src/Reu/cmdArgImport.R")
 clusterRun = F
 clusterRun = T
@@ -57,9 +59,9 @@ for(i in 1:length(pairwiseSets)){
   currentSet = pairwiseSets[i]
   correlationSubsetName = gsub("-", " - ", currentSet)
   correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
-  which(names(correlationResults) == correlationSubsetName) 
+  currentDataframe = which(names(correlationResults) == correlationSubsetName) 
   
-  currentResults = correlationResults[[i]]
+  currentResults = correlationResults[[currentDataframe]]
   currentResults$significant = currentResults$p.adj < significanceCutoff
   
   
@@ -88,6 +90,124 @@ combinedBinaries = combinedBinaries[,-grep(".1", names(combinedBinaries))]
 combinedResults = cbind(combinedResults, combinedDrivers)
 combinedResults = cbind(combinedResults, combinedBinaries)
 rm(combinedDrivers); rm(combinedBinaries)
+
+significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
+significanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
+overlapValues = significanceResults[,1:2]
+
+for(i in 2:length(significanceColumns)){
+  combinations = combn(significanceColumns, i, simplify = FALSE)
+  for(j in 1:length(combinations)){
+    currentCombination = combinations[[j]]
+    headers = gsub("-.*","",  currentCombination)
+    comboName = paste0(paste0(headers, collapse = "-"), "-Overlap")
+    
+    colsToCompare = significanceResults[,names(significanceResults) %in% currentCombination]
+    
+    comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
+    which(comboValue)
+    overlapValues$newOverlapColumn = comboValue
+    names(overlapValues)[length(names(overlapValues))] = comboName
+    combinedResults$newOverlapColumn = comboValue
+    names(combinedResults)[length(names(combinedResults))] = comboName
+  }
+}
+overlapValues = overlapValues[,-c(1:2)]
+
+
+
+
+overlapResults = list()
+
+totalSamples = nrow(significanceResults)
+for(i in 1:length(overlapValues)){
+  comboCol = overlapValues[[i]]
+  comboName = names(overlapValues)[i]
+
+  # Get columns that were used in this combination
+  involvedSets = unlist(strsplit(comboName, "-"))
+  involvedSets = involvedSets[involvedSets != "Overlap"]
+  if(length(which(grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))))> 1){
+    sigColumnOne = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))][[1]]
+  }else{
+    sigColumnOne = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))]
+  }
+  
+  if(length(which(grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))))> 1){
+    sigColumnTwo = significanceResults[, grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))][[1]]
+  }else{
+    sigColumnTwo = significanceResults[, grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))]
+  }
+  
+  numberSignificantOne = sum(sigColumnOne, na.rm = T)
+  numberSignificantTwo = sum(sigColumnTwo, na.rm = T) 
+  
+  observedOverlap = sum(comboCol, na.rm = T)
+  
+  sigOneNotOverlap = numberSignificantOne - observedOverlap
+  sigTwoNotOverlap = numberSignificantTwo - observedOverlap
+  sigNone = totalSamples - numberSignificantOne - numberSignificantTwo + observedOverlap #adding the overlap back accounts for those being in both subtractions
+  
+  
+  
+  contingency_matrix <- matrix(c(observedOverlap, sigOneNotOverlap, sigTwoNotOverlap, sigNone), nrow = 2)
+  print(contingency_matrix)
+  # Fisher's exact test
+  fisherData = fisher.test(contingency_matrix, alternative = "greater")
+  
+  overlapResults[[i]] = fisherData
+  names(overlapResults)[i] = comboName
+  
+}
+
+
+
+
+
+
+
+
+hypergeomResults = data.frame(OverlapSet = character(), PValue = numeric(), stringsAsFactors = FALSE)
+
+  
+
+  
+for(i in 1:length(overlapValues)){
+  
+  
+  
+  
+  
+  
+  comboCol = overlapValues[[i]]
+  comboName = names(overlapValues)[i]
+  
+  # Total number of items (N)
+  N = nrow(combinedResults)
+  
+  # Number of items in the overlap set (x)
+  x = sum(comboCol, na.rm = T)
+  
+  # Get columns that were used in this combination
+  involvedSets = unlist(strsplit(comboName, "-"))
+  involvedSets = involvedSets[involvedSets != "Overlap"]
+  
+  # Take the first column involved as "sample" for the hypergeometric test
+  sampleCol = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))][[1]]
+  
+  # Number of "successes" in population (M)
+  M = sum(sampleCol, na.rm = T)
+  
+  # Sample size (n)
+  n = sum(comboCol, na.rm = T)
+  
+  # Run hypergeometric test
+  pval = phyper(q = x - 1, m = M, n = N - M, k = n, lower.tail = FALSE)
+  
+  # Store the result
+  hypergeomResults = rbind(hypergeomResults, data.frame(OverlapSet = comboName, PValue = pval))
+}
+  
 
 
 
