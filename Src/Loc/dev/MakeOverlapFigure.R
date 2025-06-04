@@ -191,20 +191,20 @@ for(i in 1:length(overlapValues)){
     loglin_result <- loglin(three_way_table, margin = list(c(1), c(2), c(3)), fit = TRUE)
     
     # Print test statistics
-    cat("Likelihood Ratio Statistic (G²):", loglin_result$lrt, "\n")
-    cat("Degrees of Freedom:", loglin_result$df, "\n")
-    cat("p-value:", pchisq(loglin_result$lrt, df = loglin_result$df, lower.tail = FALSE), "\n")
-    overlapResults[[i]] = loglin_result
+    out1 = paste("Likelihood Ratio Statistic (G²):", loglin_result$lrt, "\n")
+    out2 = paste("Degrees of Freedom:", loglin_result$df, "\n")
+    out3 = paste("p-value:", pchisq(loglin_result$lrt, df = loglin_result$df, lower.tail = FALSE), "\n")
+    
+    logLInSummary = paste(out1, out2, out3)
+    cat(logLInSummary)
+    
+    overlapResults[[i]] = logLInSummary
     names(overlapResults)[i] = comboName
   }
-
-  
-  overlapResults[[i]] = fisherData
-  names(overlapResults)[i] = comboName
   
 }
 
-
+overlapResults
 
 
 
