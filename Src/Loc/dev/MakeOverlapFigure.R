@@ -1,10 +1,10 @@
+clusterRun = F
+clusterRun = T
 library(RERconverge)
 library(ggvenn)
 library(stats)
 library(combinat)
 source("Src/Reu/cmdArgImport.R")
-clusterRun = F
-clusterRun = T
 
 
 # -- Making new venn diagrams -- 
@@ -127,33 +127,77 @@ for(i in 1:length(overlapValues)){
   # Get columns that were used in this combination
   involvedSets = unlist(strsplit(comboName, "-"))
   involvedSets = involvedSets[involvedSets != "Overlap"]
-  if(length(which(grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))))> 1){
-    sigColumnOne = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))][[1]]
+  if(length(involvedSets)==2){
+    if(length(which(grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))))> 1){
+      sigColumnOne = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))][[1]]
+    }else{
+      sigColumnOne = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))]
+    }
+    
+    if(length(which(grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))))> 1){
+      sigColumnTwo = significanceResults[, grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))][[1]]
+    }else{
+      sigColumnTwo = significanceResults[, grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))]
+    }
+    
+    numberSignificantOne = sum(sigColumnOne, na.rm = T)
+    numberSignificantTwo = sum(sigColumnTwo, na.rm = T) 
+    
+    observedOverlap = sum(comboCol, na.rm = T)
+    
+    sigOneNotOverlap = numberSignificantOne - observedOverlap
+    sigTwoNotOverlap = numberSignificantTwo - observedOverlap
+    sigNone = totalSamples - numberSignificantOne - numberSignificantTwo + observedOverlap #adding the overlap back accounts for those being in both subtractions
+    
+    
+    
+    contingency_matrix <- matrix(c(observedOverlap, sigOneNotOverlap, sigTwoNotOverlap, sigNone), nrow = 2)
+    print(contingency_matrix)
+    # Fisher's exact test
+    fisherData = fisher.test(contingency_matrix, alternative = "greater")
+    overlapResults[[i]] = fisherData
+    names(overlapResults)[i] = comboName
   }else{
-    sigColumnOne = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))]
+    if(length(which(grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))))> 1){
+      sigColumnOne = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))][[1]]
+    }else{
+      sigColumnOne = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))]
+    }
+    
+    if(length(which(grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))))> 1){
+      sigColumnTwo = significanceResults[, grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))][[1]]
+    }else{
+      sigColumnTwo = significanceResults[, grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))]
+    }
+    
+    if(length(which(grepl(paste0("^", involvedSets[3], "-"), names(significanceResults))))> 1){
+      sigColumnThree = significanceResults[, grepl(paste0("^", involvedSets[3], "-"), names(significanceResults))][[1]]
+    }else{
+      sigColumnThree = significanceResults[, grepl(paste0("^", involvedSets[3], "-"), names(significanceResults))]
+    }
+    
+    df <- data.frame(sigColumnOne, sigColumnTwo, sigColumnThree)
+    
+    
+    # Tabulate all combinations (TRUE/FALSE for each of the 3 sets)
+    three_way_table <- table(df$sigColumnOne, df$sigColumnTwo, df$sigColumnThree)
+    
+    # Optional: store or summarize the result
+    contingency_matrix <- three_way_table
+    
+    contingency_df <- as.data.frame(three_way_table)
+    names(contingency_df) <- c(involvedSets[1], involvedSets[2], involvedSets[3], "Count")
+    
+    loglin_result <- loglin(three_way_table, margin = list(c(1), c(2), c(3)), fit = TRUE)
+    
+    # Print test statistics
+    cat("Likelihood Ratio Statistic (G²):", loglin_result$lrt, "\n")
+    cat("Degrees of Freedom:", loglin_result$df, "\n")
+    cat("p-value:", pchisq(loglin_result$lrt, df = loglin_result$df, lower.tail = FALSE), "\n")
+    overlapResults[[i]] = loglin_result
+    names(overlapResults)[i] = comboName
   }
-  
-  if(length(which(grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))))> 1){
-    sigColumnTwo = significanceResults[, grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))][[1]]
-  }else{
-    sigColumnTwo = significanceResults[, grepl(paste0("^", involvedSets[2], "-"), names(significanceResults))]
-  }
-  
-  numberSignificantOne = sum(sigColumnOne, na.rm = T)
-  numberSignificantTwo = sum(sigColumnTwo, na.rm = T) 
-  
-  observedOverlap = sum(comboCol, na.rm = T)
-  
-  sigOneNotOverlap = numberSignificantOne - observedOverlap
-  sigTwoNotOverlap = numberSignificantTwo - observedOverlap
-  sigNone = totalSamples - numberSignificantOne - numberSignificantTwo + observedOverlap #adding the overlap back accounts for those being in both subtractions
-  
-  
-  
-  contingency_matrix <- matrix(c(observedOverlap, sigOneNotOverlap, sigTwoNotOverlap, sigNone), nrow = 2)
-  print(contingency_matrix)
-  # Fisher's exact test
-  fisherData = fisher.test(contingency_matrix, alternative = "greater")
+
   
   overlapResults[[i]] = fisherData
   names(overlapResults)[i] = comboName
@@ -167,7 +211,6 @@ for(i in 1:length(overlapValues)){
 
 
 
-hypergeomResults = data.frame(OverlapSet = character(), PValue = numeric(), stringsAsFactors = FALSE)
 
   
 
