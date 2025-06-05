@@ -4,14 +4,27 @@ library(RERconverge)
 library(ggvenn)
 library(stats)
 library(combinat)
+library(ggpointdensity)
+library(viridis)
+library(ggpmisc)
+library(eulerr)
+library(gridExtra)
+library(grid)
+library(gridGraphics)
 source("Src/Reu/cmdArgImport.R")
 
-
-# -- Making new venn diagrams -- 
+# -- argument setup  -- 
 significanceCutoff = 0.05
 prefix = "CategoricalInsvertivoreTree"
-pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore")
+pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore")
 geneSet = "KeggReactome"
+vennDiagramSet = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore")  
+vennColorset = c("darkblue", "red", "orange")
+usingGo = !is.null(geneSet)
+saveCombinedData = T
+saveCombinedData = F
+
+
 
 args = c("r=CategoricalInsvertivoreTree")
 
@@ -51,79 +64,296 @@ if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile.rds", sep= "") #make a name for the pairwise comparisons based on prefix
 correlationResults = readRDS(pairwiseCorrelationFileName)
 
-combinedResults = NA
-combinedDrivers = NA
-combinedBinaries = NA
-
-for(i in 1:length(pairwiseSets)){
-  currentSet = pairwiseSets[i]
-  correlationSubsetName = gsub("-", " - ", currentSet)
-  correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
-  currentDataframe = which(names(correlationResults) == correlationSubsetName) 
+{
+  combinedResults = NA
+  combinedDrivers = NA
+  combinedBinaries = NA
+  prefixSet = NULL
+  prefixList = NULL
   
-  currentResults = correlationResults[[currentDataframe]]
-  currentResults$significant = currentResults$p.adj < significanceCutoff
-  
-  
-  names(currentResults) = paste0(correlationPrefix, "-", names(currentResults))
-  combinedResults = cbind(combinedResults, currentResults)
-  
-  driverFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet, "DriverTable.rds")
-  if(file.exists(driverFilename)){
-    driverTable = readRDS(driverFilename)
-    driverTable = driverTable[,-grep("main", names(driverTable))]
-    names(driverTable)[which(names(driverTable) == "Driver")] = paste0(correlationPrefix, "-", "Driver")
-    names(driverTable)[which(names(driverTable) == "DriverNumeric")] = paste0(correlationPrefix, "-", "DriverNumeric")    
+  { # load in the data 
+    for(i in 1:length(pairwiseSets)){
+      currentSet = pairwiseSets[i]
+      correlationSubsetName = gsub("-", " - ", currentSet)
+      correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
+      prefixEntry = correlationPrefix; names(prefixEntry) = currentSet; prefixSet = append(prefixSet, prefixEntry)
+      for(j in 1:2){
+        prefixSingle = strsplit(correlationPrefix, split = "")[[1]][j]; names(prefixSingle) = strsplit(currentSet, split="-")[[1]][j]; prefixList = append(prefixList, prefixSingle)
+      }
+      currentDataframe = which(names(correlationResults) == correlationSubsetName) 
+      
+      currentResults = correlationResults[[currentDataframe]]
+      currentResults$significant = currentResults$p.adj < significanceCutoff
+      
+      
+      names(currentResults) = paste0(correlationPrefix, "-", names(currentResults))
+      combinedResults = cbind(combinedResults, currentResults)
+      
+      driverFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet, "DriverTable.rds")
+      if(file.exists(driverFilename)){
+        driverTable = readRDS(driverFilename)
+        driverTable = driverTable[,-grep("main", names(driverTable))]
+        names(driverTable)[which(names(driverTable) == "Driver")] = paste0(correlationPrefix, "-", "Driver")
+        names(driverTable)[which(names(driverTable) == "DriverNumeric")] = paste0(correlationPrefix, "-", "DriverNumeric")    
+        
+        combinedDrivers = cbind(combinedDrivers, driverTable[,grep(paste0(correlationPrefix,"-"), names(driverTable))])
+        combinedBinaries = cbind(combinedBinaries, driverTable[,-grep(paste0(correlationPrefix,"-"), names(driverTable))])
+        rm(driverTable)
+      }
+      rm(currentResults)
     
-    combinedDrivers = cbind(combinedDrivers, driverTable[,grep(paste0(correlationPrefix,"-"), names(driverTable))])
-    combinedBinaries = cbind(combinedBinaries, driverTable[,-grep(paste0(correlationPrefix,"-"), names(driverTable))])
-    rm(driverTable)
+    }
   }
-  rm(currentResults)
-
-}
-combinedResults = combinedResults[,-1]
-combinedDrivers = combinedDrivers[,-1]
-combinedBinaries = combinedBinaries[,-1]
-combinedBinaries = combinedBinaries[,-grep(".1", names(combinedBinaries))]
-
-combinedResults = cbind(combinedResults, combinedDrivers)
-combinedResults = cbind(combinedResults, combinedBinaries)
-rm(combinedDrivers); rm(combinedBinaries)
-
-significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
-significanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
-overlapValues = significanceResults[,1:2]
-
-for(i in 2:length(significanceColumns)){
-  combinations = combn(significanceColumns, i, simplify = FALSE)
-  for(j in 1:length(combinations)){
-    currentCombination = combinations[[j]]
-    headers = gsub("-.*","",  currentCombination)
-    comboName = paste0(paste0(headers, collapse = "-"), "-Overlap")
-    
-    colsToCompare = significanceResults[,names(significanceResults) %in% currentCombination]
-    
-    comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
-    which(comboValue)
-    overlapValues$newOverlapColumn = comboValue
-    names(overlapValues)[length(names(overlapValues))] = comboName
-    combinedResults$newOverlapColumn = comboValue
-    names(combinedResults)[length(names(combinedResults))] = comboName
+  prefixList = unlist(prefixList); prefixList = prefixList[!duplicated(prefixList)]
+  
+  
+  combinedResults = combinedResults[,-1]
+  combinedDrivers = combinedDrivers[,-1]
+  combinedBinaries = combinedBinaries[,-1]
+  combinedBinaries = combinedBinaries[,-grep(".1", names(combinedBinaries))]
+  
+  combinedResults = cbind(combinedResults, combinedDrivers)
+  combinedResults = cbind(combinedResults, combinedBinaries)
+  rm(combinedDrivers); rm(combinedBinaries)
+  
+  
+  
+  # -- Add overlap information -- 
+  significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
+  geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
+  
+  for(i in 2:length(significanceColumns)){
+    combinations = combn(significanceColumns, i, simplify = FALSE)
+    for(j in 1:length(combinations)){
+      currentCombination = combinations[[j]]
+      headers = gsub("-.*","",  currentCombination)
+      comboName = paste0(paste0(headers, collapse = "-"), "-Overlap")
+      
+      colsToCompare = geneSignificanceResults[,names(geneSignificanceResults) %in% currentCombination]
+      
+      comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
+      which(comboValue)
+      combinedResults$newOverlapColumn = comboValue
+      names(combinedResults)[length(names(combinedResults))] = comboName
+      rm(colsToCompare)
+    }
+    rm(combinations)
+  }
+  if(saveCombinedData){
+    combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults")
+    write.csv(combinedResults, paste0(combinedDataFilename, ".csv"))
+    saveRDS(combinedResults, paste0(combinedDataFilename, ".rds"))
   }
 }
-overlapValues = overlapValues[,-c(1:2)]
 
 
+# --- Import GO Data --- 
+if(usingGo){
+  GOResults = list()
+  for(i in 1:length(pairwiseSets)){
+    currentSet = pairwiseSets[i]
+    correlationSubsetName = gsub("-", " - ", currentSet)
+    correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
+    
+    goFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet,"Enrichment-", geneSet, ".rds")
+    currentGoData = readRDS(goFilename)[[1]]
+    currentGoData$significant = currentGoData$p.adj < significanceCutoff
+    
+    
+    names(currentGoData) = paste0(correlationPrefix, "-", names(currentGoData))
+
+    
+    driverFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet, "GoDriverTable-", geneSet, ".rds")
+    if(file.exists(driverFilename)){
+      driverTable = readRDS(driverFilename)
+      if(all(rownames(driverTable) == rownames(currentGoData))){
+        currentGoData$Driver = driverTable[which(names(driverTable) == "Driver")][[1]]
+        currentGoData$DriverNumeric = driverTable[which(names(driverTable) == "DriverNumeric")][[1]]
+        
+        names(currentGoData)[which(names(currentGoData) == "Driver")] = paste0(correlationPrefix, "-", "Driver")
+        names(currentGoData)[which(names(currentGoData) == "DriverNumeric")] = paste0(correlationPrefix, "-", "DriverNumeric")    
+        
+      }
+      rm(driverTable)
+    }
+    GOResults[[i]] = currentGoData
+    names(GOResults)[i] = correlationPrefix
+    
+  }
+  rm(currentGoData)
+  
+  GoCombinedResults = NA
+  for(i in 1:length(GOResults)){
+    if(all(rownames(GOResults[[1]]) == rownames(GOResults[[i]]))){
+      cat("Combining GO Data", i, "\n")
+      GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
+    }else{
+      stop("Rownames of GO results are not the same, there is an issue with the GO data.")
+    }
+  }
+  GoCombinedResults = GoCombinedResults[,-1]
+  rm(GOResults)
+  
+  # -- Add overlap information -- 
+  GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
+  GoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% GoSignificanceColumns]
+  
+  for(i in 2:length(GoSignificanceColumns)){
+    combinations = combn(GoSignificanceColumns, i, simplify = FALSE)
+    for(j in 1:length(combinations)){
+      currentCombination = combinations[[j]]
+      headers = gsub("-.*","",  currentCombination)
+      comboName = paste0(paste0(headers, collapse = "-"), "-Overlap")
+      
+      colsToCompare = GoSignificanceResults[,names(GoSignificanceResults) %in% currentCombination]
+      
+      comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
+      which(comboValue)
+      GoCombinedResults$newOverlapColumn = comboValue
+      names(GoCombinedResults)[length(names(GoCombinedResults))] = comboName
+      rm(colsToCompare)
+    }
+    rm(combinations)
+  }
+  
+  if(saveCombinedData){
+    combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet)
+    write.csv(GoCombinedResults, paste0(combinedGODataFilename, ".csv"))
+    saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))
+  }
+}
+
+# ----- Make Plots ------ 
+
+# -- Make rho value corrleation plots --- 
+grep("-Rho", names(combinedResults))
+rhoValues = combinedResults[,grep("-Rho", names(combinedResults))]
+
+rhoComparisions = names(rhoValues)
+rhoPhenotypes = strsplit(gsub("-Rho", "", rhoComparisions), split = "")
+commonBackground = Reduce(intersect, rhoPhenotypes)
+
+for(i in 1:length(rhoPhenotypes)){ #invert tho if background in second postion so rho has consistent meaning relative to background
+  if(rhoPhenotypes[[i]][1] != commonBackground){
+    cat("Inverting rho of ", rhoPhenotypes[[i]] , "becuase background is in first position.")
+    rhoValues[i] = -1*rhoValues[i]
+  }
+}
 
 
+rhoPlotSet = list()
+netIndex= 0
+for(i in 1:length(rhoValues)){
+  xName = names(rhoValues)[i]
+  if(i+1 <= length(rhoValues)){
+    for(j in (i+1):length(rhoValues)){
+      netIndex = netIndex +1
+      yName = names(rhoValues)[j]
+      rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + geom_point() + geom_pointdensity() + scale_color_viridis() + stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE)
+      #add in an adjusted of the legend to change "n-neighbors" to somethign prettier 
+      rhoPlotSet[[netIndex]] = rhoCorrellPlot
+      names(rhoPlotSet)[netIndex] = paste(xName, yName, sep="-")
+      rm(rhoCorrellPlot)
+    }
+  }
+}
+# add a null plot by using two using permulations as a comparision 
+
+#pdf()
+print(rhoPlotSet)
+#dev.off()
+
+
+# -- Make proportional venn diagram via eulerr ---
+{ # Make required functions 
+  replacePrefixWithName = function(x) {
+    inversePrefixList = setNames(names(prefixList), prefixList); parts = unlist(strsplit(x, "-")); fullNames = inversePrefixList[parts]; paste(fullNames, collapse = "-")
+  }
+  addDashes = function(vector) {
+    sapply(vector, function(s) paste(strsplit(s, "")[[1]], collapse = "-"))
+  }
+  
+  trimSignificanceToVenn = function(significanceResults){
+    trimableComparisions = gsub("-significant", "", names(significanceResults))
+    trimableComparisions = addDashes(trimableComparisions)
+    trimableComparisions = sapply(trimableComparisions, replacePrefixWithName)
+    vennSignificanceResults = significanceResults[which(trimableComparisions %in% vennDiagramSet)]
+  }
+  
+  
+  makeVennPlot = function(vennInputDataframe, mainTitle, plot = T){
+    # Build logical vectors for each set
+    set1 <- vennInputDataframe[1] == TRUE
+    set2 <- vennInputDataframe[2] == TRUE
+    set3 <- vennInputDataframe[3] == TRUE
+    
+    # Create the Venn counts for each region
+    vennCounts = c(
+      "Column One" = sum(set1 & !set2 & !set3, na.rm = T),
+      "Column Two" = sum(!set1 & set2 & !set3, na.rm = T),
+      "Column Three" = sum(!set1 & !set2 & set3, na.rm = T),
+      "Column One&Column Two" = sum(set1 & set2 & !set3, na.rm = T),
+      "Column One&Column Three" = sum(set1 & !set2 & set3, na.rm = T),
+      "Column Two&Column Three" = sum(!set1 & set2 & set3, na.rm = T),
+      "Column One&Column Two&Column Three" = sum(set1 & set2 & set3, na.rm = T)
+    )
+    
+    comparisonPrefixes = gsub("-significant", "", names(vennInputDataframe))
+    comparisonPrefixes = gsub(commonBackground, "", comparisonPrefixes)
+    comparisonNames = sapply(comparisonPrefixes, replacePrefixWithName)
+    names(vennCounts)=c(comparisonNames[1], comparisonNames[2], comparisonNames[3], paste(comparisonNames[1], comparisonNames[2], sep="&"),paste(comparisonNames[1], comparisonNames[3], sep="&"),paste(comparisonNames[2], comparisonNames[3], sep="&"), paste(comparisonNames[1], comparisonNames[2], comparisonNames[3], sep="&"))
+    
+    # - make venn diagram labels, with the combination section on two lines and the solo sections on one 
+    totalVennValues = sum(vennCounts)
+    vennLabels = paste0(
+      vennCounts, "\n (", round(vennCounts / totalVennValues * 100, 1), "%)"
+    )
+    for(i in 1:3){
+      vennLabels[i] = paste0(
+        vennCounts[i], " (", round(vennCounts[i] / totalVennValues * 100, 1), "%)"
+      )
+    }
+    
+    # Create Euler diagram
+    fit = euler(vennCounts)
+    outPlot = plot(fit,
+         fills = list(fill = vennColorset, alpha = 0.5),
+         labels = list(font = 4),
+         quantities = list(labels = vennLabels, font = 3),
+         main = mainTitle)
+    if(plot){print(outPlot)}
+    return(outPlot)
+  }
+}
+
+
+if(length(pairwiseSets)==3){ #can simply run directly if only running on three categories. 
+  geneVenn = makeVennPlot(geneSignificanceResults, paste0("Genes (p.adj < ", significanceCutoff, ")"))
+  if(usingGo){goVenn = makeVennPlot(GoSignificanceResults, paste0("GO Categories (p.adj < ", significanceCutoff, ")"))}
+}else if(length(vennDiagramSet)==3){ #if a correct set of three categories has been given for the venn diagram set, narrow down a larger selection to that set, then run the vennDiagram. 
+  vennGeneSignificanceResults = trimSignificanceToVenn(geneSignificanceResults)
+  geneVenn = makeVennPlot(vennGeneSignificanceResults, paste0("Genes (p.adj < ", significanceCutoff, ")"))
+  if(usingGo){
+    vennGoSignificanceResults = trimSignificanceToVenn(GoSignificanceResults)
+    goVenn = makeVennPlot(vennGoSignificanceResults, paste0("GOCategories (p.adj < ", significanceCutoff, ")"))
+  }
+  
+}
+
+
+#---
+#---
+#---
+#--
+
+
+# --- Hypergeometric and chi squared tests -----
 overlapResults = list()
-
 totalSamples = nrow(significanceResults)
 for(i in 1:length(overlapValues)){
   comboCol = overlapValues[[i]]
   comboName = names(overlapValues)[i]
-
+  
   # Get columns that were used in this combination
   involvedSets = unlist(strsplit(comboName, "-"))
   involvedSets = involvedSets[involvedSets != "Overlap"]
@@ -182,11 +412,9 @@ for(i in 1:length(overlapValues)){
     # Tabulate all combinations (TRUE/FALSE for each of the 3 sets)
     three_way_table <- table(df$sigColumnOne, df$sigColumnTwo, df$sigColumnThree)
     
-    # Optional: store or summarize the result
-    contingency_matrix <- three_way_table
     
-    contingency_df <- as.data.frame(three_way_table)
-    names(contingency_df) <- c(involvedSets[1], involvedSets[2], involvedSets[3], "Count")
+    contingencyDf <- as.data.frame(three_way_table)
+    names(contingencyDf) <- c(involvedSets[1], involvedSets[2], involvedSets[3], "Count")
     
     loglin_result <- loglin(three_way_table, margin = list(c(1), c(2), c(3)), fit = TRUE)
     
@@ -212,44 +440,15 @@ overlapResults
 
 
 
-  
 
-  
-for(i in 1:length(overlapValues)){
-  
-  
-  
-  
-  
-  
-  comboCol = overlapValues[[i]]
-  comboName = names(overlapValues)[i]
-  
-  # Total number of items (N)
-  N = nrow(combinedResults)
-  
-  # Number of items in the overlap set (x)
-  x = sum(comboCol, na.rm = T)
-  
-  # Get columns that were used in this combination
-  involvedSets = unlist(strsplit(comboName, "-"))
-  involvedSets = involvedSets[involvedSets != "Overlap"]
-  
-  # Take the first column involved as "sample" for the hypergeometric test
-  sampleCol = significanceResults[, grepl(paste0("^", involvedSets[1], "-"), names(significanceResults))][[1]]
-  
-  # Number of "successes" in population (M)
-  M = sum(sampleCol, na.rm = T)
-  
-  # Sample size (n)
-  n = sum(comboCol, na.rm = T)
-  
-  # Run hypergeometric test
-  pval = phyper(q = x - 1, m = M, n = N - M, k = n, lower.tail = FALSE)
-  
-  # Store the result
-  hypergeomResults = rbind(hypergeomResults, data.frame(OverlapSet = comboName, PValue = pval))
-}
+
+
+
+
+
+
+
+
   
 
 
@@ -272,6 +471,55 @@ for(i in 1:length(overlapValues)){
 
 
 # ---- Old code ------ 
+
+
+# --- make output for sharing 
+grab_grob <- function(plot_fun) {
+  tmp <- tempfile()
+  png(tmp)
+  plot_fun
+  dev.off()
+  img <- png::readPNG(tmp)
+  file.remove(tmp)
+  rasterGrob(img)
+}
+
+
+
+
+ggVennGene = grab_grob(geneVenn)
+ggVennGo = grab_grob(goVenn)
+
+ggVennGene = capture_base_plot(geneVenn)
+ggVennGo = capture_base_plot(goVenn)
+
+library("ggplotify")
+ggVennGene = as.grob(geneVenn)
+ggVennGo = as.grob(goVenn)
+
+
+
+names(rhoPlotSet)
+c(2,4,1,5)
+rhoPlotsDisplay = grid.arrange(rhoPlotSet[[2]], rhoPlotSet[[4]],rhoPlotSet[[1]],rhoPlotSet[[5]], ncol = 2)
+vennDiagramDisplay = grid.arrange(ggVennGene, ggVennGo, ncol = 2)
+pdf("Rplots.pdf", 18, 18)
+grid.arrange(rhoPlotsDisplay, vennDiagramDisplay, ncol = 1)
+dev.off()
+#----
+
+
+
+which(GoCombinedResults$`HI-significant`)
+
+goCategory = 26
+
+targetGenes = gsub(":.*", "", strsplit(GoCombinedResults$`HI-gene.vals`[goCategory], split = ", ")[[1]])
+GoCombinedResults$`HI-stat`[goCategory]
+combinedResults$`HI-Rho`[rownames(combinedResults) %in% targetGenes]
+
+
+# --- block 1 --- 
 RERResults = readRDS("Output/CategoricalInsvertivoreTree/CategoricalInsVertivoreTreePairwiseCorrelationFile.rds")
 
 HICorrelations = RERResults$`Herbivore - Insectivore`
