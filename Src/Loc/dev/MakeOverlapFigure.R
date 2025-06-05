@@ -18,7 +18,7 @@ significanceCutoff = 0.05
 prefix = "CategoricalInsvertivoreTree"
 pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore")
 geneSet = "KeggReactome"
-vennDiagramSet = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore")  
+vennDiagramSet = c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")  
 vennColorset = c("darkblue", "red", "orange")
 usingGo = !is.null(geneSet)
 saveCombinedData = T
@@ -104,8 +104,6 @@ correlationResults = readRDS(pairwiseCorrelationFileName)
     
     }
   }
-  prefixList = unlist(prefixList); prefixList = prefixList[!duplicated(prefixList)]
-  
   
   combinedResults = combinedResults[,-1]
   combinedDrivers = combinedDrivers[,-1]
@@ -223,6 +221,21 @@ if(usingGo){
   }
 }
 
+
+# -- make resources to prefix-phenotype conversion 
+
+prefixList = unlist(prefixList); prefixList = prefixList[!duplicated(prefixList)]
+
+# Debug code line for personal use 
+names(prefixList)[which(names(prefixList) == "Insectivore")] = "Invertivore"
+
+replacePrefixWithName = function(x) {
+  inversePrefixList = setNames(names(prefixList), prefixList); parts = unlist(strsplit(x, "-")); fullNames = inversePrefixList[parts]; paste(fullNames, collapse = "-")
+}
+addDashes = function(vector) {
+  sapply(vector, function(s) paste(strsplit(s, "")[[1]], collapse = "-"))
+}
+
 # ----- Make Plots ------ 
 
 # -- Make rho value corrleation plots --- 
@@ -243,14 +256,43 @@ for(i in 1:length(rhoPhenotypes)){ #invert tho if background in second postion s
 
 rhoPlotSet = list()
 netIndex= 0
+densityScaleSet = NULL
+
+#generate the plots slim-ly to get the desired density scale 
 for(i in 1:length(rhoValues)){
   xName = names(rhoValues)[i]
   if(i+1 <= length(rhoValues)){
     for(j in (i+1):length(rhoValues)){
-      netIndex = netIndex +1
       yName = names(rhoValues)[j]
-      rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + geom_point() + geom_pointdensity() + scale_color_viridis() + stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE)
-      #add in an adjusted of the legend to change "n-neighbors" to somethign prettier 
+      
+      rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
+        geom_point() + geom_pointdensity() + scale_color_viridis()
+      
+      
+      denstiyScaleValue = ggplot_build(rhoCorrellPlot)$plot$scales$scales[[1]]$get_limits()[2]
+      densityScaleSet = append(densityScaleSet, denstiyScaleValue)
+      rm(rhoCorrellPlot)
+    }
+  }
+}
+densityScale = c(1, max(densityScaleSet))
+
+
+for(i in 1:length(rhoValues)){
+  xName = names(rhoValues)[i]
+  if(i+1 <= length(rhoValues)){
+    for(j in (i+1):length(rhoValues)){
+      yName = names(rhoValues)[j]
+      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), "Dunn Z Statistic")
+      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), "Dunn Z Statistic")
+      
+      rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
+        geom_point() + geom_pointdensity() + scale_color_viridis(name = "Number of nearby genes", limits = densityScale) + 
+        stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE) +
+        theme_classic()+
+        xlab(xLabel) + ylab(yLabel)
+      
+      netIndex = netIndex +1
       rhoPlotSet[[netIndex]] = rhoCorrellPlot
       names(rhoPlotSet)[netIndex] = paste(xName, yName, sep="-")
       rm(rhoCorrellPlot)
@@ -263,15 +305,13 @@ for(i in 1:length(rhoValues)){
 print(rhoPlotSet)
 #dev.off()
 
+test = ggplot_build(rhoPlotSet[[1]])
+test$data[[1]]
+
+
 
 # -- Make proportional venn diagram via eulerr ---
 { # Make required functions 
-  replacePrefixWithName = function(x) {
-    inversePrefixList = setNames(names(prefixList), prefixList); parts = unlist(strsplit(x, "-")); fullNames = inversePrefixList[parts]; paste(fullNames, collapse = "-")
-  }
-  addDashes = function(vector) {
-    sapply(vector, function(s) paste(strsplit(s, "")[[1]], collapse = "-"))
-  }
   
   trimSignificanceToVenn = function(significanceResults){
     trimableComparisions = gsub("-significant", "", names(significanceResults))
@@ -320,7 +360,7 @@ print(rhoPlotSet)
          fills = list(fill = vennColorset, alpha = 0.5),
          labels = list(font = 4),
          quantities = list(labels = vennLabels, font = 3),
-         main = mainTitle)
+         main = mainTitle, theme)
     if(plot){print(outPlot)}
     return(outPlot)
   }
@@ -473,25 +513,7 @@ overlapResults
 # ---- Old code ------ 
 
 
-# --- make output for sharing 
-grab_grob <- function(plot_fun) {
-  tmp <- tempfile()
-  png(tmp)
-  plot_fun
-  dev.off()
-  img <- png::readPNG(tmp)
-  file.remove(tmp)
-  rasterGrob(img)
-}
 
-
-
-
-ggVennGene = grab_grob(geneVenn)
-ggVennGo = grab_grob(goVenn)
-
-ggVennGene = capture_base_plot(geneVenn)
-ggVennGo = capture_base_plot(goVenn)
 
 library("ggplotify")
 ggVennGene = as.grob(geneVenn)
@@ -503,7 +525,22 @@ names(rhoPlotSet)
 c(2,4,1,5)
 rhoPlotsDisplay = grid.arrange(rhoPlotSet[[2]], rhoPlotSet[[4]],rhoPlotSet[[1]],rhoPlotSet[[5]], ncol = 2)
 vennDiagramDisplay = grid.arrange(ggVennGene, ggVennGo, ncol = 2)
-pdf("Rplots.pdf", 18, 18)
+
+rhoPlotName = paste0(outputFolderName, filePrefix, "StatCorrelationPlots.pdf")
+vennPlotName = paste0(outputFolderName, filePrefix, "VennPlots.pdf")
+overlapPlotName = paste0(outputFolderName, filePrefix, "OverlapPlots.pdf")
+
+
+pdf(rhoPlotName, 7,7)
+grid.arrange(rhoPlotsDisplay)
+dev.off()
+
+pdf(vennPlotName, 10,10)
+grid.arrange(vennDiagramDisplay)
+dev.off()
+
+
+pdf(overlapPlotName, 20, 20)
 grid.arrange(rhoPlotsDisplay, vennDiagramDisplay, ncol = 1)
 dev.off()
 #----
