@@ -154,6 +154,7 @@ correlationResults = readRDS(pairwiseCorrelationFileName)
     combinations = combn(rhoColumns, i, simplify = FALSE)
     for(j in 1:length(combinations)){
       currentCombination = combinations[[j]]
+      if(length(currentCombination) > 2){next}
       headers = gsub("-.*","",  currentCombination)
       comboName = paste0(paste0(headers, collapse = "-"), "-Delta")
       
