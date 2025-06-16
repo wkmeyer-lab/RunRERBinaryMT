@@ -57,6 +57,8 @@ args = c("r=CategoricalBinaryInsectivoreTree", 'm=data/zoonomiaAllMammalsTrees.r
 args = c("r=CategoricalBinaryVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 args = c("r=CategoricalBinaryHerbivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=50")
 args = c("r=CategoricalBinaryOmnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+args = c("r=CategoricalBinaryCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+
 
 args = c("r=CategoricalNoMegabranchInsvertTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 args = c("r=CategoricalDownsampledInsvertTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
