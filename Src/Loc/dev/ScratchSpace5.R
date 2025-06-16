@@ -13,9 +13,6 @@ carnivoryUNique = combinedData[which(combinedData$`CH-significant` & !combinedDa
 # I need to see about making that. 
 
 # quick fix for the driver analysis to retarget because this is not technically a part of the main analysis 
-pairwiseFileLocation = paste0("Output/",mainPrefix, "/Carnivore-Herbivore/CategoricalPrunedCarnivoreTreeCarnivore-HerbivoreCorrelationFile.rds")
-mainCorrelation = readRDS(pairwiseFileLocation)
-driverTable = combinedCorrelations
 
 # ------------------------------------------------------------------
 # --- Get set of genes most different between HI and HV  ----- 
