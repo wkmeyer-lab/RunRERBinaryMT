@@ -52,7 +52,7 @@ plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), ma
 plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
 
 pdf(treeImageFilename, height = length(phenotypeVector)/14, width = 10)     
-plotTreeCategorical(commonCategoricalTree, c("Background", "Carnivore"), master = commonMainTrees$masterTree)
+plotTreeCategorical(commonCategoricalTree, c("Background", "Carnivore"), master = stableCommonMainTrees$masterTree)
 
 plotTreeCategorical(categoricalTree, c("Background", "Carnivore"), master = stableMaintrees$masterTree)
 dev.off()  

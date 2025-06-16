@@ -7,14 +7,6 @@ library(tidytree)
 library(ape)
 source("Src/Reu/ZoonomTreeNameToCommon.R")
 source("Src/Reu/cmdArgImport.R")
-{
-  nodeid.tbl_tree <- utils::getFromNamespace("nodeid.tbl_tree", "tidytree")
-  rootnode.tbl_tree <- utils::getFromNamespace("rootnode.tbl_tree", "tidytree")
-  offspring.tbl_tree <- utils::getFromNamespace("offspring.tbl_tree", "tidytree")
-  offspring.tbl_tree_item <- utils::getFromNamespace(".offspring.tbl_tree_item", "tidytree")
-  child.tbl_tree <- utils::getFromNamespace("child.tbl_tree", "tidytree")
-  parent.tbl_tree <- utils::getFromNamespace("parent.tbl_tree", "tidytree")
-}
 
 args =c("r=CategoricalInsVertivoreTree", 'p=c("darkgreen", "darkblue", "black", "red")', 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet" )
 
@@ -69,7 +61,7 @@ args =c("r=CategoricalInsVertivoreTree", 'p=c("darkgreen", "darkblue", "black", 
   #Pallette
   if(!all(is.na(cmdArgImport('p')))){
     paletteValues = cmdArgImport('p')
-    palette(palletteValues)
+    palette(paletteValues)
   }else{
     message("No Palette Provided, using: darkgreen, darkblue, black, red")
   }

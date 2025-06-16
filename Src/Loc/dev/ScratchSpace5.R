@@ -12,6 +12,8 @@ carnivoryUNique = combinedData[which(combinedData$`CH-significant` & !combinedDa
 # Right. I don't current have driver information because I haven't run the driver analysis for the 
 # I need to see about making that. 
 
+# quick fix for the driver analysis to retarget because this is not technically a part of the main analysis 
+
 # ------------------------------------------------------------------
 # --- Get set of genes most different between HI and HV  ----- 
 # ------------------------------------------------------------------

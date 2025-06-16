@@ -16,6 +16,12 @@ source("Src/Reu/AssessGoCategoryDriver.R")
 # g = c("geneset", "optionaladditionalgeneset") OR NULL                     This determines which Go Category set has directionality assessed. only one can be run at a time. 
 
 
+args = c("r=CategoricalInsVertivoreTree", "c=c('Herbivore', 'Vertivore')", "g=KeggReactome")
+args = c("r=CategoricalInsVertivoreTree", "c=c('Herbivore', 'Insectivore')", "g=KeggReactome")
+args = c("r=CategoricalInsVertivoreTree", "c=c('Carnivore', 'Herbivore')", "g=KeggReactome")
+
+
+
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -46,8 +52,7 @@ if(clusterRun)args = commandArgs(trailingOnly = TRUE)
   }
 }
 
-args = c("r=CategoricalInsVertivoreTree", "c=c('Herbivore', 'Vertivore')", "g=KeggReactome")
-args = c("r=CategoricalInsVertivoreTree", "c=c('Herbivore', 'Insectivore')", "g=KeggReactome")
+
 
 
 # -- Argument imports -- 

@@ -1,11 +1,11 @@
 library(RERconverge)
 # ----------- Defaults for testing ----------
 #mainPrefix = "CategoricalInsVertivoreTree"
-#mainPairwise = "Herbivore-Insectivore"
+#mainPairwise = "Herbivore-Carnivore"
 #binaryPrefixOne = "CategoricalBinaryHerbivoreTree"
-#binaryPrefixTwo = "CategoricalBinaryInsectivoreTree"
+#binaryPrefixTwo = "CategoricalBinaryCarnivoreTree"
 #binaryPhenOne = "Herbivore"
-#binaryPhenTwo = "Insectivore"
+#binaryPhenTwo = "Carnivore"
 #strictBoth = F
 
 AssessRERDriver = function(mainPrefix, mainPairwise, binaryPrefixOne, binaryPhenOne, binaryPrefixTwo, binaryPhenTwo, strictBoth = F){
