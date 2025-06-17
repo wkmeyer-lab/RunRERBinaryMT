@@ -67,6 +67,8 @@ args = c('r=ZoonomiaCategoricalRefrenceTree', 'm=data/RemadeTreesAllZoonomiaSpec
 args = c('r=HillerCategoricalRefrenceTree', 'm=data/NewHillerMainTrees.rds', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification.Clean', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist", "Planktivore")', 'u=list(c("Generalist", "Omnivore"), c("Omnivore-IH", "Omnivore"), c("Omnivore", "_Omnivore"))', 'o=list(c("Piscivore", "Carnivore"), c("Planktivore", "Carnivore"), c("Insectivore", "Carnivore"), c("Piscivore", "Insectivore"))','v=T', 't=ER', 'n=HillerName', 's=NoAoudad')
 
 args = c('r=TrueCategoricalRefrenceTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification.Clean', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist", "Planktivore")', 'u=list(c("Generalist", "Omnivore"), c("Omnivore-IH", "Omnivore"), c("Omnivore", "_Omnivore"))', 'o=list(c("Piscivore", "Carnivore"), c("Planktivore", "Carnivore"), c("Insectivore", "Carnivore"), c("Piscivore", "Insectivore"))','v=T', 't=ER', 'n=Zoonomia')
+args = c('r=makeLalithaTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=AlliePheno', 'c=c("1", "2", "3")' ,'v=T', 't=ER', 'n=ZoonomiaTip')
+
 }
 {
 args = c('r=TrueCategoricalRefrenceTreeComplex', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90', 
@@ -1041,7 +1043,7 @@ manualAnnots = read.csv(spreadSheetLocation)                      #load the manu
 manualAnnots[[annotColumn]] = trimws(manualAnnots[[annotColumn]])               #trim away whitespace to allow for better matching 
 
 # - Merge hyrbid of either substituted phenotypes or merge-only phenotypes - 
-if(!is.null(substitutions)){                                                    #Consider species with multiple combined categories as the merged category
+if(!is.null(substitutions) & !is.na(substitutions)){                                                    #Consider species with multiple combined categories as the merged category
   for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
     substitutePhenotypes = substitutions[[i]]
     message(paste("Combining", substitutePhenotypes[1], "/", substitutePhenotypes[2]))
@@ -1053,7 +1055,7 @@ if(!is.null(substitutions)){                                                    
   }
 }
 
-if(!is.null(mergeOnlys)){                                                    #Consider species with multiple combined categories as the merged category
+if(!is.null(mergeOnlys) & ! is.na(mergeOnlys)){                                                    #Consider species with multiple combined categories as the merged category
   for( i in 1:length(mergeOnlys)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
     substitutePhenotypes = mergeOnlys[[i]]
     message(paste("Merging Hybrids of", substitutePhenotypes[1], "/", substitutePhenotypes[2], "to", substitutePhenotypes[2]))
@@ -1145,7 +1147,7 @@ speciesCategories = relevantSpecies[[annotColumn]]                              
 
 phenotypeVector = speciesCategories                                             #combine those into⌄
 names(phenotypeVector) = speciesNames                                           #the format the functions expect
-if(!is.null(substitutions)){
+if(!is.null(substitutions) & !is.na(substitutions)){
   for( i in 1:length(substitutions)){
     substitutePhenotypes = substitutions[[i]]
     message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))

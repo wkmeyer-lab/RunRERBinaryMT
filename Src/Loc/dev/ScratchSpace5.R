@@ -2,6 +2,19 @@ a = b #prevent full runs
 
 
 # ------------------------------------------------------------------
+# --- Work on making a tree figure for lalitha  ----- 
+# ------------------------------------------------------------------
+lalithaData = read.table("C:/Users/mit221/Downloads/fixed_Supermatrix.tsv")
+laltihaSpecies = lalithaData[1,]
+
+laltihaSpecies = unlist(laltihaSpecies)
+laltihaSpecies = laltihaSpecies[-1]
+laltihaSpecies = gsub("[0-9]+$", "", laltihaSpecies)
+laltihaSpecies = unique(laltihaSpecies)
+
+
+
+# ------------------------------------------------------------------
 # --- Assess driving diet of unqieu carnivory results  ----- 
 # ------------------------------------------------------------------
 
@@ -9,6 +22,9 @@ combinedData = readRDS(paste0(combinedDataFilename, ".rds"))
 
 carnivoryUNique = combinedData[which(combinedData$`CH-significant` & !combinedData$`HI-significant` & !combinedData$`HV-significant`),]
 
+
+table(carnivoryUNique$`CH-Driver`)
+table(sign(carnivoryUNique$`CH-Rho`))
 # Right. I don't current have driver information because I haven't run the driver analysis for the 
 # I need to see about making that. 
 
