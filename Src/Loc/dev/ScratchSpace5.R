@@ -4,6 +4,7 @@ a = b #prevent full runs
 # ------------------------------------------------------------------
 # --- Making Updated RERConverge Explanation slide  ----- 
 # ------------------------------------------------------------------
+library(RERconverge)
 mainTrees = readRDS("Data/RemadeTreesAllZoonomiaSpecies.rds")
 mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
 
@@ -14,8 +15,9 @@ CVHPaths = readRDS("Output/Old/CVHRemake/CVHRemakePathsFile.rds")
 
 source("Src/Reu/makeMasterAndGeneTreePlots.R")
 
-
-makeMasterAndGeneTreePlots(mainTrees,"IQANK1", CVHRERs,  foregroundSpecies, correlationPlot = T, tipColumn = "manualAnnotations_FaName", fgcols = "orange", bgcolor = "darkgreen")
+png("Results/tempMasterandGenePlot.png", 575, 575)
+makeMasterAndGeneTreePlots(mainTrees,"IQANK1", CVHRERs,  foregroundSpecies, correlationPlot = F, tipColumn = "manualAnnotations_FaName", fgcols = "orange", bgcolor = "darkgreen")
+dev.off()
 
 png("Results/tempCorrelationPlot.png", 420, 420)
 makeMasterAndGeneTreePlots(mainTrees,"IQANK1", CVHRERs,  foregroundSpecies, correlationPlot = T, tipColumn = "manualAnnotations_FaName", fgcols = "orange", bgcolor = "darkgreen")
