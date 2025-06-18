@@ -12,6 +12,7 @@ palette(c(  "red", "darkgreen", "black"))
 
 
 palette(c( "darkgreen", "black", "darkblue", "red"))
+palette(c( "darkgreen", "darkblue", "black", "red"))
 palette(c("black", "darkblue"))
 
 palette(c( "darkgreen", "darkblue", "black", "red", "gray"))

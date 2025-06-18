@@ -5,7 +5,7 @@
 #This script will by default convert names from zoonomia names to common names. This requires "Data/manualAnnotationsSheet.csv". This can be toggled off using convertNames = F=
 #This script can also make a plot of overall genome length vs gene length by toggling correlationPlot = T.
 
-makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL, convertNames = T, twoInOne = T, dropTips = T){
+makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NULL, foregroundVector = NULL, fgcols = "blue", correlationPlot = F, bgcolor = "black", rmlabels = NULL, convertNames = T, twoInOne = T, dropTips = T, tipColumn = "tipCol"){
   masterTree = mainTrees$masterTree
   geneTree = mainTrees$trees[[geneInQuestion]]
   
@@ -27,8 +27,8 @@ makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NUL
   if(convertNames){
     if(file.exists("Src/Reu/ZonomNameConvertVector.R")){source("Src/Reu/ZonomNameConvertVector.R")}
     if(file.exists("Src/Reu/ZoonomTreeNameToCommon.R")){source("Src/Reu/ZoonomTreeNameToCommon.R")}
-    commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot = F)
-    commonGene = ZoonomTreeNameToCommon(prunedGeneTree, plot = F)
+    commonMaster = ZoonomTreeNameToCommon(prunedMaster, plot = F, tipCol = tipColumn)
+    commonGene = ZoonomTreeNameToCommon(prunedGeneTree, plot = F, tipCol = tipColumn)
     plotMaster = commonMaster
     plotGene = commonGene
   }else{
@@ -38,7 +38,7 @@ makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NUL
   
   if(!is.null(foregroundVector)){
     if(file.exists("Src/Reu/GetForegroundEdges.R")){source("Src/Reu/GetForegroundEdges.R")}
-    if(convertNames){foregroundVector = ZonomNameConvertVectorCommon(foregroundVector)}
+    if(convertNames){foregroundVector = ZonomNameConvertVectorCommon(foregroundVector, tipColumn = tipColumn)}
     masterFGEdges = getForegroundEdges(plotMaster, foregroundVector)
     geneFGEdges = getForegroundEdges(plotGene, foregroundVector)
   }else{
@@ -81,11 +81,10 @@ makeMasterAndGeneTreePlots = function(mainTrees, geneInQuestion, RERObject = NUL
                   scale_color_manual(values = c(bgcolor, fgcols)) + 
                   coord_fixed() + 
                   expand_limits(x = max(edgeCorrealtions$Gene), y = max(edgeCorrealtions$Master))+
-                  geom_text(hjust = "bottom", size = 4, check_overlap = T, hjust = 1) + 
+                  geom_text(hjust = "bottom", size = 4, check_overlap = T) + 
                   ylab("Gene-Specific Branch Length") + 
                   xlab("Genome Average Branch Length") + 
-                  #ggtitle(plottitle) + 
-                  geom_abline(intercept = 0, slope =1, linetype = "dotted") + 
+                  geom_smooth(aes(x = Master, y = Gene, group = 1), method = "lm", se = F, linetype = "dotted", color = "lightgrey") + 
                   theme(
                       #axis.ticks.y = element_blank(), 
                       #axis.text.y = element_blank(), 
