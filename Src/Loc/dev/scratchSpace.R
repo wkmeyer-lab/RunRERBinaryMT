@@ -307,9 +307,9 @@ ZoonomTreeNameToCommon(mainTrees$masterTree)
 dev.off()
 
 mainTrees = readRDS("Data/RemadeTreesAllZoonomiaSpecies.rds")
-RERObject = CVHRERs = readRDS("Output/CVHRemake/CVHRemakeRERFile.rds")
+RERObject = CVHRERs = readRDS("Output/Old/CVHRemake/CVHRemakeRERFile.rds")
 phenotypeTree = readRDS("Output/CVHRemake/CVHRemakeBinaryForegroundTree.rds")
-foregroundSpecies = readRDS("Output/CVHRemake/CVHRemakeBinaryTreeForegroundSpecies.rds")
+foregroundSpecies = readRDS("Output/Old/CVHRemake/CVHRemakeBinaryTreeForegroundSpecies.rds")
 geneOfInterest = "FNDC11"
 foregroundName = "Carnivore"
 BackgroundName = "Herbivore"
@@ -402,7 +402,7 @@ for(i in 1:100){
   Sys.sleep(2)
 }
 
-makeMasterAndGeneTreePlots(mainTrees,"DNAH1", CVHRERs,  foregroundSpecies, correlationPlot = F)
+makeMasterAndGeneTreePlots(mainTrees,"DNAH1", CVHRERs,  foregroundSpecies, correlationPlot = F, tipColumn = "ZoonomiaTip")
   
 ?ggtitle()
 
