@@ -562,6 +562,9 @@ rhoPlotsDisplay = grid.arrange(rhoPlotSet[[3]], rhoPlotSet[[7]],rhoPlotSet[[5]],
 
 vennDiagramDisplay = grid.arrange(ggVennGene, ggVennGo, ncol = 2)
 
+
+rhoPlotSet[2]
+
 rhoPlotName = paste0(outputFolderName, filePrefix, "StatCorrelationPlots.pdf")
 vennPlotName = paste0(outputFolderName, filePrefix, "VennPlots.pdf")
 overlapPlotName = paste0(outputFolderName, filePrefix, "OverlapPlots.pdf")
@@ -579,8 +582,64 @@ dev.off()
 pdf(overlapPlotName, 24, 24)
 grid.arrange(vennDiagramDisplay, rhoPlotsDisplay, ncol = 1, padding = 4)
 dev.off()
-#----
 
+
+
+
+
+# --- make edited version for confrence talk ----
+
+
+rhoPlotSet = list()
+netIndex= 0
+for(i in 1:length(rhoValues)){
+  xName = names(rhoValues)[i]
+  if(i <= length(rhoValues)){
+    if(bothAxis){jStart = 1}else{jStart = i+1}
+    for(j in (jStart):length(rhoValues)){
+      yName = names(rhoValues)[j]
+      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), "")
+      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), "")
+      
+      rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
+        geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
+        stat_poly_eq(aes(label = paste(..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE, size = 10) +
+        theme_classic()+
+        xlab(xLabel) + ylab(yLabel)+
+        theme(axis.title.x = element_text(size = 16), axis.title.y = element_text(size = 16))+ 
+        theme(legend.position="none")
+      
+      netIndex = netIndex +1
+      rhoPlotSet[[netIndex]] = rhoCorrellPlot
+      names(rhoPlotSet)[netIndex] = paste(xName, yName, sep="-")
+      rm(rhoCorrellPlot)
+    }
+  }
+}
+
+
+names(rhoPlotSet)
+figurePlotName = "Figureplot.png"
+png(figurePlotName)
+rhoPlotSet[2]
+dev.off()
+
+
+png(figurePlotName)
+rhoPlotSet[8]
+dev.off()
+
+png(figurePlotName)
+rhoPlotSet[3]
+dev.off()
+
+png(figurePlotName)
+rhoPlotSet[7]
+dev.off()
+
+
+#----
+?pdf
 
 
 which(GoCombinedResults$`HI-significant`)
