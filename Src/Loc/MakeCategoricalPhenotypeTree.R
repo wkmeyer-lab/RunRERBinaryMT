@@ -299,21 +299,6 @@ args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 
           "vs_HLeryPat1", "vs_chlSab2", "geunonClade", "vs_HLtheGel1", 
           "vs_HLpapAnu5", "vs_HLmanSph1", "DrillMandrillClade", "vs_cerAty1", 
           "vs_HLtraJav1", "vs_mm10", "vs_HLmarFla1", "marmotClade"
-         )',
-         'p=c(
-          "vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1", "voleClade",
-          "vs_HLmusSpi1", "vs_HLmusCar1", "vs_HLmasCou1", "vs_HLmusPah1", "mouseClade",
-          "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "gundiGuineaPigClade",
-          "vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1", "Bovidae",
-          "vs_HLhydIne1", "vs_HLmunMun1", "Cervidae",
-          "vs_HLtraKan1", "mouseDeerOtherIsKept",
-          "vs_HLmurAurFea1", "outerVespert",
-          "vs_HLmyoLuc1", "Nearctic",
-          "vs_myoDav1", "Myotis",
-          "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "Vespertilioninae",
-          "vs_HLmacSob1", "FoxLongTounge",
-          "vs_HLeidHel2", "outerPeropodidae",
-          "vs_HLeonSpe1", "Roussetinae"
          )')
 {
 args = c('r=CategoricalPrunedCarnivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
@@ -877,6 +862,33 @@ args = c('r=CategoricalDownsampledInsvertTree', 'm=data/zoonomiaAllMammalsTrees.
          )')
 }
 
+args = c('r=Categorical4CategoryUnprunedTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip',
+         'c=c(
+              "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "C-InsVertivore-Mixed", "C-InsVertivore-Piscivore", "C-InsVertivore-Insectivore","C-InsVertivore-Carnivore",
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+         'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
+            c("C-InsVertivore-Mixed", "Omnivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Herbivore"), 
+            c("H-Nectarivore", "Herbivore"), 
+            c("H-High-sugar-plants-Eater", "Herbivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Omnivore")
+          )')
+
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
 {  # Bracket used for collapsing purposes
@@ -1043,7 +1055,7 @@ manualAnnots = read.csv(spreadSheetLocation)                      #load the manu
 manualAnnots[[annotColumn]] = trimws(manualAnnots[[annotColumn]])               #trim away whitespace to allow for better matching 
 
 # - Merge hyrbid of either substituted phenotypes or merge-only phenotypes - 
-if(!is.null(substitutions) & !is.na(substitutions)){                                                    #Consider species with multiple combined categories as the merged category
+if(!is.null(substitutions) & !all(is.na(substitutions))){                                                    #Consider species with multiple combined categories as the merged category
   for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
     substitutePhenotypes = substitutions[[i]]
     message(paste("Combining", substitutePhenotypes[1], "/", substitutePhenotypes[2]))
@@ -1055,7 +1067,7 @@ if(!is.null(substitutions) & !is.na(substitutions)){                            
   }
 }
 
-if(!is.null(mergeOnlys) & ! is.na(mergeOnlys)){                                                    #Consider species with multiple combined categories as the merged category
+if(!is.null(mergeOnlys) & ! all(is.na(mergeOnlys))){                                                    #Consider species with multiple combined categories as the merged category
   for( i in 1:length(mergeOnlys)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
     substitutePhenotypes = mergeOnlys[[i]]
     message(paste("Merging Hybrids of", substitutePhenotypes[1], "/", substitutePhenotypes[2], "to", substitutePhenotypes[2]))
@@ -1147,7 +1159,7 @@ speciesCategories = relevantSpecies[[annotColumn]]                              
 
 phenotypeVector = speciesCategories                                             #combine those into⌄
 names(phenotypeVector) = speciesNames                                           #the format the functions expect
-if(!is.null(substitutions) & !is.na(substitutions)){
+if(!is.null(substitutions) & !all(is.na(substitutions))){
   for( i in 1:length(substitutions)){
     substitutePhenotypes = substitutions[[i]]
     message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
