@@ -2,6 +2,38 @@ a = b #prevent full runs
 
 
 # ------------------------------------------------------------------
+# --- Making a column in mergeData that matchs the InsVertivore classification   ----- 
+# ------------------------------------------------------------------
+
+substitutions = list(
+  c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
+  c("C-Herpetivore", "Vertivore"),
+  c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
+  c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+  c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
+  c("C-InsVertivore-Mixed", "Omnivore"), 
+  c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+  c("H-Frugivore", "Herbivore"), 
+  c("H-Nectarivore", "Herbivore"), 
+  c("H-High-sugar-plants-Eater", "Herbivore"),
+  c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+  c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+  c("O-Generalist", "Omnivore")
+)
+mergeData = read.csv("Data/mergedData.csv")
+
+Dietvalues = mergeData$DerekDietClassification90InsVertivoreSorting
+
+  for( i in 1:length(substitutions)){
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
+    Dietvalues = gsub(substitutePhenotypes[1], substitutePhenotypes[2], Dietvalues)
+  }
+
+mergeData$insVertivoreDiet = Dietvalues
+
+write.csv(mergeData, "Data/mergedData.csv", row.names = F)
+# ------------------------------------------------------------------
 # --- Making Updated RERConverge Explanation slide  ----- 
 # ------------------------------------------------------------------
 mainTrees = readRDS("Data/RemadeTreesAllZoonomiaSpecies.rds")
