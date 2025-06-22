@@ -474,14 +474,9 @@ combinedData = cbind(InsectivoreGeneData, VertivoreGeneData, CarnivoreGeneData)
 # --------- Combine the Hyphy results ----
 
 hyphyDir = "Output/CategoricalInsVertivoreTree/Hyphy"
-
-
-
 csvFileList = list.files(path = hyphyDir, pattern = "\\.csv$")
 phenotypeList = c("H", "I", "O", "V" )
 mainRowList = NULL
-
-
 baseOutput = read.csv(paste0(hyphyDir, "/",csvFileList[1]), row.names = 1)
 baseOutput = baseOutput[,2,drop=F]
 
@@ -498,15 +493,13 @@ for(i in csvFileList){
   colnames(inputSelected) = paste0(geneName, "_", phenotypeList[foreGroundNum], "_correctedPValue")
   
   baseOutput = merge(baseOutput, inputSelected, by = 0, all = TRUE)
-
-
-
-
-  
 }
-?merge
 
 write.csv(baseOutput, "Output/CategoricalInsvertivoreTree/Hyphy/CombineHyphy.csv")
+
+
+
+
 
 # --- make plots to demonstrate binary trees --- 
 

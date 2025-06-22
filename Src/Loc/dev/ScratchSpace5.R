@@ -36,25 +36,30 @@ write.csv(mergeData, "Data/mergedData.csv", row.names = F)
 # ------------------------------------------------------------------
 # --- Making Updated RERConverge Explanation slide  ----- 
 # ------------------------------------------------------------------
+library(RERconverge)
+source("Src/Reu/ZonomNameConvertMatrixCommon.R")
 mainTrees = readRDS("Data/RemadeTreesAllZoonomiaSpecies.rds")
 mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
 
 CVHRERs = readRDS("Output/Old/CVHRemake/CVHRemakeRERFile.rds")
 foregroundSpecies = readRDS("Output/Old/CVHRemake/CVHRemakeBinaryTreeForegroundSpecies.rds")
 CVHPaths = readRDS("Output/Old/CVHRemake/CVHRemakePathsFile.rds")
+commonRERs = ZonomNameConvertMatrixCommon(CVHRERs)
 
 
 source("Src/Reu/makeMasterAndGeneTreePlots.R")
 
-
-makeMasterAndGeneTreePlots(mainTrees,"IQANK1", CVHRERs,  foregroundSpecies, correlationPlot = T, tipColumn = "manualAnnotations_FaName", fgcols = "orange", bgcolor = "darkgreen")
+# this one is correctly sized for the most part, but the tip labels are too small (especially given the lighter orange). I don't know how to fix that -- changing the obvious values in the plotting funciton had no effect. 
+png("Results/tempMasterandGenePlot.png", 575, 575)
+makeMasterAndGeneTreePlots(mainTrees,"IQANK1", CVHRERs,  foregroundSpecies, correlationPlot = F, tipColumn = "manualAnnotations_FaName", fgcols = "orange", bgcolor = "darkgreen")
+dev.off()
 
 png("Results/tempCorrelationPlot.png", 420, 420)
 makeMasterAndGeneTreePlots(mainTrees,"IQANK1", CVHRERs,  foregroundSpecies, correlationPlot = T, tipColumn = "manualAnnotations_FaName", fgcols = "orange", bgcolor = "darkgreen")
 dev.off()
 
 
-plotRersNew(commonRERs, "IQANK1", CVHPaths, sort = F)
+plotRers(commonRERs, "IQANK1", CVHPaths, sort = F)
 plotRersNew = function (rermat = NULL, index = NULL, phenv = NULL, rers = NULL, method = "k", xlims = NULL, plot = 1, xextend = 0.2, sortrers = F) {
   {
     if (!is.null(phenv) && length(unique(phenv[!is.na(phenv)])) > 
