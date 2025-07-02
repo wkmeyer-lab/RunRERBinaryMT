@@ -67,7 +67,7 @@ args = c('r=CategoricalBinaryOmnivoreTree', 'm=c("Data/MGI_Mammalian_Phenotype_L
 args = c('r=CategoricalDownsampledInsvertTree', 'p=F', 'g=T', 's=c("Omnivore-Vertivore", "Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
 
 args = c('r=CategoricalInsVertivoreTree', 'p=F', 'g=T', 's=c("Omnivore-Vertivore", "Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
-
+args = c('r=meanTemp', 'm=data/zoonomiaAllMammalsTrees.rds', 'p=F','v=T')
 
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}

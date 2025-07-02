@@ -1,4 +1,15 @@
 a = b #prevent full runs
+library(RERconverge)
+
+# ------------------------------------------------------------------
+# --- Checking if mergedata has all hiller speices   ----- 
+# ------------------------------------------------------------------
+mergeData = read.csv("Data/mergedData.csv")
+mainTrees = readRDS('data/zoonomiaAllMammalsTrees.rds')
+
+mainTrees$masterTree$tip.label[which(!mainTrees$masterTree$tip.label %in% mergeData$ZoonomiaTip)]
+
+which(mergeData)
 
 
 # ------------------------------------------------------------------

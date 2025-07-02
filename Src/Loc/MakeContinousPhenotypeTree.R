@@ -20,6 +20,10 @@ source("Src/Reu/ZonomNameConvertVector.R")
 # s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
 # c = < "Diff" or "mean" or "last" >                     This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
 # n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
+# z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
+# x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
+# y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
+# p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
 
 
 #----------------
@@ -27,6 +31,7 @@ args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'd=Data/M
 args = c('r=MaturityLogRaw', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=logCombinedMaturity','v=T', 'n=FaName')
 args = c('r=PankajBodysize', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=combinedBodysize','v=T', 'n=FaName')
 
+args = c('r=meanTemp', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=panTheriaTemperature','v=T', 'n=ZoonomiaTip')
 
 
 # --- Standard start-up code ---
@@ -63,7 +68,7 @@ if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 { # Bracket used for collapsing purposes
 # Defaults
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
-spreadSheetLocation = "Data/manualAnnotationsSheet.csv"
+spreadSheetLocation = "Data/mergedData.csv"
 annotColumn = NULL
 categoryList = NULL
 useScreen = F
@@ -71,6 +76,12 @@ screenColumn = NULL
 nameColumn = "FaName"
 continousMetric = "diff"
 validMetrics= c("diff", "mean", "last")
+usingPruning = F
+usingAutoPruning = F
+manualPruningProtections = NULL
+pruningPrefrenceColumn = NA
+pruningProtection = F
+manualPrunedSpecies = NULL
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -80,9 +91,9 @@ validMetrics= c("diff", "mean", "last")
   }
   #read in the tree based on filetype extension
   if(file_ext(mainTreesLocation) == "rds"){
-    mainTrees = readRDS(mainTreesLocation)
+    if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
   }else{
-    mainTrees = readTrees(mainTreesLocation) 
+    if(!exists("mainTrees")){mainTrees = readTrees(mainTreesLocation)} 
   }
 
   #spreadsheet File
@@ -122,6 +133,37 @@ validMetrics= c("diff", "mean", "last")
   }else{
     message("Name Column not specified, using 'tipName'.")
   }
+
+  #Pruning cutoff
+  if(!is.na(cmdArgImport('z'))){
+    usingPruning = T
+    usingAutoPruning = T
+    pruningCutoff = cmdArgImport('z')
+  }else{
+    message("Pruning Cutoff not specified, not pruning tree.")
+  }
+  
+  #PruningPrefrenceColumn 
+  if(!is.na(cmdArgImport('x'))){
+    pruningPrefrenceColumn = cmdArgImport('x')
+  }else{
+    if(usingPruning){message("No pruning prefrence column specified")}
+  }
+  
+  #ManualPruningProtections
+  if(!all(is.na(cmdArgImport('y')))){
+    manualPruningProtections = cmdArgImport('y')
+  }else{
+    if(usingPruning){message("No manually protected species specified")}
+  }
+  
+  #ManualPruningSpecies
+  if(!all(is.na(cmdArgImport('p')))){
+    manualPruningSpecies = cmdArgImport('p')
+    usingPruning = T
+  }else{
+    if(usingPruning){message("No manually pruned species specified")}
+  }
 }
 
 
@@ -135,26 +177,77 @@ speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",
 
 if(!file.exists(speciesFilterFilename) | forceUpdate){                          #if no filter exists or update is forced, make a filter 
   # --- subset the manual annots to only those with data in the categories used, and optionally by the screen column
-  relevantSpecies = manualAnnots[!is.na(manualAnnots[[annotColumn]]),]          #remove all species which have no value in the specified column
+  relevantSpecies = manualAnnots[!is.na(manualAnnots[[annotColumn]]),]#remove all species which are not part of the specified categories
   if(useScreen){                                                                #if using a screening collumn 
-    relevantSpecies = relevantSpecies[ relevantSpecies[screenColumn] %in% 1, ]  #remove all species not positive for that collumn 
+    relevantSpecies = relevantSpecies[ relevantSpecies[[screenColumn]] %in% 1, ]  #remove all species not positive for that collumn 
   }
-  relevantSpecies = relevantSpecies[!relevantSpecies$FaName %in% "", ]          #remove any species without an FA name (not on the master tree)
-  speciesFilter = relevantSpecies$FaName                                        #make a list of the master tree tip labels of the included species
-
+  relevantSpecies = relevantSpecies[!relevantSpecies[[nameColumn]] %in% "", ]          #remove any species without an FA name (not on the master tree)
+  speciesFilter = relevantSpecies[[nameColumn]]                                       #make a list of the master tree tip labels of the included species
+  if(usingPruning){
+    if(usingAutoPruning){
+      source("Src/Reu/autoPruner.R")
+      pruningProtectionSpecies = NULL
+      if(!is.na(pruningPrefrenceColumn)){
+        if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
+          pruningProtection = T
+        }else{ 
+          pruningProtection = F
+        }
+        
+        pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
+        pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
+      }
+      allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
+      
+      workingTree = mainTrees$masterTree
+      workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
+      
+      fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
+      fewGeneSpecies = fewGeneSpecies[- which(fewGeneSpecies %in% allProtectedSpecies)]
+      workingTree = drop.tip(workingTree, fewGeneSpecies)
+      names(fewGeneSpecies)[1:length(fewGeneSpecies)] = "fewGenes"
+      
+      pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
+      pdf(pruningFilename, width = 16, height = length(workingTree$tip.label)/8)
+      prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = allProtectedSpecies, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
+      if(!pruningProtection){
+        prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+      }
+      dev.off()
+    }
+    if(!is.null(all(manualPruningSpecies))){
+      prunedTree = drop.tip(prunedTree, manualPruningSpecies)
+      names(manualPruningSpecies)[1:length(manualPruningSpecies)] = "manualDrop"
+      droppedTips = append(droppedTips, manualPruningSpecies)
+    }
+    
+    
+    prunedSpecies = speciesFilter[!speciesFilter %in% prunedTree$tip.label]
+    speciesFilter = speciesFilter[-which(speciesFilter %in% prunedSpecies)]
+    
+    prunedSpeciesFilename = paste(outputFolderName, filePrefix, "prunedSpecies.rds",sep="")
+    saveRDS(droppedTips, prunedSpeciesFilename)
+    prunedSpeciesTextFilename = file(paste(outputFolderName, filePrefix, "prunedSpecies.txt",sep=""))
+    writeLines(print(droppedTips),prunedSpeciesTextFilename)
+    close(prunedSpeciesTextFilename)
+  }
+  
+  
+  
   saveRDS(speciesFilter, file = speciesFilterFilename)                          #save that as the species filter
   
-  irrelevantSpecies = manualAnnots[! manualAnnots[["FaName"]] %in% speciesFilter,]
+  irrelevantSpecies = manualAnnots[! manualAnnots[[nameColumn]] %in% speciesFilter,]
 }else{ #if not, use the existing one 
   relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
   speciesFilter = relevantSpecieslist                                           #make the speciesFilter object for later 
-  relevantSpecies = manualAnnots[ manualAnnots[["FaName"]] %in% relevantSpecieslist,] #and select the manual annotations entries in that list (useful if the list is more restrictive than it would be by default) 
-  irrelevantSpecies = manualAnnots[! manualAnnots[["FaName"]] %in% relevantSpecieslist,]
+  relevantSpecies = manualAnnots[ manualAnnots[[nameColumn]] %in% relevantSpecieslist,] #and select the manual annotations entries in that list (useful if the list is more restrictive than it would be by default) 
+  irrelevantSpecies = manualAnnots[! manualAnnots[[nameColumn]] %in% relevantSpecieslist,]
 }
 
 # - Phenotype Vector - 
-speciesNames = relevantSpecies$FaName                                           #Exract the tip name of each species
+relevantSpecies = relevantSpecies[relevantSpecies[[nameColumn]] %in% speciesFilter, ] 
 speciesValues = relevantSpecies[[annotColumn]]                                  #extract the category of each species (in same order)
+speciesNames = relevantSpecies[[nameColumn]]                                         #Exract the tip name of each species
 
 phenotypeVector = speciesValues                                                 #combine those into⌄
 phenotypeVector = as.numeric(phenotypeVector)
