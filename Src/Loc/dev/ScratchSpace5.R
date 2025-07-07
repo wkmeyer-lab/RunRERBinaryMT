@@ -2,6 +2,37 @@ a = b #prevent full runs
 library(RERconverge)
 
 # ------------------------------------------------------------------
+# ---  Making Demos of the plots or other main-repo addable functions ----- 
+# ------------------------------------------------------------------
+
+#MakeMasterAndGeneTreePlot 
+
+source("Src/Reu/makeMasterAndGeneTreePlots.R")
+
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+RERObject = readRDS("Output/CategoricalBinaryCarnivoreTree/CategoricalBinaryCarnivoreTreeRERFile.rds")
+phenotypeVector = readRDS("Output/CategoricalBinaryCarnivoreTree/CategoricalBinaryCarnivoreTreeCategoricalPhenotypeVector.rds")
+geneInQuestion = "CFTR"
+dropTips = T
+convertNames = T
+tipColumn = "ZoonomiaTip"
+
+makeMasterAndGeneTreePlots(mainTrees, "M6PR", RERObject, tipColumn = "ZoonomiaTip", phenotypeVector = phenotypeVector, fgcols = "orange", bgcolor = "darkgreen")
+
+
+
+#RER violin plot 
+source("Src/Reu/rerViolinPlot.R")
+
+RerData = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
+PathsData = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+PhenotypeSet = c("Herbivore", "Insectivore",  "Omnivore", "Vertivore")
+Colorset = c( "darkgreen", "darkblue","black", "red")
+geneOfInterest = "CYP1A1"
+rerViolinPlot(mainTrees, RerData, pathsObject = PathsData, phenotypeSet = PhenotypeSet, colorScale = Colorset, geneOfInterest = geneOfInterest)
+
+
+# ------------------------------------------------------------------
 # --- Checking if mergedata has all hiller speices   ----- 
 # ------------------------------------------------------------------
 mergeData = read.csv("Data/mergedData.csv")
@@ -239,8 +270,8 @@ saveRDS(hillerTreePruned, paste0(outputFolderName, "ZoonomiaMaximalTreeHillerBra
 # --- Making violin plots from the categorical data for presentaiton  ----- 
 # ------------------------------------------------------------------
 
-filePrefix = "CategoricalInsVertvoreTree"
-outputFolderName = "CategoricalInsVertvoreTree/"
+filePrefix = "CategoricalInsVertivoreTree"
+outputFolderName = "Output/CategoricalInsVertivoreTree/"
 cat4phenotypeSet = c("Herbivore", "Insectivore",  "Omnivore", "Vertivore")
 cat4colorset = c( "darkgreen", "darkblue","black", "red")
 
