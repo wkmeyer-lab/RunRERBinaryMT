@@ -17,8 +17,9 @@ dropTips = T
 convertNames = T
 tipColumn = "ZoonomiaTip"
 
+png("Results/MasterAndGeneExmaple.png", width = 1200, height = 1200)
 makeMasterAndGeneTreePlots(mainTrees, "M6PR", RERObject, tipColumn = "ZoonomiaTip", phenotypeVector = phenotypeVector, fgcols = "orange", bgcolor = "darkgreen")
-
+dev.off()
 
 
 #RER violin plot 
@@ -29,8 +30,10 @@ PathsData = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreT
 PhenotypeSet = c("Herbivore", "Insectivore",  "Omnivore", "Vertivore")
 Colorset = c( "darkgreen", "darkblue","black", "red")
 geneOfInterest = "CYP1A1"
-rerViolinPlot(mainTrees, RerData, pathsObject = PathsData, phenotypeSet = PhenotypeSet, colorScale = Colorset, geneOfInterest = geneOfInterest)
 
+png("Results/RERViolinPlotExample.png", 600, 600)
+rerViolinPlot(mainTrees, RerData, pathsObject = PathsData, phenotypeSet = PhenotypeSet, colorScale = Colorset, geneOfInterest = geneOfInterest)
+dev.off()
 
 # ------------------------------------------------------------------
 # --- Checking if mergedata has all hiller speices   ----- 
