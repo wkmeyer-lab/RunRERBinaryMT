@@ -8,6 +8,13 @@ library(RERconverge)
 #binaryPhenTwo = "Carnivore"
 #strictBoth = F
 
+mainPrefix = "CategoricalPrunedCarnivoreTree"
+mainPairwise = "Carvniore-Herbivore"
+binaryPrefixOne = "CategoricalBinaryHerbivoreTree"
+binaryPhenOne = "Herbivore"
+binaryPrefixTwo = "CategoricalBinaryCarnivoreTree"
+binaryPhenTwo = "Carnivore"
+
 AssessRERDriver = function(mainPrefix, mainPairwise, binaryPrefixOne, binaryPhenOne, binaryPrefixTwo, binaryPhenTwo, strictBoth = F){
   # -- handle pairwises without spaces pre-included --
   if(!grepl(" ", mainPairwise)){

@@ -1,5 +1,5 @@
 prefix = "CategoricalInsVertivoreTree"
-pairwise = "Herbivore-Insectivore"
+pairwise = "Carnivore-Herbivore"
 GoSet = "KeggReactome"
 GenePValueCutoff = 0.1
 GoCategoryCutoff = 0.05
@@ -26,8 +26,8 @@ AssessGoCategoryDriver = function(prefix, pairwise, GoSet, GenePValueCutoff = 0.
   GoData = GoData[which(GoData$p.adj < GoCategoryCutoff), ] #trim GoData to categories below cutoff
   
   # -- determine phenotype mappings --
-  phenOneName = directionalityTable$directionality[which(directionalityTable$directionNumeric == 1)[1]]
-  phenTwoName = directionalityTable$directionality[which(directionalityTable$directionNumeric == 2)[1]]
+  phenOneName = directionalityTable$Driver[which(directionalityTable$DriverNumeric == 1)[1]]
+  phenTwoName = directionalityTable$Driver[which(directionalityTable$DriverNumeric == 2)[1]]
   
   significantGenes = directionalityTable[which(directionalityTable$main_p.adj < GenePValueCutoff),1]
   
@@ -47,11 +47,11 @@ AssessGoCategoryDriver = function(prefix, pairwise, GoSet, GenePValueCutoff = 0.
     relevantDirectionality = directionalityTable[which(directionalityTable$X %in% relevantGenes),]
     
     numberofTotalGenes = nrow(relevantDirectionality)
-    numberOfUnclearGenes = length(which(relevantDirectionality$directionNumeric == 0))
-    numberOfOneGenes = length(which(relevantDirectionality$directionNumeric == 1))
-    numberOfTwoGenes = length(which(relevantDirectionality$directionNumeric == 2))
-    numberOfBothGenes = length(which(relevantDirectionality$directionNumeric %in% c(3,4)))
-    numberOfStrictGenes = length(which(relevantDirectionality$directionNumeric == 4))
+    numberOfUnclearGenes = length(which(relevantDirectionality$DriverNumeric == 0))
+    numberOfOneGenes = length(which(relevantDirectionality$DriverNumeric == 1))
+    numberOfTwoGenes = length(which(relevantDirectionality$DriverNumeric == 2))
+    numberOfBothGenes = length(which(relevantDirectionality$DriverNumeric %in% c(3,4)))
+    numberOfStrictGenes = length(which(relevantDirectionality$DriverNumeric == 4))
     print(rownames(GoData)[i])
     directionalitySummary = data.frame(numberofTotalGenes, numberOfUnclearGenes, numberOfOneGenes, numberOfTwoGenes, numberOfBothGenes, numberOfStrictGenes)
     print(directionalitySummary)
