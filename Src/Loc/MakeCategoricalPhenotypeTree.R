@@ -889,6 +889,33 @@ args = c('r=Categorical4CategoryUnprunedTree', 'm=data/zoonomiaAllMammalsTrees.r
             c("O-Generalist", "Omnivore")
           )')
 
+args = c('r=CategoricalInsVertivoreTreeHeavyPrune', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.05',
+         'c=c(
+              "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "C-InsVertivore-Mixed", "C-InsVertivore-Piscivore", "C-InsVertivore-Insectivore","C-InsVertivore-Carnivore",
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+         'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
+            c("C-InsVertivore-Mixed", "Omnivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Herbivore"), 
+            c("H-Nectarivore", "Herbivore"), 
+            c("H-High-sugar-plants-Eater", "Herbivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Omnivore")
+          )', 'y=c("vs_HLpanLeo1")')
+
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
 {  # Bracket used for collapsing purposes
@@ -937,7 +964,7 @@ usingAutoPruning = F
 manualPruningProtections = NULL
 pruningPrefrenceColumn = NA
 pruningProtection = F
-manualPrunedSpecies = NULL
+manualPruningSpecies = NULL
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -1106,12 +1133,15 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
         pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
       }
       allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
+      if(all(is.null(allProtectedSpecies))){allProtectedSpecies = ""}
       
       workingTree = mainTrees$masterTree
       workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
       
       fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
-      fewGeneSpecies = fewGeneSpecies[- which(fewGeneSpecies %in% allProtectedSpecies)]
+      if(length(which(fewGeneSpecies %in% allProtectedSpecies)) > 0){
+        fewGeneSpecies = fewGeneSpecies[-which(fewGeneSpecies %in% allProtectedSpecies)]
+      }
       workingTree = drop.tip(workingTree, fewGeneSpecies)
       names(fewGeneSpecies)[1:length(fewGeneSpecies)] = "fewGenes"
       
@@ -1123,7 +1153,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
       }
       dev.off()
     }
-    if(!is.null(all(manualPruningSpecies))){
+    if(!all(is.null(manualPruningSpecies))){
       prunedTree = drop.tip(prunedTree, manualPruningSpecies)
       names(manualPruningSpecies)[1:length(manualPruningSpecies)] = "manualDrop"
       droppedTips = append(droppedTips, manualPruningSpecies)
