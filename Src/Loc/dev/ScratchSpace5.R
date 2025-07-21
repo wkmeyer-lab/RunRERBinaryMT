@@ -1,5 +1,69 @@
 a = b #prevent full runs
 library(RERconverge)
+# ------------------------------------------------------------------
+# ---  Make plots using the branchlength removed mastertrees  ----- 
+# ------------------------------------------------------------------
+stableMaintrees = mainTrees 
+mainTrees = stableMaintrees
+stableMaintrees = readRDS(mainTreesLocation)
+
+stableCommonMainTrees = stableMaintrees
+stableCommonMainTrees$masterTree = ZoonomTreeNameToCommon(stableCommonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+
+
+mainTrees$masterTree$edge.length[1:length(mainTrees$masterTree$edge.length)] = 1
+
+pdf(treeImageFilename, height = length(phenotypeVector)/14, width = 10)     
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableCommonMainTrees$masterTree)
+
+plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = stableMaintrees$masterTree)
+dev.off()  
+
+categoricalCommonTreeFilename = paste(outputFolderName, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
+saveRDS(commonCategoricalTree, categoricalCommonTreeFilename)
+
+plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableMaintrees$masterTree)
+
+plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = stableCommonMainTrees$masterTree)
+
+pdf(treeImageFilename, height = length(phenotypeVector)/14, width = 10)     
+plotTreeCategorical(commonCategoricalTree, c("Background", "Carnivore"), master = stableCommonMainTrees$masterTree)
+
+plotTreeCategorical(categoricalTree, c("Background", "Carnivore"), master = stableMaintrees$masterTree)
+dev.off()  
+
+
+
+# ------------------------------------------------------------------
+# ---  Make subset tree for tyler ----- 
+# ------------------------------------------------------------------
+
+tylerSpecies = read.csv("Results/toMichael.csv")
+
+
+tipsToKeep = tylerSpecies$fa
+
+
+commonCategoricalTree
+
+tipsToKeep = ZonomNameConvertVectorCommon(tipsToKeep, tipColumn = "ZoonomiaTip")
+tipsToKeep = commonCategoricalTree$tip.label[which(1:64 %% 2 ==0)]
+tipsToDrop = commonCategoricalTree$tip.label[!commonCategoricalTree$tip.label %in% tipsToKeep]
+commonCategoricalTreePruned = drop.tip(commonCategoricalTree, tipsToDrop)
+
+commonCategoricalTree = commonCategoricalTreePruned
+
+ggTreeOut = ggtree(commonCategoricalTree) +scale_color_manual(values=palette()) 
+ggTreeOut = ggTreeOut %<+% edge + aes(color=CategorylengthChar)
+ggTreeOut = ggTreeOut %<+% tip_data 
+ggTreeOut$data$label = paste(ggTreeOut$data$label, "-", ggTreeOut$data$node, sep="")
+ggTreeOut = ggTreeOut + geom_tiplab()
+#ggTreeOut = ggTreeOut + geom_tiplab(geom = "phylopic", aes(image = uuid))
+#ggTreeOut + geom_phylopic(aes(uuid = uuid), color = "black", alpha = 1, size = 0.08)
+ggTreeOut
+
+
+
 
 # ------------------------------------------------------------------
 # ---  Making Demos of the plots or other main-repo addable functions ----- 
