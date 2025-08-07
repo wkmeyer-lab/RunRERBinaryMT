@@ -1,5 +1,170 @@
 a = b #prevent full runs
 library(RERconverge)
+library(tools)
+
+
+# ------------------------------------------------------------------
+# ---  -Making scatterplots of the DNA repair genes---- 
+# ------------------------------------------------------------------
+#Run alongside the MakeOVerlapFigure main script 
+combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
+combinedResults = readRDS(combinedDataFilename)
+
+combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
+GoCombinedResults = readRDS(combinedGODataFilename)
+
+DNARepairGenesFilename = "Results/dnaRepairGenes.rds"
+genesets = readRDS(DNARepairGenesFilename)
+
+
+rhoValuesSpecific = rhoValues
+specificGenes = which(rownames(rhoValues) %in% genesets$combined)
+
+rhoValuesSpecific = rhoValues[specificGenes, ]
+
+library(ggrepel)
+
+for(i in 1:length(rhoValuesSpecific)){
+  xName = names(rhoValuesSpecific)[i]
+  if(i+1 <= length(rhoValuesSpecific)){
+    for(j in (i+1):length(rhoValuesSpecific)){
+      yName = names(rhoValuesSpecific)[j]
+      
+      rhoCorrellPlot = ggplot(rhoValuesSpecific, aes(x = .data[[xName]], y = .data[[yName]])) + 
+        geom_point() + geom_pointdensity() + scale_color_viridis()
+      
+      
+      denstiyScaleValue = ggplot_build(rhoCorrellPlot)$plot$scales$scales[[1]]$get_limits()[2]
+      densityScaleSet = append(densityScaleSet, denstiyScaleValue)
+      rm(rhoCorrellPlot)
+    }
+  }
+}
+densityScale = c(1, max(densityScaleSet))
+
+
+rhoPlotSet = list()
+netIndex= 0
+for(i in 1:length(rhoValuesSpecific)){
+  xName = names(rhoValuesSpecific)[i]
+  if(i <= length(rhoValuesSpecific)){
+    if(bothAxis){jStart = 1}else{jStart = i+1}
+    for(j in (jStart):length(rhoValuesSpecific)){
+      yName = names(rhoValuesSpecific)[j]
+      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), " Dunn Z Statistic")
+      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), " Dunn Z Statistic")
+      
+      rhoCorrellPlot = ggplot(rhoValuesSpecific, aes(x = .data[[xName]], y = .data[[yName]])) + 
+        geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
+        stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE, size = 6) +
+        theme_classic()+
+        geom_text_repel(aes(label = rownames(rhoValuesSpecific)), size = 3)+
+        geom_vline(xintercept = 0, linetype = "dashed", color = "black") +  # vertical line at x=0
+        geom_hline(yintercept = 0, linetype = "dashed", color = "black") +  # horizontal line at y=0
+        xlab(xLabel) + ylab(yLabel)+
+        theme(axis.title.x = element_text(size = 16), axis.title.y = element_text(size = 16))
+      
+      netIndex = netIndex +1
+      rhoPlotSet[[netIndex]] = rhoCorrellPlot
+      names(rhoPlotSet)[netIndex] = paste(xName, yName, sep="-")
+      rm(rhoCorrellPlot)
+    }
+  }
+}
+
+rhoPlotSet$`HI-Rho-HV-Rho`
+
+png("Results/DNARepairGenes.png", 1200,1200)
+rhoPlotSet$`HI-Rho-HV-Rho`
+dev.off()
+# ------------------------------------------------------------------
+# --- Making RERPlots fro the oxidation genes ----- 
+# ------------------------------------------------------------------
+library(data.table)
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
+
+
+filePrefix = "CategoricalInsVertivoreTree"
+outputFolderName = "Output/CategoricalInsVertivoreTree/"
+cat4phenotypeSet = c("Herbivore", "Insectivore",  "Omnivore", "Vertivore")
+cat4colorset = c( "darkgreen", "darkblue","black", "red")
+
+RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")       #Set a filename for the RERs based on the prefix
+cat4RERObject = readRDS(RERFileName)                                              #Use the existing ones
+PathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "")  
+pathObject = readRDS(PathsFilename)
+
+commonRERs = cat4RERObject
+colnames(commonRERs) = ZonomNameConvertVectorCommon(colnames(commonRERs), tipColumn = "ZoonomiaTip")
+
+
+palette(c( "darkgreen", "darkblue","black", "red"))
+plotRers(commonRERs, "ACAA2", pathObject)
+
+genesOfNote = c("EHHADH", "ECI2", "ACADM", "ACOT12", "ACAD11", "ACOT13", "ACAA2")
+
+k=1
+
+pdf("results/temp.pdf", 20, 20)
+treePlotRers(mainTrees, cat4RERObject, genesOfNote[k], phenv = pathObject)
+dev.off()
+
+
+categoricalTree = readRDS(paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep= ""))
+
+trimmedMainTrees = mainTrees
+trimmedMasterTree = drop.tip(mainTrees$masterTree, which(!mainTrees$masterTree$tip.label %in% categoricalTree$tip.label))
+
+trimmedMainTrees$masterTree = trimmedMasterTree
+i = 1
+for(i in 1:length(trimmedMainTrees$trees)){
+  currentTree = trimmedMainTrees$trees[[i]]
+  trimmedCurrentTree = drop.tip(currentTree, which(!currentTree$tip.label %in% categoricalTree$tip.label))
+  trimmedMainTrees$trees[[i]] = trimmedCurrentTree
+}
+
+
+RERTree = returnRersAsTree(trimmedMainTrees, cat4RERObject, genesOfNote[k])
+
+
+# -- Switching to making a new maintrees object fro returnRERs that's pruned to the right size. 
+
+write.tree(trimmedMasterTree, "Results/InsVertMasterTree.tree")
+
+# ------------------------------------------------------------------
+# ---  Getting gene list of the pathways in opposite directions  ----- 
+# ------------------------------------------------------------------
+library(RERconverge)
+library("tools")
+source("Src/Reu/cmdArgImport.R")
+library(xlsx)
+
+pathwayNames = c("REACTOME_HDR_THROUGH_SINGLE_STRAND_ANNEALING_SSA", "REACTOME_HDR_THROUGH_HOMOLOGOUS_RECOMBINATION_HRR", "REACTOME_DNA_DOUBLE_STRAND_BREAK_REPAIR", "REACTOME_HOMOLOGY_DIRECTED_REPAIR", "REACTOME_DISEASES_OF_DNA_REPAIR")
+
+gmtFileName = "Data/KeggReactome.gmt"
+gmtFile = read.gmt(gmtFileName)
+
+which(gmtFile$geneset.names %in% pathwayNames)
+
+genesets = gmtFile$genesets[which(gmtFile$geneset.names %in% pathwayNames)]
+names(genesets) = gmtFile$geneset.names[which(gmtFile$geneset.names %in% pathwayNames)]
+
+unlist(genesets[1:5])
+
+genesets$combined = list(unlist(genesets[1:5]))
+genesets$combined = unlist(genesets[1:5])
+genesets$combined = unique(genesets$combined)
+
+DNARepairGenesFilename = "Results/dnaRepairGenes.rds"
+saveRDS(genesets, DNARepairGenesFilename)
+
+lines <- sapply(genesets, function(x) paste(x, collapse = "\t"))
+
+writeLines(lines, "Results/dnaRepairGenes.txt")
+
+names(genesets)
+
 # ------------------------------------------------------------------
 # ---  Make plots using the branchlength removed mastertrees  ----- 
 # ------------------------------------------------------------------

@@ -24,6 +24,8 @@ usingGo = !is.null(geneSet)
 saveCombinedData = T
 saveCombinedData = F
 bothAxis = T
+saveData = F
+saveData = T
 
 
 
@@ -175,7 +177,7 @@ correlationResults = readRDS(pairwiseCorrelationFileName)
   if(saveCombinedData){
     combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults")
     write.csv(combinedResults, paste0(combinedDataFilename, ".csv"))
-    saveRDS(combinedResults, paste0(combinedDataFilename, ".rds"))
+    if(saveData){saveRDS(combinedResults, paste0(combinedDataFilename, ".rds"))}
   }
 }
 
@@ -252,7 +254,7 @@ if(usingGo){
   if(saveCombinedData){
     combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet)
     write.csv(GoCombinedResults, paste0(combinedGODataFilename, ".csv"))
-    saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))
+    if(saveData){saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))}
   }
 }
 
