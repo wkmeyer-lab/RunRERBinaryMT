@@ -2,6 +2,65 @@ a = b #prevent full runs
 library(RERconverge)
 library(tools)
 
+# ------------------------------------------------------------------
+# --- Making RERPlots fro the oxidation genes using the new maintrees ----- 
+# ------------------------------------------------------------------
+library(data.table)
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+mainTrees = readRDS("data/categoricalInsVertivoreMaintrees.rds")
+mainTrees$masterTree
+
+filePrefix = "CategoricalSlimMainInsVertivoreTree"
+outputFolderName = "Output/CategoricalSlimMainInsVertivoreTree/"
+cat4phenotypeSet = c("Herbivore", "Insectivore",  "Omnivore", "Vertivore")
+cat4colorset = c( "darkgreen", "darkblue","black", "red")
+
+RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "")       #Set a filename for the RERs based on the prefix
+cat4RERObject = readRDS(RERFileName)                                              #Use the existing ones
+PathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "")  
+pathObject = readRDS(PathsFilename)
+
+commonRERs = cat4RERObject
+colnames(commonRERs) = ZonomNameConvertVectorCommon(colnames(commonRERs), tipColumn = "ZoonomiaTip")
+
+
+palette(c( "darkgreen", "darkblue","black", "red"))
+
+
+genesOfNote = c("EHHADH", "ECI2", "ACADM", "ACOT12", "ACAD11", "ACOT13", "ACAA2")
+k=1
+plotRers(commonRERs, genesOfNote[k], pathObject)
+
+pdf("results/temp.pdf", 20, 20)
+treePlotRers(mainTrees, cat4RERObject, genesOfNote[k], phenv = pathObject)
+dev.off()
+
+
+mainTrees$trees$EHHADH$tip.label
+
+
+
+categoricalTree = readRDS(paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep= ""))
+
+trimmedMainTrees = mainTrees
+trimmedMasterTree = drop.tip(mainTrees$masterTree, which(!mainTrees$masterTree$tip.label %in% categoricalTree$tip.label))
+
+trimmedMainTrees$masterTree = trimmedMasterTree
+i = 1
+for(i in 1:length(trimmedMainTrees$trees)){
+  currentTree = trimmedMainTrees$trees[[i]]
+  trimmedCurrentTree = drop.tip(currentTree, which(!currentTree$tip.label %in% categoricalTree$tip.label))
+  trimmedMainTrees$trees[[i]] = trimmedCurrentTree
+}
+
+
+RERTree = returnRersAsTree(trimmedMainTrees, cat4RERObject, genesOfNote[k])
+
+
+# -- Switching to making a new maintrees object fro returnRERs that's pruned to the right size. 
+
+write.tree(trimmedMasterTree, "Results/InsVertMasterTree.tree")
+
 
 # ------------------------------------------------------------------
 # ---  -Making scatterplots of the DNA repair genes---- 
