@@ -1,84 +1,278 @@
-#------ Run driver assessment code if not already run  --- 
-mainPrefix = "CategoricalInsVertivoreTree"
-subdirectory = "Herbivore-Vertivore"
-BinaryTreeOne = "CategoricalBinaryHerbivoreTree"
-BinaryPhenotype = "Herbivore"
-BinaryTreeTwo = "CategoricalBinaryInsectivoreTree"
-BinaryPhenotypeTwo = "Insectivore"
-GOGroup = "KeggReactome"
+clusterRun = F
+clusterRun = T
 
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+library(GSEABase)
+source("Src/Reu/cmdArgImport.R")
 
-driverTableFilename = paste0("Output/", mainPrefix, "/", subdirectory, "/", mainPrefix, subdirectory, "DriverTable")
-if(!file.exists(paste0(driverTableFilename, ".rds"))){
-  source("Src/Reu/AssessRERDirection.R")
-  driverTable = AssessRERDirection(mainPrefix,subdirectory , BinaryTreeOne, BinaryPhenotype,  BinaryTreeTwo, BinaryPhenotypeTwo)
-  write.csv(driverTable, paste0(driverTableFilename, ".csv"))
-  saveRDS(driverTable, paste0(driverTableFilename, ".rds"))
-}else{
-  driverTable = readRDS(paste0(driverTableFilename, ".rds"))
+args = c("r=CategoricalInsVertivoreTree", "s=Carnivore-Herbivore", 
+         "a=CategoricalBinaryCarnivoreTree", "b=Carnivore", "c=CategoricalBinaryHerbivoreTree", "d=Herbivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=T")
+args = c("r=CategoricalInsVertivoreTree", "s=Herbivore-Vertivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryVertivoreTree", "d=Vertivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=T")
+args = c("r=CategoricalInsVertivoreTree", "s=Herbivore-Insectivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryInsectivoreTree", "d=Insectivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=T")
+
+{
+  # --- Standard start-up code ---
+  if(clusterRun)args = commandArgs(trailingOnly = TRUE)
+  {  # Bracket used for collapsing purposes
+    #File Prefix
+    if(!is.na(cmdArgImport('r'))){
+      filePrefix = cmdArgImport('r')
+    }else{
+      stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
+    }
+    
+    #  Output Directory 
+    if(!dir.exists("Output")){                                      #Make output directory if it does not exist
+      dir.create("Output")
+    }
+    outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
+    if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
+      dir.create(outputFolderNameNoSlash)
+    }
+    outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+    
+    #  Force update argument
+    forceUpdate = FALSE
+    if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
+      forceUpdate = cmdArgImport('v')
+      forceUpdate = as.logical(forceUpdate)
+    }else{
+      message("Force update not specified, not forcing update")
+    }
+  }
+  
+  # --- Import arguments --- 
+  filePrefix = "CategoricalInsVertivoreTree"
+  subdirectory = "Carnivore-Herbivore"
+  BinaryTreeOne = "CategoricalBinaryHerbivoreTree"
+  BinaryPhenotype = "Herbivore"
+  BinaryTreeTwo = "CategoricalBinaryCarnivoreTree"
+  BinaryPhenotypeTwo = "Carnivore"
+  GOGroup = "KeggReactome"
+  
+  useOverlap = T
+  overlapValues = c("HV", "HI", "CH")
+  overlapBackground = ("H")
+  pvalueCutoff = 0.05
+  useDriver = T
+  
+  {
+  #subdirectory
+  if(!is.na(cmdArgImport('s'))){
+    subdirectory = cmdArgImport('s')
+  }else{
+    stop("Missing Arugment")
+  }
+  
+  #Binary Location one 
+  if(!is.na(cmdArgImport('a'))){
+    BinaryTreeOne = cmdArgImport('a')
+  }else{
+    stop("Missing Arugment")
+  }
+  
+  #Binary Prefix one
+  if(!is.na(cmdArgImport('b'))){
+    BinaryPhenotype = cmdArgImport('b')
+  }else{
+    stop("Missing Arugment")
+  }
+  
+  #Binary Location two 
+  if(!is.na(cmdArgImport('c'))){
+    BinaryTreeTwo = cmdArgImport('c')
+  }else{
+    stop("Missing Arugment")
+  }
+  
+  #Binary Prefix two 
+  if(!is.na(cmdArgImport('d'))){
+    BinaryPhenotypeTwo = cmdArgImport('d')
+  }else{
+    stop("Missing Arugment")
+  }
+  
+  #GOGroup 
+  if(!is.na(cmdArgImport('g'))){
+    GOGroup = cmdArgImport('g')
+  }else{
+    message("No GO arg, using KeggReactome")
+  }
+  
+  #Use Overlap 
+  if(!is.na(cmdArgImport('o'))){
+    useOverlap = cmdArgImport('o')
+  }else{
+    message("No overlap Arg, using overlap")
+  }
+  
+  #Overlap list
+  if(!all(is.na(cmdArgImport('l')))){
+    overlapValues = cmdArgImport('l')
+  }else{
+    if(useOverlap){
+      stop("Missing Arugment")
+    }
+  }
+  
+  #Overlap Background
+  if(!is.na(cmdArgImport('k'))){
+    overlapBackground = cmdArgImport('k')
+  }else{
+    if(useOverlap){
+      stop("Missing Arugment")
+    }
+  }
+  
+  #p value cutoff 
+  if(!is.na(cmdArgImport('p'))){
+    pvalueCutoff = cmdArgImport('p')
+  }else{
+    if(useOverlap){
+      message("No pvalue cutoff, using 0.05")
+    }
+  }
+  
+  #use driver
+    #Use Overlap 
+    if(!is.na(cmdArgImport('i'))){
+      useDriver = cmdArgImport('i')
+    }else{
+      message("No driver Arg, using driver")
+    }
+  }
 }
 
-goDriverTableFilename = paste0("Output/", mainPrefix, "/", subdirectory, "/", mainPrefix, subdirectory, "GoDriverTable")
-if(!file.exists(paste0(goDriverTableFilename, ".csv"))){
-  GODriver = AssessGoCategoryDirection(mainPrefix, subdirectory, GOGroup, 0.1, 1, F)
-  View(GODriver)
-  write.csv(GODriver, paste0(goDriverTableFilename, ".csv"))
-}
-
-#--- split GO Driver into positive and negative
-
-goDriverTableFilename = paste0("Output/", mainPrefix, "/", subdirectory, "/", mainPrefix, subdirectory, "GoDriverTable")
-GODriver = read.csv(paste0(goDriverTableFilename, ".csv"))
 
 
-GoDriverPositive = GODriver[which(GODriver$stat > 0),]
-GoDriverNegative = GODriver[which(GODriver$stat < 0),]
-
-GODriverPositiveColored = GODriver
-GODriverPositiveColored$p.adj[GODriverPositiveColored$stat < 0] = 0.11
-GODriverPositiveColored$pval[GODriverPositiveColored$stat < 0] = 0.11
-
-
-cytoscapeDirectory = paste0("Output/", mainPrefix, "/", subdirectory, "/", "Cytoscape")
+# -- setup output files ---
+cytoscapeDirectory = paste0("Output/", filePrefix, "/", subdirectory, "/", "Cytoscape")
 if(!dir.exists(cytoscapeDirectory)){                       #create that directory if it does not exist
   dir.create(cytoscapeDirectory)
 }
 
-
-goPositiveGoDriverTableFilename = paste0("Output/", mainPrefix, "/", subdirectory, "/", "Cytoscape/", mainPrefix, subdirectory, "GoDriverPositiveTable")
-goNegativeGoDriverTableFilename = paste0("Output/", mainPrefix, "/", subdirectory, "/", "Cytoscape/", mainPrefix, subdirectory, "GoDriverNegativeTable")
-goColoredGoDriverTableFilename = paste0("Output/", mainPrefix, "/", subdirectory, "/", "Cytoscape/", mainPrefix, subdirectory, "GoDriverPositiveColoredTable")
-
-write.table(GODriverPositiveColored, paste0(goColoredGoDriverTableFilename, ".txt"), sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
-write.csv(GoDriverPositive, paste0(goPositiveGoDriverTableFilename, ".csv"), row.names = F)
-write.csv(GoDriverNegative, paste0(goNegativeGoDriverTableFilename, ".csv"), row.names = F)
-write.csv(GODriverPositiveColored, paste0(goColoredGoDriverTableFilename, ".csv"), row.names = F)
-
-
-
-# ---- Convert a Driver table to cytoscape format 
-
-GODriver
 gmtFilename = paste0("Data/", GOGroup, ".gmt")
 file.copy(gmtFilename, paste0(cytoscapeDirectory, "/", GOGroup, ".gmt")) #make a copy in the cytoscape direcotry for easy cytoscape work 
-GOCytoscape = GODriver[,c(1,7,3,4,2,6)]
-colnames(GOCytoscape) = c("GO.ID", "Description", "pVal", "p.adj", "Phenotype", "Gene.vals")
-GOCytoscape$Phenotype = sign(GOCytoscape$Phenotype)
-#GOCytoscape$Phenotype[GOCytoscape$Phenotype == 1] = "1"
-write.table(GOCytoscape, paste0(cytoscapeDirectory, "/CytoscapeInput.txt"), sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+
+
+
+# ------ Driver analysis ---- 
+if(useDriver){
+  #------ Run driver assessment code if not already run  --- 
+  driverTableFilename = paste0("Output/", filePrefix, "/", subdirectory, "/", filePrefix, subdirectory, "DriverTable")
+  if(!file.exists(paste0(driverTableFilename, ".rds"))){
+    source("Src/Reu/AssessRERDriver.R")
+    driverTable = AssessRERDriver(filePrefix,subdirectory , BinaryTreeOne, BinaryPhenotype,  BinaryTreeTwo, BinaryPhenotypeTwo)
+    write.csv(driverTable, paste0(driverTableFilename, ".csv"))
+    saveRDS(driverTable, paste0(driverTableFilename, ".rds"))
+  }else{
+    driverTable = readRDS(paste0(driverTableFilename, ".rds"))
+  }
+  
+  goDriverTableFilename = paste0("Output/", filePrefix, "/", subdirectory, "/", filePrefix, subdirectory, "GoDriverTable")
+  if(!file.exists(paste0(goDriverTableFilename, ".csv"))){
+    source("Src/Reu/AssessGOCategoryDriver.R")
+    GODriver = AssessGoCategoryDriver(filePrefix, subdirectory, GOGroup, 0.1, 1, F)
+    View(GODriver)
+    write.csv(GODriver, paste0(goDriverTableFilename, ".csv"))
+  }
+  
+  #--- split GO Driver into positive and negative
+  
+  goDriverTableFilename = paste0("Output/", filePrefix, "/", subdirectory, "/", filePrefix, subdirectory, "GoDriverTable")
+  GODriver = read.csv(paste0(goDriverTableFilename, ".csv"))
+  
+  
+  GoDriverPositive = GODriver[which(GODriver$stat > 0),]
+  GoDriverNegative = GODriver[which(GODriver$stat < 0),]
+  
+  GODriverPositiveColored = GODriver
+  GODriverPositiveColored$p.adj[GODriverPositiveColored$stat < 0] = 0.11
+  GODriverPositiveColored$pval[GODriverPositiveColored$stat < 0] = 0.11
+  
+  
+
+  
+  goPositiveGoDriverTableFilename = paste0("Output/", filePrefix, "/", subdirectory, "/", "Cytoscape/", filePrefix, subdirectory, "GoDriverPositiveTable")
+  goNegativeGoDriverTableFilename = paste0("Output/", filePrefix, "/", subdirectory, "/", "Cytoscape/", filePrefix, subdirectory, "GoDriverNegativeTable")
+  goColoredGoDriverTableFilename = paste0("Output/", filePrefix, "/", subdirectory, "/", "Cytoscape/", filePrefix, subdirectory, "GoDriverPositiveColoredTable")
+  
+  write.table(GODriverPositiveColored, paste0(goColoredGoDriverTableFilename, ".txt"), sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+  write.csv(GoDriverPositive, paste0(goPositiveGoDriverTableFilename, ".csv"), row.names = F)
+  write.csv(GoDriverNegative, paste0(goNegativeGoDriverTableFilename, ".csv"), row.names = F)
+  write.csv(GODriverPositiveColored, paste0(goColoredGoDriverTableFilename, ".csv"), row.names = F)
+  
+  GODriver
+  
+  
+  GOCytoscape = GODriver[,c(1,7,3,4,2,6)]
+  colnames(GOCytoscape) = c("GO.ID", "Description", "pVal", "p.adj", "Phenotype", "Gene.vals")
+  GOCytoscape$Phenotype = sign(GOCytoscape$Phenotype)
+  #GOCytoscape$Phenotype[GOCytoscape$Phenotype == 1] = "1"
+  write.table(GOCytoscape, paste0(cytoscapeDirectory, "/CytoscapeInput.txt"), sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+  
+  GOCytoscapePositive = GOCytoscape[which(GOCytoscape$Phenotype >0),]
+  GOCytoscapePositiveFilename = paste0(cytoscapeDirectory, "/Cytoscape", BinaryPhenotype,"FasterInput.txt")
+  write.table(GOCytoscapePositive, GOCytoscapePositiveFilename, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+  
+  GOCytoscapeNegative = GOCytoscape[which(GOCytoscape$Phenotype <0),]
+  GOCytoscapeNegativeFilename = paste0(cytoscapeDirectory, "/Cytoscape", BinaryPhenotypeTwo,"FasterInput.txt")
+  write.table(GOCytoscapeNegative, GOCytoscapeNegativeFilename, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+  
   #Use that cytoscape input file as the data in Cytoscape, on the generic setting
-
-
-library(GSEABase)
-gmtData = getGmt(gmtFilename)
-
-gmtNames = names(gmtData)
-gmtDriver = GODriver$Directionality[match(gmtNames, GODriver$X)]
-gmtUpdate = data.frame(gmtNames, gmtDriver)
-write.csv(gmtUpdate, paste0(cytoscapeDirectory, "/GmtDirectionColumn.csv"), row.names = F)
+  
+  # -- save as gmt file --- 
+  gmtData = getGmt(gmtFilename)
+  
+  gmtNames = names(gmtData)
+  gmtDriver = GODriver$Driver[match(gmtNames, GODriver$X)]
+  gmtUpdate = data.frame(gmtNames, gmtDriver)
+  write.csv(gmtUpdate, paste0(cytoscapeDirectory, "/GmtDirectionColumn.csv"), row.names = F)
   #This creates a column with the driving phenotype information. 
   #Open the gmt file in excel, and replace the description column with the produced driver column. 
   #This is set up this way because R is bad at handling variable row lengths, so it is easier to edit the gmt file in excel.
+  
+}
+
+
+# -- Make overlap gmt column instead ---
+if(useOverlap){
+  combinedGOFilename = paste0("Output/", filePrefix, "/", filePrefix, "combinedGOResults-", GOGroup, ".rds")
+  combinedGOData = readRDS(combinedGOFilename)
+  
+  combinedGOData$overlapName = NA
+  
+  testColumns = paste0(overlapValues, "-p.adj")
+  for(i in 1:nrow(combinedGOData)){
+    currentOverlapName = ""
+    for(j in testColumns){
+      currentTest = which(colnames(combinedGOData) == j)
+      currentValue = combinedGOData[i, currentTest]
+      if(currentValue < pvalueCutoff){
+        overlapNameAddition = j
+        overlapNameAddition = gsub("-p.adj", "", overlapNameAddition)
+        overlapNameAddition = gsub(overlapBackground, "", overlapNameAddition)
+        currentOverlapName = paste0(currentOverlapName, overlapNameAddition)
+      }
+    }
+    combinedGOData$overlapName[i] = currentOverlapName
+  }
+ 
+  
+  gmtData = getGmt(gmtFilename)
+  gmtNames = names(gmtData)
+  gmtOverlap = combinedGOData$overlapName[match(gmtNames, rownames(combinedGOData))]
+  gmtUpdate = data.frame(gmtNames, gmtOverlap)
+  write.csv(gmtUpdate, paste0(cytoscapeDirectory, "/GmtOverlapColumn.csv"), row.names = F)
+   
+}
+
 
 # --- Guide on how to convert these outputs into a cytoscape figure: ----
 

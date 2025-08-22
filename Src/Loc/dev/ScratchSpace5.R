@@ -2,6 +2,30 @@ a = b #prevent full runs
 library(RERconverge)
 
 # ------------------------------------------------------------------
+# ---  Confirm Rho meaning for Categorical Diet ----- 
+# ------------------------------------------------------------------
+
+
+results = readRDS("OUtput/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCombinedCategoricalCorrelationFile.rds")
+RERObject = readRDS("Output/CategoricalBinaryCarnivoreTree/CategoricalBinaryCarnivoreTreeRERFile.rds")
+phenotypeVector = readRDS("Output/CategoricalBinaryCarnivoreTree/CategoricalBinaryCarnivoreTreeCategoricalPhenotypeVector.rds")
+pathsObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+phenotypeSet = c("Herbivore", "Insectivore", "Omnivore", "Vertivore")
+colorset = c( "darkgreen", "darkblue", "black", "red")
+
+plotRers(RERObject, "CPB1" , pathsObject,)
+source("Src/Reu/rerViolinPlot.R")
+rerViolinPlot(mainTrees, RERObject, pathsObject, phenotypeSet , geneOfInterest = "CPB1", colorScale = colorset)
+
+pairwiseResults = results[[2]]
+
+genelist = c("CPB1")
+rowindex = which(rownames(pairwiseResults$`1 - 2`)%in% genelist)
+
+pairwiseResults$`1 - 2`[rowindex,]
+
+# ------------------------------------------------------------------
 # ---  Making Demos of the plots or other main-repo addable functions ----- 
 # ------------------------------------------------------------------
 
