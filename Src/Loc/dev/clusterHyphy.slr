@@ -102,12 +102,22 @@ else
 fi
 
 
+echo "#########################################################################"
+
 #Generate the hyphy input file
 cd /share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME
 
 module load r
-R --no-save --args g=$GENENAME a=$FASTAFILEPATH r=$FILEPREFIX $ARG1 $ARG2 $ARG3 $ARG4 </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Reu/hyphyFileMake.R
 HYPHYINPUTFILENAME="${FILEPREFIX}${GENENAME}HyphyInputFile.fna"
+if [ -f $HYPHYINPUTFILENAME ] ; then
+        echo "Input File exists"
+else
+        echo "Generating Input file"
+        R --no-save --args g=$GENENAME a=$FASTAFILEPATH r=$FILEPREFIX $ARG1 $ARG2 $ARG3 $ARG4 </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Reu/hyphyFileMake.R
+fi
+
+echo "#######################################################################"
+
 
 # Run hyphy itself
 cd ./Output/$FILEPREFIX/Hyphy

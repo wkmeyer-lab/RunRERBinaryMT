@@ -109,16 +109,16 @@ args =c("r=makeLalithaTree", 'p=c("darkgreen", "darkblue", "black")', 'c=c("1", 
 
 
 if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
-commonMainTrees = mainTrees
-commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn, plot = F)
-commonMasterTree = commonMainTrees$masterTree
-
+#commonMainTrees = mainTrees
+#commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn, plot = F)
+#commonMasterTree = commonMainTrees$masterTree
+commonMasterTree = ZoonomTreeNameToCommon(mainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn, plot = F)
 
 categoricalCommonTreeFilename = paste(outputFolderName, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
 commonCategoricalTree = readRDS(categoricalCommonTreeFilename)
-scientificCategoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalScientificTree.rds", sep="") #make a filename based on the prefix
-scientificCategoricalTree = readRDS(scientificCategoricalTreeFilename)
-
+#scientificCategoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalScientificTree.rds", sep="") #make a filename based on the prefix
+#scientificCategoricalTree = readRDS(scientificCategoricalTreeFilename)
+scientificCategoricalTree = ZoonomTreeNameToCommon(commonCategoricalTree, manualAnnotLocation = spreadSheetLocation, tipCol = "CommonName", scientific = T, scientificCol = "Scientific_Binomial", plot = F)
 
 commonMasterTrimmed = drop.tip(commonMasterTree, commonMasterTree$tip.label[!commonMasterTree$tip.label %in% commonCategoricalTree$tip.label])
 if(!is.rooted(commonCategoricalTree)){commonMasterTrimmed = unroot(commonMasterTrimmed)}
