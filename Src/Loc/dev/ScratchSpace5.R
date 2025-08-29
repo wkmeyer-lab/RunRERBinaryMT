@@ -3,6 +3,16 @@ library(RERconverge)
 library(tools)
 
 # ------------------------------------------------------------------
+# --- Getting named paths for emily ----- 
+# ------------------------------------------------------------------
+
+paths = readRDS(pathsFilename)
+paths = paths-1
+all.equal(binaryPaths, paths)
+
+paths != binaryPaths
+
+# ------------------------------------------------------------------
 # --- Looking into I-V signifiacnt results ----- 
 # ------------------------------------------------------------------
 
