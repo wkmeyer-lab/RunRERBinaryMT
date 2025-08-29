@@ -20,7 +20,24 @@ IVSigGenes = rownames(combinedResults)[which(combinedResults$`IV-significant`)]
 
 length(which(GoCombinedResults$`IV-significant`))
 
-GoCombinedResults[which(GoCombinedResults$`IV-significant`),c(1,2)]
+GoCombinedResults[which(GoCombinedResults$`IV-significant`),c(29,30)]
+
+
+inverseDNARepairGenes = which(GoCombinedResults$`HI-HV-Overlap` & !GoCombinedResults$`HI-HV-CH-Overlap`)
+inverseOlfactionGene = which(rownames(GoCombinedResults) == "REACTOME_OLFACTORY_SIGNALING_PATHWAY")
+inverseGenes = append(inverseDNARepairGenes, inverseOlfactionGene)
+rownames(GoCombinedResults)[inverseGenes]
+
+GoCombinedResults[inverseGenes,c(29,30)]
+
+length(which(GoCombinedResults$`OV-significant`))
+GoCombinedResults[which(GoCombinedResults$`OV-significant`),c(35,36)]
+
+vertCandidates = which(rownames(GoCombinedResults) %in% c("REACTOME_GLUCOCORTICOID_BIOSYNTHESIS", "REACTOME_METABOLISM_OF_STEROID_HORMONES"))
+
+sigcols = grep("significant", colnames(GoCombinedResults))
+
+GoCombinedResults[vertCandidates,sigcols]
 
 # ------------------------------------------------------------------
 # --- Making RERPlots fro the oxidation genes using the new maintrees ----- 
