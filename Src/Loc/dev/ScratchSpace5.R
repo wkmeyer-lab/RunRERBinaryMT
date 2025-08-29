@@ -3,6 +3,26 @@ library(RERconverge)
 library(tools)
 
 # ------------------------------------------------------------------
+# --- Looking into I-V signifiacnt results ----- 
+# ------------------------------------------------------------------
+
+geneSet = "KeggReactome"
+
+combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
+combinedResults = readRDS(combinedDataFilename)
+
+combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
+GoCombinedResults = readRDS(combinedGODataFilename)
+
+length(which(combinedResults$`IV-significant`))
+
+IVSigGenes = rownames(combinedResults)[which(combinedResults$`IV-significant`)]
+
+length(which(GoCombinedResults$`IV-significant`))
+
+GoCombinedResults[which(GoCombinedResults$`IV-significant`),c(1,2)]
+
+# ------------------------------------------------------------------
 # --- Making RERPlots fro the oxidation genes using the new maintrees ----- 
 # ------------------------------------------------------------------
 library(data.table)

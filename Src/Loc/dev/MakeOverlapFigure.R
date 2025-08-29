@@ -16,7 +16,7 @@ source("Src/Reu/cmdArgImport.R")
 # -- argument setup  -- 
 significanceCutoff = 0.05
 prefix = "CategoricalInsvertivoreTree"
-pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore")
+pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore")
 geneSet = "KeggReactome"
 vennDiagramSet = c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")  
 vennColorset = c("darkblue", "red", "orange")
