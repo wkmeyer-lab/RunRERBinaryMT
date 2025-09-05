@@ -3,6 +3,20 @@ library(RERconverge)
 library(tools)
 
 # ------------------------------------------------------------------
+# --- looking into data for methods section  ----- 
+# ------------------------------------------------------------------
+maintrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+masterTree = maintrees$masterTree
+
+otherCategoicalTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+
+categoricalTree$tip.label[which(!categoricalTree$tip.label %in% otherCategoicalTree$tip.label)]
+
+all.equal(categoricalTree, otherCategoicalTree)
+
+length(droppedTips)
+
+# ------------------------------------------------------------------
 # --- Getting named paths for emily ----- 
 # ------------------------------------------------------------------
 
@@ -271,6 +285,9 @@ writeLines(lines, "Results/dnaRepairGenes.txt")
 
 names(genesets)
 
+which(is.numeric(names(droppedTips)))
+which(!is.na(as.numeric(names(droppedTips))))
+length(which(!is.na(as.numeric(names(droppedTips)))))
 # ------------------------------------------------------------------
 # ---  Make plots using the branchlength removed mastertrees  ----- 
 # ------------------------------------------------------------------
