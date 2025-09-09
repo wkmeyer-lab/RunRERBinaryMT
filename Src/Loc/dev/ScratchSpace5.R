@@ -1,6 +1,177 @@
 a = b #prevent full runs
 library(RERconverge)
 library(tools)
+# ------------------------------------------------------------------
+# --- using liam's zero-length-added-tip ancestral infrence method  ----- 
+# ------------------------------------------------------------------
+
+# --------------
+# -- section which is actually run during phenotype generation --- 
+
+masterTree = mainTrees$masterTree
+
+nodesToAdd = c(455, 457, 471, 650, 492)
+names(nodesToAdd) = c("Mammalia", "Marsupalia", "Placentalia", "Chiroptera", "Primates")
+
+masterTreeAdded = masterTree
+for(i in 1:length(nodesToAdd)){
+  M<-matchNodes(masterTree,masterTreeAdded,method="distances")
+  masterTreeAdded<-bind.tip(masterTreeAdded,names(nodesToAdd)[i],edge.length=0,
+                              where=M[which(M[,1]==as.numeric(nodesToAdd[i])),2])
+}
+mainTrees$masterTree = masterTreeAdded
+
+phenToAdd = c("Insectivore", "Insectivore", "Insectivore", "Insectivore", "Omnivore")
+names(phenToAdd) = names(nodesToAdd)
+
+phenotypeVector = append(phenotypeVector, phenToAdd)
+speciesFilter = append(speciesFilter, names(phenToAdd))
+
+
+# - Make common name versions of objects (used in visualization) - 
+commonMainTrees = mainTrees
+commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+commonPhenotypeVector = phenotypeVector
+names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+
+# - Categorical Tree - 
+treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
+palette(c( "darkgreen", "darkblue","black", "red"))
+
+pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
+commonCategoricalTree = char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = F)
+categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = F) #use the phenotype vector to make a tree
+
+commonCategoricalTreeExtraTip = commonCategoricalTree
+categoricalTreeExtraTip = categoricalTree
+
+commonCategoricalTree = drop.tip(commonCategoricalTree, names(nodesToAdd))
+categoricalTree = drop.tip(categoricalTree, names(nodesToAdd))
+mainTrees$masterTree = drop.tip(mainTrees$masterTree, names(nodesToAdd))
+commonMasterAdded = commonMainTrees$masterTree
+commonMainTrees$masterTree = drop.tip(commonMainTrees$masterTree, names(nodesToAdd))
+
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTrees$masterTree)
+plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+
+plotTreeCategorical(commonCategoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMasterAdded)
+plotTreeCategorical(categoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = masterTreeAdded)
+dev.off()  
+# ----------------------------
+# comaprision of this with the primary analysis
+
+primaryCategoricalTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+
+
+length(primaryCategoricalTree$edge)
+length(categoricalTree$edge)
+all.equal(primaryCategoricalTree$edge,categoricalTree$edge)
+
+length(which(!primaryCategoricalTree$edge == categoricalTree$edge))
+
+all.equal(primaryCategoricalTree$Nnode,categoricalTree$Nnode)
+all.equal(primaryCategoricalTree$node.label,categoricalTree$node.label)
+
+all.equal(primaryCategoricalTree$tip.label,categoricalTree$tip.label)
+
+primaryCategoricalTree$tip.label %in% categoricalTree$tip.label
+# What this is saying is that the tips are the same, but are stored in a different order. 
+# Suggested that save-loading it will reload ordering potentially casued by tip changes) 
+write.tree(categoricalTree, "Output/CategoricalInsVertivoreTreeLiamInference/CategoricalTreeRaw.tree")
+categoricalTreeNew = read.tree("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalTreeRaw.tree")
+all.equal(categoricalTreeNew$tip.label,categoricalTree$tip.label)
+#no, that didn't do it. 
+
+categoricalTreeNew = reorder.phylo(categoricalTree)
+primaryTreeNew = reorder.phylo(primaryCategoricalTree)
+#also no effect
+
+match(categoricalTree$tip.label, primaryCategoricalTree$tip.label)
+
+all.equal(primaryCategoricalTree$edge.length,categoricalTree$edge.length)
+
+library(gridExtra)
+
+liamTree = plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+primaryTree = plotTreeCategorical(primaryCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+
+sideBySide = grid.arrange(liamTree, primaryTree)
+
+pdf(height = length(phenotypeVector)/18, width = 20) 
+par(mfrow=c(1,2))
+liamTree = plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+primaryTree = plotTreeCategorical(primaryCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+
+dev.off()
+# ----------
+#Code writteen to learn how to do the above 
+
+#Make a plot of the master tree with node labels to find fing nodes
+pdf("Output/CategoricalInsVertivoreTree/MasterTreeWithNodeLables.pdf", width = 12, height = 24,)
+plotTree(commonMaster,offset=1,direction="rightwards",
+         lwd=1)
+
+nodelabels(commonMaster$node.label, cex=0.6, col= "red", frame="none")
+nodelabels(cex=0.6, col= "green", frame="none", adj = c(0, 2))
+
+dev.off()
+
+#Nodes to set 
+nodesToAdd = c(455, 457, 471, 650, 492)
+names(nodesToAdd) = c("Mammalia", "Marsupalia", "Placentalia", "Chiroptera", "Primates")
+
+commonMasterAdded = commonMaster
+for(i in 1:length(nodesToAdd)){
+  M<-matchNodes(commonMaster,commonMasterAdded,method="distances")
+  commonMasterAdded<-bind.tip(commonMasterAdded,names(nodesToAdd)[i],edge.length=0,
+                   where=M[which(M[,1]==as.numeric(nodesToAdd[i])),2])
+}
+
+pdf("Output/CategoricalInsVertivoreTreeLiamInference/MasterTreeWithAddedNodes.pdf", width = 24, height = 24,)
+par(mfrow=c(1,2))
+plotTree(commonMaster,fsize=0.8,lwd=1)
+nodelabels(cex=0.6)
+plotTree(commonMasterAdded,fsize=0.8,lwd=1)
+dev.off()
+
+# Liam's code
+
+## load phytools
+library(phytools)
+## simulate a small tree
+tree<-pbtree(n=26,tip.label=LETTERS,scale=1)
+## set a value of Q
+Q<-matrix(c(-1,1,0,1,-2,1,0,1,-1),3,3,
+          dimnames=list(letters[1:3],letters[1:3]))
+## simulate data
+xx<-sim.Mk(tree,Q,internal=TRUE)
+xx
+
+plotTree(tree,offset=1,direction="upwards",
+         lwd=1)
+pp<-get("last_plot.phylo",envir=.PlotPhyloEnv)
+cols<-setNames(palette.colors(3,"Polychrome 36"),
+               letters[1:3])
+points(pp$xx,pp$yy,pch=16,col=cols[xx],cex=1.5)
+
+nn<-xx[sort(sample(1:tree$Nnode+Ntip(tree),10))]
+nn
+
+x<-xx[tree$tip.label]
+x
+
+nntree<-tree
+for(i in 1:length(nn)){
+  M<-matchNodes(tree,nntree,method="distances")
+  nntree<-bind.tip(nntree,names(nn)[i],edge.length=0,
+                   where=M[which(M[,1]==as.numeric(names(nn)[i])),2])
+}
+
+par(mfrow=c(1,2))
+plotTree(tree,fsize=0.8,lwd=1)
+nodelabels(cex=0.6)
+plotTree(nntree,fsize=0.8,lwd=1)
 
 # ------------------------------------------------------------------
 # --- looking into data for methods section  ----- 
