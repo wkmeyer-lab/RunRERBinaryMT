@@ -63,6 +63,10 @@ if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 
 
 
+#------------------------------------------------
+# -- Make combined data - now in other script -- 
+#------------------------------------------------
+{
 # -- Make central RERData object 
 
 getComparisionDifference = function(dataframe, colOne, colTwo){
@@ -257,7 +261,11 @@ if(usingGo){
     if(saveData){saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))}
   }
 }
+}
 
+#------------------------------------------------
+# -- OVerlap Figure exclusive code -- 
+#------------------------------------------------
 
 # -- make resources to prefix-phenotype conversion 
 
