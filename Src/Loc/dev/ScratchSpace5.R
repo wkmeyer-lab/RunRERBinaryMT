@@ -1,6 +1,34 @@
 a = b #prevent full runs
 library(RERconverge)
 library(tools)
+
+# ------------------------------------------------------------------
+# --- Looking into tree sizes  ----- 
+# ------------------------------------------------------------------
+
+mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
+mainTrees$masterTree
+
+unprunedTree = readRDS("Output/Categorical4CategoryUnprunedTree/Categorical4CategoryUnprunedTreeCategoricalTree.rds")
+prunedTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+
+prunedTree
+
+?fastwilcoxGMTall 
+
+function (vals, annotList, alternative = "two.sided", ...) 
+{
+  reslist = list()
+  for (n in names(annotList)) {
+    reslist[[n]] = fastwilcoxGMT(vals, annotList[[n]], alternative = alternative, 
+                                 ...)
+    message(paste0(nrow(reslist[[n]]), " results for annotation set ", 
+                   n))
+  }
+  reslist
+}
+<bytecode: 0x000001ee6f9a39b0>
+  <environment: namespace:RERconverge>
 # ------------------------------------------------------------------
 # --- using liam's zero-length-added-tip ancestral infrence method  ----- 
 # ------------------------------------------------------------------
