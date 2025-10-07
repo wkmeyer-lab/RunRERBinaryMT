@@ -16,6 +16,9 @@ source("Src/Reu/cmdArgImport.R")
 args = c("r=CategoricalInsvertivoreTree", "p=NULL", "g=gene")
 args = c("r=CategoricalInsvertivoreTree", "p=NULL", "g=KeggReactome")
 
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=gene")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome")
+
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -156,12 +159,14 @@ if(usingGene){
   }
   
   combinedResults = combinedResults[,-1]
-  combinedDrivers = combinedDrivers[,-1]
-  combinedBinaries = combinedBinaries[,-1]
-  combinedBinaries = combinedBinaries[,-grep(".1", names(combinedBinaries))]
+  if(!is.na(combinedDrivers)){
+    combinedDrivers = combinedDrivers[,-1]
+    combinedBinaries = combinedBinaries[,-1]
+    combinedBinaries = combinedBinaries[,-grep(".1", names(combinedBinaries))]
   
-  combinedResults = cbind(combinedResults, combinedDrivers)
-  combinedResults = cbind(combinedResults, combinedBinaries)
+    combinedResults = cbind(combinedResults, combinedDrivers)
+    combinedResults = cbind(combinedResults, combinedBinaries)
+  }
   rm(combinedDrivers); rm(combinedBinaries)
   
   
@@ -296,3 +301,4 @@ if(usingGo){
     if(saveData){saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))}
   }
 }
+

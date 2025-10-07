@@ -2,6 +2,27 @@ a = b #prevent full runs
 library(RERconverge)
 library(tools)
 
+
+# ------------------------------------------------------------------
+# --- Looking into differecen between liam and non-liam results  ----- 
+# ------------------------------------------------------------------
+
+which(!rownames(GOResults$HI) %in% rownames(GOResults$HV))
+which(!rownames(GOResults$HO) %in% rownames(GOResults$HV))
+which(!rownames(GOResults$IO) %in% rownames(GOResults$HV))
+rownames(GOResults$HI)[279]
+rownames(GOResults$HO)[279]
+
+GOResults$HI = GOResults$HI[-279,]
+GOResults$HO = GOResults$HO[-279,]
+GOResults$IO = GOResults$IO[-279,]
+
+
+nonLiamReuslts = readRDS("Output/CategoricalInsVertivoreTree/")
+
+
+
+
 # ------------------------------------------------------------------
 # --- Looking into tree sizes  ----- 
 # ------------------------------------------------------------------
