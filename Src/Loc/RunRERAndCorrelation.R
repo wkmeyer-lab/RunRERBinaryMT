@@ -66,6 +66,7 @@ args = c("r=CategoricalDownsampledInsvertTree", 'm=data/zoonomiaAllMammalsTrees.
 args = c('r=meanTemp', 'm=data/zoonomiaAllMammalsTrees.rds', 's=c','v=T', 'n=ZoonomiaTip')
 
 args = c("r=CategoricalSlimMainInsVertivoreTree", 'm=data/CategoricalInsVertivoreMaintrees.rds', "s=g", "v=F", "l=170")
+args = c("r=CategoricalInsVertivoreTreeLiamInference", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 
 
 
