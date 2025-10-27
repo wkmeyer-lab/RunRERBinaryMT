@@ -27,18 +27,21 @@ TOOLNAME=$2
 FILEPREFIX=$3
 GENENAME=$4
 FOREGROUNDPATHVALUE=$5
+BINARIZEVALUE=$6
 
 echo ProjectName: $PROJECTNAME
 echo Hyphy tool: $TOOLNAME
 echo FilePrefix: $FILEPREFIX
 echo GeneName: $GENENAME
 echo ForegroundValue: $FOREGROUNDPATHVALUE
+echo BinarizeValue: $BINARIZEVALUE
+
 
 #Collect additional Arguments
-ARG1=$6
-ARG2=$7
-ARG3=$8
-ARG4=$9
+ARG1=$7
+ARG2=$8
+ARG3=$9
+ARG4=$10
 
 #Find the fasta alignment file for that gene
 cd $ALIGNMENTPATH
@@ -113,7 +116,7 @@ if [ -f $HYPHYINPUTFILENAME ] ; then
         echo "Input File exists"
 else
         echo "Generating Input file"
-        R --no-save --args g=$GENENAME a=$FASTAFILEPATH r=$FILEPREFIX $ARG1 $ARG2 $ARG3 $ARG4 </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Reu/hyphyFileMake.R
+        R --no-save --args g=$GENENAME a=$FASTAFILEPATH r=$FILEPREFIX f=$FOREGROUNDPATHVALUE b=$BINARIZEVALUE $ARG1 $ARG2 $ARG3 $ARG4 </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Reu/hyphyFileMake.R
 fi
 
 echo "#######################################################################"
@@ -124,7 +127,12 @@ cd ./Output/$FILEPREFIX/Hyphy
 OUTPUTFILENAME="${FILEPREFIX}-Hyphy-${TOOLNAME}-${GENENAME}-Foreground_${FOREGROUNDPATHVALUE}.json"
 
 module load hyphy
-hyphy $TOOLNAME $HYPHYINPUTFILENAME --branches $FOREGROUNDPATHVALUE --output $OUTPUTFILENAME
+
+if [ $TOOLNAME == relax] ; then
+  hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference Background --output $OUTPUTFILENAME
+else
+  hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --branches $FOREGROUNDPATHVALUE --output $OUTPUTFILENAME
+fi
 
 cd /share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME
 R --no-save --args g=$GENENAME f=$FOREGROUNDPATHVALUE r=$FILEPREFIX t=$TOOLNAME </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Reu/ExtractHyphyPvalues.R

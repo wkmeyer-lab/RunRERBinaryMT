@@ -1,4 +1,5 @@
-makePhenMasterTree = function(geneName, filePrefix, convertToCommon = F, tipCol = "tipName", manualPhenotypeTreeLocation = NULL, foregroundCategory = NULL){
+makePhenMasterTree = function(geneName = NA, filePrefix, convertToCommon = F, tipCol = "tipName", manualPhenotypeTreeLocation = NULL, foregroundCategory = NULL, binarizeTree = NULL){
+  binarizeTree = as.logical(binarizeTree)
   useManualTree = F
   if(!is.null(manualPhenotypeTreeLocation)){useManualTree = T}
   outputFolderName = paste("Output/",filePrefix,"/", sep = "")
@@ -44,7 +45,12 @@ makePhenMasterTree = function(geneName, filePrefix, convertToCommon = F, tipCol 
     }
   }
   
-  allLabels[which(allLabels == foregroundCategory)] = "Foreground"
+  if(!binarizeTree){
+    allLabels[which(allLabels == foregroundCategory)] = "Foreground"
+  }
+  if(binarizeTree){
+    allLabels[which(allLabels != foregroundCategory)] = "Background"
+  }
   
   tipLabels = allLabels[c(1:length(phenotypeTree$tip.label))]
   originalTipValues = phenMasterTree$tip.label

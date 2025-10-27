@@ -24,6 +24,8 @@ args = c("g=EHHADH", "r=CategoricalInsVertivoreTree", "a=Results/ENST00000231887
 args = c("g=SDS", "r=CategoricalInsVertivoreTree", "a=Results/ENST00000231887.EHHADH.filt.fa")
 args = c("g=EHHADH", "r=CategoricalInsVertivoreTree", "a=Results/ENST00000231887.EHHADHTEST.filt.fa")
 
+args = c("g=EHHADH", "r=CategoricalInsVertivoreTree", "a=Results/ENST00000231887.EHHADHTEST.filt.fa", "f=2", "b=T")
+
 
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -69,14 +71,15 @@ geneName = NULL
 fileprefix = NULL
 fastaLocation = NULL
 
-if(!clusterRun){mainTreesLocation = '../RunRER/Data/zoonomiaAllMammalsTrees.rds'  #This targets the runRERBInary version of the data by default, regardless of if being run in a separate project or not. 
+if(!clusterRun){mainTreesLocation = '../RunRERBinaryMT/Data/zoonomiaAllMammalsTrees.rds'  #This targets the runRERBInary version of the data by default, regardless of if being run in a separate project or not. 
 }
 if(clusterRun){mainTreesLocation = '../RunRERBinaryMT/Data/zoonomiaAllMammalsTrees.rds'  #This targets the runRERBInary version of the data by default, regardless of if being run in a separate project or not. 
 }
 
 useManualTree = F
 phenotypeTreeLocation = NULL
-foregroundCategory = "dshakgldskagkjshadgkhalgh" #this is a random string which will likely never be found in the wild; used so that an actual NULL doesn't cause problems
+foregroundCategoryValue = "dshakgldskagkjshadgkhalgh" #this is a random string which will likely never be found in the wild; used so that an actual NULL doesn't cause problems
+binarizeTreeValue = F
 
 { # Bracket used for collapsing purposes
   
@@ -111,16 +114,23 @@ foregroundCategory = "dshakgldskagkjshadgkhalgh" #this is a random string which 
   
   #Foreground Replacement
   if(!is.na(cmdArgImport('f'))){
-    foregroundCategory = cmdArgImport('f')
+    foregroundCategoryValue = cmdArgImport('f')
   }else{
     message("No foreground replacement selected, not replacing any path values with FOREGROUND. Note: This is standard behavior.")
+  }
+  
+  #Tree Binarization
+  if(!is.na(cmdArgImport('b'))){
+    binarizeTreeValue = cmdArgImport('b')
+  }else{
+    message("Binarization not selected, not binzairizing tree. Note: This is standard behavior.")
   }
 
 }
 
 
 
-phenMasterTree = makePhenMasterTree(geneName, filePrefix, manualPhenotypeTreeLocation = phenotypeTreeLocation)
+phenMasterTree = makePhenMasterTree(geneName, filePrefix, manualPhenotypeTreeLocation = phenotypeTreeLocation, foregroundCategory = foregroundCategoryValue, binarizeTree = binarizeTreeValue)
 
 
 # - Read Fasta file - 
