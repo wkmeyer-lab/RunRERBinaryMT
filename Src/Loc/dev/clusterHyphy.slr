@@ -28,6 +28,7 @@ FILEPREFIX=$3
 GENENAME=$4
 FOREGROUNDPATHVALUE=$5
 BINARIZEVALUE=$6
+BACKGROUNDVALUE=$7
 
 echo ProjectName: $PROJECTNAME
 echo Hyphy tool: $TOOLNAME
@@ -38,10 +39,10 @@ echo BinarizeValue: $BINARIZEVALUE
 
 
 #Collect additional Arguments
-ARG1=$7
-ARG2=$8
-ARG3=$9
-ARG4=$10
+ARG1=$8
+ARG2=$9
+ARG3=$10
+ARG4=$11
 
 #Find the fasta alignment file for that gene
 cd $ALIGNMENTPATH
@@ -129,7 +130,11 @@ OUTPUTFILENAME="${FILEPREFIX}-Hyphy-${TOOLNAME}-${GENENAME}-Foreground_${FOREGRO
 module load hyphy
 
 if [ $TOOLNAME == relax] ; then
-  hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference Background --output $OUTPUTFILENAME
+  if [ $BINARIZEVALUE == T | $BINARIZEVALUE == TRUE] ; then
+    hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference Background --output $OUTPUTFILENAME
+  else
+    hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference $BACKGROUNDVALUE --output $OUTPUTFILENAME
+  fi
 else
   hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --branches $FOREGROUNDPATHVALUE --output $OUTPUTFILENAME
 fi
