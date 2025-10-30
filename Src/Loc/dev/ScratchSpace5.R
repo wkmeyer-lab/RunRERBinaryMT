@@ -2,6 +2,114 @@ a = b #prevent full runs
 library(RERconverge)
 library(tools)
 
+# ------------------------------------------------------------------
+# --- Examine liam results ----- 
+# ------------------------------------------------------------------
+
+liamResultsCore = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCombinedCategoricalCorrelationFile.rds")
+omnibus = liamResultsCore[[1]]
+length(which(omnibus$p.adj < 0.05))
+
+liamGoOverall = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/Overall/CategoricalInsVertivoreTreeLiamInferenceOverallEnrichment-KeggReactome.rds")
+
+liamGoOverall = liamGoOverall[[1]]
+length(which(liamGoOverall$p.adj < 0.05))
+
+liamCarnResults = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsvertivoreTreeCarnivoreLiamInferencecombinedGeneResults.rds")
+
+length(which(liamCarnResults$`CH-significant`))
+length(which(liamCarnResults$`CO-significant`))
+length(which(liamCarnResults$`HO-significant`))
+
+liamResultsCoreCarn = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsVertivoreTreeCarnivoreLiamInferenceCombinedCategoricalCorrelationFile.rds")
+omnibusCarn = liamResultsCoreCarn[[1]]
+length(which(omnibusCarn$p.adj < 0.05))
+
+
+liamCarnGoResults = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsvertivoreTreeCarnivoreLiamInferencecombinedGOResults-KeggReactome.rds")
+length(which(liamCarnGoResults$`CH-significant`))
+length(which(liamCarnGoResults$`CO-significant`))
+length(which(liamCarnGoResults$`HO-significant`))
+
+
+liamCarnGoOverall = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/Overall/CategoricalInsVertivoreTreeCarnivoreLiamInferenceOverallEnrichment-KeggReactome.rds")
+
+liamCarnGoOverall = liamCarnGoOverall[[1]]
+length(which(liamCarnGoOverall$p.adj < 0.05))
+
+
+
+
+carnGoResults = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGOResults-KeggReactome.rds")
+length(which(carnGoResults$`CH-significant`))
+length(which(carnGoResults$`CO-significant`))
+length(which(carnGoResults$`HO-significant`))
+
+noliamResultsCore = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGeneResults.rds")
+length(which(noliamResultsCore$`IV-significant`))
+
+# Add carnivory results to main liam infrence
+
+`Carnivore - Herbivore` = liamResultsCoreCarn[[2]][1] 
+names(`Carnivore - Herbivore`) = "Carnivore - Herbivore"
+`Carnivore - Omnivore` = liamResultsCoreCarn[[2]][2] 
+names(`Carnivore - Omnivore`) = "Carnivore - Omnivore"
+
+correlationResults[7] = `Carnivore - Herbivore`
+names(correlationResults)[7] = "Carnivore - Herbivore"
+correlationResults[8] = `Carnivore - Omnivore`
+names(correlationResults)[8] = "Carnivore - Omnivore"
+
+saveRDS(correlationResults, "Output/CategoricalInsvertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencePairwiseCorrelationFile.rds")
+write.csv(correlationResults, "Output/CategoricalInsvertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencePairwiseCorrelationFile.csv")
+# ------------------------------------------------------------------
+# --- Make RER PLots ----- 
+# ------------------------------------------------------------------
+
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+pathObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+RERObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
+
+
+commonRERs = RERObject
+colnames(commonRERs) = ZonomNameConvertVectorCommon(colnames(commonRERs), tipColumn = "ZoonomiaTip")
+palette(c( "darkgreen", "darkblue","black", "red"))
+
+postiveSelectionOverlap = c("CTRL", "CPA1", "SLC36A1", "SLC6A19", "CELA3B", "CLPS", "SLC7A9", "PNLIPRP2", "FABP1", "ABCG8", "LCT")
+
+postiveSelectionNoOverlap = c("APOB", "APOA1", "LIPF","NPC1L1","MEP1B","SLC3A2","HK1","MGAM", 
+                        "APOB", "PLPP2", "APOA1", "SLC27A4", "PLA2G1B", "SLC8A2", "SLC3A1", "DPP4", "KCNN4", "SLC3A2", "MGAM2", "HK3", "G6PC",
+                        "APOB", "PLA2G5", "SCAB1", "CPA3", 
+                        "APOB", "MOGAT2", "MTTP", "SLC1A5", "SLC7A8", "SLC15A1", "PRKCB", "ATP1B1", "ATP1B3",
+                        "SLC3A2", "SLC1A5",  "DPP4", "APOB", "CD36", "PLPP2", 
+                        "APOB", "PIK3CD", "CPB2", "KCNK5"
+)
+length(unique(postiveSelectionNoOverlap))
+length(unique(postiveSelectionOverlap))
+
+unique(rownames(commonRERs))
+
+i=1
+{
+plotRers(commonRERs, postiveSelectionOverlap[i], pathObject, sortrers = T)
+i=i+1
+}
+
+i=1
+{
+  plotRers(commonRERs, postiveSelectionNoOverlap[i], pathObject, sortrers = T)
+  i=i+1
+}
+
+i=1
+{
+  plotRers(commonRERs, unique(rownames(commonRERs))[i], pathObject, sortrers = T)
+  i=i+1
+}
+#
+
+
+plotRers(commonRERs, "RAD50", pathObject, sortrers = T)
 
 # ------------------------------------------------------------------
 # --- Make carnivory results for liam  ----- 
@@ -504,70 +612,44 @@ names(liamResultsGO) = paste0("liam-", names(liamResultsGO))
 
 which(liamResults$`HI-significant`)
 
+
+# Get significance values for genes
 significanceColumns = names(liamResults)[grep("significant", names(liamResults))]
-
-
 geneSignificanceResults = liamResults[, names(liamResults) %in% significanceColumns]
-
-
 colSums(geneSignificanceResults, na.rm = T)
 
+significanceColumns = names(nonLiamResults)[grep("significant", names(nonLiamResults))]
+geneSignificanceResultsNL = nonLiamResults[, names(nonLiamResults) %in% significanceColumns]
+colSums(geneSignificanceResultsNL, na.rm = T)
+#Remove the ch column from the non-liam results
+geneSignificanceResultsNL = geneSignificanceResultsNL[,-1]
+
+
+matchGeneSignificant = geneSignificanceResults == geneSignificanceResultsNL
+matchGeneSignificant[!geneSignificanceResults & !geneSignificanceResultsNL] = NA
+totalSignificant = colSums(!is.na(matchGeneSignificant))
+sharedSignificant = colSums(matchGeneSignificant, na.rm = T)
+
+sharedSignificant/totalSignificant 
 
 
 
-densityScaleSet = NULL
+significanceColumnsGO = names(liamResultsGO)[grep("significant", names(liamResultsGO))]
+geneSignificanceResultsGO = liamResultsGO[, names(liamResultsGO) %in% significanceColumnsGO]
+colSums(geneSignificanceResultsGO, na.rm = T)
 
-#generate the plots slim-ly to get the desired density scale 
-for(i in 1:length(rhoValues)){
-  xName = names(rhoValues)[i]
-  if(i+1 <= length(rhoValues)){
-    for(j in (i+1):length(rhoValues)){
-      yName = names(rhoValues)[j]
-      
-      rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
-        geom_point() + geom_pointdensity() + scale_color_viridis()
-      
-      
-      denstiyScaleValue = ggplot_build(rhoCorrellPlot)$plot$scales$scales[[1]]$get_limits()[2]
-      densityScaleSet = append(densityScaleSet, denstiyScaleValue)
-      rm(rhoCorrellPlot)
-    }
-  }
-}
-densityScale = c(1, max(densityScaleSet))
+significanceColumnsGO = names(nonLiamResultsGO)[grep("significant", names(nonLiamResultsGO))]
+geneSignificanceResultsGONL = nonLiamResultsGO[, names(nonLiamResultsGO) %in% significanceColumnsGO]
+colSums(geneSignificanceResultsGONL, na.rm = T)
 
+geneSignificanceResultsGONL = geneSignificanceResultsGONL[,c(1,4,2,3,5,6)]
 
-rhoPlotSet = list()
-netIndex= 0
-for(i in 1:length(rhoValues)){
-  xName = names(rhoValues)[i]
-  if(i <= length(rhoValues)){
-    if(bothAxis){jStart = 1}else{jStart = i+1}
-    for(j in (jStart):length(rhoValues)){
-      yName = names(rhoValues)[j]
-      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), " Dunn Z Statistic")
-      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), " Dunn Z Statistic")
-      
-      rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
-        geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
-        stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE, size = 6) +
-        theme_classic()+
-        xlab(xLabel) + ylab(yLabel)+
-        theme(axis.title.x = element_text(size = 16), axis.title.y = element_text(size = 16))
-      
-      netIndex = netIndex +1
-      rhoPlotSet[[netIndex]] = rhoCorrellPlot
-      names(rhoPlotSet)[netIndex] = paste(xName, yName, sep="-")
-      rm(rhoCorrellPlot)
-    }
-  }
-}
-# add a null plot by using two using permulations as a comparision 
+matchGeneSignificantGO = geneSignificanceResultsGO == geneSignificanceResultsGONL
+matchGeneSignificantGO[!geneSignificanceResultsGO & !geneSignificanceResultsGONL] = NA
+totalSignificantGO = colSums(!is.na(matchGeneSignificantGO))
+sharedSignificantGO = colSums(matchGeneSignificantGO, na.rm = T)
 
-#pdf()
-print(rhoPlotSet)
-#dev.off()
-
+sharedSignificantGO/totalSignificantGO 
 
 
 

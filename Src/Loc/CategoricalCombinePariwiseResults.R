@@ -19,6 +19,10 @@ args = c("r=CategoricalInsvertivoreTree", "p=NULL", "g=KeggReactome")
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=gene")
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome")
 
+args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=gene")
+args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=KeggReactome")
+
+
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -59,7 +63,7 @@ geneSet = NULL
 usingGo = F
 saveData = T
 usingGene = T
-
+saveCombinedData = T
 
 { # Bracket used for collapsing purposes
   
