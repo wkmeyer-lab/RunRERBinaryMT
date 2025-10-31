@@ -1550,8 +1550,12 @@ saveRDS(hillerTreePruned, paste0(outputFolderName, "ZoonomiaMaximalTreeHillerBra
 # --- Making violin plots from the categorical data for presentaiton  ----- 
 # ------------------------------------------------------------------
 
+library(tools)
+library(RERconverge)
 filePrefix = "CategoricalInsVertivoreTree"
 outputFolderName = "Output/CategoricalInsVertivoreTree/"
+phenotypeStyle = "Categorical"
+mainTreesLocation = "data/zoonomiaAllMammalsTrees.rds"
 cat4phenotypeSet = c("Herbivore", "Insectivore",  "Omnivore", "Vertivore")
 cat4colorset = c( "darkgreen", "darkblue","black", "red")
 
@@ -1564,9 +1568,30 @@ cat4pathsObject = readRDS(pathsFileName)                                        
 combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
 combinedResults = readRDS(combinedDataFilename)
 
-overlap = combinedResults[combinedResults$`HI-HV-CH-Overlap` & !is.na(combinedResults$`HI-HV-CH-Overlap`) & !combinedResults$`HO-significant`,]
+#This one is for a gene that's significnat in all three predatory diets, it was used fof the volution talk 
+#overlap = combinedResults[combinedResults$`CH-HI-HV-Overlap` & !is.na(combinedResults$`CH-HI-HV-Overlap`) & !combinedResults$`HO-significant`,]
+#overlapGenes = rownames(overlap[order(overlap$`HI-p.adj`),])
 
+
+#This one is for a gene that's significant in the two specific predatory diets but not combined carnivore. It was used in the fellowship proposal 
+overlap = combinedResults[!combinedResults$`CH-HI-Overlap` & 
+                            !combinedResults$`HI-HV-Overlap` & 
+                            !is.na(combinedResults$`HI-HV-Overlap`) & 
+                            !is.na(combinedResults$`CH-HI-HV-Overlap`) & 
+                            !combinedResults$`HO-significant` &
+                            combinedResults$`HI-significant`,]
 overlapGenes = rownames(overlap[order(overlap$`HI-p.adj`),])
+
+
+overlap2 = combinedResults[!combinedResults$`CH-HV-Overlap` & 
+                            !combinedResults$`HI-HV-Overlap` & 
+                            !is.na(combinedResults$`HI-HV-Overlap`) & 
+                            !is.na(combinedResults$`CH-HI-HV-Overlap`) & 
+                            !combinedResults$`HO-significant` &
+                            combinedResults$`HV-significant`,]
+overlapGenes2 = rownames(overlap2[order(overlap$`HV-p.adj`),])
+
+
 
 filePrefix = "CategoricalPrunedCarnivoreTree"
 outputFolderName = "Output/CategoricalPrunedCarnivoreTree/"
@@ -1605,6 +1630,10 @@ comboPlot
 i = i+1
 }
 goodGenes = c(1, 8, 10)
+
+png("Output/CategoricalInsVertivoreTree/Visualizations/InvertivoryUniqueGene.png", height = 765, width = 1485)
+print(comboPlot)
+dev.off()
 # ------------------------------------------------------------------
 # --- Work on making a tree figure for lalitha  ----- 
 # ------------------------------------------------------------------
