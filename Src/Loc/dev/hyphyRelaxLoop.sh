@@ -10,7 +10,7 @@ JOB_SCRIPT="clusterHyphy.slr"
 PARTITION="rapids"
 
 #The foreground value to use.
-FOREGROUNDVALUE
+FOREGROUNDVALUE=1
 
 #The maximum number of jobs to run at the same time.
 MAX_CONCURRENT_JOBS=100
