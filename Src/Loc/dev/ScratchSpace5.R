@@ -6,6 +6,21 @@ library(tools)
 # ------------------------------------------------------------------
 # --- Compare GO Significance thresholds ----- 
 # ------------------------------------------------------------------
+combinedVenn = grid.arrange(geneVenn, goVenn, nrow = 1)
+
+pdf("Output/CategoricalInsVertivoreTreeLiamInference/Categproca;")
+
+vennPlotName = paste0(outputFolderName, filePrefix, "VennPlots.pdf")
+overlapPlotName = paste0(outputFolderName, filePrefix, "OverlapPlots.pdf")
+
+
+
+pdf(vennPlotName, 30,15)
+grid.arrange(combinedVenn)
+dev.off()
+
+
+
 saveRDS(GoSignificanceColumns, paste0(combinedGODataFilename, ".rds"))
 
 
