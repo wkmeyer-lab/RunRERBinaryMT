@@ -2,9 +2,53 @@ a = b #prevent full runs
 library(RERconverge)
 library(tools)
 
+
+# ------------------------------------------------------------------
+# --- Compare GO Significance thresholds ----- 
+# ------------------------------------------------------------------
+saveRDS(GoSignificanceColumns, paste0(combinedGODataFilename, ".rds"))
+
+
+for(i in 1:length(pairwiseSets)){
+  currentSet = pairwiseSets[i]
+  correlationSubsetName = gsub("-", " - ", currentSet)
+  correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
+  
+  goFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet,"Enrichment-", geneSet, ".rds")
+  currentGoData = readRDS(goFilename)[[1]]
+  currentGoData$significant = currentGoData$p.adj < 0.05
+  message(length(which(currentGoData$significant)))
+  currentGoData$significant = currentGoData$p.adj < 0.1
+  message(length(which(currentGoData$significant)))
+  
+  names(currentGoData) = paste0(correlationPrefix, "-", names(currentGoData))
+  
+  
+  driverFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet, "GoDriverTable-", geneSet, ".rds")
+  if(file.exists(driverFilename)){
+    driverTable = readRDS(driverFilename)
+    if(all(rownames(driverTable) == rownames(currentGoData))){
+      currentGoData$Driver = driverTable[which(names(driverTable) == "Driver")][[1]]
+      currentGoData$DriverNumeric = driverTable[which(names(driverTable) == "DriverNumeric")][[1]]
+      
+      names(currentGoData)[which(names(currentGoData) == "Driver")] = paste0(correlationPrefix, "-", "Driver")
+      names(currentGoData)[which(names(currentGoData) == "DriverNumeric")] = paste0(correlationPrefix, "-", "DriverNumeric")    
+      
+    }
+    rm(driverTable)
+  }
+  GOResults[[i]] = currentGoData
+  names(GOResults)[i] = correlationPrefix
+  
+}
+
+
+
 # ------------------------------------------------------------------
 # --- Compare liam results and non-liam results ----- 
 # ------------------------------------------------------------------
+
+saveRDS(GoCombinedResults, "Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
 
 noLiamGenes = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGeneResults.rds")
 liamGenes = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGeneResults.rds")

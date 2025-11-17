@@ -19,8 +19,8 @@ args = c("r=CategoricalInsvertivoreTree", "p=NULL", "g=KeggReactome")
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=gene")
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome")
 
-args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=gene")
-args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=KeggReactome")
+args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=gene", "c=0.05", "s=F")
+args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=KeggReactome", "c=0.1", "s=T")
 
 
 # -- Standard Startup code -- 
@@ -89,15 +89,23 @@ saveCombinedData = T
       message("Null geneset specified or gene specified, performing gene correlation.")
     }else{
       usingGo = T
+      usingGene = F
     }
   }else{
     message("No geneset specified or gene specified, performing gene correlation.")
   }
   
+  #cutoffsaveData 
+  if(!is.na(cmdArgImport('c'))){
+    saveData = cmdArgImport('c')
+  }else{
+    message("pvalue cuttoff not specified, using 0.05")
+  }  
+  
   
   #saveData 
   if(!is.na(cmdArgImport('s'))){
-    saveData = cmdArgImport('s')
+    saveData = as.logical(cmdArgImport('s'))
   }else{
     message("saveData not specified, using TRUE")
   }
