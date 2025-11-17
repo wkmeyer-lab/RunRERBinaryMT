@@ -14,7 +14,7 @@ library(gridGraphics)
 source("Src/Reu/cmdArgImport.R")
 
 # -- argument setup  -- 
-significanceCutoff = 0.05
+significanceCutoff = 0.1
 prefix = "CategoricalInsvertivoreTreeLiamInference"
 pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
 geneSet = "KeggReactome"

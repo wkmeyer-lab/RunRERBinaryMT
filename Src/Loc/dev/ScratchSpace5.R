@@ -3,6 +3,122 @@ library(RERconverge)
 library(tools)
 
 # ------------------------------------------------------------------
+# --- Compare liam results and non-liam results ----- 
+# ------------------------------------------------------------------
+
+noLiamGenes = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGeneResults.rds")
+liamGenes = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGeneResults.rds")
+
+noLiamGO = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGOResults-KeggReactome.rds")
+liamGO = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+
+liam = liamGenes
+nonliam = noLiamGenes
+testCol = "HI-p.adj"
+
+compareOverlap = function(testCol, liam, nonliam){
+  liamColValue = which(colnames(liam) == testCol)
+  liamCol = liam[liamColValue]
+  
+  nonliamColValue = which(colnames(nonliam) == testCol)
+  nonliamCol = nonliam[nonliamColValue]
+  
+  isPval = !is.logical(liamCol[[1]])
+  
+  if(isPval){
+    plot(liamCol[[1]], nonliamCol[[1]])
+    
+    model = lm(nonliamCol[[1]] ~ liamCol[[1]])
+    r2 = summary(model)$r.squared
+    text(x = min(liamCol[[1]], na.rm = T), y = max(nonliamCol[[1]], na.rm = T), labels = paste("R² =", round(r2, 3)), pos = 4)
+    
+    liamCol[[1]] = liamCol[[1]] < 0.1
+    nonliamCol[[1]] = nonliamCol[[1]] < 0.1
+  }
+  
+  
+  
+  liamSignificant = length(which(liamCol[[1]]))
+  nonliamSignificant = length(which(nonliamCol[[1]]))
+  
+  liamInNonliam = length(which(which(liamCol[[1]]) %in% which(nonliamCol[[1]])))
+  liamOverlapPercent = liamInNonliam/liamSignificant
+  
+  nonliamInLiam = length(which(which(nonliamCol[[1]]) %in% which(liamCol[[1]])))
+  nonliamOverlapPercent = nonliamInLiam/nonliamSignificant
+  
+  cat("##########\n")
+  cat(testCol)
+  cat("\n")
+  if(isPval){
+    cat("R Squared: ")
+    cat(r2)
+    cat("\n")
+  }
+  
+  #cat("#\n")
+  cat("Liam value: ")
+  cat(liamSignificant)
+  cat("\n")
+  cat("Non-Liam value: ")
+  cat(nonliamSignificant)
+  cat("\n")
+  cat("Liam non-Liam ratio: ")
+  cat(nonliamSignificant/liamSignificant)
+  cat("\n")
+  
+  #cat("# \n")
+  cat("Liam in Non-Liam: ")
+  cat(liamInNonliam)
+  cat("     ")
+  cat(liamOverlapPercent)
+  cat("\n")
+  
+  cat("Non-Liam in Liam: ")
+  cat(nonliamInLiam)
+  cat("     ")
+  cat(nonliamOverlapPercent)
+  cat("\n")
+  
+}
+
+compareOverlap("HI-significant", liamGenes, noLiamGenes)
+compareOverlap("HV-significant", liamGenes, noLiamGenes)
+compareOverlap("IV-significant", liamGenes, noLiamGenes)
+compareOverlap("CH-significant", liamGenes, noLiamGenes)
+
+compareOverlap("HI-p.adj", liamGenes, noLiamGenes)
+compareOverlap("HV-p.adj", liamGenes, noLiamGenes)
+compareOverlap("IV-p.adj", liamGenes, noLiamGenes)
+compareOverlap("CH-p.adj", liamGenes, noLiamGenes)
+
+# MInimum overlap is 74% in HV, or 69% in CH, liam is larger than non-liam. 
+
+compareOverlap("HI-significant", liamGO, noLiamGO)
+compareOverlap("HV-significant", liamGO, noLiamGO)
+compareOverlap("IV-significant", liamGO, noLiamGO)
+compareOverlap("CH-significant", liamGO, noLiamGO)
+
+
+compareOverlap("HI-p.adj", liamGO, noLiamGO)
+compareOverlap("HV-p.adj", liamGO, noLiamGO)
+compareOverlap("IV-p.adj", liamGO, noLiamGO)
+compareOverlap("CH-p.adj", liamGO, noLiamGO)
+
+
+# ------------------------------------------------------------------
+# --- I-V numbers ----- 
+# ------------------------------------------------------------------
+
+genesResults = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGeneResults.rds")
+
+length(which(genesResults$`IV-significant`))
+
+GoResults = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGOResults-KeggReactome.rds")
+length(which(GoResults$`IV-significant`))
+
+
+# ------------------------------------------------------------------
 # --- Examine liam results ----- 
 # ------------------------------------------------------------------
 
@@ -1631,7 +1747,7 @@ i = i+1
 }
 goodGenes = c(1, 8, 10)
 
-png("Output/CategoricalInsVertivoreTree/Visualizations/InvertivoryUniqueGene.png", height = 765, width = 1485)
+png("Output/CategoricalInsVertivoreTree/Visualizations/InvertivoryUniqueGene.png", height = 382, width = 742)
 print(comboPlot)
 dev.off()
 # ------------------------------------------------------------------
