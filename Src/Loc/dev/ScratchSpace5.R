@@ -2,6 +2,69 @@ a = b #prevent full runs
 library(RERconverge)
 library(tools)
 
+# ------------------------------------------------------------------
+# --- Make liam-non-liam comparison plots ----- 
+# ------------------------------------------------------------------
+
+
+# -- argument setup  -- 
+significanceCutoff = 0.05
+prefix = "CategoricalInsvertivoreTreeLiamInference"
+pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
+geneSet = "KeggReactome"
+vennDiagramSet = c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")  
+vennColorset = c("darkblue", "red", "orange")
+usingGo = !is.null(geneSet)
+saveCombinedData = T
+saveCombinedData = F
+bothAxis = T
+saveData = T
+saveData = F
+
+args = c("r=CategoricalInsvertivoreTree")
+args = c("r=CategoricalInsvertivoreTreeLiamInference")
+
+
+
+# ------------------------------------------------------------------
+# --- Figure out paths files ----- 
+# ------------------------------------------------------------------
+
+OgPaths = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+
+#Make thoeretical non-liam paths
+
+modelType = "ER"
+ancestralTrait = NULL
+
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+
+nonliamPhenotype = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPhenotypeVector.rds")
+nonliamTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+nonliamSpeciesFilter = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeSpeciesFilter.rds")
+
+nonliamCharpaths = char2PathsCategorical(nonliamPhenotype, mainTrees, nonliamSpeciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
+nonliamTreePaths = tree2Paths(nonliamTree, mainTrees, useSpecies = nonliamSpeciesFilter, categorical = TRUE) #do not binarize; the categorical data is already contained in the phenotype tree.
+
+all.equal(OgPaths, nonliamCharpaths)
+all.equal(OgPaths, nonliamTreePaths)
+
+LiamInference
+
+ogliamPaths = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPathsFile.rds")
+
+
+liamPhenotype = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPhenotypeVector.rds")
+liamTree = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+liamSpeciesFilter = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceSpeciesFilter.rds")
+
+liamCharpaths = char2PathsCategorical(liamPhenotype, mainTrees, liamSpeciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
+liamTreePaths = tree2Paths(liamTree, mainTrees, useSpecies = liamSpeciesFilter, categorical = TRUE) #do not binarize; the categorical data is already contained in the phenotype tree.
+
+
+all.equal(ogliamPaths, liamCharpaths)
+all.equal(ogliamPaths, liamTreePaths)
+
 
 # ------------------------------------------------------------------
 # --- Compare GO Significance thresholds ----- 

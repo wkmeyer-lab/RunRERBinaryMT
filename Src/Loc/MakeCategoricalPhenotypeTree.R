@@ -1403,9 +1403,13 @@ saveRDS(scientificCategoricalTree, scientificCategoricalTreeFilename)
 
 
 # - Paths - 
-pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
-paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
-saveRDS(paths, file = pathsFilename)                                            #save the path 
+#pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
+#paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
+#saveRDS(paths, file = pathsFilename)                                            #save the path 
+
+
+
+
 
 
 # -- Convert Tree to Binary (Manual only) --
