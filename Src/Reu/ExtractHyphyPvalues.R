@@ -84,23 +84,58 @@ hyphyFile = paste0(hyphyFileNoExtension, ".json")
 
 json_data <- fromJSON(hyphyFile)
 
-# Extract branch attributes
-branch_data <- json_data$`branch attributes`$`0`
-
-# Convert to data frame
-df <- do.call(rbind, lapply(names(branch_data), function(node) {
-  data.frame(Node = node,
+# Branch for different HyPhy tools
+if(hyphyTool == "absrel"){
+	# Extract branch attributes
+  branch_data <- json_data$`branch attributes`$`0`
+  
+  # Convert to data frame
+	df <- do.call(rbind, lapply(names(branch_data), function(node) {
+  	data.frame(Node = node,
              Uncorrected_P_value = ifelse(is.null(branch_data[[node]]$`Uncorrected P-value`), NA, branch_data[[node]]$`Uncorrected P-value`),
              Corrected_P_value = ifelse(is.null(branch_data[[node]]$`Corrected P-value`), NA, branch_data[[node]]$`Corrected P-value`))
-}))
-colnames(df) = paste0(hyphyTool, "_", colnames(df))
+	}))
+	colnames(df) = paste0(hyphyTool, "_", colnames(df))
 
-df = df[order(df$absrel_Corrected_P_value),]
+	df = df[order(df$absrel_Corrected_P_value),]
 
-outFileName = paste0(hyphyFileNoExtension, ".csv")
+	outFileName = paste0(hyphyFileNoExtension, ".csv")
 
-# Save as CSV
-write.csv(df, outFileName, row.names = FALSE)
+	# Save as CSV
+	write.csv(df, outFileName, row.names = FALSE)
 
-# Print message
-cat(paste("CSV file with p-values has been saved as '", outFileName, "'\n"))
+	# Print message
+	cat(paste("CSV file with p-values has been saved as '", outFileName, "'\n"))
+}
+if(hyphyTool == "relax"){
+	#p-value is inside 'test results'.
+	p_value <- json_data[['test results']][['p-value']]
+
+	#extract Omega (ω) values
+	#these are under 'fits' -> 'Alternative' -> 'rate distributions'.
+  omega_reference <- json_data$fits[['RELAX alternative']][['Rate Distributions']][['Reference']]
+    
+    omega_test <- json_data$fits[['RELAX alternative']][['Rate Distributions']][['Test']]
+
+	#extract the Tree File (Newick String)
+	tree_string <- json_data[['branch attributes']][['0']]
+
+	#combine all extracted data into a single list
+	output_data <- list(
+	  p_value = p_value,
+    omega_reference = omega_reference, 
+    omega_test = omega_test,           
+    newick_tree_string = tree_string
+	)	
+
+	#define output file path
+	rds_file_path <- paste0(hyphyFileNoExtension, ".Rds")
+
+	#save the list object to the .Rds file
+	saveRDS(output_data, file = rds_file_path)
+
+	#print confirmation message
+	print(paste0("All data successfully saved to:", rds_file_path))
+}else{
+	print(paste0("The ", hyphyTool, " tool has not yet been implemented into this pipeline"))
+}

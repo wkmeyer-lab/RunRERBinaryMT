@@ -136,8 +136,11 @@ phenMasterTree = makePhenMasterTree(geneName, filePrefix, manualPhenotypeTreeLoc
 # - Read Fasta file - 
 message(fastaLocation)
 fasta = read.fasta(fastaLocation)
+
 lowQuailtyAlignment = grep("!", fasta)
-fasta = fasta[-lowQuailtyAlignment]
+if(length(lowQualityAlignment) > 0){
+  fasta = fasta[-lowQuailtyAlignment]
+}
 
 fastaTipHeaders = names(fasta)
 fastaTipHeaders = sub("\\t.*", "", fastaTipHeaders)

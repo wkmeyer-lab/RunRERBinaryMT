@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #The full path to your file containing the list of gene names.
-GENE_FILE="/share/ceph/wym219group/shared/projects/seaverData/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/combinedSignificantGenes.txt"
+GENE_FILE="/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/combinedSignificantGenes.txt"
 
 #The name of the script Slurm will run for each job.
 JOB_SCRIPT="clusterHyphy.slr"
@@ -38,7 +38,7 @@ for (( i=1; i<=$NUM_GENES; i++ )); do
         continue
     fi
     
-    2. Calculate the "job slot" (from 0 to 99)
+    # Calculate the "job slot" (from 0 to 99)
     JOB_SLOT=$(($i % $MAX_CONCURRENT_JOBS))
     
     #Submit the job

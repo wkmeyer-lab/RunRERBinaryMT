@@ -3,176 +3,177 @@
 #SBATCH -p rapids
 #SBATCH -n 1
 #SBATCH -N 1
-#SBATCH -t 24:00:00
+#SBATCH -t 48:00:00
 #SBATCH -J hyphyCluster
 #SBATCH -o /share/ceph/wym219group/shared/erroutfiles/seaverErrors/%j.%N.out
 #SBATCH --open-mode=append
 #SBATCH --mail-type=TIME_LIMIT
 #SBATCH --mail-user=aws519@lehigh.edu
 
-# --- New Error Handling ---
-# This makes the script exit immediately if any command fails
-set -e
 
-# Define a variable to track what the script is doing
+#--------ERROR HANDLING--------#
+local job_id=${SLURM_JOB_ID:-"NOT_A_SLURM_JOB"}
+
+#define a progress tracking variable
 CURRENT_STEP="Initialization"
 
-# Define the path to the single, master error log for all genes
-# (You can change this path if you want)
-MASTER_ERROR_LOG="/share/ceph/wym219group/shared/projects/seaverData/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/Hyphy/MASTER_JOB_FAILURE_LOG.txt"
+#set path to master error log
+MASTER_ERROR_LOG="/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/Hyphy/MASTER_JOB_FAILURE_LOG.txt"
 
-# This function will be called when the script exits, for any reason
+#calls the error trap if the script has any non-zero exit code
 error_trap() {
-  # Get the exit code of the last command
   local exit_code=$?
-  
-  # Check if the exit code is NOT 0 (which means an error occurred)
   if [ $exit_code -ne 0 ]; then
-    echo "Job for $GENENAME failed at step: $CURRENT_STEP (Exit code: $exit_code)"
-    
-    # Use flock to prevent multiple jobs from writing to the log at the exact same time
-    # (This is safer for a central log file)
+    echo "Job $job_id for $GENENAME failed at step: $CURRENT_STEP (Exit code: $exit_code)"
     (
       flock 200
-      echo "$GENENAME - ERROR during $CURRENT_STEP" >> "$MASTER_ERROR_LOG"
+      echo "Job $job_id: $GENENAME - ERROR during $CURRENT_STEP" >> "$MASTER_ERROR_LOG"
     ) 200>"$MASTER_ERROR_LOG.lock"
-    
   fi
 }
 
-# Set the trap: Call the 'error_trap' function when the script EXITS
+#call the 'error_trap' function when the script EXITS
 trap error_trap EXIT
+#------------------------------#
 
-#Usage:
-#Cd to the project's main directory
-#sbatch runRERmt.slr <Project name> <Hyphy Tool Name> <File Prefix> <Target Gene> <ForegroundPathValue> <BinarizeValue>
+
+#load required modules
 module load r
 module load hyphy
 
+#set paths to alignment files
 ALIGNMENTPATH="/share/ceph/wym219group/shared/data/filtered_alignments"
-FILTEREDPATH="/share/ceph/wym219group/shared/data/fixed_filtered_translated_alignments"
+TRANSLATEDPATH="/share/ceph/wym219group/shared/data/fixed_filtered_translated_alignments"
 echo AlignmentPath: $ALIGNMENTPATH
 
-PROJECTNAME=$1 #This is the first input after the submission script name
-TOOLNAME=$2
-FILEPREFIX=$3
-GENENAME=$4
-FOREGROUNDPATHVALUE=$5
-BINARIZEVALUE=$6
-BACKGROUNDVALUE=$7
+#arguments passed to this script from terminal or wrapper script
+#SYNTAX: sbatch clusterHyphy.slr <ProjectName> <ToolName> <FilePrefix> <GeneName> <ForegroundPathValue> <BinarizeValue> <BackgroundValue>
+PROJECTNAME=$1 #The name of the project
+TOOLNAME=$2 #The name of the tool being used (e.g. absrel, relax, etc.)
+FILEPREFIX=$3 #File prefix for naming output files (e.g. CategoricalInsVertivoreTree)
+GENENAME=$4 #Name of gene corresponding to alignment being analyzed by the tool (e.g. GJA1)
+FOREGROUNDPATHVALUE=$5 #Value of branch to be used as foreground
+BINARIZEVALUE=$6 #<T/TRUE for true, any other value for no> Whether to binarize the tree (i.e. set all branch values other than the foreground to be background)
+BACKGROUNDVALUE=$7 #If tree is not to be binarized, which branch should be used as background
 
+#Print current values of all input arguments
 echo ProjectName: $PROJECTNAME
 echo Hyphy tool: $TOOLNAME
 echo FilePrefix: $FILEPREFIX
 echo GeneName: $GENENAME
 echo ForegroundValue: $FOREGROUNDPATHVALUE
 echo BinarizeValue: $BINARIZEVALUE
+echo BackgroundValue: $BACKGROUNDVALUE
 
 
-#Find the fasta alignment file for that gene
+#change directory to alignment path
 CURRENT_STEP="Finding Fasta"
 cd $ALIGNMENTPATH
 
-GENENAMESEARCH="${GENENAME}."
-count=$(find | grep $GENENAMESEARCH |wc -l)
-echo count: $count
-if [ $count -gt 1 ]; then
-        cd $FILTEREDPATH
-        FASTAFILEBASE=$(find | grep $GENENAMESEARCH | head -n 1)
-        echo FASTAFILEBASE: $FASTAFILEBASE
-        FASTAFILEBASE="${FASTAFILEBASE:2:-11}"
-        FASTAFILE="${FASTAFILEBASE}.filt.fa"
-        #code
-else
-        FASTAFILE=$(find | grep $GENENAME)
-        FASTAFILE="${FASTAFILE:2}"
+#error trap for if cd failed
+if [ $? -ne 0 ]; then #Checks if exit status of last command does not equal 0
+  echo "ERROR: Failed to change directory to $ALIGNMENTPATH. Exiting."
+  exit 1 
 fi
-echo "Fasta file is:"
-echo $FASTAFILE
 
+#sets the name of the FASTA file to either the nucleotide alignment that matches the translated alignment or the only available nucleotide alignement
+GENENAMESEARCH="${GENENAME}."
+count=$(find | grep $GENENAMESEARCH |wc -l) #counts nucleotide alignment files corresponding to the input gene
+echo count: $count
+
+#CURRENTLY WE ONLY WANT TO RUN ON GENES THAT HAVE TRANSLATED ALIGNMENTS
+#THIS WILL NEED TO BE MODIFIED TO RUN ANY GENES THAT DON'T HAVE TRANSLATED ALIGNMENTS
+#OR TO RUN MULTIPLE TRANSCRIPTS FOR THE SAME GENE
+
+#if [ $count -gt 1 ]; then #if more than one alignment exists, selects nucleotide alignment that has matching translated alignment
+    cd $TRANSLATEDPATH
+    FASTAFILEBASE=$(find | grep $GENENAMESEARCH | head -n 1) #Searches translated alignments for the input gene
+    echo FASTAFILEBASE: $FASTAFILEBASE
+    FASTAFILEBASE="${FASTAFILEBASE#./}" #Trims prefix from file name
+    FASTAFILEBASE="${FASTAFILEBASE%%.*}" #Trims file extension
+    FASTAFILE="${FASTAFILEBASE}.filt.fa" #Set desired file name to format of nucleotide alignment
+#else #If only one nucleotide alignment file exists, set FASTAFILE to it
+    #FASTAFILE=$(find | grep $GENENAMESEARCH | head -n 1)
+    #FASTAFILE="${FASTAFILE:2}"
+#fi
+
+#print path to file
 FASTAFILEPATH="${ALIGNMENTPATH}/${FASTAFILE}"
 echo "Fasta file path is:"
 echo $FASTAFILEPATH
 
-if [ -f $FASTAFILEPATH  ]; then
-        echo "File exists."
+#check that the nucleotide alignment corresponding to the translated alignment exists
+if [ -f "$FASTAFILEPATH" ]; then
+    echo "File exists."
+#if not, log it as a missing alignment
 else
-        if [ $count -gt 1 ]; then
-                echo "Filtered file does not match  base file, using first base file."
-                cd $ALIGNMENTPATH
-                FASTAFILE=$(find | grep $GENENAME |head -n 1)
-                FASTAFILE="${FASTAFILE:2}"
-                echo "Fasta file is:"
-                echo $FASTAFILE
-                
-                FASTAFILEPATH="${ALIGNMENTPATH}/${FASTAFILE}"
-                echo "Fasta file path is:"
-                echo $FASTAFILEPATH
+    CURRENT_STEP="Missing Fasta File" # Set step before exiting
+    echo "Fasta File does not exist. Adding current gene of list of missing file genes."
+    cd /share/ceph/wym219group/shared/projects/seaverProjects/$PROJECTNAME/Output/$FILEPREFIX/Hyphy        
+    missingAlignmentNotificationFilename="missing-Alignment-${GENENAME}.txt"
+    touch $missingAlignmentNotificationFilename
+    echo "This was generated by a script with the arguments:" >> $missingAlignmentNotificationFilename
+    echo ProjectName: $PROJECTNAME >> $missingAlignmentNotificationFilename
+    echo Hyphy tool: $TOOLNAME >> $missingAlignmentNotificationFilename
+    echo FilePrefix: $FILEPREFIX >> $missingAlignmentNotificationFilename
+    echo GeneName: $GENENAME >> $missingAlignmentNotificationFilename
+    echo ForegroundValue: $FOREGROUNDPATHVALUE >> $missingAlignmentNotificationFilename
+    touch "MissingAlignmentList.txt"
+    echo "${GENENAME} count:${count}" >> "MissingAlignmentList.txt"
 
-        else
-                CURRENT_STEP="Missing Fasta File" # Set step before exiting
-                echo "Fasta File does not exist. Adding current gene of list of missing file genes."
-                cd /share/ceph/wym219group/shared/projects/seaverData/$PROJECTNAME/Output/$FILEPREFIX/Hyphy
-                missingAlignmentNotificationFilename="missing-Alignment-${GENENAME}.txt"
-                touch $missingAlignmentNotificationFilename
-                echo "This was generated by a script with the arguments:" >> $missingAlignmentNotificationFilename
-                echo ProjectName: $PROJECTNAME >> $missingAlignmentNotificationFilename
-            _   echo Hyphy tool: $TOOLNAME >> $missingAlignmentNotificationFilename
-                echo FilePrefix: $FILEPREFIX >> $missingAlignmentNotificationFilename
-                echo GeneName: $GENENAME >> $missingAlignmentNotificationFilename
-                echo ForegroundValue: $FOREGROUNDPATHVALUE >> $missingAlignmentNotificationFilename
-
-
-                touch "MissingAlignmentList.txt"
-                echo "${GENENAME} count:${count}" >> "MissingAlignmentList.txt"
-
-                exit 1 # Changed from 12345. This will trigger the error_trap.
-        fi
-
+    exit 1
 fi
-
 
 echo "#########################################################################"
 
-#Generate the hyphy input file
+#generate the hyphy input file
 CURRENT_STEP="Generating HyPhy Input (hyphyFileMake.R)"
-cd /share/ceph/wym219group/shared/projects/seaverData/$PROJECTNAME
+cd /share/ceph/wym219group/shared/projects/seaverProjects/$PROJECTNAME
 
-module load r
+#module load r
 HYPHYINPUTFILENAME="${FILEPREFIX}${GENENAME}HyphyInputFile.fna"
-if [ -f $HYPHYINPUTFILENAME ] ; then
-        echo "Input File exists"
+if [ -f $HYPHYINPUTFILENAME ] ; then #Checks if the input file is already generated
+    echo "Input File exists"
 else
-        echo "Generating Input file"
-        R --no-save --args g=$GENENAME a=$FASTAFILEPATH r=$FILEPREFIX f=$FOREGROUNDPATHVALUE b=$BINARIZEVALUE </share/ceph/wym219group/shared/projects/seaverData/$PROJECTNAME/Src/Reu/hyphyFileMake.R
+    echo "Generating Input file"
+    R --no-save --args g=$GENENAME a=$FASTAFILEPATH r=$FILEPREFIX f=$FOREGROUNDPATHVALUE b=$BINARIZEVALUE </share/ceph/wym219group/shared/projects/seaverProjects/$PROJECTNAME/Src/Reu/hyphyFileMake.R
+    if [ $? -ne 0 ]; then
+      echo "ERROR: hyphyFileMake.R failed. Exiting."
+      exit 1
+    fi
 fi
 
 echo "#######################################################################"
 
-
-# Run hyphy itself
+#run hyphy itself
 CURRENT_STEP="Running HyPhy ($TOOLNAME)"
 cd ./Output/$FILEPREFIX/Hyphy
 OUTPUTFILENAME="${FILEPREFIX}-Hyphy-${TOOLNAME}-${GENENAME}-Foreground_${FOREGROUNDPATHVALUE}.json"
 
-module load hyphy
-
 if [[ "$TOOLNAME" == "relax" ]] ; then
-  # Check if binarization is set to True (case-sensitive)
-  if [[ "$BINARIZEVALUE" == "T" || "$BINARIZEVALUE" == "TRUE" ]] ; then
-    hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference Background --output $OUTPUTFILENAME
-  else
-    hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference $BACKGROUNDVALUE --output $OUTPUTFILENAME
-  fi
+  #check if binarization is set to TRUE
+  BINARIZEVALUE=$(echo "$BINARIZEVALUE" | tr '[:upper:]' '[:lower:]')
+  if [[ "$BINARIZEVALUE" == "t" || "$BINARIZEVALUE" == "true" ]] ; then
+    hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference Background --output $OUTPUTFILENAME
+  else
+    hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference $BACKGROUNDVALUE --output $OUTPUTFILENAME
+  fi
 else
-  # Runs for any tool other than "relax"
-  hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --branches $FOREGROUNDPATHVALUE --output $OUTPUTFILENAME
+  #runs for any tool other than "relax"
+  hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --branches $FOREGROUNDPATHVALUE --output $OUTPUTFILENAME
 fi
 
-CURRENT_STEP="Extracting P-values (ExtractHyphyPvalues.R)"
-cd /share/ceph/wym219group/shared/projects/seaverData/$PROJECTNAME
-R --no-save --args g=$GENENAME f=$FOREGROUNDPATHVALUE r=$FILEPREFIX t=$TOOLNAME </share/ceph/wym219group/shared/projects/seaverData/$PROJECTNAME/Src/Reu/ExtractHyphyPvalues.R
+if [ $? -ne 0 ]; then
+  echo "ERROR: HyPhy ($TOOLNAME) command failed. Exiting."
+  exit 1
+fi
 
-# If the script reaches here, it was successful.
-# The trap will still run, but $? will be 0, so nothing will be logged.
-CURRENT_STEP="Success"
+#extract p-values from all relax outputs
+CURRENT_STEP="Extracting p-values (ExtractHyphyPvalues.R)"
+cd /share/ceph/wym219group/shared/projects/seaverProjects/$PROJECTNAME
+R --no-save --args g=$GENENAME f=$FOREGROUNDPATHVALUE r=$FILEPREFIX t=$TOOLNAME </share/ceph/wym219group/shared/projects/seaverProjects/$PROJECTNAME/Src/Reu/ExtractHyphyPvalues.R
+
+if [ $? -ne 0 ]; then
+  echo "ERROR: ExtractHyphyPvalues.R failed. Exiting."
+  exit 1
+fi
