@@ -42,3 +42,4 @@ Output/EcholocationUpdate2
 !Data/mergedData.csv
 *.bak
 *Hyphy*
+*Enrichment-*
