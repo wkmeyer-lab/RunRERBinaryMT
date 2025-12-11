@@ -2,6 +2,343 @@ a = b #prevent full runs
 library(RERconverge)
 library(tools)
 
+
+# ------------------------------------------------------------------
+# ---  check seize ----- 
+# ------------------------------------------------------------------
+
+phenoTree = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+
+table(phenoTree$edge.length)
+
+
+data = read.csv("Data/mergedData.csv")
+table(data$DerekDietClassification90InsVertivoreSorting)
+grep("Piscivore")
+
+# ------------------------------------------------------------------
+# ---  Examine cortisol results ----- 
+# ------------------------------------------------------------------
+
+which(rownames(GoMetaCombined) == "REACTOME_METABOLISM_OF_STEROID_HORMONES")
+
+which(gmt$geneset.names == "REACTOME_METABOLISM_OF_STEROID_HORMONES")
+
+steroidGenes = gmt$genesets[348][[1]]
+
+steriodCHSignifiance = geneMetaCombined$`CH-significant-Liam`[match(steroidGenes, rownames(geneMetaCombined))]
+steriodHISignifiance = geneMetaCombined$`HI-significant-Liam`[match(steroidGenes, rownames(geneMetaCombined))]
+steriodHVSignifiance = geneMetaCombined$`HV-significant-Liam`[match(steroidGenes, rownames(geneMetaCombined))]
+
+
+
+steriodSignificance = data.frame(steroidGenes, steriodCHSignifiance, steriodHISignifiance, steriodHVSignifiance)
+
+genesAllwaysUnsignificant = which(apply(steriodSignificance[,2:4], 1, function(x) all(x == FALSE)))
+genesNA = which(apply(steriodSignificance[,2:4], 1, function(x) all(is.na(x))))
+
+
+steriodSignificant = steriodSignificance[-c(genesAllwaysUnsignificant, genesNA),]
+
+
+CHOnlyGenes = steriodSignificant[c(which(apply(steriodSignificant[,3:4], 1, function(x) all(x == FALSE))),which(apply(steriodSignificant[,3:4], 1, function(x) all(x == TRUE)))),]
+steriodDifferences = steriodSignificant[-c(which(apply(steriodSignificant[,3:4], 1, function(x) all(x == FALSE))),which(apply(steriodSignificant[,3:4], 1, function(x) all(x == TRUE)))),]
+
+
+
+
+# ------------------------------------------------------------------
+# ---  Make new venn diagram ----- 
+# ------------------------------------------------------------------
+
+vennInputDataframe = vennGoSignificanceResults
+
+makeVennPlot = function(vennInputDataframe, mainTitle, plot = T){
+  # Build logical vectors for each set
+  set1 <- vennInputDataframe[1] == TRUE
+  set2 <- vennInputDataframe[2] == TRUE
+  set3 <- vennInputDataframe[3] == TRUE
+  
+  # Create the Venn counts for each region
+  vennCounts = c(
+    "Column One" = sum(set1 & !set2 & !set3, na.rm = T),
+    "Column Two" = sum(!set1 & set2 & !set3, na.rm = T),
+    "Column Three" = sum(!set1 & !set2 & set3, na.rm = T),
+    "Column One&Column Two" = sum(set1 & set2 & !set3, na.rm = T),
+    "Column One&Column Three" = sum(set1 & !set2 & set3, na.rm = T),
+    "Column Two&Column Three" = sum(!set1 & set2 & set3, na.rm = T),
+    "Column One&Column Two&Column Three" = sum(set1 & set2 & set3, na.rm = T)
+  )
+  
+  comparisonPrefixes = gsub("-significant", "", names(vennInputDataframe))
+  comparisonPrefixes = gsub(commonBackground, "", comparisonPrefixes)
+  comparisonNames = sapply(comparisonPrefixes, replacePrefixWithName)
+  names(vennCounts)=c(comparisonNames[1], comparisonNames[2], comparisonNames[3], paste(comparisonNames[1], comparisonNames[2], sep="&"),paste(comparisonNames[1], comparisonNames[3], sep="&"),paste(comparisonNames[2], comparisonNames[3], sep="&"), paste(comparisonNames[1], comparisonNames[2], comparisonNames[3], sep="&"))
+  
+  # - make venn diagram labels, with the combination section on two lines and the solo sections on one 
+  totalVennValues = sum(vennCounts)
+  vennLabels = paste0(
+    vennCounts, "\n (", round(vennCounts / totalVennValues * 100, 1), "%)"
+  )
+  for(i in 1:3){
+    vennLabels[i] = paste0(
+      vennCounts[i], " (", round(vennCounts[i] / totalVennValues * 100, 1), "%)"
+    )
+  }
+  
+  
+  vennCountsCustom = vennCounts
+  
+  vennCountsCustom[5] = 80
+  vennCountsCustom[1] = 40 
+  vennCountsCustom[2] = 15
+  
+  vennLabelsCustom = vennLabels
+  vennLabelsCustom[4] = 3
+  
+  # Create Euler diagram
+  fit = euler(vennCountsCustom)
+  outPlot = plot(fit,
+                 fills = list(fill = vennColorset, alpha = 0.5),
+                 labels = list(font = 4),
+                 quantities = list(labels = vennLabelsCustom, font = 3),
+                 main = mainTitle, theme)
+  if(plot){print(outPlot)}
+  return(outPlot)
+}
+
+GoVennCustom = outPlot
+
+png(width = 1120, height = 560, file = "Output/CategoricalInsvertivoreTreeLiamInference/VennDiagramFigure.png")
+combinedPlot = grid.arrange(geneVenn, GoVennCustom, nrow = 1)
+dev.off()
+
+# ------------------------------------------------------------------
+# --- Add cytoscape index column ----- 
+# ------------------------------------------------------------------
+
+cytoscapeNodes = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/CarnivoreConserveddefaultnode.csv")
+cytoscapeNodes2 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/Bidirectionalnodes.csv")
+cytoscapeNodes3 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/Herbivorenodes.csv")
+cytoscapeNodes4 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/BidectionalNewNodes.csv")
+
+
+GOOutput = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+
+rownames(GOOutput)
+
+cytoscapeNodes$shared.name
+
+test = match(cytoscapeNodes2$shared.name, rownames(GOOutput))
+
+rownames(GOOutput)[436]
+
+nodeIdexes = data.frame(cytoscapeNodes4$shared.name, match(cytoscapeNodes4$shared.name, rownames(GOOutput)))
+
+write.csv(nodeIdexes, "Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/BidirectionalNewIndexes.csv")
+
+
+length(which(GOOutput$`IV-significant`))
+
+length(which(geneMetaCombined$`IV-significant-Liam`))
+
+repairVsH = c("PID_FANCONI_PATHWAY","REACTOME_DISEASES_OF_DNA_REPAIR","REACTOME_DNA_DOUBLE_STRAND_BREAK_REPAIR","REACTOME_DNA_REPAIR","REACTOME_FANCONI_ANEMIA_PATHWAY","REACTOME_HDR_THROUGH_HOMOLOGOUS_RECOMBINATION_HRR","REACTOME_HDR_THROUGH_SINGLE_STRAND_ANNEALING_SSA","REACTOME_HOMOLOGOUS_DNA_PAIRING_AND_STRAND_EXCHANGE","REACTOME_HOMOLOGY_DIRECTED_REPAIR","REACTOME_RESOLUTION_OF_D_LOOP_STRUCTURES","REACTOME_RESOLUTION_OF_D_LOOP_STRUCTURES_THROUGH_SYNTHESIS_DEPENDENT_STRAND_ANNEALING_SDSA")
+
+repairIV = c("KEGG_HOMOLOGOUS_RECOMBINATION","REACTOME_DISEASES_OF_DNA_REPAIR","REACTOME_DISEASES_OF_MISMATCH_REPAIR_MMR","REACTOME_DNA_DOUBLE_STRAND_BREAK_REPAIR","REACTOME_DNA_REPAIR","REACTOME_FANCONI_ANEMIA_PATHWAY","REACTOME_HDR_THROUGH_HOMOLOGOUS_RECOMBINATION_HRR","REACTOME_HDR_THROUGH_SINGLE_STRAND_ANNEALING_SSA","REACTOME_HOMOLOGOUS_DNA_PAIRING_AND_STRAND_EXCHANGE","REACTOME_HOMOLOGY_DIRECTED_REPAIR","REACTOME_RESOLUTION_OF_D_LOOP_STRUCTURES","REACTOME_RESOLUTION_OF_D_LOOP_STRUCTURES_THROUGH_SYNTHESIS_DEPENDENT_STRAND_ANNEALING_SDSA")
+
+repairVsH %in% repairIV
+repairIV %in% repairVsH
+
+
+RnavVsH = c(
+  "REACTOME_TRANSPORT_OF_THE_SLBP_DEPENDANT_MATURE_MRNA",
+  "REACTOME_RESPONSE_OF_MTB_TO_PHAGOCYTOSIS",
+  "REACTOME_LEISHMANIA_INFECTION",
+  "REACTOME_NUCLEAR_ENVELOPE_NE_REASSEMBLY",
+  "REACTOME_MRNA_SPLICING_MINOR_PATHWAY",
+  "REACTOME_FORMATION_OF_THE_EARLY_ELONGATION_COMPLEX",
+  "REACTOME_NEUROTOXICITY_OF_CLOSTRIDIUM_TOXINS",
+  "REACTOME_HCMV_INFECTION",
+  "REACTOME_FORMATION_OF_TC_NER_PRE_INCISION_COMPLEX",
+  "REACTOME_FCERI_MEDIATED_NF_KB_ACTIVATION",
+  "REACTOME_HIV_TRANSCRIPTION_ELONGATION",
+  "REACTOME_METABOLISM_OF_RNA",
+  "REACTOME_PROCESSING_OF_CAPPED_INTRON_CONTAINING_PRE_MRNA",
+  "REACTOME_HIV_LIFE_CYCLE",
+  "REACTOME_INFLUENZA_INFECTION",
+  "REACTOME_HCMV_LATE_EVENTS",
+  "REACTOME_HOST_INTERACTIONS_OF_HIV_FACTORS",
+  "REACTOME_SNRNP_ASSEMBLY",
+  "REACTOME_FORMATION_OF_RNA_POL_II_ELONGATION_COMPLEX",
+  "REACTOME_TRANSPORT_OF_MATURE_MRNAS_DERIVED_FROM_INTRONLESS_TRANSCRIPTS",
+  "REACTOME_SUPPRESSION_OF_PHAGOSOMAL_MATURATION",
+  "REACTOME_RNA_POLYMERASE_II_PRE_TRANSCRIPTION_EVENTS",
+  "REACTOME_TOXICITY_OF_BOTULINUM_TOXIN_TYPE_D_BOTD",
+  "REACTOME_MRNA_SPLICING",
+  "REACTOME_INFECTION_WITH_MYCOBACTERIUM_TUBERCULOSIS",
+  "REACTOME_SUMOYLATION_OF_CHROMATIN_ORGANIZATION_PROTEINS",
+  "REACTOME_HCMV_EARLY_EVENTS",
+  "REACTOME_PREVENTION_OF_PHAGOSOMAL_LYSOSOMAL_FUSION",
+  "REACTOME_HIV_INFECTION",
+  "REACTOME_RNA_POLYMERASE_II_TRANSCRIPTION_TERMINATION",
+  "REACTOME_SLBP_DEPENDENT_PROCESSING_OF_REPLICATION_DEPENDENT_HISTONE_PRE_MRNAS",
+  "REACTOME_PROCESSING_OF_CAPPED_INTRONLESS_PRE_MRNA",
+  "REACTOME_INFECTIOUS_DISEASE",
+  "REACTOME_GLYCOLYSIS",
+  "REACTOME_PROCESSING_OF_INTRONLESS_PRE_MRNAS",
+  "KEGG_SPLICEOSOME",
+  "REACTOME_ABORTIVE_ELONGATION_OF_HIV_1_TRANSCRIPT_IN_THE_ABSENCE_OF_TAT",
+  "REACTOME_TRANSPORT_OF_MATURE_TRANSCRIPT_TO_CYTOPLASM"
+)
+
+RnavIV = c(
+  "REACTOME_FORMATION_OF_RNA_POL_II_ELONGATION_COMPLEX",
+  "REACTOME_HIV_INFECTION",
+  "REACTOME_INFECTIOUS_DISEASE",
+  "REACTOME_POTENTIAL_THERAPEUTICS_FOR_SARS",
+  "REACTOME_RNA_POLYMERASE_II_PRE_TRANSCRIPTION_EVENTS",
+  "REACTOME_RNA_POLYMERASE_II_TRANSCRIPTION",
+  "REACTOME_SARS_COV_INFECTIONS",
+  "REACTOME_TRANSCRIPTION_OF_THE_HIV_GENOME"
+)
+
+
+RnavIV[!RnavIV %in% RnavVsH]
+
+# ------------------------------------------------------------------
+# --- Update Enrichments ----- 
+# ------------------------------------------------------------------
+
+source("src/reu/RERConvergeFunctions.R")
+
+
+getStat = function(res){
+  stat=sign(res$Rho)*(-log10(res$P))
+  names(stat)=rownames(res)
+  #deal with duplicated genes
+  genenames=sub("\\..*", "",names(stat))
+  multname=names(which(table(genenames)>1))
+  for(n in multname){
+    ii=which(genenames==n)
+    iimax=which(max(stat[ii])==max(abs(stat[ii])))
+    stat[ii[-iimax]]=NA
+  }
+  sum(is.na(stat))
+  stat=stat[!is.na(stat)]
+  
+  stat
+}
+
+
+fastwilcoxGMTall = function (vals, annotList, alternative = "two.sided", ...) 
+{
+  reslist = list()
+  for (n in names(annotList)) {
+    reslist[[n]] = fastwilcoxGMT(vals, annotList[[n]], alternative = alternative, 
+                                 ...)
+    message(paste0(nrow(reslist[[n]]), " results for annotation set ", 
+                   n))
+  }
+  reslist
+}
+
+
+vals = rerStats
+gmt = gmtAnnotations
+
+fastwilcoxGMT=function(vals, gmt, simple=T, use.all=F, num.g=10,genes=NULL, outputGeneVals=F, order=F,
+                       alternative = "two.sided"){
+  vals=vals[!is.na(vals)]
+  if(is.null(genes)){
+    genes=unique(unlist(gmt$genesets))
+  }
+  out=matrix(nrow=length(gmt$genesets), ncol=5)
+  rownames(out)=gmt$geneset.names
+  colnames(out)=c("stat", "pval", "p.adj","num.genes", "gene.vals")
+  out=as.data.frame(out)
+  genes=intersect(genes, names(vals))
+  
+  valsr=rank(vals[genes])
+  numg=length(vals)+1
+  valsallr=rank(vals)
+  for( i in 1:nrow(out)){
+    
+    curgenes=intersect(genes,gmt$genesets[[i]])
+    
+    bkgenes=setdiff(genes, curgenes)
+    
+    if (length(bkgenes)==0 || use.all){
+      bkgenes=setdiff(names(vals), curgenes)
+    }
+    if(length(curgenes)>=num.g & length(bkgenes)>2){
+      if(!simple){
+        # change alternative = "greater" for the one-sided test
+        res=wilcox.test(x = vals[curgenes], y=vals[bkgenes], exact=F, alternative = alternative)
+        
+        out[i, 1:2]=c(res$statistic/(as.numeric(length(bkgenes))*as.numeric(length(curgenes))), res$p.value)
+      }
+      else{
+        # add an alternative parameter (can be "greater" or "two.sided")
+        out[i, 1:2]=simpleAUCgenesRanks(valsr[curgenes],valsr[bkgenes], alt = alternative)
+        
+      }
+      
+      out[i,"num.genes"]=length(curgenes)
+      if(outputGeneVals){
+        if (out[i,1]>0.5){
+          oo=order(vals[curgenes], decreasing = T)
+          granks=numg-valsallr[curgenes]
+        }
+        else{
+          oo=order(vals[curgenes], decreasing = F)
+          granks=valsallr[curgenes]
+        }
+        
+        
+        nn=paste(curgenes[oo],round((granks[curgenes])[oo],2),sep=':' )
+        out[i,"gene.vals"]=paste(nn, collapse = ", ")
+      }
+    }
+    
+  }
+  # hist(out[,2])
+  out[,1]=out[,1]-0.5
+  out[, "p.adj"]=p.adjust(out[,2], method="BH")
+  
+  out=out[!is.na(out[,2]),]
+  if(order){
+    out=out[order(-abs(out[,1])),]
+  }
+  out
+}
+
+
+pos = valsr[curgenes]
+neg = valsr[bkgenes]
+
+simpleAUCgenesRanks=function(pos, neg, alt = "two.sided"){
+  
+  posn=length(pos)
+  negn=length(neg)
+  posn=as.numeric(posn)
+  negn=as.numeric(negn)
+  stat=sum(pos)-posn*(posn+1)/2 #Average pos
+  auc=stat/(posn*negn)
+  mu=posn*negn/2
+  sd=sqrt((posn*negn*(posn+negn+1))/12)
+  
+  if(alt == "two.sided") {
+    stattest=apply(cbind(stat, posn*negn-stat),1,max)
+    pp=(2*pnorm(stattest, mu, sd, lower.tail = F))
+  }
+  
+  else if(alt == "greater"){
+    pp=(pnorm(stat,mu,sd,lower.tail=FALSE)) 
+  }
+  return(c(auc,pp))
+}
+
+
 # ------------------------------------------------------------------
 # --- Make liam-non-liam comparison plots ----- 
 # ------------------------------------------------------------------
@@ -24,6 +361,289 @@ saveData = F
 args = c("r=CategoricalInsvertivoreTree")
 args = c("r=CategoricalInsvertivoreTreeLiamInference")
 
+
+nonliamResults = combinedResults
+nonliamGoResults = GoCombinedResults
+
+liamResults = combinedResults
+liamGoResults = GoCombinedResults
+
+# -- Read Data 
+combinedGeneDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
+combinedResults = readRDS(combinedGeneDataFilename)
+significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
+geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
+
+
+combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
+GoCombinedResults = readRDS(combinedGODataFilename)
+GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
+GoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% GoSignificanceColumns]
+
+
+
+
+
+
+
+# -- make resources to prefix-phenotype conversion 
+prefixSet = NULL
+prefixList = NULL
+for(i in 1:length(pairwiseSets)){
+  currentSet = pairwiseSets[i]
+  correlationSubsetName = gsub("-", " - ", currentSet)
+  correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
+  prefixEntry = correlationPrefix; names(prefixEntry) = currentSet; prefixSet = append(prefixSet, prefixEntry)
+  for(j in 1:2){
+    prefixSingle = strsplit(correlationPrefix, split = "")[[1]][j]; names(prefixSingle) = strsplit(currentSet, split="-")[[1]][j]; prefixList = append(prefixList, prefixSingle)
+  }
+}
+
+
+prefixList = unlist(prefixList); prefixList = prefixList[!duplicated(prefixList)]
+
+# Debug code line for personal use 
+names(prefixList)[which(names(prefixList) == "Insectivore")] = "Invertivore"
+
+replacePrefixWithName = function(x) {
+  inversePrefixList = setNames(names(prefixList), prefixList); parts = unlist(strsplit(x, "-")); fullNames = inversePrefixList[parts]; paste(fullNames, collapse = "-")
+}
+
+addDashes = function(vector) {
+  sapply(vector, function(s) paste(strsplit(s, "")[[1]], collapse = "-"))
+}
+
+
+#-------------------------------------------------------------------
+
+
+
+#gene
+liamResults = liamGeneResults
+nonliamResults = nonliamGeneResults
+
+editedLiamResults = liamResults
+colnames(editedLiamResults) = paste0(colnames(liamResults), "-Liam")
+metaCombinedResults = cbind(nonliamResults, editedLiamResults)
+
+combinedResults = metaCombinedResults
+geneMetaCombined = metaCombinedResults
+
+
+#GO
+#nonliamGeneResults = nonliamResults
+#liamGeneResults = liamResults
+
+liamResults = liamGoResults
+nonliamResults = nonliamGoResults
+
+editedLiamResults = liamResults
+colnames(editedLiamResults) = paste0(colnames(liamResults), "-Liam")
+metaCombinedResults = cbind(nonliamResults, editedLiamResults)
+
+names(combinedResults) = gsub("-stat", corrleationColumnType, names(combinedResults))
+
+combinedResults = metaCombinedResults
+GoMetaCombined = metaCombinedResults
+
+
+
+#Prefix
+prefixList = append(prefixList, c("L", "i", "a", "m", "-", ""))
+names(prefixList) = append(names(prefixList)[1:5], c("Liam", "", "", "", "", ""))
+
+bothAxis = F
+
+corrleationColumnType = "-p.adj"
+#-------------------------------------------------------------------
+
+{
+  
+  
+  
+  grep(corrleationColumnType, names(combinedResults))
+  rhoValues = combinedResults[,grep(corrleationColumnType, names(combinedResults))]
+  
+  rhoComparisions = names(rhoValues)
+  
+  #rhoComparisions = rhoComparisions[-c(5,6,7,9,13,14,15)]
+  
+  rhoPhenotypes = strsplit(gsub(corrleationColumnType, "", rhoComparisions), split = "")
+  commonBackground = Reduce(intersect, rhoPhenotypes)
+  if(length(commonBackground) == 1){
+    for(i in 1:length(rhoPhenotypes)){ #invert tho if background in second postion so rho has consistent meaning relative to background
+      if(rhoPhenotypes[[i]][1] != commonBackground){
+        cat("Inverting rho of ", rhoPhenotypes[[i]] , "becuase background is in first position.")
+        rhoValues[i] = -1*rhoValues[i]
+      }
+    }
+  }
+  
+  densityScaleSet = NULL
+  
+  #generate the plots slim-ly to get the desired density scale 
+  for(i in 1:length(rhoValues)){
+    xName = names(rhoValues)[i]
+    if(i+1 <= length(rhoValues)){
+      for(j in (i+1):length(rhoValues)){
+        yName = names(rhoValues)[j]
+        
+        rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
+          geom_point() + geom_pointdensity() + scale_color_viridis()
+        
+        
+        denstiyScaleValue = ggplot_build(rhoCorrellPlot)$plot$scales$scales[[1]]$get_limits()[2]
+        densityScaleSet = append(densityScaleSet, denstiyScaleValue)
+        rm(rhoCorrellPlot)
+      }
+    }
+  }
+  densityScale = c(1, max(densityScaleSet))
+  
+  
+  rhoPlotSet = list()
+  netIndex= 0
+  for(i in 1:length(rhoValues)){
+    xName = names(rhoValues)[i]
+    if(i <= length(rhoValues)){
+      if(bothAxis){jStart = 1}else{jStart = i+1}
+      for(j in (jStart):length(rhoValues)){
+        yName = names(rhoValues)[j]
+        yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-", "", gsub(corrleationColumnType, "", yName)))), " Dunn Z Statistic")
+        xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-", "", gsub(corrleationColumnType, "", xName)))), " Dunn Z Statistic")
+        
+        rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
+          geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
+          stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE, size = 6) +
+          theme_classic()+
+          xlab(xLabel) + ylab(yLabel)+
+          theme(axis.title.x = element_text(size = 16), axis.title.y = element_text(size = 16))
+        
+        netIndex = netIndex +1
+        rhoPlotSet[[netIndex]] = rhoCorrellPlot
+        names(rhoPlotSet)[netIndex] = paste(xName, yName, sep="-")
+        rm(rhoCorrellPlot)
+      }
+    }
+  }
+  # add a null plot by using two using permulations as a comparision 
+  
+  #pdf()
+  #print(rhoPlotSet)
+  #dev.off()
+}
+
+names(rhoPlotSet)
+
+firstPhen = sapply(strsplit(names(rhoPlotSet), "-"), `[`, 1)
+secondPhen = sapply(strsplit(names(rhoPlotSet), "-"), `[`, 3)
+
+matchingPlots = which(firstPhen == secondPhen)
+
+liamComaprePlots = rhoPlotSet[matchingPlots]
+names(liamComaprePlots)
+
+#Gene
+CHPlot = liamComaprePlots[1]
+CHPlot = CHPlot[[1]]
+
+HIPlot = liamComaprePlots[2]
+HIPlot = HIPlot[[1]]
+
+HVPlot = liamComaprePlots[4]
+HVPlot = HVPlot[[1]]
+
+
+herbivoreCompare = grid.arrange(CHPlot, HIPlot, HVPlot, nrow = 2)
+
+#geneComparePlot = herbivoreCompare
+genePvalComparePlot = herbivoreCompare
+
+
+
+#GO
+CHPlot = liamComaprePlots[3]
+CHPlot = CHPlot[[1]]
+
+HIPlot = liamComaprePlots[1]
+HIPlot = HIPlot[[1]]
+
+HVPlot = liamComaprePlots[2]
+HVPlot = HVPlot[[1]]
+
+
+herbivoreCompare = grid.arrange(CHPlot, HIPlot, HVPlot, nrow = 2)
+
+#GoComparePlot = herbivoreCompare
+GoPvalComparePlot = herbivoreCompare
+
+
+plot(geneComparePlot)
+plot(GoComparePlot)
+
+
+# ------------------------------------------------------------------
+# ---------- Looking into the specific lost GO categories 
+
+GoMetaCombined
+names(GoMetaCombined)
+which(GoMetaCombined$`HI-HV-Overlap` & !GoMetaCombined$`HI-HV-CH-Overlap`)
+
+# --- Finding changed pathways 
+
+HiDifference = which(GoMetaCombined$`HI-significant` != GoMetaCombined$`HI-significant-Liam`)
+HvDifference = which(GoMetaCombined$`HV-significant` != GoMetaCombined$`HV-significant-Liam`)
+ChDifference = which(GoMetaCombined$`CH-significant` != GoMetaCombined$`CH-significant-Liam`)
+
+
+
+
+
+
+nonliamOnlyHI = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HI-significant"),which(colnames(GoMetaCombined) == "HI-significant-Liam"))][,1]))
+liamOnlyHI = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HI-significant"),which(colnames(GoMetaCombined) == "HI-significant-Liam"))][,2]))
+HiLoss = nonliamOnlyHI-liamOnlyHI
+nonliamOnlyHV = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HV-significant"),which(colnames(GoMetaCombined) == "HV-significant-Liam"))][,1]))
+liamOnlyHV = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HV-significant"),which(colnames(GoMetaCombined) == "HV-significant-Liam"))][,2]))
+HvLoss = nonliamOnlyHV-liamOnlyHV
+nonliamOnlyCH = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "CH-significant"),which(colnames(GoMetaCombined) == "CH-significant-Liam"))][,1]))
+liamOnlyCH = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "CH-significant"),which(colnames(GoMetaCombined) == "CH-significant-Liam"))][,2]))
+ChLoss = nonliamOnlyCH-liamOnlyCH
+
+{
+cat(paste0("Number of nonliam-only HI: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HI-significant"),which(colnames(GoMetaCombined) == "HI-significant-Liam"))][,1])), "\n"))
+cat(paste0("Number of liam-only HI: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HI-significant"),which(colnames(GoMetaCombined) == "HI-significant-Liam"))][,2])), "\n"))
+cat(paste0("Number of nonliam-only HV: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HV-significant"),which(colnames(GoMetaCombined) == "HV-significant-Liam"))][,1])), "\n"))
+cat(paste0("Number of liam-only HV: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HV-significant"),which(colnames(GoMetaCombined) == "HV-significant-Liam"))][,2])), "\n"))
+cat(paste0("Number of nonliam-only CH: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "CH-significant"),which(colnames(GoMetaCombined) == "CH-significant-Liam"))][,1])), "\n"))
+cat(paste0("Number of liam-only CH: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "CH-significant"),which(colnames(GoMetaCombined) == "CH-significant-Liam"))][,2])), "\n"))
+}
+
+nonliamSignificant = (which(GoMetaCombined$`HI-significant` | GoMetaCombined$`HV-significant` | GoMetaCombined$`CH-significant`))
+liamSignificant = (which(GoMetaCombined$`HI-significant-Liam` | GoMetaCombined$`HV-significant-Liam` | GoMetaCombined$`CH-significant-Liam`))
+
+length(which(liamSignificant %in% nonliamSignificant))
+#260, so almost all of the ones in liam are in the nonliam 
+
+liamMissing = nonliamSignificant[which(!nonliamSignificant %in% liamSignificant)]
+length(liamMissing)
+
+
+liamMissingGO = GoMetaCombined[liamMissing,]
+liamMissingGO = liamMissingGO[,-grep("Overlap", colnames(liamMissingGO))]
+liamMissingGO = liamMissingGO[,-grep("Driver", colnames(liamMissingGO))]
+liamMissingGO = liamMissingGO[,-grep("O", colnames(liamMissingGO))]
+
+write.csv(liamMissingGO, "Results/LiamMissingGO.csv")
+
+# --- Opposite pathways 
+oppsitePathways = GoMetaCombined[which(GoMetaCombined$`HI-HV-Overlap` & !GoMetaCombined$`HI-HV-CH-Overlap`),]
+
+grep("Overlap", colnames(oppsitePathways))
+
+oppsitePathways = oppsitePathways[,-grep("Overlap", colnames(oppsitePathways))]
+oppsitePathways = oppsitePathways[,-grep("Driver", colnames(oppsitePathways))]
+oppsitePathways = oppsitePathways[,-grep("O", colnames(oppsitePathways))]
 
 
 # ------------------------------------------------------------------
@@ -1310,8 +1930,8 @@ for(i in 1:length(rhoValuesSpecific)){
     if(bothAxis){jStart = 1}else{jStart = i+1}
     for(j in (jStart):length(rhoValuesSpecific)){
       yName = names(rhoValuesSpecific)[j]
-      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), " Dunn Z Statistic")
-      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), " Dunn Z Statistic")
+      yLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", yName))), " Dunn Z Statistic")
+      xLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", xName))), " Dunn Z Statistic")
       
       rhoCorrellPlot = ggplot(rhoValuesSpecific, aes(x = .data[[xName]], y = .data[[yName]])) + 
         geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
@@ -1991,8 +2611,8 @@ for(i in 1:length(rhoValuesPerm)){
   if(i+1 <= length(rhoValuesPerm)){
     for(j in (i+1):length(rhoValuesPerm)){
       yName = names(rhoValuesPerm)[j]
-      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), " Stat")
-      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), " Stat")
+      yLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", yName))), " Stat")
+      xLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", xName))), " Stat")
       
       rhoCorrellPlot = ggplot(rhoValuesPerm, aes(x = .data[[xName]], y = .data[[yName]])) + 
         geom_point() + geom_pointdensity() + scale_color_viridis(name = "Number of nearby genes", limits = densityScale) + 

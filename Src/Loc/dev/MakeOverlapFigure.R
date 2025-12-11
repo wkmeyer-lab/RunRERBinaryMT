@@ -114,23 +114,24 @@ addDashes = function(vector) {
 # -- Make rho value corrleation plots --- 
 {
   
-
+corrleationColumnType = "-Rho"
   
   
-grep("-Rho", names(combinedResults))
-rhoValues = combinedResults[,grep("-Rho", names(combinedResults))]
+grep(corrleationColumnType, names(combinedResults))
+rhoValues = combinedResults[,grep(corrleationColumnType, names(combinedResults))]
 
 rhoComparisions = names(rhoValues)
-rhoPhenotypes = strsplit(gsub("-Rho", "", rhoComparisions), split = "")
+rhoPhenotypes = strsplit(gsub(corrleationColumnType, "", rhoComparisions), split = "")
 commonBackground = Reduce(intersect, rhoPhenotypes)
 
-for(i in 1:length(rhoPhenotypes)){ #invert tho if background in second postion so rho has consistent meaning relative to background
-  if(rhoPhenotypes[[i]][1] != commonBackground){
-    cat("Inverting rho of ", rhoPhenotypes[[i]] , "becuase background is in first position.")
-    rhoValues[i] = -1*rhoValues[i]
+if(length(commonBackground) == 1){
+  for(i in 1:length(rhoPhenotypes)){ #invert tho if background in second postion so rho has consistent meaning relative to background
+    if(rhoPhenotypes[[i]][1] != commonBackground){
+      cat("Inverting rho of ", rhoPhenotypes[[i]] , "becuase background is in first position.")
+      rhoValues[i] = -1*rhoValues[i]
+    }
   }
 }
-
 
 densityScaleSet = NULL
 
@@ -162,8 +163,8 @@ for(i in 1:length(rhoValues)){
     if(bothAxis){jStart = 1}else{jStart = i+1}
     for(j in (jStart):length(rhoValues)){
       yName = names(rhoValues)[j]
-      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), " Dunn Z Statistic")
-      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), " Dunn Z Statistic")
+      yLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", yName))), " Dunn Z Statistic")
+      xLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", xName))), " Dunn Z Statistic")
       
       rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
         geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
@@ -455,7 +456,7 @@ overlapResults
     }
     
     # -- Add Delta information -- 
-    rhoColumns = names(combinedResults)[grep("-Rho", names(combinedResults))]
+    rhoColumns = names(combinedResults)[grep(corrleationColumnType, names(combinedResults))]
     geneRhoColumns = combinedResults[, names(combinedResults) %in% rhoColumns]
     for(i in 2:length(rhoColumns)){
       combinations = combn(rhoColumns, i, simplify = FALSE)
@@ -642,8 +643,8 @@ for(i in 1:length(rhoValues)){
     if(bothAxis){jStart = 1}else{jStart = i+1}
     for(j in (jStart):length(rhoValues)){
       yName = names(rhoValues)[j]
-      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), "")
-      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), "")
+      yLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", yName))), "")
+      xLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", xName))), "")
       
       rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
         geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 

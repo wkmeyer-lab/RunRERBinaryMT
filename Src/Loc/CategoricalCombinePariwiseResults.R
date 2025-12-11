@@ -22,6 +22,14 @@ args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome
 args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=gene", "c=0.05", "s=F")
 args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=KeggReactome", "c=0.1", "s=T")
 
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=MGI_Mammalian_Phenotype_Level_4", "c=0.05", "s=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=GO_Biological_Process_2023", "c=0.05", "s=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=DisGeNET", "c=0.05", "s=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=tissue_specific", "c=0.05", "s=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=EnrichmentHsSymbolsFile2", "c=0.05", "s=T")
+
+
+
 
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
