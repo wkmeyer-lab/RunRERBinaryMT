@@ -2,6 +2,66 @@ a = b #prevent full runs
 library(RERconverge)
 library(tools)
 
+# ------------------------------------------------------------------
+# ---  Make Liam Radial Tree ----- 
+# ------------------------------------------------------------------
+
+liamTree = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+nonliamTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+
+
+match(liamTree$tip.label, nonliamTree$tip.label)
+
+liamNonliamTipConversionIndex = match(nonliamTree$tip.label, liamTree$tip.label)
+
+
+{
+collapsedClades = data.frame()
+collapsedClades[1,] = NA
+
+collapsedClades$Platypus = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(1)])
+collapsedClades$Opossums = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(3,4,5)])
+collapsedClades$Koala = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(8,9)])
+collapsedClades$Kangaroos = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(10,11,12,13)])
+collapsedClades$Anteaters = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(23,24)])
+collapsedClades$Sloths = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(25,26)])
+collapsedClades$Elephant= MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(19,20,21)])
+collapsedClades$Aardvark = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(14,15,16,17,18)])
+collapsedClades$Strepsirrhini = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(27,28,29,30,31,32,33,34,35,36,37)])
+collapsedClades$Atelidae = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(38,39,40,41,42,43)])
+collapsedClades$Chimpanze = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(44:55)])
+collapsedClades$Hares = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(56,57)])
+collapsedClades$Squirrels = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(58:66)])
+collapsedClades$Capybara = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(67:70)])
+collapsedClades$Beaver = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(72:74)])
+collapsedClades$Jerboa = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(75:77)])
+collapsedClades$Deomyinae = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(90:97)])
+collapsedClades$Vole = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(86:89)])
+collapsedClades$Neotominae = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(80:85)])
+collapsedClades$`African Hedgehogs` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(99,100)])
+collapsedClades$`Talpa europaea` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(101:104)])
+collapsedClades$`Flying Fox` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(105:107)])
+collapsedClades$Rhinolophidae = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(108:113)])
+collapsedClades$`Big Brown Bat` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(125:129)])
+collapsedClades$Phyllostomidae = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(121:124)])
+collapsedClades$Noctilio = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(114)])
+collapsedClades$Horse = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(168:170)])
+collapsedClades$Pig = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(172:173)])
+collapsedClades$`bos bison` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(194:196)])
+collapsedClades$`Humpback Whale` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(175:178)])
+collapsedClades$`Dolphins` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(182:186)])
+collapsedClades$`Pangolin` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(130:131)])
+collapsedClades$`Lion` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(137:139)])
+collapsedClades$`Meerkat` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(135:136)])
+collapsedClades$`Dog` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(140:141)])
+collapsedClades$`Brown Bear` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(142:144)])
+collapsedClades$`Odobenus rosmarus` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(146:149)])
+collapsedClades$`Phocidae` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(150:153)])
+collapsedClades$`Procyon lotor` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(156:158)])
+collapsedClades$`Lontra provocax` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(162:166)])
+collapsedClades$`Tasmanian Devil` = MRCA(commonCategoricalTree, liamNonliamTipConversionIndex[c(6:7)])
+}
+#collapsedClades$Cats = MRCA(commonCategoricalTree, c("Jaguar", "Lion", "Cheetah"))
 
 # ------------------------------------------------------------------
 # ---  check seize ----- 
@@ -117,11 +177,14 @@ dev.off()
 # --- Add cytoscape index column ----- 
 # ------------------------------------------------------------------
 
-cytoscapeNodes = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/CarnivoreConserveddefaultnode.csv")
+cytoscapeNodes1 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/CarnivoreConserveddefaultnode.csv")
 cytoscapeNodes2 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/Bidirectionalnodes.csv")
 cytoscapeNodes3 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/Herbivorenodes.csv")
 cytoscapeNodes4 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/BidectionalNewNodes.csv")
+cytoscapeNodes5 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Insectivore-Vertivore/Cytoscape/IVNodes.csv")
 
+
+cytoscapeNodes = cytoscapeNodes5
 
 GOOutput = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
 
@@ -129,13 +192,15 @@ rownames(GOOutput)
 
 cytoscapeNodes$shared.name
 
-test = match(cytoscapeNodes2$shared.name, rownames(GOOutput))
+test = match(cytoscapeNodes$shared.name, rownames(GOOutput))
+
+which(rownames(GOOutput) == "KEGG_BETA_ALANINE_METABOLISM")
 
 rownames(GOOutput)[436]
 
-nodeIdexes = data.frame(cytoscapeNodes4$shared.name, match(cytoscapeNodes4$shared.name, rownames(GOOutput)))
+nodeIdexes = data.frame(cytoscapeNodes$shared.name, (match(cytoscapeNodes$shared.name, rownames(GOOutput)))+1)
 
-write.csv(nodeIdexes, "Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/BidirectionalNewIndexes.csv")
+write.csv(nodeIdexes, "Output/CategoricalInsVertivoreTreeLiamInference/Insectivore-Vertivore/Cytoscape/newIVConservedIndex.csv")
 
 
 length(which(GOOutput$`IV-significant`))
