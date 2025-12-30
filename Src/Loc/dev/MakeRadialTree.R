@@ -7,10 +7,18 @@ library(tidytree)
 library(ape)
 source("Src/Reu/ZoonomTreeNameToCommon.R")
 source("Src/Reu/cmdArgImport.R")
+nodeid.tbl_tree <- utils::getFromNamespace("nodeid.tbl_tree", "tidytree")
+rootnode.tbl_tree <- utils::getFromNamespace("rootnode.tbl_tree", "tidytree")
+offspring.tbl_tree <- utils::getFromNamespace("offspring.tbl_tree", "tidytree")
+offspring.tbl_tree_item <- utils::getFromNamespace(".offspring.tbl_tree_item", "tidytree")
+child.tbl_tree <- utils::getFromNamespace("child.tbl_tree", "tidytree")
+parent.tbl_tree <- utils::getFromNamespace("parent.tbl_tree", "tidytree")
+
 
 args =c("r=CategoricalInsVertivoreTree", 'p=c("darkgreen", "darkblue", "black", "red")', 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
 args =c("r=makeLalithaTree", 'p=c("darkgreen", "darkblue", "black")', 'c=c("1", "2", "3")', 'n=ZoonomiaTip', "l=Phen", "i= T")
 
+args =c("r=CategoricalInsVertivoreTreeLiamInference", 'p=c("darkgreen", "darkblue", "black", "red")', 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
 
 
 
@@ -98,7 +106,7 @@ args =c("r=makeLalithaTree", 'p=c("darkgreen", "darkblue", "black")', 'c=c("1", 
   
   #imageAllTips
   if(!is.na(cmdArgImport('i'))){
-    imageAllTips = cmdArgImport('i')
+    imageAllTips = as.logical(cmdArgImport('i'))
   }else{
     message("Use of clade labels not specified, labeling all tips")
   }
@@ -197,7 +205,7 @@ tip_data = data.frame(
 ggTreeOut = ggtree(commonCategoricalTree, layout = "circular") +scale_color_manual(values=palette()) 
 ggTreeOut = ggTreeOut %<+% edge + aes(color=CategorylengthChar)
 ggTreeOut = ggTreeOut %<+% tip_data 
-ggTreeOut$data$label = paste(ggTreeOut$data$label, "-", ggTreeOut$data$node, sep="")
+#ggTreeOut$data$label = paste(ggTreeOut$data$label, "-", ggTreeOut$data$node, sep="")
 #ggTreeOut = ggTreeOut + geom_tiplab()
 #ggTreeOut = ggTreeOut + geom_tiplab(geom = "phylopic", aes(image = uuid))
 #ggTreeOut + geom_phylopic(aes(uuid = uuid), color = "black", alpha = 1, size = 0.08)
@@ -411,9 +419,17 @@ pdf(treeOutputLocation)
 ggTreeClades + ggimage:: geom_phylopic(data = ggTreeClades$data, aes(image = phylopic, x = x_new, y= y_new),size = 0.02)
 dev.off()
 
+treeOutputLocation = paste0(outputFolderName, filePrefix, "RadialDisplayTree.png")
+png(treeOutputLocation, 3000, 3000)
+#ggTreeClades + rphylopic::geom_phylopic(data = ggTreeClades$data, aes(uuid = phylopic, x = x_new, y= y_new),size = 0.02)
+ggTreeClades + ggimage:: geom_phylopic(data = ggTreeClades$data, aes(image = phylopic, x = x_new, y= y_new),size = 0.02)
+dev.off()
+
 
 
 
 
 # Make code for using the clade style tip labels on individual tips 
+
+
 

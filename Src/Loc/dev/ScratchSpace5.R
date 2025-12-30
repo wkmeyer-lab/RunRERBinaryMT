@@ -182,9 +182,11 @@ cytoscapeNodes2 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herb
 cytoscapeNodes3 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/Herbivorenodes.csv")
 cytoscapeNodes4 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/BidectionalNewNodes.csv")
 cytoscapeNodes5 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Insectivore-Vertivore/Cytoscape/IVNodes.csv")
+cytoscapeNodes6 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/NewPredatorNodes.csv")
+cytoscapeNodes7 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/NewBidirectionalNodes.csv")
 
 
-cytoscapeNodes = cytoscapeNodes5
+cytoscapeNodes = cytoscapeNodes7
 
 GOOutput = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
 
@@ -195,12 +197,15 @@ cytoscapeNodes$shared.name
 test = match(cytoscapeNodes$shared.name, rownames(GOOutput))
 
 which(rownames(GOOutput) == "KEGG_BETA_ALANINE_METABOLISM")
+which(rownames(GOOutput) == "REACTOME_DNA_REPAIR")
+
+
 
 rownames(GOOutput)[436]
 
 nodeIdexes = data.frame(cytoscapeNodes$shared.name, (match(cytoscapeNodes$shared.name, rownames(GOOutput)))+1)
 
-write.csv(nodeIdexes, "Output/CategoricalInsVertivoreTreeLiamInference/Insectivore-Vertivore/Cytoscape/newIVConservedIndex.csv")
+write.csv(nodeIdexes, "Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/fixedBidirectionalIndex.csv")
 
 
 length(which(GOOutput$`IV-significant`))
