@@ -3,6 +3,22 @@ library(RERconverge)
 library(tools)
 
 # ------------------------------------------------------------------
+# ---  Make newick files for trees ----- 
+# ------------------------------------------------------------------
+
+phenotypeTree3Diet = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsVertivoreTreeCarnivoreLiamInferenceCategoricalCommonTree.rds")
+phenotypeTree4Diet = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalCommonTree.rds")
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+masterTree = mainTrees$masterTree
+
+
+write.tree(phenotypeTree3Diet,"Results/PhenTree3.txt")
+write.tree(phenotypeTree4Diet,"Results/PhenTree4.txt")
+write.tree(masterTree,"Results/masterTree.txt")
+
+
+
+# ------------------------------------------------------------------
 # ---  Make Liam Radial Tree ----- 
 # ------------------------------------------------------------------
 
