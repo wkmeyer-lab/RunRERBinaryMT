@@ -3,6 +3,29 @@ library(RERconverge)
 library(tools)
 
 # ------------------------------------------------------------------
+# ---  Make New SUpplementary File 3----- 
+# ------------------------------------------------------------------
+
+MGI = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-MGI_Mammalian_Phenotype_Level_4.rds")
+GO = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-GO_Biological_Process_2023.rds")
+DisGen = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-DisGeNet.rds")
+tissue = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-tissue_specific.rds")
+Enrichment = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-EnrichmentHsSymbolsFile2.rds")
+
+
+MGI$GeneSet = rep("MGI Mammalian Phenotype", nrow(MGI))
+GO$GeneSet = rep("GO Biological Process", nrow(GO))
+DisGen$GeneSet = rep("DisGeNET", nrow(DisGen))
+tissue$GeneSet = rep("Tissue Specific", nrow(tissue))
+Enrichment$GeneSet = rep("EnrichmentHsSymbols", nrow(Enrichment))
+
+
+combinedGenesets = rbind(MGI, GO, DisGen, tissue, Enrichment)
+
+combinedGenesets = combinedGenesets[,c(1,296, 2:295)]
+write.csv(combinedGenesets, "Output/CategoricalInsVertivoreTreeLiamInference/CombinedGenesetOutput.csv")
+
+# ------------------------------------------------------------------
 # ---  Make newick files for trees ----- 
 # ------------------------------------------------------------------
 
