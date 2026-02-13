@@ -79,6 +79,8 @@ args = c('r=CategoricalInsVertivoreTreeLiamInference', 'm=c("Data/KeggReactome.g
 args = c('r=CategoricalInsVertivoreTreeCarnivoreLiamInference', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Carnivore-Omnivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Overall")' )
 args = c('r=CategoricalInsVertivoreTreeCarnivoreLiamInference', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("Carnivore-Omnivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Overall")' )
 
+args = c('r=Demo', 'v=F', 'm=c("Data/KeggReactome.gmt", "Data/DisGeNET.gmt")', 's=c("Carnivore-Herbivore", "Carnivore-Omnivore", "Herbivore-Omnivore", "Overall")')
+
 
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
@@ -113,7 +115,7 @@ if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
 # --- Argument Imports ---
 # Defaults
 gmtFileLocation = "Data/enrichmentGmtFile.gmt"
-usePermulations = TRUE
+usePermulations = FALSE
 usePermulationPValOverride = FALSE
 permulationPValOverride = NULL 
 useCorrelationOverride = FALSE

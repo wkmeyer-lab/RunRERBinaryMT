@@ -2,6 +2,10 @@ library(RERconverge)
 source("Src/Loc/dev/MergeDataCreation.R")
 
 
+
+
+# ------------------------------- Making your input Data ----------------------------------------
+
 # The first thing we need is a set of genetrees with a mastertree based on the average of the gene trees. This set of trees is called a Trees Object, or a MainTrees. 
 # In this case, we will be using the demo shiped with RERConerge. 
 
@@ -31,25 +35,24 @@ demoTrees$masterTree$tip.label
 
 
 #The first table to add into CombineDatasets is the scientific names of species. 
-ScientificName = c("Ailuropoda melanoleuca", "Allactaga bullata", "Bos taurus", 
-                           "Callithrix jacchus", "Camelus bactrianus", "Canis lupus familiaris", 
-                           "Capra hircus", "Cavia porcellus", "Chinchilla lanigera", "Chlorocebus sabaeus", 
-                           "Chrysochloris asiatica", "Condylura cristata", "Cricetulus griseus", 
-                           "Dasypus novemcinctus", "Delphinus delphis", "Diceros bicornis", 
-                           "Echinops telfairi", "Elephantulus edwardii", "Eptesicus fuscus", 
-                           "Equus caballus", "Erinaceus europaeus", "Felis catus", "Gorilla gorilla", 
-                           "Heterocephalus glaber", "Homo sapiens", "Loxodonta africana", 
-                           "Macaca fascicularis", "Macaca mulatta", "Macropus eugenii", 
-                           "Mesocricetus auratus", "Monodelphis domestica", "Mus musculus", 
-                           "Mustela putorius", "Myotis davidii", "Myotis lucifugus", "Nomascus leucogenys", 
-                           "Ochotona princeps", "Octodon degus", "Odobenus rosmarus", "Orcinus orca", 
-                           "Ornithorhynchus anatinus", "Orycteropus afer afer", "Oryctolagus cuniculus", 
-                           "Otolemur garnettii", "Ovis aries", "Pan troglodytes", "Pantholops hodgsonii", 
-                           "Papio anubis", "Pongo abelii", "Pteropus vampyrus", "Rattus norvegicus", 
-                           "Saimiri boliviensis", "Sarcophilus harrisii", "Sorex araneus", 
-                           "Spermophilus tridecemlineatus", "Sus scrofa", "Trichechus manatus latirostris", 
-                           "Tupaia chinensis", "Vicugna pacos", "Halichoerus grypus", "Microtus arvalis", 
-                           "Pteropus giganteus")
+ScientificName = c("Ornithorhynchus anatinus", "Monodelphis domestica", "Sarcophilus harrisii", 
+                   "Macropus eugenii", "Dasypus novemcinctus", "Orycteropus afer afer", 
+                   "Echinops telfairi", "Chrysochloris asiatica", "Elephantulus edwardii", 
+                   "Trichechus manatus latirostris", "Loxodonta africana", "Condylura cristata", 
+                   "Erinaceus europaeus", "Sorex araneus", "Felis catus", "Canis lupus familiaris", 
+                   "Ailuropoda melanoleuca", "Mustela putorius", "Halichoerus grypus", 
+                   "Odobenus rosmarus", "Pteropus vampyrus", "Pteropus giganteus", 
+                   "Eptesicus fuscus", "Myotis davidii", "Myotis lucifugus", "Diceros bicornis", 
+                   "Equus caballus", "Vicugna pacos", "Camelus bactrianus", "Sus scrofa", 
+                   "Delphinus delphis", "Orcinus orca", "Bos taurus", "Pantholops hodgsonii", 
+                   "Ovis aries", "Capra hircus", "Tupaia chinensis", "Ochotona princeps", 
+                   "Oryctolagus cuniculus", "Allactaga bullata", "Rattus norvegicus", 
+                   "Mus musculus", "Microtus arvalis", "Mesocricetus auratus", "Cricetulus griseus", 
+                   "Spermophilus tridecemlineatus", "Heterocephalus glaber", "Cavia porcellus", 
+                   "Chinchilla lanigera", "Octodon degus", "Otolemur garnettii", 
+                   "Saimiri boliviensis", "Callithrix jacchus", "Chlorocebus sabaeus", 
+                   "Papio anubis", "Macaca mulatta", "Macaca fascicularis", "Nomascus leucogenys", 
+                   "Pongo abelii", "Gorilla gorilla", "Pan troglodytes", "Homo sapiens")
 SpeciesScientificNamesDataframe = data.frame(ScientificName)
 
 
@@ -58,19 +61,20 @@ SpeciesScientificNamesDataframe = data.frame(ScientificName)
 starterData = createSortedTable(SpeciesScientificNamesDataframe, "ScientificName")
 
 #Next, we add the common names 
-CommonName = c("Panda", "Gobi jerboa", "Cow", "Marmoset", "Bactrian Camel", 
-                       "Dog", "Domestic goat", "Domestic guinea pig", "Chinchilla", 
-                       "Green monkey", "Cape golden mole", "Star-nosed mole", "Chinese hamster", 
-                       "Armadillo", "Dolphin", "Black Rhinoceros", "Tenrec", "Cape elephant shrew", 
-                       "Big brown bat", "Horse", "Hedgehog", "Cat", "Gorilla", "Naked mole-rat", 
-                       "Human", "Elephant", "Crab-eating macaque", "Rhesus Macaca", 
-                       "Wallaby", "Golden hamster", "Opossum", "Common mouse", "Ferret", 
-                       "David's myotis bat", "Microbat", "Gibbon", "Pika", "Brush-tailed rat", 
-                       "Pacific walrus", "Killer whale", "Platypus", "Aardvark", "Rabbit", 
-                       "Bushbaby", "Domestic sheep", "Chimp", "Tibetan antelope", "Olive Baboon", 
-                       "Orangutan", "Megabat", "Rat", "Squirrel monkey", "Tasmanian devil", 
-                       "Shrew", "Squirrel", "Pig", "Manatee", "Chinese tree shrew", 
-                       "Alpaca", "Grey seal", "Common vole", "Indian flying fox")
+CommonName = c("Platypus", "Opossum", "Tasmanian devil", "Wallaby", "Armadillo", 
+               "Aardvark", "Tenrec", "Cape golden mole", "Cape elephant shrew", 
+               "Manatee", "Elephant", "Star-nosed mole", "Hedgehog", "Shrew", 
+               "Cat", "Dog", "Panda", "Ferret", "Grey seal", "Pacific walrus", 
+               "Megabat", "Indian flying fox", "Big brown bat", "David's myotis bat", 
+               "Microbat", "Black Rhinoceros", "Horse", "Alpaca", "Bactrian Camel", 
+               "Pig", "Dolphin", "Killer whale", "Cow", "Tibetan antelope", 
+               "Domestic sheep", "Domestic goat", "Chinese tree shrew", "Pika", 
+               "Rabbit", "Gobi jerboa", "Rat", "Common mouse", "Common vole", 
+               "Golden hamster", "Chinese hamster", "Squirrel", "Naked mole-rat", 
+               "Domestic guinea pig", "Chinchilla", "Brush-tailed rat", "Bushbaby", 
+               "Squirrel monkey", "Marmoset", "Green monkey", "Olive Baboon", 
+               "Rhesus Macaca", "Crab-eating macaque", "Gibbon", "Orangutan", 
+               "Gorilla", "Chimp", "Human")
 
 SpeciesCommonNamesDataframe = data.frame(CommonName, ScientificName) #Note that all added data must have scientific name included in the added data
 
@@ -82,18 +86,17 @@ combinedData = CombineDatasets(combinedDataInput = starterData, newDatasetInput 
 
 #We then need to add phenotype data for our species to the mergedData 
 
-DemoDietPhenotype = c("Omnivore", "Omnivore", "Herbivore", "Omnivore", "Omnivore", 
-                      "Carnivore", "Herbivore", "Herbivore", "Herbivore", "Omnivore", 
-                      "Carnivore", "Carnivore", "Herbivore", "Carnivore", NA, "Herbivore", 
-                      NA, "Carnivore", "Carnivore", "Herbivore", "Omnivore", "Carnivore", 
-                      "Herbivore", "Herbivore", "Omnivore", "Herbivore", "Omnivore", 
-                      "Omnivore", "Herbivore", "Omnivore", "Omnivore", "Omnivore", 
-                      "Carnivore", "Carnivore", "Carnivore", "Herbivore", "Herbivore", 
-                      "Herbivore", "Carnivore", "Carnivore", "Carnivore", "Carnivore", 
-                      "Herbivore", "Herbivore", "Herbivore", "Omnivore", "Herbivore", 
-                      "Omnivore", "Omnivore", "Herbivore", "Omnivore", "Omnivore", 
-                      "Omnivore", "Omnivore", "Omnivore", "Omnivore", "Herbivore", 
-                      NA, "Herbivore", NA, NA, NA)
+DemoDietPhenotype = c("Carnivore", "Omnivore", "Omnivore", "Herbivore", "Carnivore", 
+                      "Carnivore", NA, "Carnivore", "Carnivore", "Herbivore", "Herbivore", 
+                      "Carnivore", "Omnivore", "Omnivore", "Carnivore", "Carnivore", 
+                      "Omnivore", "Carnivore", NA, "Carnivore", "Herbivore", NA, "Carnivore", 
+                      "Carnivore", "Carnivore", "Herbivore", "Herbivore", "Herbivore", 
+                      "Omnivore", "Omnivore", NA, "Carnivore", "Herbivore", "Herbivore", 
+                      "Herbivore", "Herbivore", NA, "Herbivore", "Herbivore", "Omnivore", 
+                      "Omnivore", "Omnivore", NA, "Omnivore", "Herbivore", "Omnivore", 
+                      "Herbivore", "Herbivore", "Herbivore", "Herbivore", "Herbivore", 
+                      "Omnivore", "Omnivore", "Omnivore", "Omnivore", "Omnivore", "Omnivore", 
+                      "Herbivore", "Omnivore", "Herbivore", "Omnivore", "Omnivore")
 
 DietDataframe = data.frame(DemoDietPhenotype, ScientificName)
 newDataset = DietDataframe
@@ -115,6 +118,10 @@ write.csv(MergedData, "Results/DemoMergedData.csv")
 
 
 #With your dataset and merged data complete, we can now begin using the functions of runRER. 
+
+
+
+# ------------------ Making your Phenotype Tree ---------------------------------------
 
 #The first script to use is MakeCategoricalPhenotypeTree. If you are not using a categorical phenotype, you would use the appropriate phenotype tree creator. 
 
@@ -142,10 +149,12 @@ write.csv(MergedData, "Results/DemoMergedData.csv")
   #We can ignore all of these for now -- if you do not include the in your arg string, they will use their default values, which are fine.  
 
 
+##NOTE: WHEN RUNNING THE SCRIPTs, MAKE SURE TO SKIP THE LINE clusterRun = T AS THIS SETS THE CODE TO WORK ON THE CLUSTER INSTEAD OF A LOCAL MACHINE 
+
 ## TEST YOURSELF: What should the args you use for this script be? ##
 #####DEV Note: In full version, better explain why args are a string (need to use c), why use ' quotes, why args with mulitple values need another c and use " quotes. ########
 ##Spoiler this##
-#args = c('r=Demo', 'v=F', 'm=demoTreeFile', 'd=Results/DemoMergedData.csv', 'a=DemoDietPhenotype', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'n=demoTreeTipName')
+args = c('r=Demo', 'v=F', 'm=demoTreeFile', 'd=Results/DemoMergedData.csv', 'a=DemoDietPhenotype', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'n=demoTreeTipName')
 ##end spoiler##
 
 #If you run that script, you should find a copy of your tree in "Ouput/Demo/DemoCategoricalTree.pdf
@@ -154,5 +163,81 @@ write.csv(MergedData, "Results/DemoMergedData.csv")
 palette(c("red", "darkgreen", "black"))
 
 
+# ----------------------------------- Running RERConverge and getting your RER Results --------------------------------------
+
+# Now that you have a phenotype tree (phenoytpe data) and a MainTrees (gene data), we can compare the two, to see if they are linked. 
+
+#The first step is to compare the number of differences in each gene across species, to determine the relative evolutionary rate of each gene. 
+  #This is done by the getAllResiduals function (contained in runRER), and is stored in the PrefixRERFile.rds file in the output folder. 
+#Once we know which genes are evolving faster and slower, we can then see if a gene's relative evolutionary rate is correlated with our phenotype. 
+  #This is done using the various Correlation functions within runRER. These are then output to PrefixCorrelationFile.csv (and .rds) in the output folder. 
+
+#To use RunRERandCorrelation, we do something very similar to Make CategoricalPhenotypeTree; it is also operated using arugments. 
+
+#The arguments we needs are: 
+#The shared arguments from before (r, v, and m)
+#s    This sets what type of phenotype you are using.
+  #In this case, "g" or "categorical" (they do the same thing)
+
+#The other arguments are for overriding the normal functions by manually providing files (p and f), used for continuous phenotypes (c), or change the minimum species required to run correlation on a gene (l)
+
+## TEST YOURSELF: What should the args be for this script? ##
+##Spoiler this##
+args = c('r=Demo', 'v=F', 'm=demoTreeFile', 's=g')
+##End spoiler## 
+
+#Use those arguments, and run the script. This may take a while. 
+#Once the script finishes, take a look at the output correlation files. 
+####DEV NOTE: In full version explain p, p.adj, MTH correction, and what RHO means ####
+###DEV NOTE: May want to switch out phenotype to one that produces significant results from this dataset. ####
+
+#Now that you have run this script, you can see folders in your output folder. These are for each of the pairwise comparisons (For example Herbivore-Carnivore, Herbivore-Omnivore, etc.)
+#Now that you have your results, they can still be somewhat hard to interpret. There is a script that can help with that to a degree. 
+
+#This script is VisualizeResultsNew, and is operated like the others. There are two new arguments that new need to change for this script: 
+#s  This tells the script which subdirectorys to make a visualization of. We want to do it for all of them. 
+  #In this case, it is "Carnivore-Herbivore", "Carnivore-Omnivore", "Herbivore-Omnivore", amd "Overall
+#g  This sets is gene enrichment should be included in the visualization. For now, we need to set this to False (F)\
+#p  This sets if the 
+
+#The others are involved in visualizing enrichment (l, o, and u) which we will be using later. The others are used for permulations (p and f), which we will be using much later. 
+
+##Test yourself: What should the args for this script be? ##
+##Spoiler this##
+args = c('r=Demo', 'v=F', 'g=F', 's=c("Carnivore-Herbivore", "Carnivore-Omnivore", "Herbivore-Omnivore", "Overall")')
+
+#ONce that complete, look at the new visualize output files in the OUptu subdirectories. 
 
 
+# -------------------------- Running Enrichment Analysis -----------------------------------
+
+#Now that we have connected genes with out pehnotype, we can try to see if any groups of genes (pathways, similar functions, etc.) are linked with it. 
+#This is done using Gene Enrichment Categories, which are datasets of groups of genes invilved in a shared pathways or process. 
+#Various Gene Enrichment sets can be found online, in this case we will use Kegg-Reactome and DisGeNET as examples. 
+
+####Dev Note: Figure out the obtaining of these files when not shipped with repo #####
+
+#To Do this, we will use the EnrichmentAnalysisNew script. It is operated with args, just like the others. 
+
+#For this, there are a few arguments that we have seen before: 
+#r, and v 
+#s  The subdirectory argument 
+
+#There is a new argument for this script as well, though it shares a letter with other scripts. 
+#m    In this case, m is for the gmt files, instead of the MainTrees file. provide it a vector of the gmt files you want to you. 
+  #In this case, "Data/KeggReactome.gmt" and "Data/DisGeNET.gmt". 
+
+##Test yourself: What should the args for this script be? ##
+##Spoiler this##
+args = c('r=Demo', 'v=F', 'm=c("Data/KeggReactome.gmt", "Data/DisGeNET.gmt")', 's=c("Carnivore-Herbivore", "Carnivore-Omnivore", "Herbivore-Omnivore", "Overall")')
+
+#ONce you have the enrichments completed, we can go back and use the visualize script again, but this time with the enrichment turned on. 
+##Test yourself: What should the args for the new VisualizeResultsNew be? ##
+##Spoiler this##
+args = c('r=Demo', 'v=F', 'g=T', 's=c("Carnivore-Herbivore", "Carnivore-Omnivore", "Herbivore-Omnivore", "Overall")')
+
+####DEV NOTE: FIx the need to manually change the number of enrichment plots in visualizeResults####
+#####DEV NOTE: Fix the visualizer breaking paritailly when only using 2 GO categories#####
+
+#With that, you have completed a basic RERConverge analysis of this demo phenotype! 
+#Later walkthroughs will cover using permulations and use on the cluster. 

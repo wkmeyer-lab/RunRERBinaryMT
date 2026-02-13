@@ -35,17 +35,19 @@ testTipLabel[which(testTipLabel == "Crab eating macaque")] = "Crab-eating macaqu
 testTipLabel[which(!testTipLabel %in% mainMergedData$CommonName)]
 
 
-scientificNames = mainMergedData$ScientificNameFull[mainMergedData$CommonName %in% testTipLabel]
+scientificNames = mainMergedData$ScientificNameFull[match(testTipLabel, mainMergedData$CommonName)]
+
+
 dput(scientificNames)
 
 
-commonNames = mainMergedData$CommonName[mainMergedData$CommonName %in% testTipLabel]
+commonNames = mainMergedData$CommonName[match(testTipLabel, mainMergedData$CommonName)]
 dput(commonNames)
 
 length(demoTrees$masterTree$tip.label)
 
 
-dietPhen = mainMergedData$MeyerTrophicLevel[mainMergedData$CommonName %in% testTipLabel]
+dietPhen = mainMergedData$MeyerTrophicLevel[match(testTipLabel, mainMergedData$CommonName)]
 
 dput(dietPhen)
 

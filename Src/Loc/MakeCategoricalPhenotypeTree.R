@@ -16,13 +16,13 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # m = mainTreeFilename.txt or .rds                       This sets the location of the maintrees file
 # d = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
 # a = "annotCollumn"                                     This is the column in the manual annotations spreadsheet to use
+# n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
 # c = <c("nameOfCategory1,"nameOfCategory2")>            This is the list of category names 
 # u = list(c("replace1", "with1"),c("replace2, with2"))
 # o = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
 # s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
 # t = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
 # g = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
-# n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
 # z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
 # x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
 # y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
@@ -255,6 +255,7 @@ args = c('r=CategoricalCarnivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=
           )', 
          'v=T', 't=ER', 'n=ZoonomiaTip')
 }
+{
 args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01',
          'c=c(
               "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
@@ -300,6 +301,7 @@ args = c('r=CategoricalInsVertivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 
           "vs_HLpapAnu5", "vs_HLmanSph1", "DrillMandrillClade", "vs_cerAty1", 
           "vs_HLtraJav1", "vs_mm10", "vs_HLmarFla1", "marmotClade"
          )')
+}
 {
 args = c('r=CategoricalPrunedCarnivoreTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 
          'c=c("C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
@@ -962,7 +964,8 @@ args = c('r=CategoricalSlimMainInsVertivoreTree', 'm=data/CategoricalInsVertivor
           "vs_HLtraJav1", "vs_mm10", "vs_HLmarFla1", "marmotClade"
          )')
 }
-args = c('r=CategoricalInsVertivoreTreePruningTest', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01',
+
+{args = c('r=CategoricalInsVertivoreTreePruningTest', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01',
          'c=c(
               "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
               "O-For Examination", "O-Scavenger", 
@@ -1089,7 +1092,8 @@ args = c('r=CategoricalInsVertivoreTreeLiamInference', 'm=data/zoonomiaAllMammal
           "vs_HLeidHel2", "outerPeropodidae",
           "vs_HLeonSpe1", "Roussetinae"
          )')
-
+}
+args = c('r=Demo', 'v=T', 'm=C:/Users/mit221/AppData/Local/R/win-library/4.2/RERconverge/extdata/SubsetMammalGeneTrees.txt', 'd=Results/DemoMergedData.csv', 'a=DemoDietPhenotype', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'n=demoTreeTipName')
 
 
 # --- Standard start-up code ---

@@ -68,7 +68,7 @@ args = c('r=meanTemp', 'm=data/zoonomiaAllMammalsTrees.rds', 's=c','v=T', 'n=Zoo
 args = c("r=CategoricalSlimMainInsVertivoreTree", 'm=data/CategoricalInsVertivoreMaintrees.rds', "s=g", "v=F", "l=170")
 args = c("r=CategoricalInsVertivoreTreeLiamInference", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 args = c("r=CategoricalInsVertivoreTreeCarnivoreLiamInference", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-
+args = c('r=Demo', 'v=F', 'm=demoTreeFile', 's=g')
 
 
 # --- Standard start-up code ---
