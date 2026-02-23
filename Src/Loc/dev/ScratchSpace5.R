@@ -27,8 +27,7 @@ function (vals, annotList, alternative = "two.sided", ...)
   }
   reslist
 }
-<bytecode: 0x000001ee6f9a39b0>
-  <environment: namespace:RERconverge>
+
 # ------------------------------------------------------------------
 # --- using liam's zero-length-added-tip ancestral infrence method  ----- 
 # ------------------------------------------------------------------
