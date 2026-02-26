@@ -81,6 +81,10 @@ args = c('r=CategoricalInsVertivoreTreeCarnivoreLiamInference', 'm=c("Data/MGI_M
 
 args = c('r=Demo', 'v=F', 'm=c("Data/KeggReactome.gmt", "Data/DisGeNET.gmt")', 's=c("Carnivore-Herbivore", "Carnivore-Omnivore", "Herbivore-Omnivore", "Overall")')
 
+args = c('r=CategoricalInsVertivoreTreeLiamInference', 'm=c("Data/KeggReactome.gmt", "Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=C', 's=c("Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
+
+args = c('r=CategoricalInsVertivoreTreeLiamInference', 'm=c("Data/KeggReactome.gmt")', 'p=C', 's=c("Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
+
 
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
@@ -222,22 +226,27 @@ for(i in 1:length(subdirectoryValueList)){
   
   rerStats = getStat(correlationData)                                             #processes the RERs somewhat into stat values. only uses the P column, and the sign of the Rho column. 
   
-  for(i in 1:length(gmtFileLocation)){
+  for(j in 1:length(gmtFileLocation)){
   #Load the gmt annotations 
-  gmtAnnotations = read.gmt(gmtFileLocation[i])                                      #read the gmt file
+  gmtAnnotations = read.gmt(gmtFileLocation[j])                                      #read the gmt file
   annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
-  enrichmentListName = substring(gmtFileLocation[i], 6, last = (nchar(gmtFileLocation[i]) - 4)) #make a geneset name based on the filename 
+  enrichmentListName = substring(gmtFileLocation[j], 6, last = (nchar(gmtFileLocation[j]) - 4)) #make a geneset name based on the filename 
   names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
   
   enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
   
   #save the enrichment output
-  enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+  if(usePermulations == F){
+    enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+    enrichmentCsvName = enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
+  }else{
+    enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-Permulation-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+    enrichmentCsvName = paste(outputFolderName, filePrefix, subdirectoryValue, "Permulation-Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
+  }
   saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
-  enrichmentCsvName = enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
   gc()
   if(!i == 0){ #stops from writing two copies of the same sheet when no subdirectories. 
-    write.xlsx(enrichmentResult, file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T, append = T)
+   write.xlsx(enrichmentResult, file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T, append = T)
   }
   }
 }

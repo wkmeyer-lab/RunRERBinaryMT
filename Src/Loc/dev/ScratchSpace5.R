@@ -2,6 +2,57 @@ a = b #prevent full runs
 library(RERconverge)
 library(tools)
 
+#---------------------------------------------------------------------
+# --- Encorperate permulation P values --- 
+# --------------------------------------------------------------------
+
+topPerms = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencePermulationsPValueCorrelations.rds")
+
+ 
+topPerms[[1]]$index = seq_len(nrow(topPerms[[1]]))
+topPerms[[2]][[1]]$index = seq_len(nrow(topPerms[[2]][[1]]))
+topPerms[[2]][[2]]$index = seq_len(nrow(topPerms[[2]][[2]]))
+topPerms[[2]][[3]]$index = seq_len(nrow(topPerms[[2]][[3]]))
+topPerms[[2]][[4]]$index = seq_len(nrow(topPerms[[2]][[4]]))
+topPerms[[2]][[5]]$index = seq_len(nrow(topPerms[[2]][[5]]))
+topPerms[[2]][[6]]$index = seq_len(nrow(topPerms[[2]][[6]]))
+
+
+overallPerms = topPerms[[1]]
+pairwaisePerms = topPerms[[2]]
+
+
+overallPerms = overallPerms[order(overallPerms$p.adj),]
+overallPerms$baseRank = seq_len(nrow(overallPerms))
+overallPerms = overallPerms[order(overallPerms$permP),]
+overallPerms$permRank = seq_len(nrow(overallPerms))
+
+for(i in 1:6){
+  pairwaisePerms[[i]] = pairwaisePerms[[i]][order(pairwaisePerms[[i]]$p.adj),]
+  pairwaisePerms[[i]]$baseRank = seq_len(nrow(pairwaisePerms[[i]]))
+  pairwaisePerms[[i]] = pairwaisePerms[[i]][order(pairwaisePerms[[i]]$permP),]
+  pairwaisePerms[[i]]$permRank = seq_len(nrow(pairwaisePerms[[i]]))
+  plot(pairwaisePerms[[i]]$baseRank, pairwaisePerms[[i]]$permRank)
+}
+
+plot(pairwaisePerms[[i]]$p.adj, pairwaisePerms[[i]]$permP)
+
+
+
+# saveRDS(pairwaisePerms, "Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencePermulationPairwiseCorrelationFile.rds")
+
+
+permGO = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencecombinedGOResults-KeggReactomePermulations.rds")
+nonpermGO = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+
+permGO$`CH-stat` - nonpermGO$`CH-stat`
+
+
+plot(permGO$`HV-p.adj`, nonpermGO$`HV-p.adj`)
+
+test1 = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/Insectivore-Vertivore/CategoricalInsVertivoreTreeLiamInferenceInsectivore-VertivoreCorrelationFile.rds")
+test2 = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/Insectivore-Vertivore/CategoricalInsVertivoreTreeLiamInferenceInsectivore-VertivorePermulationsCorrelationFile.rds")
+
 # ------------------------------------------------------------------
 # ---  Make New SUpplementary File 3----- 
 # ------------------------------------------------------------------

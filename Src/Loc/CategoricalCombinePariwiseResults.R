@@ -27,6 +27,9 @@ args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=GO_Biologica
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=DisGeNET", "c=0.05", "s=T")
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=tissue_specific", "c=0.05", "s=T")
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=EnrichmentHsSymbolsFile2", "c=0.05", "s=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=gene", "s=T", "l=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome", "s=T", "l=T")
 
 
 
@@ -72,6 +75,7 @@ usingGo = F
 saveData = T
 usingGene = T
 saveCombinedData = T
+usePermulations = F
 
 { # Bracket used for collapsing purposes
   
@@ -117,6 +121,13 @@ saveCombinedData = T
   }else{
     message("saveData not specified, using TRUE")
   }
+  
+  #Use Permualtions 
+  if(!is.na(cmdArgImport('l'))){
+    usePermulations = as.logical(cmdArgImport('l'))
+  }else{
+    message("saveData not specified, using TRUE")
+  }
 }
 
 # ---- Main Code ----- 
@@ -132,7 +143,12 @@ getComparisionDifference = function(dataframe, colOne, colTwo){
   distanceFromEqual
 }
 
-pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile.rds", sep= "") #make a name for the pairwise comparisons based on prefix
+if(!usePermulations){
+  pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile.rds", sep= "") #make a name for the pairwise comparisons based on prefix
+}else{
+  pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PermulationPairwiseCorrelationFile.rds", sep= "") #make a name for the pairwise comparisons based on prefix
+}
+
 correlationResults = readRDS(pairwiseCorrelationFileName)
 
 if(usingGene){
