@@ -26,7 +26,7 @@ saveCombinedData = F
 bothAxis = T
 saveData = T
 saveData = F
-
+usePermulations = F
 
 
 args = c("r=CategoricalInsvertivoreTree")
@@ -64,6 +64,8 @@ if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 
 
 
+
+
 #------------------------------------------------
 # -- OVerlap Figure exclusive code -- 
 #------------------------------------------------
@@ -72,13 +74,30 @@ if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 # -- Read Data 
 combinedGeneDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
 combinedResults = readRDS(combinedGeneDataFilename)
-significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
+if(usePermulations){
+  significanceColumns = names(combinedResults)[grep("permSignificant", names(combinedResults))]
+}else{
+  significanceColumns = names(combinedResults)[grep("unpermSignificant", names(combinedResults))]
+}
+#backward compatibility to load in old files if the new names don't exist 
+if(length(grep("permSignificant", names(combinedResults))) == 0 && length(grep("unpermSignificant", names(combinedResults))) == 0){
+  significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
+}
+
 geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
 
 
 combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
 GoCombinedResults = readRDS(combinedGODataFilename)
-GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
+if(usePermulations){
+  GoSignificanceColumns = names(GoCombinedResults)[grep("permSignificant", names(GoCombinedResults))]
+}else{
+  GoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
+}
+#backward compatibility to load in old files if the new names don't exist 
+if(length(grep("permSignificant", names(GoCombinedResults))) == 0 && length(grep("unpermSignificant", names(GoCombinedResults))) == 0){
+  GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
+}
 GoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% GoSignificanceColumns]
 
 
@@ -197,7 +216,10 @@ print(rhoPlotSet)
   # Make required functions 
   
   trimSignificanceToVenn = function(significanceResults){
-    trimableComparisions = gsub("-significant", "", names(significanceResults))
+    trimableComparisions = gsub("Significant", "", names(significanceResults))
+    trimableComparisions = gsub("significant", "", names(significanceResults))
+    trimableComparisions = gsub("-unperm", "", names(significanceResults))
+    trimableComparisions = gsub("-perm", "", names(significanceResults))
     trimableComparisions = addDashes(trimableComparisions)
     trimableComparisions = sapply(trimableComparisions, replacePrefixWithName)
     vennSignificanceResults = significanceResults[match(vennDiagramSet, trimableComparisions)]
@@ -221,7 +243,10 @@ print(rhoPlotSet)
       "Column One&Column Two&Column Three" = sum(set1 & set2 & set3, na.rm = T)
     )
     
-    comparisonPrefixes = gsub("-significant", "", names(vennInputDataframe))
+    comparisonPrefixes = gsub("Significant", "", names(vennInputDataframe))
+    comparisonPrefixes = gsub("significant", "", names(vennInputDataframe))
+    comparisonPrefixes = gsub("-unperm", "", names(vennInputDataframe))
+    comparisonPrefixes = gsub("-perm", "", names(vennInputDataframe))
     comparisonPrefixes = gsub(commonBackground, "", comparisonPrefixes)
     comparisonNames = sapply(comparisonPrefixes, replacePrefixWithName)
     names(vennCounts)=c(comparisonNames[1], comparisonNames[2], comparisonNames[3], paste(comparisonNames[1], comparisonNames[2], sep="&"),paste(comparisonNames[1], comparisonNames[3], sep="&"),paste(comparisonNames[2], comparisonNames[3], sep="&"), paste(comparisonNames[1], comparisonNames[2], comparisonNames[3], sep="&"))

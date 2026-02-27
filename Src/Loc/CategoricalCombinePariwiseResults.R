@@ -170,7 +170,17 @@ if(usingGene){
       currentDataframe = which(names(correlationResults) == correlationSubsetName) 
       
       currentResults = correlationResults[[currentDataframe]]
-      currentResults$significant = currentResults$p.adj < significanceCutoff
+      if(usePermulations){
+        if(exists(currentResults$permP.adj)){
+          currentResults$permSignificant = currentResults$permP.adj < significanceCutoff
+          currentResults$unpermSignificant = currentResults$p.adj < significanceCutoff
+        }else{
+          currentResults$permSignificant = currentResults$permP < significanceCutoff
+          currentResults$unpermSignificant = currentResults$p.adj < significanceCutoff
+        }
+      }else{
+        currentResults$significant = currentResults$p.adj < significanceCutoff
+      }
       
       
       names(currentResults) = paste0(correlationPrefix, "-", names(currentResults))
@@ -208,7 +218,33 @@ if(usingGene){
   
   
   # -- Add overlap information -- 
-  significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
+
+  #Permualted
+  if(usePermulations){
+    permSignificanceColumns = names(combinedResults)[grep("permSignificant", names(combinedResults))]
+    permGeneSignificanceResults = combinedResults[, names(combinedResults) %in% permSignificanceColumns]
+    
+    for(i in 2:length(permSignificanceColumns)){
+      combinations = combn(permSignificanceColumns, i, simplify = FALSE)
+      for(j in 1:length(combinations)){
+        currentCombination = combinations[[j]]
+        headers = gsub("-.*","",  currentCombination)
+        comboName = paste0(paste0(headers, collapse = "-"), "-PermOverlap")
+        
+        colsToCompare = permGeneSignificanceResults[,names(permGeneSignificanceResults) %in% currentCombination]
+        
+        comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
+        which(comboValue)
+        combinedResults$newOverlapColumn = comboValue
+        names(combinedResults)[length(names(combinedResults))] = comboName
+        rm(colsToCompare)
+      }
+      rm(combinations)
+    }
+  }
+    
+  #Unpermulated
+  significanceColumns = names(combinedResults)[grep("unpermSignificant", names(combinedResults))]
   geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
   
   for(i in 2:length(significanceColumns)){
@@ -216,7 +252,7 @@ if(usingGene){
     for(j in 1:length(combinations)){
       currentCombination = combinations[[j]]
       headers = gsub("-.*","",  currentCombination)
-      comboName = paste0(paste0(headers, collapse = "-"), "-Overlap")
+      comboName = paste0(paste0(headers, collapse = "-"), "-UnpermOverlap")
       
       colsToCompare = geneSignificanceResults[,names(geneSignificanceResults) %in% currentCombination]
       
@@ -272,7 +308,19 @@ if(usingGo){
     
     goFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet,"Enrichment-", geneSet, ".rds")
     currentGoData = readRDS(goFilename)[[1]]
-    currentGoData$significant = currentGoData$p.adj < significanceCutoff
+    
+    if(usePermulations){
+      if(exists(currentGoData$permP.adj)){
+        currentGoData$permSignificant = currentGoData$permP.adj < significanceCutoff
+        currentGoData$unpermSignificant = currentGoData$p.adj < significanceCutoff        
+      }else{
+        currentGoData$permSignificant = currentGoData$permP < significanceCutoff
+        currentGoData$unpermSignificant = currentGoData$p.adj < significanceCutoff
+      }
+    }else{
+      currentGoData$significant = currentGoData$p.adj < significanceCutoff
+    }
+    
     
     
     names(currentGoData) = paste0(correlationPrefix, "-", names(currentGoData))
@@ -310,17 +358,41 @@ if(usingGo){
   rm(GOResults)
   
   # -- Add overlap information -- 
-  GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
-  GoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% GoSignificanceColumns]
   
-  for(i in 2:length(GoSignificanceColumns)){
-    combinations = combn(GoSignificanceColumns, i, simplify = FALSE)
+  #Permulated
+  permGoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
+  permGoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% permGoSignificanceColumns]
+  
+  for(i in 2:length(permGoSignificanceColumns)){
+    combinations = combn(permGoSignificanceColumns, i, simplify = FALSE)
     for(j in 1:length(combinations)){
       currentCombination = combinations[[j]]
       headers = gsub("-.*","",  currentCombination)
-      comboName = paste0(paste0(headers, collapse = "-"), "-Overlap")
+      comboName = paste0(paste0(headers, collapse = "-"), "-PermOverlap")
       
-      colsToCompare = GoSignificanceResults[,names(GoSignificanceResults) %in% currentCombination]
+      colsToCompare = permGoSignificanceResults[,names(permGoSignificanceResults) %in% currentCombination]
+      
+      comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
+      which(comboValue)
+      GoCombinedResults$newOverlapColumn = comboValue
+      names(GoCombinedResults)[length(names(GoCombinedResults))] = comboName
+      rm(colsToCompare)
+    }
+    rm(combinations)
+  }
+  
+  #unpermulated
+  unpermGoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
+  unpermGoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% unpermGoSignificanceColumns]
+  
+  for(i in 2:length(unpermGoSignificanceColumns)){
+    combinations = combn(unpermGoSignificanceColumns, i, simplify = FALSE)
+    for(j in 1:length(combinations)){
+      currentCombination = combinations[[j]]
+      headers = gsub("-.*","",  currentCombination)
+      comboName = paste0(paste0(headers, collapse = "-"), "-UnpermOverlap")
+      
+      colsToCompare = unpermGoSignificanceResults[,names(unpermGoSignificanceResults) %in% currentCombination]
       
       comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
       which(comboValue)

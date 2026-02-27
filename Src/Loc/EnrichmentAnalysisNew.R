@@ -206,7 +206,11 @@ for(i in 1:length(subdirectoryValueList)){
   
   if(usePermulations){                                                            #If permualtions are being used   
     if(useCategoricalPermulations){
-      correlationData$P = correlationData$permP
+      if(exists(correlationData$PermP.adj)){
+        correlationData$P = correlationData$permP.adj
+      }else{
+        correlationData$P = correlationData$permP
+      }
     }else{
       if(usePermulationPValOverride){                                               #check for a location override
         permulationFileLocation = paste(outputFolderName, permulationPValOverride, sep="")                           #if so, use it 
