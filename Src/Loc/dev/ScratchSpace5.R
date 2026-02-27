@@ -3,6 +3,182 @@ library(RERconverge)
 library(tools)
 
 #---------------------------------------------------------------------
+# --- work on making new p value caluclation script --- 
+# --------------------------------------------------------------------
+
+realCors = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCombinedCategoricalCorrelationFile.rds")
+intermediateList = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPermulationsIntermediates7.rds")
+
+CategoricalCollectIntermediateResults = function(realCors, intermediateList, initial = F, start=1, end=NULL, report=F){
+  {totalStart = Sys.time()}
+  corsMatEffSize = intermediateList[[1]]
+  Peffsize = intermediateList[[2]]
+  corsMatPvals = intermediateList[[3]]
+  Ppvals = intermediateList[[4]]
+  message("Obtaining permulations p-values")
+  N = nrow(realCors[[1]]) #
+  if(initial){ #Only do this if start = 1, because otherwise it's already made and you'll overwrite the old script's results 
+    realCors[[1]]$permP = rep(NA, N) #Make a column for permP values in all of the dataframes 
+    realCors[[1]]$numMoreExtremePerms = rep(0, N) #Make a column for permP values in all of the dataframes 
+    realCors[[1]]$numTotalPerms = rep(0, N) #Make a column for permP values in all of the dataframes 
+    for (j in 1:length(realCors[[2]])) {
+      realCors[[2]][[j]]$permP = rep(NA, N) #Make a column for permP values in all of the dataframes 
+      realCors[[2]][[j]]$numMoreExtremePerms = rep(0, N) #Make a column for permP values in all of the dataframes 
+      realCors[[2]][[j]]$numTotalPerms = rep(0, N) #Make a column for permP values in all of the dataframes 
+    }
+  }
+  
+  #Start updating the correlations
+  if(is.null(end)){ #if no end specified
+    stop = N
+  }else{
+    stop = end
+  }
+  for (gene in start:stop) {
+    if(report){geneStart = Sys.time()}
+    if (is.na(realCors[[1]]$Rho[gene])) {
+      p = NA
+    }
+    else {
+      signVal = sign(realCors[[1]]$Rho[gene])
+      MatEffSizes = corsMatEffSize[gene, ]
+      signedMatEffSizes = MatEffSizes[which(sign(MatEffSizes) == signVal)]
+      newMoreExtreme = sum(abs(signedMatEffSizes) > abs(realCors[[1]]$Rho[gene]), na.rm = TRUE)
+      newTotal = (sum(!is.na(signedMatEffSizes)))
+      realCors[[1]]$numMoreExtremePerms[gene] = realCors[[1]]$numMoreExtremePerms[gene] + newMoreExtreme 
+      realCors[[1]]$numTotalPerms[gene] =  realCors[[1]]$numTotalPerms[gene] + newTotal
+    }
+    for (j in 1:length(realCors[[2]])) {
+      if (is.na(realCors[[2]][[j]]$Rho[gene])) {
+        p = NA
+      }
+      else {
+        realValue = realCors[[2]][[j]]$Rho[gene]
+        signValue = sign(realValue)
+        peffValues = Peffsize[[names(realCors[[2]][j])]][gene, ]
+        signedPeffValues = peffValues[which( sign(peffValues) == signValue)]
+        newMoreExtreme = (sum(abs(signedPeffValues) > abs(realValue), na.rm = TRUE))
+        newTotal = (sum(!is.na(signedPeffValues))+1)
+        realCors[[2]][[j]]$numMoreExtremePerms[gene] = realCors[[2]][[j]]$numMoreExtremePerms[gene] + newMoreExtreme
+        realCors[[2]][[j]]$numTotalPerms[gene] = realCors[[2]][[j]]$numTotalPerms[gene] + newTotal
+      }
+      
+    }
+    if(report){geneEnd = Sys.time(); geneDuration = geneEnd - geneStart;message(paste("Completed Gene", gene, "Duration", geneDuration, attr(geneDuration, "units")))}
+  }
+  message("Done")
+  {totalEnd = Sys.time(); totalDuration = totalEnd - totalStart;message(paste("Completed p-Values; Duration", totalDuration, attr(totalDuration, "units")))}
+  return(list(res = realCors, pvals = list(corsMatPvals, Ppvals), effsize = list(corsMatEffSize, Peffsize)))
+  
+}
+
+test = CategoricalCollectIntermediateResults(realCors, intermediateList, report = T)
+
+CollectedIntermediates = test
+
+CategoricalCalculatePValueFromCollectedIntermediates = function(CollectedIntermediates, start=1, end=NULL, report=F){
+  realCors = CollectedIntermediates[[1]]
+  N = nrow(realCors[[1]]) #
+  totalStart = Sys.time()
+
+  #Start updating the correlations
+  if(is.null(end)){ #if no end specified
+    stop = N
+  }else{
+    stop = end
+  }
+  for (gene in start:stop) {
+    if(report){geneStart = Sys.time()}
+    if (is.na(realCors[[1]]$Rho[gene])) {
+      p = NA
+    }
+    else {
+      p = realCors[[1]]$numMoreExtremePerms[gene]/(realCors[[1]]$numTotalPerms[gene]+1)
+    }
+    realCors[[1]]$permP[gene] = p
+    for (j in 1:length(realCors[[2]])) {
+      if (is.na(realCors[[2]][[j]]$Rho[gene])) {
+        p = NA
+      }
+      else {
+        p = (realCors[[2]][[j]]$numMoreExtremePerms[gene])/ (realCors[[2]][[j]]$numTotalPerms[gene]+1)
+      }
+      realCors[[2]][[j]]$permP[gene] = p
+    }
+    if(report){geneEnd = Sys.time(); geneDuration = geneEnd - geneStart;message(paste("Completed Gene", gene, "Duration", geneDuration, attr(geneDuration, "units")))}
+  }
+  message("Done")
+  {totalEnd = Sys.time(); totalDuration = totalEnd - totalStart;message(paste("Completed p-Values; Duration", totalDuration, attr(totalDuration, "units")))}
+  
+  CollectedIntermediates[[1]] = realCors
+  
+  return(CollectedIntermediates)
+}
+
+
+test2 = CategoricalCalculatePValueFromCollectedIntermediates(CollectedIntermediates)
+test2$res[[1]]
+
+test[[1]]
+
+if(calulateValue){
+  source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
+  
+  #Correlations
+  correlationFileName = paste(outputFolderName, filePrefix, "CombinedCategoricalCorrelationFile.rds", sep= "") #Make a correlation filename based on the prefix
+  correlationsObject = readRDS(correlationFileName) 
+  
+  if(onlyCalulateValue){
+    if(metacombineValue == F){
+      combinedDataFileName = paste(outputFolderName, filePrefix, "Combined", permulationPrefix,"PermulationsIntermediates", runInstanceValue, ".rds", sep="")
+    }else{
+      combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCombined", permulationPrefix, "PermulationsIntermediates", runInstanceValue, ".rds", sep="")
+    }
+    combinedPermulationsData = readRDS(combinedDataFileName)
+  }
+  permulationsPValues = CategoricalCalculatePermulationPValues(correlationsObject, combinedPermulationsData)
+  permulationsPValuesOutput = permulationsPValues$res
+  
+  #Give pairwise outputs descriptive names
+  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #select the phenotype vector based on prefix
+  phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
+  categories = map_to_state_space(phenotypeVector)                              #and use it to connect branch lengths to phenotype name
+  categoryNames = categories$name2index                                         #store the length-phenotype connection
+  
+  pairwiseTableNames = names(permulationsPValuesOutput[[2]])                               #Prepare to replace the number-number titles with phenotype-phenotype titles
+  for(i in 1:length(categoryNames)){                                            #for each phenotype
+    pairwiseTableNames= gsub(i, names(categoryNames)[i], pairwiseTableNames)    #replace the number with the phenotype name  
+  }
+  names(permulationsPValuesOutput[[2]]) = pairwiseTableNames                               #update the dataframe titles
+  
+  permulationsPValuesFilename = paste(outputFolderName, filePrefix, "PermulationsPValueCorrelations.rds", sep= "")
+  saveRDS(permulationsPValuesOutput, permulationsPValuesFilename)
+  
+  outputSubdirectoryNoslash = paste(outputFolderName, "Overall", sep = "")
+  if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+    dir.create(outputSubdirectoryNoslash)
+  }
+  outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+  
+  permulationsPValuesOverallFilename = paste(outputSubdirectory, filePrefix, "OverallPermulationsCorrelationFile.rds", sep= "")
+  saveRDS(permulationsPValuesOutput[[1]], permulationsPValuesOverallFilename)
+  
+  for(i in 1:length(pairwiseTableNames)){
+    pairwiseTableNames= gsub(" ", "", pairwiseTableNames)
+    
+    outputSubdirectoryNoslash = paste(outputFolderName, pairwiseTableNames[i], sep = "")
+    if(!dir.exists(outputSubdirectoryNoslash)){                       #create that directory if it does not exist
+      dir.create(outputSubdirectoryNoslash)
+    }
+    outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
+    
+    permulationsPValuesPairFilename = paste(outputSubdirectory, filePrefix, pairwiseTableNames[i], "PermulationsCorrelationFile",".rds", sep= "")
+    saveRDS(permulationsPValuesOutput[[2]][[i]], permulationsPValuesPairFilename)
+  }
+}
+
+
+#---------------------------------------------------------------------
 # --- Encorperate permulation P values --- 
 # --------------------------------------------------------------------
 
