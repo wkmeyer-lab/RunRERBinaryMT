@@ -124,6 +124,7 @@ permulationsData = readRDS(permulationsDataFileName)
 # -- calculate p values -- 
 
 permCorrelations = CategoricalPermulationGetCor(correlationsObject, permulationsData$trees, phenotypeVector, mainTrees, RERObject, report=T)
-
+message("Correlations complete.")
 permulationIntermediateFilename =  paste(outputFolderName, filePrefix, "CategoricalPermulationsIntermediates", runInstanceValue, ".rds", sep= "")
+message("Attempting to save file.")
 saveRDS(permCorrelations, permulationIntermediateFilename)
