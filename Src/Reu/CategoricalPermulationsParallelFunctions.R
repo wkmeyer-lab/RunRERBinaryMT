@@ -30,19 +30,32 @@ CategoricalPermulationGetCor =  function (realCors, nullPhens, phenvals, treesOb
   names(Peffsize) = names(realCors[[2]])
   if(report){message("pVals")}
   for (i in 1:length(nullPaths)) {
-    if(report){corStartTime = Sys.time()}
-    cors = getAllCor(RERmat, nullPaths[[i]], method = method, 
-                     min.sp = min.sp, min.pos = min.pos, winsorizeRER = winsorizeRER, 
-                     winsorizetrait = winsorizetrait, weighted = weighted)
-    if(report){corEndTime = Sys.time(); corDuration = corEndTime - corStartTime; message(paste("Completed Correlation", i, "Duration", corDuration, attr(corDuration, "units")))}
-    corsMatPvals[, i] = cors[[1]]$P
-    corsMatEffSize[, i] = cors[[1]]$Rho
-    for (j in 1:length(cors[[2]])) {
-      Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
-      Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
-    }
-    #if(report){message(paste("compelted", i))}
-    gc()
+    tryCatch({
+      if(report){corStartTime = Sys.time()}
+      cors = getAllCor(RERmat, nullPaths[[i]], method = method, 
+                       min.sp = min.sp, min.pos = min.pos, winsorizeRER = winsorizeRER, 
+                       winsorizetrait = winsorizetrait, weighted = weighted)
+      if(report){corEndTime = Sys.time(); corDuration = corEndTime - corStartTime; message(paste("Completed Correlation", i, "Duration", corDuration, attr(corDuration, "units")))}
+      corsMatPvals[, i] = cors[[1]]$P
+      corsMatEffSize[, i] = cors[[1]]$Rho
+      for (j in 1:length(cors[[2]])) {
+        Ppvals[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$P
+        Peffsize[[names(cors[[2]])[j]]][, i] = cors[[2]][[j]]$Rho
+      }
+      #if(report){message(paste("compelted", i))}
+      gc()
+    }, error = function(i, corsMatPvals, corsMatEffSize, Ppvals, Peffsize){
+      message("This error occurred on this Correlation:") 
+      message(i)
+      message("Skipping.")
+      corsMatPvals[, i] = NA
+      corsMatEffSize[, i] = NA
+      for (j in 1:length(cors[[2]])) {
+        Ppvals[[names(cors[[2]])[j]]][, i] = NA
+        Peffsize[[names(cors[[2]])[j]]][, i] = NA
+      }
+    } )
+
   }
   output = list(corsMatEffSize, Peffsize, corsMatPvals, Ppvals)
   names(output) = c("corsMatEffSize", "Peffsize", "corsMatPvals", "Ppvals")
