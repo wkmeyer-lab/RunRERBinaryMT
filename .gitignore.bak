@@ -16,8 +16,8 @@ Data/Testing
 *FishTree*
 Output/Test
 Output/Domestication/IgnoreGit
-*Correlationfile*
-*PathsFile*
+Correlationfile
+PathsFile
 RERFile
 *graphs*
 Output/categoryTest
@@ -39,3 +39,6 @@ Output/EcholocationUpdate2
 !Output/IPCUnRelaxTest
 !Output/HMGUnRelaxTest
 !Output/MaturityLifespanPercent
+!Data/mergedData.csv
+*.bak
+*Hyphy*
