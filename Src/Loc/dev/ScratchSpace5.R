@@ -3,6 +3,1731 @@ library(RERconverge)
 library(tools)
 
 # ------------------------------------------------------------------
+# ---  Make New SUpplementary File 3----- 
+# ------------------------------------------------------------------
+
+MGI = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-MGI_Mammalian_Phenotype_Level_4.rds")
+GO = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-GO_Biological_Process_2023.rds")
+DisGen = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-DisGeNet.rds")
+tissue = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-tissue_specific.rds")
+Enrichment = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-EnrichmentHsSymbolsFile2.rds")
+
+
+MGI$GeneSet = rep("MGI Mammalian Phenotype", nrow(MGI))
+GO$GeneSet = rep("GO Biological Process", nrow(GO))
+DisGen$GeneSet = rep("DisGeNET", nrow(DisGen))
+tissue$GeneSet = rep("Tissue Specific", nrow(tissue))
+Enrichment$GeneSet = rep("EnrichmentHsSymbols", nrow(Enrichment))
+
+
+combinedGenesets = rbind(MGI, GO, DisGen, tissue, Enrichment)
+
+combinedGenesets = combinedGenesets[,c(1,296, 2:295)]
+write.csv(combinedGenesets, "Output/CategoricalInsVertivoreTreeLiamInference/CombinedGenesetOutput.csv")
+
+# ------------------------------------------------------------------
+# ---  Make newick files for trees ----- 
+# ------------------------------------------------------------------
+
+phenotypeTree3Diet = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsVertivoreTreeCarnivoreLiamInferenceCategoricalCommonTree.rds")
+phenotypeTree4Diet = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalCommonTree.rds")
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+masterTree = mainTrees$masterTree
+
+
+write.tree(phenotypeTree3Diet,"Results/PhenTree3.txt")
+write.tree(phenotypeTree4Diet,"Results/PhenTree4.txt")
+write.tree(masterTree,"Results/masterTree.txt")
+
+
+
+# ------------------------------------------------------------------
+# ---  Make Liam Radial Tree ----- 
+# ------------------------------------------------------------------
+
+liamTree = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+nonliamTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+
+
+match(liamTree$tip.label, nonliamTree$tip.label)
+
+liamNonliamTipConversionIndex = match(nonliamTree$tip.label, liamTree$tip.label)
+
+
+{
+collapsedClades = data.frame()
+collapsedClades[1,] = NA
+
+collapsedClades$Platypus = MRCA(commonCategoricalTree, 195)
+collapsedClades$Opossums = MRCA(commonCategoricalTree, c(194,192,193))
+collapsedClades$Koala = MRCA(commonCategoricalTree, c(190,191))
+collapsedClades$Kangaroos = MRCA(commonCategoricalTree, c(186,187,189,188))
+collapsedClades$Anteaters = MRCA(commonCategoricalTree, c(183,182))
+collapsedClades$Sloths = MRCA(commonCategoricalTree, c(181,180))
+collapsedClades$Elephant= MRCA(commonCategoricalTree, c(178,177,176))
+collapsedClades$Aardvark = MRCA(commonCategoricalTree, c(175,174,171,172,173))
+collapsedClades$Strepsirrhini = MRCA(commonCategoricalTree, c(28,29,27,26,24,25,23,21,22,20,19))
+collapsedClades$Atelidae = MRCA(commonCategoricalTree, c(6,5,4,3,2,1))
+collapsedClades$Chimpanze = MRCA(commonCategoricalTree, c(18,17,16,15,14,12,13,10,9,8,7,11))
+collapsedClades$Hares = MRCA(commonCategoricalTree, c(71,70))
+collapsedClades$Squirrels = MRCA(commonCategoricalTree, c(69,67,68,61,66,65,63,62,64))
+collapsedClades$Capybara = MRCA(commonCategoricalTree, c(33,32,31,30))
+collapsedClades$Beaver = MRCA(commonCategoricalTree, c(36,35,34))
+collapsedClades$Jerboa = MRCA(commonCategoricalTree, c(59,58,57))
+collapsedClades$Deomyinae = MRCA(commonCategoricalTree, c(41,39,40,38,37,44,43,42))
+collapsedClades$Vole = MRCA(commonCategoricalTree, c(48,47,46,45))
+collapsedClades$Neotominae = MRCA(commonCategoricalTree, c(54,49,50,52,51,53))
+collapsedClades$`African Hedgehogs` = MRCA(commonCategoricalTree, c(168,169))
+collapsedClades$`Talpa europaea` = MRCA(commonCategoricalTree, c(167,165,164,166))
+collapsedClades$`Flying Fox` = MRCA(commonCategoricalTree, c(163,161,162))
+collapsedClades$Rhinolophidae = MRCA(commonCategoricalTree, c(155,156,158,157,159,160))
+collapsedClades$`Big Brown Bat` = MRCA(commonCategoricalTree, c(143,142,139,140,141))
+collapsedClades$Phyllostomidae = MRCA(commonCategoricalTree, c(144,145,147,146))
+collapsedClades$Noctilio = MRCA(commonCategoricalTree, c(154))
+collapsedClades$Horse = MRCA(commonCategoricalTree, c(100,99,98))
+collapsedClades$Pig = MRCA(commonCategoricalTree, c(95,96))
+collapsedClades$`bos bison` = MRCA(commonCategoricalTree, c(87,89,88))
+collapsedClades$`Humpback Whale` = MRCA(commonCategoricalTree, c(75,74,72,73))
+collapsedClades$`Dolphins` = MRCA(commonCategoricalTree, c(82,81,80,77,76))
+collapsedClades$`Pangolin` = MRCA(commonCategoricalTree, c(138,137))
+collapsedClades$`Lion` = MRCA(commonCategoricalTree, c(131,130,129))
+collapsedClades$`Meerkat` = MRCA(commonCategoricalTree, c(135,134))
+collapsedClades$`Dog` = MRCA(commonCategoricalTree, c(101,102))
+collapsedClades$`Brown Bear` = MRCA(commonCategoricalTree, c(125,128,127))
+collapsedClades$`Odobenus rosmarus` = MRCA(commonCategoricalTree, c(120,119,118,117))
+collapsedClades$`Phocidae` = MRCA(commonCategoricalTree, c(124,123,121,122))
+collapsedClades$`Procyon lotor` = MRCA(commonCategoricalTree, c(114,113,112))
+collapsedClades$`Lontra provocax` = MRCA(commonCategoricalTree, c(108,107,106,105,104))
+collapsedClades$`Tasmanian Devil` = MRCA(commonCategoricalTree, c(184,185))
+}
+
+
+
+
+{
+  collapsedClades = data.frame()
+  collapsedClades[1,] = NA
+  
+  collapsedClades$Platypus = MRCA(commonCategoricalTree, c(1))
+  collapsedClades$Opossums = MRCA(commonCategoricalTree, c(3,4,5))
+  collapsedClades$Koala = MRCA(commonCategoricalTree, c(8,9))
+  collapsedClades$Kangaroos = MRCA(commonCategoricalTree, c(10,11,12,13))
+  collapsedClades$Anteaters = MRCA(commonCategoricalTree, c(23,24))
+  collapsedClades$Sloths = MRCA(commonCategoricalTree, c(25,26))
+  collapsedClades$Elephant= MRCA(commonCategoricalTree, c(19,20,21))
+  collapsedClades$Aardvark = MRCA(commonCategoricalTree, c(14,15,16,17,18))
+  collapsedClades$Strepsirrhini = MRCA(commonCategoricalTree, c(27,28,29,30,31,32,33,34,35,36,37))
+  collapsedClades$Atelidae = MRCA(commonCategoricalTree, c(38,39,40,41,42,43))
+  collapsedClades$Chimpanze = MRCA(commonCategoricalTree, c(44:55))
+  collapsedClades$Hares = MRCA(commonCategoricalTree, c(56,57))
+  collapsedClades$Squirrels = MRCA(commonCategoricalTree, c(58:66))
+  collapsedClades$Capybara = MRCA(commonCategoricalTree, c(67:70))
+  collapsedClades$Beaver = MRCA(commonCategoricalTree, c(72:74))
+  collapsedClades$Jerboa = MRCA(commonCategoricalTree, c(75:77))
+  collapsedClades$Deomyinae = MRCA(commonCategoricalTree, c(90:97))
+  collapsedClades$Vole = MRCA(commonCategoricalTree, c(86:89))
+  collapsedClades$Neotominae = MRCA(commonCategoricalTree, c(80:85))
+  collapsedClades$`African Hedgehogs` = MRCA(commonCategoricalTree, c(99,100))
+  collapsedClades$`Talpa europaea` = MRCA(commonCategoricalTree, c(101:104))
+  collapsedClades$`Flying Fox` = MRCA(commonCategoricalTree, c(105:107))
+  collapsedClades$Rhinolophidae = MRCA(commonCategoricalTree, c(108:113))
+  collapsedClades$`Big Brown Bat` = MRCA(commonCategoricalTree, c(125:129))
+  collapsedClades$Phyllostomidae = MRCA(commonCategoricalTree, c(121:124))
+  collapsedClades$Noctilio = MRCA(commonCategoricalTree, c(114))
+  collapsedClades$Horse = MRCA(commonCategoricalTree, c(168:170))
+  collapsedClades$Pig = MRCA(commonCategoricalTree, c(172:173))
+  collapsedClades$`bos bison` = MRCA(commonCategoricalTree, c(194:196))
+  collapsedClades$`Humpback Whale` = MRCA(commonCategoricalTree, c(175:178))
+  collapsedClades$`Dolphins` = MRCA(commonCategoricalTree, c(182:186))
+  collapsedClades$`Pangolin` = MRCA(commonCategoricalTree, c(130:131))
+  collapsedClades$`Lion` = MRCA(commonCategoricalTree, c(137:139))
+  collapsedClades$`Meerkat` = MRCA(commonCategoricalTree, c(135:136))
+  collapsedClades$`Dog` = MRCA(commonCategoricalTree, c(140:141))
+  collapsedClades$`Brown Bear` = MRCA(commonCategoricalTree, c(142:144))
+  collapsedClades$`Odobenus rosmarus` = MRCA(commonCategoricalTree, c(146:149))
+  collapsedClades$`Phocidae` = MRCA(commonCategoricalTree, c(150:153))
+  collapsedClades$`Procyon lotor` = MRCA(commonCategoricalTree, c(156:158))
+  collapsedClades$`Lontra provocax` = MRCA(commonCategoricalTree, c(162:166))
+  collapsedClades$`Tasmanian Devil` = MRCA(commonCategoricalTree, c(6:7))
+  
+  #collapsedClades$Cats = MRCA(commonCategoricalTree, c("Jaguar", "Lion", "Cheetah"))
+}
+
+
+#collapsedClades$Cats = MRCA(commonCategoricalTree, c("Jaguar", "Lion", "Cheetah"))
+
+# ------------------------------------------------------------------
+# ---  check seize ----- 
+# ------------------------------------------------------------------
+
+phenoTree = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+
+table(phenoTree$edge.length)
+
+
+data = read.csv("Data/mergedData.csv")
+table(data$DerekDietClassification90InsVertivoreSorting)
+grep("Piscivore")
+
+# ------------------------------------------------------------------
+# ---  Examine cortisol results ----- 
+# ------------------------------------------------------------------
+
+which(rownames(GoMetaCombined) == "REACTOME_METABOLISM_OF_STEROID_HORMONES")
+
+which(gmt$geneset.names == "REACTOME_METABOLISM_OF_STEROID_HORMONES")
+
+steroidGenes = gmt$genesets[348][[1]]
+
+steriodCHSignifiance = geneMetaCombined$`CH-significant-Liam`[match(steroidGenes, rownames(geneMetaCombined))]
+steriodHISignifiance = geneMetaCombined$`HI-significant-Liam`[match(steroidGenes, rownames(geneMetaCombined))]
+steriodHVSignifiance = geneMetaCombined$`HV-significant-Liam`[match(steroidGenes, rownames(geneMetaCombined))]
+
+
+
+steriodSignificance = data.frame(steroidGenes, steriodCHSignifiance, steriodHISignifiance, steriodHVSignifiance)
+
+genesAllwaysUnsignificant = which(apply(steriodSignificance[,2:4], 1, function(x) all(x == FALSE)))
+genesNA = which(apply(steriodSignificance[,2:4], 1, function(x) all(is.na(x))))
+
+
+steriodSignificant = steriodSignificance[-c(genesAllwaysUnsignificant, genesNA),]
+
+
+CHOnlyGenes = steriodSignificant[c(which(apply(steriodSignificant[,3:4], 1, function(x) all(x == FALSE))),which(apply(steriodSignificant[,3:4], 1, function(x) all(x == TRUE)))),]
+steriodDifferences = steriodSignificant[-c(which(apply(steriodSignificant[,3:4], 1, function(x) all(x == FALSE))),which(apply(steriodSignificant[,3:4], 1, function(x) all(x == TRUE)))),]
+
+
+
+
+# ------------------------------------------------------------------
+# ---  Make new venn diagram ----- 
+# ------------------------------------------------------------------
+
+vennInputDataframe = vennGoSignificanceResults
+
+makeVennPlot = function(vennInputDataframe, mainTitle, plot = T){
+  # Build logical vectors for each set
+  set1 <- vennInputDataframe[1] == TRUE
+  set2 <- vennInputDataframe[2] == TRUE
+  set3 <- vennInputDataframe[3] == TRUE
+  
+  # Create the Venn counts for each region
+  vennCounts = c(
+    "Column One" = sum(set1 & !set2 & !set3, na.rm = T),
+    "Column Two" = sum(!set1 & set2 & !set3, na.rm = T),
+    "Column Three" = sum(!set1 & !set2 & set3, na.rm = T),
+    "Column One&Column Two" = sum(set1 & set2 & !set3, na.rm = T),
+    "Column One&Column Three" = sum(set1 & !set2 & set3, na.rm = T),
+    "Column Two&Column Three" = sum(!set1 & set2 & set3, na.rm = T),
+    "Column One&Column Two&Column Three" = sum(set1 & set2 & set3, na.rm = T)
+  )
+  
+  comparisonPrefixes = gsub("-significant", "", names(vennInputDataframe))
+  comparisonPrefixes = gsub(commonBackground, "", comparisonPrefixes)
+  comparisonNames = sapply(comparisonPrefixes, replacePrefixWithName)
+  names(vennCounts)=c(comparisonNames[1], comparisonNames[2], comparisonNames[3], paste(comparisonNames[1], comparisonNames[2], sep="&"),paste(comparisonNames[1], comparisonNames[3], sep="&"),paste(comparisonNames[2], comparisonNames[3], sep="&"), paste(comparisonNames[1], comparisonNames[2], comparisonNames[3], sep="&"))
+  
+  # - make venn diagram labels, with the combination section on two lines and the solo sections on one 
+  totalVennValues = sum(vennCounts)
+  vennLabels = paste0(
+    vennCounts, "\n (", round(vennCounts / totalVennValues * 100, 1), "%)"
+  )
+  for(i in 1:3){
+    vennLabels[i] = paste0(
+      vennCounts[i], " (", round(vennCounts[i] / totalVennValues * 100, 1), "%)"
+    )
+  }
+  
+  
+  vennCountsCustom = vennCounts
+  
+  vennCountsCustom[5] = 80
+  vennCountsCustom[1] = 40 
+  vennCountsCustom[2] = 15
+  
+  vennLabelsCustom = vennLabels
+  vennLabelsCustom[4] = 3
+  
+  # Create Euler diagram
+  fit = euler(vennCountsCustom)
+  outPlot = plot(fit,
+                 fills = list(fill = vennColorset, alpha = 0.5),
+                 labels = list(font = 4),
+                 quantities = list(labels = vennLabelsCustom, font = 3),
+                 main = mainTitle, theme)
+  if(plot){print(outPlot)}
+  return(outPlot)
+}
+
+GoVennCustom = outPlot
+
+png(width = 1120, height = 560, file = "Output/CategoricalInsvertivoreTreeLiamInference/VennDiagramFigure.png")
+combinedPlot = grid.arrange(geneVenn, GoVennCustom, nrow = 1)
+dev.off()
+
+# ------------------------------------------------------------------
+# --- Add cytoscape index column ----- 
+# ------------------------------------------------------------------
+
+cytoscapeNodes1 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/CarnivoreConserveddefaultnode.csv")
+cytoscapeNodes2 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/Bidirectionalnodes.csv")
+cytoscapeNodes3 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/Herbivorenodes.csv")
+cytoscapeNodes4 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/BidectionalNewNodes.csv")
+cytoscapeNodes5 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Insectivore-Vertivore/Cytoscape/IVNodes.csv")
+cytoscapeNodes6 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/NewPredatorNodes.csv")
+cytoscapeNodes7 = read.csv("Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/NewBidirectionalNodes.csv")
+
+
+cytoscapeNodes = cytoscapeNodes7
+
+GOOutput = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+
+rownames(GOOutput)
+
+cytoscapeNodes$shared.name
+
+test = match(cytoscapeNodes$shared.name, rownames(GOOutput))
+
+which(rownames(GOOutput) == "KEGG_BETA_ALANINE_METABOLISM")
+which(rownames(GOOutput) == "REACTOME_DNA_REPAIR")
+
+
+
+rownames(GOOutput)[436]
+
+nodeIdexes = data.frame(cytoscapeNodes$shared.name, (match(cytoscapeNodes$shared.name, rownames(GOOutput)))+1)
+
+write.csv(nodeIdexes, "Output/CategoricalInsVertivoreTreeLiamInference/Herbivore-Insectivore/Cytoscape/fixedBidirectionalIndex.csv")
+
+
+length(which(GOOutput$`IV-significant`))
+
+length(which(geneMetaCombined$`IV-significant-Liam`))
+
+repairVsH = c("PID_FANCONI_PATHWAY","REACTOME_DISEASES_OF_DNA_REPAIR","REACTOME_DNA_DOUBLE_STRAND_BREAK_REPAIR","REACTOME_DNA_REPAIR","REACTOME_FANCONI_ANEMIA_PATHWAY","REACTOME_HDR_THROUGH_HOMOLOGOUS_RECOMBINATION_HRR","REACTOME_HDR_THROUGH_SINGLE_STRAND_ANNEALING_SSA","REACTOME_HOMOLOGOUS_DNA_PAIRING_AND_STRAND_EXCHANGE","REACTOME_HOMOLOGY_DIRECTED_REPAIR","REACTOME_RESOLUTION_OF_D_LOOP_STRUCTURES","REACTOME_RESOLUTION_OF_D_LOOP_STRUCTURES_THROUGH_SYNTHESIS_DEPENDENT_STRAND_ANNEALING_SDSA")
+
+repairIV = c("KEGG_HOMOLOGOUS_RECOMBINATION","REACTOME_DISEASES_OF_DNA_REPAIR","REACTOME_DISEASES_OF_MISMATCH_REPAIR_MMR","REACTOME_DNA_DOUBLE_STRAND_BREAK_REPAIR","REACTOME_DNA_REPAIR","REACTOME_FANCONI_ANEMIA_PATHWAY","REACTOME_HDR_THROUGH_HOMOLOGOUS_RECOMBINATION_HRR","REACTOME_HDR_THROUGH_SINGLE_STRAND_ANNEALING_SSA","REACTOME_HOMOLOGOUS_DNA_PAIRING_AND_STRAND_EXCHANGE","REACTOME_HOMOLOGY_DIRECTED_REPAIR","REACTOME_RESOLUTION_OF_D_LOOP_STRUCTURES","REACTOME_RESOLUTION_OF_D_LOOP_STRUCTURES_THROUGH_SYNTHESIS_DEPENDENT_STRAND_ANNEALING_SDSA")
+
+repairVsH %in% repairIV
+repairIV %in% repairVsH
+
+
+RnavVsH = c(
+  "REACTOME_TRANSPORT_OF_THE_SLBP_DEPENDANT_MATURE_MRNA",
+  "REACTOME_RESPONSE_OF_MTB_TO_PHAGOCYTOSIS",
+  "REACTOME_LEISHMANIA_INFECTION",
+  "REACTOME_NUCLEAR_ENVELOPE_NE_REASSEMBLY",
+  "REACTOME_MRNA_SPLICING_MINOR_PATHWAY",
+  "REACTOME_FORMATION_OF_THE_EARLY_ELONGATION_COMPLEX",
+  "REACTOME_NEUROTOXICITY_OF_CLOSTRIDIUM_TOXINS",
+  "REACTOME_HCMV_INFECTION",
+  "REACTOME_FORMATION_OF_TC_NER_PRE_INCISION_COMPLEX",
+  "REACTOME_FCERI_MEDIATED_NF_KB_ACTIVATION",
+  "REACTOME_HIV_TRANSCRIPTION_ELONGATION",
+  "REACTOME_METABOLISM_OF_RNA",
+  "REACTOME_PROCESSING_OF_CAPPED_INTRON_CONTAINING_PRE_MRNA",
+  "REACTOME_HIV_LIFE_CYCLE",
+  "REACTOME_INFLUENZA_INFECTION",
+  "REACTOME_HCMV_LATE_EVENTS",
+  "REACTOME_HOST_INTERACTIONS_OF_HIV_FACTORS",
+  "REACTOME_SNRNP_ASSEMBLY",
+  "REACTOME_FORMATION_OF_RNA_POL_II_ELONGATION_COMPLEX",
+  "REACTOME_TRANSPORT_OF_MATURE_MRNAS_DERIVED_FROM_INTRONLESS_TRANSCRIPTS",
+  "REACTOME_SUPPRESSION_OF_PHAGOSOMAL_MATURATION",
+  "REACTOME_RNA_POLYMERASE_II_PRE_TRANSCRIPTION_EVENTS",
+  "REACTOME_TOXICITY_OF_BOTULINUM_TOXIN_TYPE_D_BOTD",
+  "REACTOME_MRNA_SPLICING",
+  "REACTOME_INFECTION_WITH_MYCOBACTERIUM_TUBERCULOSIS",
+  "REACTOME_SUMOYLATION_OF_CHROMATIN_ORGANIZATION_PROTEINS",
+  "REACTOME_HCMV_EARLY_EVENTS",
+  "REACTOME_PREVENTION_OF_PHAGOSOMAL_LYSOSOMAL_FUSION",
+  "REACTOME_HIV_INFECTION",
+  "REACTOME_RNA_POLYMERASE_II_TRANSCRIPTION_TERMINATION",
+  "REACTOME_SLBP_DEPENDENT_PROCESSING_OF_REPLICATION_DEPENDENT_HISTONE_PRE_MRNAS",
+  "REACTOME_PROCESSING_OF_CAPPED_INTRONLESS_PRE_MRNA",
+  "REACTOME_INFECTIOUS_DISEASE",
+  "REACTOME_GLYCOLYSIS",
+  "REACTOME_PROCESSING_OF_INTRONLESS_PRE_MRNAS",
+  "KEGG_SPLICEOSOME",
+  "REACTOME_ABORTIVE_ELONGATION_OF_HIV_1_TRANSCRIPT_IN_THE_ABSENCE_OF_TAT",
+  "REACTOME_TRANSPORT_OF_MATURE_TRANSCRIPT_TO_CYTOPLASM"
+)
+
+RnavIV = c(
+  "REACTOME_FORMATION_OF_RNA_POL_II_ELONGATION_COMPLEX",
+  "REACTOME_HIV_INFECTION",
+  "REACTOME_INFECTIOUS_DISEASE",
+  "REACTOME_POTENTIAL_THERAPEUTICS_FOR_SARS",
+  "REACTOME_RNA_POLYMERASE_II_PRE_TRANSCRIPTION_EVENTS",
+  "REACTOME_RNA_POLYMERASE_II_TRANSCRIPTION",
+  "REACTOME_SARS_COV_INFECTIONS",
+  "REACTOME_TRANSCRIPTION_OF_THE_HIV_GENOME"
+)
+
+
+RnavIV[!RnavIV %in% RnavVsH]
+
+# ------------------------------------------------------------------
+# --- Update Enrichments ----- 
+# ------------------------------------------------------------------
+
+source("src/reu/RERConvergeFunctions.R")
+
+
+getStat = function(res){
+  stat=sign(res$Rho)*(-log10(res$P))
+  names(stat)=rownames(res)
+  #deal with duplicated genes
+  genenames=sub("\\..*", "",names(stat))
+  multname=names(which(table(genenames)>1))
+  for(n in multname){
+    ii=which(genenames==n)
+    iimax=which(max(stat[ii])==max(abs(stat[ii])))
+    stat[ii[-iimax]]=NA
+  }
+  sum(is.na(stat))
+  stat=stat[!is.na(stat)]
+  
+  stat
+}
+
+
+fastwilcoxGMTall = function (vals, annotList, alternative = "two.sided", ...) 
+{
+  reslist = list()
+  for (n in names(annotList)) {
+    reslist[[n]] = fastwilcoxGMT(vals, annotList[[n]], alternative = alternative, 
+                                 ...)
+    message(paste0(nrow(reslist[[n]]), " results for annotation set ", 
+                   n))
+  }
+  reslist
+}
+
+
+vals = rerStats
+gmt = gmtAnnotations
+
+fastwilcoxGMT=function(vals, gmt, simple=T, use.all=F, num.g=10,genes=NULL, outputGeneVals=F, order=F,
+                       alternative = "two.sided"){
+  vals=vals[!is.na(vals)]
+  if(is.null(genes)){
+    genes=unique(unlist(gmt$genesets))
+  }
+  out=matrix(nrow=length(gmt$genesets), ncol=5)
+  rownames(out)=gmt$geneset.names
+  colnames(out)=c("stat", "pval", "p.adj","num.genes", "gene.vals")
+  out=as.data.frame(out)
+  genes=intersect(genes, names(vals))
+  
+  valsr=rank(vals[genes])
+  numg=length(vals)+1
+  valsallr=rank(vals)
+  for( i in 1:nrow(out)){
+    
+    curgenes=intersect(genes,gmt$genesets[[i]])
+    
+    bkgenes=setdiff(genes, curgenes)
+    
+    if (length(bkgenes)==0 || use.all){
+      bkgenes=setdiff(names(vals), curgenes)
+    }
+    if(length(curgenes)>=num.g & length(bkgenes)>2){
+      if(!simple){
+        # change alternative = "greater" for the one-sided test
+        res=wilcox.test(x = vals[curgenes], y=vals[bkgenes], exact=F, alternative = alternative)
+        
+        out[i, 1:2]=c(res$statistic/(as.numeric(length(bkgenes))*as.numeric(length(curgenes))), res$p.value)
+      }
+      else{
+        # add an alternative parameter (can be "greater" or "two.sided")
+        out[i, 1:2]=simpleAUCgenesRanks(valsr[curgenes],valsr[bkgenes], alt = alternative)
+        
+      }
+      
+      out[i,"num.genes"]=length(curgenes)
+      if(outputGeneVals){
+        if (out[i,1]>0.5){
+          oo=order(vals[curgenes], decreasing = T)
+          granks=numg-valsallr[curgenes]
+        }
+        else{
+          oo=order(vals[curgenes], decreasing = F)
+          granks=valsallr[curgenes]
+        }
+        
+        
+        nn=paste(curgenes[oo],round((granks[curgenes])[oo],2),sep=':' )
+        out[i,"gene.vals"]=paste(nn, collapse = ", ")
+      }
+    }
+    
+  }
+  # hist(out[,2])
+  out[,1]=out[,1]-0.5
+  out[, "p.adj"]=p.adjust(out[,2], method="BH")
+  
+  out=out[!is.na(out[,2]),]
+  if(order){
+    out=out[order(-abs(out[,1])),]
+  }
+  out
+}
+
+
+pos = valsr[curgenes]
+neg = valsr[bkgenes]
+
+simpleAUCgenesRanks=function(pos, neg, alt = "two.sided"){
+  
+  posn=length(pos)
+  negn=length(neg)
+  posn=as.numeric(posn)
+  negn=as.numeric(negn)
+  stat=sum(pos)-posn*(posn+1)/2 #Average pos
+  auc=stat/(posn*negn)
+  mu=posn*negn/2
+  sd=sqrt((posn*negn*(posn+negn+1))/12)
+  
+  if(alt == "two.sided") {
+    stattest=apply(cbind(stat, posn*negn-stat),1,max)
+    pp=(2*pnorm(stattest, mu, sd, lower.tail = F))
+  }
+  
+  else if(alt == "greater"){
+    pp=(pnorm(stat,mu,sd,lower.tail=FALSE)) 
+  }
+  return(c(auc,pp))
+}
+
+
+# ------------------------------------------------------------------
+# --- Make liam-non-liam comparison plots ----- 
+# ------------------------------------------------------------------
+
+
+# -- argument setup  -- 
+significanceCutoff = 0.05
+prefix = "CategoricalInsvertivoreTreeLiamInference"
+pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
+geneSet = "KeggReactome"
+vennDiagramSet = c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")  
+vennColorset = c("darkblue", "red", "orange")
+usingGo = !is.null(geneSet)
+saveCombinedData = T
+saveCombinedData = F
+bothAxis = T
+saveData = T
+saveData = F
+
+args = c("r=CategoricalInsvertivoreTree")
+args = c("r=CategoricalInsvertivoreTreeLiamInference")
+
+
+nonliamResults = combinedResults
+nonliamGoResults = GoCombinedResults
+
+liamResults = combinedResults
+liamGoResults = GoCombinedResults
+
+# -- Read Data 
+combinedGeneDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
+combinedResults = readRDS(combinedGeneDataFilename)
+significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
+geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
+
+
+combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
+GoCombinedResults = readRDS(combinedGODataFilename)
+GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
+GoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% GoSignificanceColumns]
+
+
+
+
+
+
+
+# -- make resources to prefix-phenotype conversion 
+prefixSet = NULL
+prefixList = NULL
+for(i in 1:length(pairwiseSets)){
+  currentSet = pairwiseSets[i]
+  correlationSubsetName = gsub("-", " - ", currentSet)
+  correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
+  prefixEntry = correlationPrefix; names(prefixEntry) = currentSet; prefixSet = append(prefixSet, prefixEntry)
+  for(j in 1:2){
+    prefixSingle = strsplit(correlationPrefix, split = "")[[1]][j]; names(prefixSingle) = strsplit(currentSet, split="-")[[1]][j]; prefixList = append(prefixList, prefixSingle)
+  }
+}
+
+
+prefixList = unlist(prefixList); prefixList = prefixList[!duplicated(prefixList)]
+
+# Debug code line for personal use 
+names(prefixList)[which(names(prefixList) == "Insectivore")] = "Invertivore"
+
+replacePrefixWithName = function(x) {
+  inversePrefixList = setNames(names(prefixList), prefixList); parts = unlist(strsplit(x, "-")); fullNames = inversePrefixList[parts]; paste(fullNames, collapse = "-")
+}
+
+addDashes = function(vector) {
+  sapply(vector, function(s) paste(strsplit(s, "")[[1]], collapse = "-"))
+}
+
+
+#-------------------------------------------------------------------
+
+
+
+#gene
+liamResults = liamGeneResults
+nonliamResults = nonliamGeneResults
+
+editedLiamResults = liamResults
+colnames(editedLiamResults) = paste0(colnames(liamResults), "-Liam")
+metaCombinedResults = cbind(nonliamResults, editedLiamResults)
+
+combinedResults = metaCombinedResults
+geneMetaCombined = metaCombinedResults
+
+
+#GO
+#nonliamGeneResults = nonliamResults
+#liamGeneResults = liamResults
+
+liamResults = liamGoResults
+nonliamResults = nonliamGoResults
+
+editedLiamResults = liamResults
+colnames(editedLiamResults) = paste0(colnames(liamResults), "-Liam")
+metaCombinedResults = cbind(nonliamResults, editedLiamResults)
+
+names(combinedResults) = gsub("-stat", corrleationColumnType, names(combinedResults))
+
+combinedResults = metaCombinedResults
+GoMetaCombined = metaCombinedResults
+
+
+
+#Prefix
+prefixList = append(prefixList, c("L", "i", "a", "m", "-", ""))
+names(prefixList) = append(names(prefixList)[1:5], c("Liam", "", "", "", "", ""))
+
+bothAxis = F
+
+corrleationColumnType = "-p.adj"
+#-------------------------------------------------------------------
+
+{
+  
+  
+  
+  grep(corrleationColumnType, names(combinedResults))
+  rhoValues = combinedResults[,grep(corrleationColumnType, names(combinedResults))]
+  
+  rhoComparisions = names(rhoValues)
+  
+  #rhoComparisions = rhoComparisions[-c(5,6,7,9,13,14,15)]
+  
+  rhoPhenotypes = strsplit(gsub(corrleationColumnType, "", rhoComparisions), split = "")
+  commonBackground = Reduce(intersect, rhoPhenotypes)
+  if(length(commonBackground) == 1){
+    for(i in 1:length(rhoPhenotypes)){ #invert tho if background in second postion so rho has consistent meaning relative to background
+      if(rhoPhenotypes[[i]][1] != commonBackground){
+        cat("Inverting rho of ", rhoPhenotypes[[i]] , "becuase background is in first position.")
+        rhoValues[i] = -1*rhoValues[i]
+      }
+    }
+  }
+  
+  densityScaleSet = NULL
+  
+  #generate the plots slim-ly to get the desired density scale 
+  for(i in 1:length(rhoValues)){
+    xName = names(rhoValues)[i]
+    if(i+1 <= length(rhoValues)){
+      for(j in (i+1):length(rhoValues)){
+        yName = names(rhoValues)[j]
+        
+        rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
+          geom_point() + geom_pointdensity() + scale_color_viridis()
+        
+        
+        denstiyScaleValue = ggplot_build(rhoCorrellPlot)$plot$scales$scales[[1]]$get_limits()[2]
+        densityScaleSet = append(densityScaleSet, denstiyScaleValue)
+        rm(rhoCorrellPlot)
+      }
+    }
+  }
+  densityScale = c(1, max(densityScaleSet))
+  
+  
+  rhoPlotSet = list()
+  netIndex= 0
+  for(i in 1:length(rhoValues)){
+    xName = names(rhoValues)[i]
+    if(i <= length(rhoValues)){
+      if(bothAxis){jStart = 1}else{jStart = i+1}
+      for(j in (jStart):length(rhoValues)){
+        yName = names(rhoValues)[j]
+        yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-", "", gsub(corrleationColumnType, "", yName)))), " Dunn Z Statistic")
+        xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-", "", gsub(corrleationColumnType, "", xName)))), " Dunn Z Statistic")
+        
+        rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
+          geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
+          stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE, size = 6) +
+          theme_classic()+
+          xlab(xLabel) + ylab(yLabel)+
+          theme(axis.title.x = element_text(size = 16), axis.title.y = element_text(size = 16))
+        
+        netIndex = netIndex +1
+        rhoPlotSet[[netIndex]] = rhoCorrellPlot
+        names(rhoPlotSet)[netIndex] = paste(xName, yName, sep="-")
+        rm(rhoCorrellPlot)
+      }
+    }
+  }
+  # add a null plot by using two using permulations as a comparision 
+  
+  #pdf()
+  #print(rhoPlotSet)
+  #dev.off()
+}
+
+names(rhoPlotSet)
+
+firstPhen = sapply(strsplit(names(rhoPlotSet), "-"), `[`, 1)
+secondPhen = sapply(strsplit(names(rhoPlotSet), "-"), `[`, 3)
+
+matchingPlots = which(firstPhen == secondPhen)
+
+liamComaprePlots = rhoPlotSet[matchingPlots]
+names(liamComaprePlots)
+
+#Gene
+CHPlot = liamComaprePlots[1]
+CHPlot = CHPlot[[1]]
+
+HIPlot = liamComaprePlots[2]
+HIPlot = HIPlot[[1]]
+
+HVPlot = liamComaprePlots[4]
+HVPlot = HVPlot[[1]]
+
+
+herbivoreCompare = grid.arrange(CHPlot, HIPlot, HVPlot, nrow = 2)
+
+#geneComparePlot = herbivoreCompare
+genePvalComparePlot = herbivoreCompare
+
+
+
+#GO
+CHPlot = liamComaprePlots[3]
+CHPlot = CHPlot[[1]]
+
+HIPlot = liamComaprePlots[1]
+HIPlot = HIPlot[[1]]
+
+HVPlot = liamComaprePlots[2]
+HVPlot = HVPlot[[1]]
+
+
+herbivoreCompare = grid.arrange(CHPlot, HIPlot, HVPlot, nrow = 2)
+
+#GoComparePlot = herbivoreCompare
+GoPvalComparePlot = herbivoreCompare
+
+
+plot(geneComparePlot)
+plot(GoComparePlot)
+
+
+# ------------------------------------------------------------------
+# ---------- Looking into the specific lost GO categories 
+
+GoMetaCombined
+names(GoMetaCombined)
+which(GoMetaCombined$`HI-HV-Overlap` & !GoMetaCombined$`HI-HV-CH-Overlap`)
+
+# --- Finding changed pathways 
+
+HiDifference = which(GoMetaCombined$`HI-significant` != GoMetaCombined$`HI-significant-Liam`)
+HvDifference = which(GoMetaCombined$`HV-significant` != GoMetaCombined$`HV-significant-Liam`)
+ChDifference = which(GoMetaCombined$`CH-significant` != GoMetaCombined$`CH-significant-Liam`)
+
+
+
+
+
+
+nonliamOnlyHI = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HI-significant"),which(colnames(GoMetaCombined) == "HI-significant-Liam"))][,1]))
+liamOnlyHI = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HI-significant"),which(colnames(GoMetaCombined) == "HI-significant-Liam"))][,2]))
+HiLoss = nonliamOnlyHI-liamOnlyHI
+nonliamOnlyHV = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HV-significant"),which(colnames(GoMetaCombined) == "HV-significant-Liam"))][,1]))
+liamOnlyHV = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HV-significant"),which(colnames(GoMetaCombined) == "HV-significant-Liam"))][,2]))
+HvLoss = nonliamOnlyHV-liamOnlyHV
+nonliamOnlyCH = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "CH-significant"),which(colnames(GoMetaCombined) == "CH-significant-Liam"))][,1]))
+liamOnlyCH = length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "CH-significant"),which(colnames(GoMetaCombined) == "CH-significant-Liam"))][,2]))
+ChLoss = nonliamOnlyCH-liamOnlyCH
+
+{
+cat(paste0("Number of nonliam-only HI: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HI-significant"),which(colnames(GoMetaCombined) == "HI-significant-Liam"))][,1])), "\n"))
+cat(paste0("Number of liam-only HI: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HI-significant"),which(colnames(GoMetaCombined) == "HI-significant-Liam"))][,2])), "\n"))
+cat(paste0("Number of nonliam-only HV: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HV-significant"),which(colnames(GoMetaCombined) == "HV-significant-Liam"))][,1])), "\n"))
+cat(paste0("Number of liam-only HV: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "HV-significant"),which(colnames(GoMetaCombined) == "HV-significant-Liam"))][,2])), "\n"))
+cat(paste0("Number of nonliam-only CH: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "CH-significant"),which(colnames(GoMetaCombined) == "CH-significant-Liam"))][,1])), "\n"))
+cat(paste0("Number of liam-only CH: \n", length(which(GoMetaCombined[HiDifference, c(which(colnames(GoMetaCombined) == "CH-significant"),which(colnames(GoMetaCombined) == "CH-significant-Liam"))][,2])), "\n"))
+}
+
+nonliamSignificant = (which(GoMetaCombined$`HI-significant` | GoMetaCombined$`HV-significant` | GoMetaCombined$`CH-significant`))
+liamSignificant = (which(GoMetaCombined$`HI-significant-Liam` | GoMetaCombined$`HV-significant-Liam` | GoMetaCombined$`CH-significant-Liam`))
+
+length(which(liamSignificant %in% nonliamSignificant))
+#260, so almost all of the ones in liam are in the nonliam 
+
+liamMissing = nonliamSignificant[which(!nonliamSignificant %in% liamSignificant)]
+length(liamMissing)
+
+
+liamMissingGO = GoMetaCombined[liamMissing,]
+liamMissingGO = liamMissingGO[,-grep("Overlap", colnames(liamMissingGO))]
+liamMissingGO = liamMissingGO[,-grep("Driver", colnames(liamMissingGO))]
+liamMissingGO = liamMissingGO[,-grep("O", colnames(liamMissingGO))]
+
+write.csv(liamMissingGO, "Results/LiamMissingGO.csv")
+
+# --- Opposite pathways 
+oppsitePathways = GoMetaCombined[which(GoMetaCombined$`HI-HV-Overlap` & !GoMetaCombined$`HI-HV-CH-Overlap`),]
+
+grep("Overlap", colnames(oppsitePathways))
+
+oppsitePathways = oppsitePathways[,-grep("Overlap", colnames(oppsitePathways))]
+oppsitePathways = oppsitePathways[,-grep("Driver", colnames(oppsitePathways))]
+oppsitePathways = oppsitePathways[,-grep("O", colnames(oppsitePathways))]
+
+
+# ------------------------------------------------------------------
+# --- Figure out paths files ----- 
+# ------------------------------------------------------------------
+
+OgPaths = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+
+#Make thoeretical non-liam paths
+
+modelType = "ER"
+ancestralTrait = NULL
+
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+
+nonliamPhenotype = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPhenotypeVector.rds")
+nonliamTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+nonliamSpeciesFilter = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeSpeciesFilter.rds")
+
+nonliamCharpaths = char2PathsCategorical(nonliamPhenotype, mainTrees, nonliamSpeciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
+nonliamTreePaths = tree2Paths(nonliamTree, mainTrees, useSpecies = nonliamSpeciesFilter, categorical = TRUE) #do not binarize; the categorical data is already contained in the phenotype tree.
+
+all.equal(OgPaths, nonliamCharpaths)
+all.equal(OgPaths, nonliamTreePaths)
+
+LiamInference
+
+ogliamPaths = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPathsFile.rds")
+
+
+liamPhenotype = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPhenotypeVector.rds")
+liamTree = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+liamSpeciesFilter = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceSpeciesFilter.rds")
+
+liamCharpaths = char2PathsCategorical(liamPhenotype, mainTrees, liamSpeciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
+liamTreePaths = tree2Paths(liamTree, mainTrees, useSpecies = liamSpeciesFilter, categorical = TRUE) #do not binarize; the categorical data is already contained in the phenotype tree.
+
+
+all.equal(ogliamPaths, liamCharpaths)
+all.equal(ogliamPaths, liamTreePaths)
+
+
+# ------------------------------------------------------------------
+# --- Compare GO Significance thresholds ----- 
+# ------------------------------------------------------------------
+combinedVenn = grid.arrange(geneVenn, goVenn, nrow = 1)
+
+pdf("Output/CategoricalInsVertivoreTreeLiamInference/Categproca;")
+
+vennPlotName = paste0(outputFolderName, filePrefix, "VennPlots.pdf")
+overlapPlotName = paste0(outputFolderName, filePrefix, "OverlapPlots.pdf")
+
+
+
+pdf(vennPlotName, 30,15)
+grid.arrange(combinedVenn)
+dev.off()
+
+
+
+saveRDS(GoSignificanceColumns, paste0(combinedGODataFilename, ".rds"))
+
+
+for(i in 1:length(pairwiseSets)){
+  currentSet = pairwiseSets[i]
+  correlationSubsetName = gsub("-", " - ", currentSet)
+  correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
+  
+  goFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet,"Enrichment-", geneSet, ".rds")
+  currentGoData = readRDS(goFilename)[[1]]
+  currentGoData$significant = currentGoData$p.adj < 0.05
+  message(length(which(currentGoData$significant)))
+  currentGoData$significant = currentGoData$p.adj < 0.1
+  message(length(which(currentGoData$significant)))
+  
+  names(currentGoData) = paste0(correlationPrefix, "-", names(currentGoData))
+  
+  
+  driverFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet, "GoDriverTable-", geneSet, ".rds")
+  if(file.exists(driverFilename)){
+    driverTable = readRDS(driverFilename)
+    if(all(rownames(driverTable) == rownames(currentGoData))){
+      currentGoData$Driver = driverTable[which(names(driverTable) == "Driver")][[1]]
+      currentGoData$DriverNumeric = driverTable[which(names(driverTable) == "DriverNumeric")][[1]]
+      
+      names(currentGoData)[which(names(currentGoData) == "Driver")] = paste0(correlationPrefix, "-", "Driver")
+      names(currentGoData)[which(names(currentGoData) == "DriverNumeric")] = paste0(correlationPrefix, "-", "DriverNumeric")    
+      
+    }
+    rm(driverTable)
+  }
+  GOResults[[i]] = currentGoData
+  names(GOResults)[i] = correlationPrefix
+  
+}
+
+
+
+# ------------------------------------------------------------------
+# --- Compare liam results and non-liam results ----- 
+# ------------------------------------------------------------------
+
+saveRDS(GoCombinedResults, "Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+
+noLiamGenes = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGeneResults.rds")
+liamGenes = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGeneResults.rds")
+
+noLiamGO = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGOResults-KeggReactome.rds")
+liamGO = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+
+liam = liamGenes
+nonliam = noLiamGenes
+testCol = "HI-p.adj"
+
+compareOverlap = function(testCol, liam, nonliam){
+  liamColValue = which(colnames(liam) == testCol)
+  liamCol = liam[liamColValue]
+  
+  nonliamColValue = which(colnames(nonliam) == testCol)
+  nonliamCol = nonliam[nonliamColValue]
+  
+  isPval = !is.logical(liamCol[[1]])
+  
+  if(isPval){
+    plot(liamCol[[1]], nonliamCol[[1]])
+    
+    model = lm(nonliamCol[[1]] ~ liamCol[[1]])
+    r2 = summary(model)$r.squared
+    text(x = min(liamCol[[1]], na.rm = T), y = max(nonliamCol[[1]], na.rm = T), labels = paste("R² =", round(r2, 3)), pos = 4)
+    
+    liamCol[[1]] = liamCol[[1]] < 0.1
+    nonliamCol[[1]] = nonliamCol[[1]] < 0.1
+  }
+  
+  
+  
+  liamSignificant = length(which(liamCol[[1]]))
+  nonliamSignificant = length(which(nonliamCol[[1]]))
+  
+  liamInNonliam = length(which(which(liamCol[[1]]) %in% which(nonliamCol[[1]])))
+  liamOverlapPercent = liamInNonliam/liamSignificant
+  
+  nonliamInLiam = length(which(which(nonliamCol[[1]]) %in% which(liamCol[[1]])))
+  nonliamOverlapPercent = nonliamInLiam/nonliamSignificant
+  
+  cat("##########\n")
+  cat(testCol)
+  cat("\n")
+  if(isPval){
+    cat("R Squared: ")
+    cat(r2)
+    cat("\n")
+  }
+  
+  #cat("#\n")
+  cat("Liam value: ")
+  cat(liamSignificant)
+  cat("\n")
+  cat("Non-Liam value: ")
+  cat(nonliamSignificant)
+  cat("\n")
+  cat("Liam non-Liam ratio: ")
+  cat(nonliamSignificant/liamSignificant)
+  cat("\n")
+  
+  #cat("# \n")
+  cat("Liam in Non-Liam: ")
+  cat(liamInNonliam)
+  cat("     ")
+  cat(liamOverlapPercent)
+  cat("\n")
+  
+  cat("Non-Liam in Liam: ")
+  cat(nonliamInLiam)
+  cat("     ")
+  cat(nonliamOverlapPercent)
+  cat("\n")
+  
+}
+
+compareOverlap("HI-significant", liamGenes, noLiamGenes)
+compareOverlap("HV-significant", liamGenes, noLiamGenes)
+compareOverlap("IV-significant", liamGenes, noLiamGenes)
+compareOverlap("CH-significant", liamGenes, noLiamGenes)
+
+compareOverlap("HI-p.adj", liamGenes, noLiamGenes)
+compareOverlap("HV-p.adj", liamGenes, noLiamGenes)
+compareOverlap("IV-p.adj", liamGenes, noLiamGenes)
+compareOverlap("CH-p.adj", liamGenes, noLiamGenes)
+
+# MInimum overlap is 74% in HV, or 69% in CH, liam is larger than non-liam. 
+
+compareOverlap("HI-significant", liamGO, noLiamGO)
+compareOverlap("HV-significant", liamGO, noLiamGO)
+compareOverlap("IV-significant", liamGO, noLiamGO)
+compareOverlap("CH-significant", liamGO, noLiamGO)
+
+
+compareOverlap("HI-p.adj", liamGO, noLiamGO)
+compareOverlap("HV-p.adj", liamGO, noLiamGO)
+compareOverlap("IV-p.adj", liamGO, noLiamGO)
+compareOverlap("CH-p.adj", liamGO, noLiamGO)
+
+
+# ------------------------------------------------------------------
+# --- I-V numbers ----- 
+# ------------------------------------------------------------------
+
+genesResults = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGeneResults.rds")
+
+length(which(genesResults$`IV-significant`))
+
+GoResults = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGOResults-KeggReactome.rds")
+length(which(GoResults$`IV-significant`))
+
+
+# ------------------------------------------------------------------
+# --- Examine liam results ----- 
+# ------------------------------------------------------------------
+
+liamResultsCore = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCombinedCategoricalCorrelationFile.rds")
+omnibus = liamResultsCore[[1]]
+length(which(omnibus$p.adj < 0.05))
+
+liamGoOverall = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/Overall/CategoricalInsVertivoreTreeLiamInferenceOverallEnrichment-KeggReactome.rds")
+
+liamGoOverall = liamGoOverall[[1]]
+length(which(liamGoOverall$p.adj < 0.05))
+
+liamCarnResults = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsvertivoreTreeCarnivoreLiamInferencecombinedGeneResults.rds")
+
+length(which(liamCarnResults$`CH-significant`))
+length(which(liamCarnResults$`CO-significant`))
+length(which(liamCarnResults$`HO-significant`))
+
+liamResultsCoreCarn = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsVertivoreTreeCarnivoreLiamInferenceCombinedCategoricalCorrelationFile.rds")
+omnibusCarn = liamResultsCoreCarn[[1]]
+length(which(omnibusCarn$p.adj < 0.05))
+
+
+liamCarnGoResults = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsvertivoreTreeCarnivoreLiamInferencecombinedGOResults-KeggReactome.rds")
+length(which(liamCarnGoResults$`CH-significant`))
+length(which(liamCarnGoResults$`CO-significant`))
+length(which(liamCarnGoResults$`HO-significant`))
+
+
+liamCarnGoOverall = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/Overall/CategoricalInsVertivoreTreeCarnivoreLiamInferenceOverallEnrichment-KeggReactome.rds")
+
+liamCarnGoOverall = liamCarnGoOverall[[1]]
+length(which(liamCarnGoOverall$p.adj < 0.05))
+
+
+
+
+carnGoResults = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGOResults-KeggReactome.rds")
+length(which(carnGoResults$`CH-significant`))
+length(which(carnGoResults$`CO-significant`))
+length(which(carnGoResults$`HO-significant`))
+
+noliamResultsCore = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGeneResults.rds")
+length(which(noliamResultsCore$`IV-significant`))
+
+# Add carnivory results to main liam infrence
+
+`Carnivore - Herbivore` = liamResultsCoreCarn[[2]][1] 
+names(`Carnivore - Herbivore`) = "Carnivore - Herbivore"
+`Carnivore - Omnivore` = liamResultsCoreCarn[[2]][2] 
+names(`Carnivore - Omnivore`) = "Carnivore - Omnivore"
+
+correlationResults[7] = `Carnivore - Herbivore`
+names(correlationResults)[7] = "Carnivore - Herbivore"
+correlationResults[8] = `Carnivore - Omnivore`
+names(correlationResults)[8] = "Carnivore - Omnivore"
+
+saveRDS(correlationResults, "Output/CategoricalInsvertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencePairwiseCorrelationFile.rds")
+write.csv(correlationResults, "Output/CategoricalInsvertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencePairwiseCorrelationFile.csv")
+# ------------------------------------------------------------------
+# --- Make RER PLots ----- 
+# ------------------------------------------------------------------
+
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+pathObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalPathsFile.rds")
+RERObject = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeRERFile.rds")
+
+
+commonRERs = RERObject
+colnames(commonRERs) = ZonomNameConvertVectorCommon(colnames(commonRERs), tipColumn = "ZoonomiaTip")
+palette(c( "darkgreen", "darkblue","black", "red"))
+
+postiveSelectionOverlap = c("CTRL", "CPA1", "SLC36A1", "SLC6A19", "CELA3B", "CLPS", "SLC7A9", "PNLIPRP2", "FABP1", "ABCG8", "LCT")
+
+postiveSelectionNoOverlap = c("APOB", "APOA1", "LIPF","NPC1L1","MEP1B","SLC3A2","HK1","MGAM", 
+                        "APOB", "PLPP2", "APOA1", "SLC27A4", "PLA2G1B", "SLC8A2", "SLC3A1", "DPP4", "KCNN4", "SLC3A2", "MGAM2", "HK3", "G6PC",
+                        "APOB", "PLA2G5", "SCAB1", "CPA3", 
+                        "APOB", "MOGAT2", "MTTP", "SLC1A5", "SLC7A8", "SLC15A1", "PRKCB", "ATP1B1", "ATP1B3",
+                        "SLC3A2", "SLC1A5",  "DPP4", "APOB", "CD36", "PLPP2", 
+                        "APOB", "PIK3CD", "CPB2", "KCNK5"
+)
+length(unique(postiveSelectionNoOverlap))
+length(unique(postiveSelectionOverlap))
+
+unique(rownames(commonRERs))
+
+i=1
+{
+plotRers(commonRERs, postiveSelectionOverlap[i], pathObject, sortrers = T)
+i=i+1
+}
+
+i=1
+{
+  plotRers(commonRERs, postiveSelectionNoOverlap[i], pathObject, sortrers = T)
+  i=i+1
+}
+
+i=1
+{
+  plotRers(commonRERs, unique(rownames(commonRERs))[i], pathObject, sortrers = T)
+  i=i+1
+}
+#
+
+
+plotRers(commonRERs, "RAD50", pathObject, sortrers = T)
+
+# ------------------------------------------------------------------
+# --- Make carnivory results for liam  ----- 
+# ------------------------------------------------------------------
+
+liamTree = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+liamPhenotype = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPhenotypeVector.rds")
+liamFilter = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceSpeciesFilter.rds")
+
+
+mergedData = read.csv("Data/mergedData.csv")
+mixInvVertSpecies = which(mergedData$DerekDietClassification90InsVertivoreSorting == "C-InsVertivore-Mixed")
+
+mixSpecies = mergedData$ZoonomiaTip[mixInvVertSpecies]
+
+names(liamCarnivoryPhenotype)[which(names(liamCarnivoryPhenotype) %in% mixSpecies)]
+
+ZonomNameConvertVectorCommon(names(liamCarnivoryPhenotype)[which(names(liamCarnivoryPhenotype) %in% mixSpecies)], tipColumn ="ZoonomiaTip")
+
+liamCarnivoryPhenotype = liamPhenotype
+liamCarnivoryPhenotype[which(liamCarnivoryPhenotype == "Vertivore" | liamCarnivoryPhenotype == "Insectivore")] = "Carnivore"
+liamCarnivoryPhenotype[which(names(liamCarnivoryPhenotype) %in% mixSpecies)] = "Carnivore"
+
+liamTreeCarnivory = liamTree
+liamTreeCarnivory$edge.length[which(liamTreeCarnivory$edge.length %in% c(1))] = 5
+liamTreeCarnivory$edge.length[which(liamTreeCarnivory$edge.length %in% c(3))] = 6
+liamTreeCarnivory$edge.length[which(liamTreeCarnivory$edge.length %in% c(2,4))] = 1
+liamTreeCarnivory$edge.length[which(liamTreeCarnivory$edge.length %in% c(5))] = 2
+liamTreeCarnivory$edge.length[which(liamTreeCarnivory$edge.length %in% c(6))] = 3
+
+
+speciesFilter = liamFilter
+phenotypeVector = liamCarnivoryPhenotype
+categoricalTree = liamTreeCarnivory
+outputFolderName = "Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/"
+filePrefix = "CategoricalInsVertivoreTreeCarnivoreLiamInference"
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
+saveRDS(liamCarnivoryPhenotype, file = phenotypeVectorFilename)                        #save the phenotype vector
+
+speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
+saveRDS(speciesFilter, file = speciesFilterFilename)                          #save that as the species filter
+
+
+
+
+spreadSheetLocation = "Data/mergedData.csv"
+nameColumn = "ZoonomiaTip"
+mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
+commonMainTrees = mainTrees
+commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+commonPhenotypeVector = phenotypeVector
+names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+commonCategoricalTree = ZoonomTreeNameToCommon(categoricalTree, tipCol = "ZoonomiaTip")
+
+
+
+treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
+palette(c("red", "darkgreen", "black"))
+
+pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
+
+plotTreeCategorical(commonCategoricalTree, c("Carnivore", "Herbivore", "Omnivore"), master = commonMainTrees$masterTree)
+plotTreeCategorical(categoricalTree, c("Carnivore", "Herbivore", "Omnivore" ), master = mainTrees$masterTree)
+
+#plotTreeCategorical(commonCategoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMasterAdded)
+#plotTreeCategorical(categoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = masterTreeAdded)
+dev.off()  
+
+categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+saveRDS(categoricalTree, categoricalTreeFilename)                               #save the tree
+categoricalCommonTreeFilename = paste(outputFolderName, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
+saveRDS(commonCategoricalTree, categoricalCommonTreeFilename)
+
+
+pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
+paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
+saveRDS(paths, file = pathsFilename)                                            #save the path 
+
+
+
+# ------------------------------------------------------------------
+# --- Emily CC figure ----- 
+# ------------------------------------------------------------------
+
+getPermsBinary=function(numperms, fg_vec, sisters_list, root_sp, RERmat, trees, mastertree, permmode="cc", method="k", min.pos=2, trees_list=NULL, calculateenrich=F, annotlist=NULL){
+  pathvec = foreground2Paths(fg_vec, trees, clade="all",plotTree=F)
+  col_labels = colnames(trees$paths)
+  names(pathvec) = col_labels
+  
+  message("As of RERConverge [X.xx], permulation functions have been updated. Old versions have been moved to ccLegacy and ssmLegacy.")
+  if(permmode=="cc"){
+    print("Running CC permulation. sisters_list is required only for enrichments, otherwise sisters_list = NA is sufficient.")
+    
+    print("Generating permulated trees")
+    
+    # --- new code since legacy method; switching to categorical function to infer phenotype tree --
+    #covert fg_vec to a categorical phenotypeVector
+    phenotypeVector = rep(0, length(trees$masterTree$tip.label))
+    names(phenotypeVector) = trees$masterTree$tip.label
+    phenotypeVector[names(phenotypeVector) %in% fg_vec] = 1
+    
+    
+    permulationData = categoricalPermulations(trees, phenotypeVector, rm = "ER", rp = "auto", ntrees = numperms)
+    
+    
+    permulatedTrees = lapply(permulationData$trees, function(x) {
+      tr = trees$masterTree
+      tr$edge.length = c(x$tips, x$nodes)[tr$edge[,2]]
+      tr$edge.length = tr$edge.length-1
+      names(tr$edge.length) = NULL
+      #tree2Paths(tr, treesObj, categorical = TRUE, useSpecies = names(phenvals))
+      tr
+    })
+    permulated.binphens = list(permulatedTrees)
+    #----
+    #permulated.binphens = generatePermulatedBinPhen(trees$masterTree, numperms, trees, root_sp, fg_vec, sisters_list, pathvec, permmode="cc")
+    permulated.fg = mapply(getForegroundsFromBinaryTree, permulated.binphens[[1]])
+    permulated.fg.list = as.list(data.frame(permulated.fg))
+    phenvec.table = mapply(foreground2Paths,permulated.fg.list,MoreArgs=list(treesObj=trees,clade="all"))
+    phenvec.list = lapply(seq_len(ncol(phenvec.table)), function(i) phenvec.table[,i])
+    
+    print("Calculating correlations")
+    corMatList = lapply(phenvec.list, correlateWithBinaryPhenotype, RERmat=RERmat)
+    
+    #make enrich list/matrices to fill
+    permPvals=data.frame(matrix(ncol=numperms, nrow=nrow(RERmat)))
+    rownames(permPvals)=rownames(RERmat)
+    permRhovals=data.frame(matrix(ncol=numperms, nrow=nrow(RERmat)))
+    rownames(permRhovals)=rownames(RERmat)
+    permStatvals=data.frame(matrix(ncol=numperms, nrow=nrow(RERmat)))
+    rownames(permStatvals)=rownames(RERmat)
+    
+    for (i in 1:length(corMatList)){
+      permPvals[,i] = corMatList[[i]]$P
+      permRhovals[,i] = corMatList[[i]]$Rho
+      permStatvals[,i] = sign(corMatList[[i]]$Rho)*-log10(corMatList[[i]]$P)
+    }
+    
+  }
+  else if (permmode=="ccLegacy"){
+    print("Running CC Legacy permulation")
+    
+    print("Generating permulated trees")
+    permulated.binphens = generatePermulatedBinPhen(trees$masterTree, numperms, trees, root_sp, fg_vec, sisters_list, pathvec, permmode="cc")
+    permulated.fg = mapply(getForegroundsFromBinaryTree, permulated.binphens[[1]])
+    permulated.fg.list = as.list(data.frame(permulated.fg))
+    phenvec.table = mapply(foreground2Paths,permulated.fg.list,MoreArgs=list(treesObj=trees,clade="all"))
+    phenvec.list = lapply(seq_len(ncol(phenvec.table)), function(i) phenvec.table[,i])
+    
+    print("Calculating correlations")
+    corMatList = lapply(phenvec.list, correlateWithBinaryPhenotype, RERmat=RERmat)
+    
+    #make enrich list/matrices to fill
+    permPvals=data.frame(matrix(ncol=numperms, nrow=nrow(RERmat)))
+    rownames(permPvals)=rownames(RERmat)
+    permRhovals=data.frame(matrix(ncol=numperms, nrow=nrow(RERmat)))
+    rownames(permRhovals)=rownames(RERmat)
+    permStatvals=data.frame(matrix(ncol=numperms, nrow=nrow(RERmat)))
+    rownames(permStatvals)=rownames(RERmat)
+    
+    for (i in 1:length(corMatList)){
+      permPvals[,i] = corMatList[[i]]$P
+      permRhovals[,i] = corMatList[[i]]$Rho
+      permStatvals[,i] = sign(corMatList[[i]]$Rho)*-log10(corMatList[[i]]$P)
+    }
+    
+  } else if (permmode=="ssm"){
+    print("Running SSM permulation. sisters_list is required only for enrichments, otherwise sisters_list = NA is sufficient.")
+    
+    if (is.null(trees_list)){
+      trees_list = trees$trees
+    }
+    
+    RERmat = RERmat[match(names(trees_list), rownames(RERmat)),]
+    
+    print("Generating permulated trees")
+    permulated.binphens = generatePermulatedBinPhenSSMBatched(trees_list,numperms,trees,root_sp,fg_vec,sisters_list,pathvec,permmode="ssm")
+    
+    # Get species membership of the trees
+    df.list = lapply(trees_list,getSpeciesMembershipStats,masterTree=mastertree,foregrounds=fg_vec)
+    df.converted = data.frame(matrix(unlist(df.list), nrow=length(df.list), byrow=T),stringsAsFactors=FALSE)
+    attr = attributes(df.list[[1]])
+    col_names = attr$names
+    attr2 = attributes(df.list)
+    row_names = attr2$names
+    
+    colnames(df.converted) = col_names
+    rownames(df.converted) = row_names
+    
+    df.converted$num.fg = as.integer(df.converted$num.fg)
+    df.converted$num.spec = as.integer(df.converted$num.spec)
+    
+    spec.members = df.converted$spec.members
+    
+    # Group gene trees based on the similarity of their species membership
+    grouped.trees = groupTrees(spec.members)
+    ind.unique.trees = grouped.trees$ind.unique.trees
+    ind.unique.trees = unlist(ind.unique.trees)
+    ind.tree.groups = grouped.trees$ind.tree.groups
+    
+    # For each unique tree, produce a permuted tree. We already have this function, but we need a list of trees to feed in.
+    unique.trees = trees_list[ind.unique.trees]
+    
+    # precompute clade mapping for each unique tree
+    unique.map.list = mapply(matchAllNodesClades,unique.trees,MoreArgs=list(treesObj=trees))
+    
+    # calculate paths for each permulation
+    unique.permulated.binphens = permulated.binphens[ind.unique.trees]
+    unique.permulated.paths = calculatePermulatedPaths_apply(unique.permulated.binphens,unique.map.list,trees)
+    
+    permulated.paths = vector("list", length = length(trees_list))
+    for (j in 1:length(permulated.paths)){
+      permulated.paths[[j]] = vector("list",length=numperms)
+    }
+    for (i in 1:length(unique.permulated.paths)){
+      ind.unique.tree = ind.unique.trees[i]
+      ind.tree.group = ind.tree.groups[[i]]
+      unique.path = unique.permulated.paths[[i]]
+      for (k in 1:length(ind.tree.group)){
+        permulated.paths[[ind.tree.group[k]]] = unique.path
+      }
+    }
+    attributes(permulated.paths)$names = row_names
+    
+    print("Calculating correlations")
+    RERmat.list = lapply(seq_len(nrow(RERmat[])), function(i) RERmat[i,])
+    corMatList = mapply(calculateCorPermuted,permulated.paths,RERmat.list)
+    permPvals = extractCorResults(corMatList,numperms,mode="P")
+    rownames(permPvals) = names(trees_list)
+    permRhovals = extractCorResults(corMatList,numperms,mode="Rho")
+    rownames(permRhovals) = names(trees_list)
+    permStatvals = sign(permRhovals)*-log10(permPvals)
+    rownames(permStatvals) = names(trees_list)
+    
+  } else if (permmode=="ssmLegacy"){
+    print("Running SSM Legacy permulation")
+    
+    if (is.null(trees_list)){
+      trees_list = trees$trees
+    }
+    
+    RERmat = RERmat[match(names(trees_list), rownames(RERmat)),]
+    
+    print("Generating permulated trees")
+    permulated.binphens = generatePermulatedBinPhenSSMBatched(trees_list,numperms,trees,root_sp,fg_vec,sisters_list,pathvec,permmode="ssmLegacy")
+    
+    # Get species membership of the trees
+    df.list = lapply(trees_list,getSpeciesMembershipStats,masterTree=mastertree,foregrounds=fg_vec)
+    df.converted = data.frame(matrix(unlist(df.list), nrow=length(df.list), byrow=T),stringsAsFactors=FALSE)
+    attr = attributes(df.list[[1]])
+    col_names = attr$names
+    attr2 = attributes(df.list)
+    row_names = attr2$names
+    
+    colnames(df.converted) = col_names
+    rownames(df.converted) = row_names
+    
+    df.converted$num.fg = as.integer(df.converted$num.fg)
+    df.converted$num.spec = as.integer(df.converted$num.spec)
+    
+    spec.members = df.converted$spec.members
+    
+    # Group gene trees based on the similarity of their species membership
+    grouped.trees = groupTrees(spec.members)
+    ind.unique.trees = grouped.trees$ind.unique.trees
+    ind.unique.trees = unlist(ind.unique.trees)
+    ind.tree.groups = grouped.trees$ind.tree.groups
+    
+    # For each unique tree, produce a permuted tree. We already have this function, but we need a list of trees to feed in.
+    unique.trees = trees_list[ind.unique.trees]
+    
+    # precompute clade mapping for each unique tree
+    unique.map.list = mapply(matchAllNodesClades,unique.trees,MoreArgs=list(treesObj=trees))
+    
+    # calculate paths for each permulation
+    unique.permulated.binphens = permulated.binphens[ind.unique.trees]
+    unique.permulated.paths = calculatePermulatedPaths_apply(unique.permulated.binphens,unique.map.list,trees)
+    
+    permulated.paths = vector("list", length = length(trees_list))
+    for (j in 1:length(permulated.paths)){
+      permulated.paths[[j]] = vector("list",length=numperms)
+    }
+    for (i in 1:length(unique.permulated.paths)){
+      ind.unique.tree = ind.unique.trees[i]
+      ind.tree.group = ind.tree.groups[[i]]
+      unique.path = unique.permulated.paths[[i]]
+      for (k in 1:length(ind.tree.group)){
+        permulated.paths[[ind.tree.group[k]]] = unique.path
+      }
+    }
+    attributes(permulated.paths)$names = row_names
+    
+    print("Calculating correlations")
+    RERmat.list = lapply(seq_len(nrow(RERmat[])), function(i) RERmat[i,])
+    corMatList = mapply(calculateCorPermuted,permulated.paths,RERmat.list)
+    permPvals = extractCorResults(corMatList,numperms,mode="P")
+    rownames(permPvals) = names(trees_list)
+    permRhovals = extractCorResults(corMatList,numperms,mode="Rho")
+    rownames(permRhovals) = names(trees_list)
+    permStatvals = sign(permRhovals)*-log10(permPvals)
+    rownames(permStatvals) = names(trees_list)
+    
+  } else {
+    stop("Invalid binary permulation mode.")
+  }
+  
+  if (calculateenrich){
+    realFgtree = foreground2TreeClades(fg_vec, sisters_list, trees, plotTree=F)
+    realpaths = tree2PathsClades(realFgtree, trees)
+    realresults = getAllCor(RERmat, realpaths, method=method, min.pos=min.pos)
+    realstat =sign(realresults$Rho)*-log10(realresults$P)
+    names(realstat) = rownames(RERmat)
+    realenrich = fastwilcoxGMTall(na.omit(realstat), annotlist, outputGeneVals=F)
+    
+    #sort real enrichments
+    groups=length(realenrich)
+    c=1
+    while(c<=groups){
+      current=realenrich[[c]]
+      realenrich[[c]]=current[order(rownames(current)),]
+      c=c+1
+    }
+    #make matrices to fill
+    permenrichP=vector("list", length(realenrich))
+    permenrichStat=vector("list", length(realenrich))
+    c=1
+    while(c<=length(realenrich)){
+      newdf=data.frame(matrix(ncol=numperms, nrow=nrow(realenrich[[c]])))
+      rownames(newdf)=rownames(realenrich[[c]])
+      permenrichP[[c]]=newdf
+      permenrichStat[[c]]=newdf
+      c=c+1
+    }
+    
+    counter=1;
+    while (counter <= numperms){
+      stat = permStatvals[,counter]
+      names(stat) = rownames(RERmat)
+      enrich=fastwilcoxGMTall(na.omit(stat), annotlist, outputGeneVals=F)
+      #sort and store enrichment results
+      groups=length(enrich)
+      c=1
+      while(c<=groups){
+        current=enrich[[c]]
+        enrich[[c]]=current[order(rownames(current)),]
+        enrich[[c]]=enrich[[c]][match(rownames(permenrichP[[c]]), rownames(enrich[[c]])),]
+        permenrichP[[c]][,counter]=enrich[[c]]$pval
+        permenrichStat[[c]][,counter]=enrich[[c]]$stat
+        c=c+1
+      }
+      counter = counter+1
+    }
+  }
+  
+  if(calculateenrich){
+    data=vector("list", 5)
+    data[[1]]=permPvals
+    data[[2]]=permRhovals
+    data[[3]]=permStatvals
+    data[[4]]=permenrichP
+    data[[5]]=permenrichStat
+    names(data)=c("corP", "corRho", "corStat", "enrichP", "enrichStat")
+  } else {
+    data=vector("list", 3)
+    data[[1]]=permPvals
+    data[[2]]=permRhovals
+    data[[3]]=permStatvals
+    names(data)=c("corP", "corRho", "corStat")
+  }
+  data
+}
+
+
+#Load RERconverge output from murine rodent analysis
+load("../../MiscData/RERconverge_output.logRTM_binary.OUmodel.RTMspeciesOnly.rds")
+
+
+fgspec<-c("Pseudomys_novaehollandiae_ABTC08140", "Pseudomys_delicatulus_U1509", "Notomys_alexis_U1308", "Notomys_fuscus_M22830", "Notomys_mitchellii_M21518", "Zyzomys_pedunculatus_Z34925", "Bandicota_indica_ABTC119185", "Nesokia_indica_ABTC117074", "Hyomys_goliath_ABTC42697", "Pseudomys_shortridgei_Z25113", "Paruromys_dominator_JAE4870", "Eropeplus_canus_NMVZ21733")
+
+
+newPerms = getPermsBinary(100, fgspec, NA, myTrees$masterTree$tip.label[1], myRER, myTrees, myTrees$masterTree, permmode = "cc")
+legacyPerms = getPermsBinary(100, fgspec, NA, myTrees$masterTree$tip.label[1], myRER, myTrees, myTrees$masterTree, permmode = "ccLegacy")
+
+numPerms = 100
+trees = myTrees
+permTrees<-list()
+permFG_list<-list()
+inFG<-c()
+Sys.time()
+pdf("Results/Emily/emilyNewPermulationPlot.pdf", onefile=TRUE, height=8.5, width=11)
+for(i in 1:numPerms){
+   
+  phenotypeVector = rep(0, length(trees$masterTree$tip.label))
+  names(phenotypeVector) = trees$masterTree$tip.label
+  phenotypeVector[names(phenotypeVector) %in% fgspec] = 1
+  
+  permulationData = categoricalPermulations(trees, phenotypeVector, rm = "ER", rp = "auto", ntrees = 1)
+    
+    
+    permulatedTrees = lapply(permulationData$trees, function(x) {
+      tr = trees$masterTree
+      tr$edge.length = c(x$tips, x$nodes)[tr$edge[,2]]
+      tr$edge.length = tr$edge.length-1
+      names(tr$edge.length) = NULL
+      #tree2Paths(tr, treesObj, categorical = TRUE, useSpecies = names(phenvals))
+      tr
+    })
+  permTree = permulatedTrees[[1]]
+  #permTree<-getPermsBinary(1, fgspec, NA, myTrees$masterTree$tip.label[1], myRER, myTrees, myTrees$masterTree, permmode = "cc")
+  permTrees[[i]]<-permTree
+  fgEdges<-permTree$edge[which(permTree$edge.length==1),2]
+  permFgs<-permTree$tip.label[fgEdges]
+  permFG_list[[i]]<-permFgs
+  inFG<-cbind(inFG, unlist(sapply(myTrees$masterTree$tip.label, function(x) if(x %in% permFgs){1} else{0})))
+}
+dev.off()
+Sys.time()
+inFG_sums<-rowSums(inFG)
+inFG_props<-inFG_sums/numPerms
+shortnames<-unlist(sapply(names(inFG_sums), function(x) paste(strsplit(x, "_")[[1]][1:2], collapse="_")))
+names(inFG_sums)<-shortnames
+names(inFG_props)<-shortnames
+pdf("Results/Emily/newCCBarplot.pdf", onefile=TRUE, height=8.5, width=11)
+barplot(height=inFG_sums, main=paste("Number of times each species appeared in the foreground out of", numPerms, "permulations\nccNew Permulations"), las=2, cex.names=0.5)
+barplot(height=inFG_props, main=paste("Proportion of times each species appeared in the foreground out of", numPerms, "permulations\nccNew Permulations"), las=2, cex.names=0.5, ylim=c(0,0.8))
+dev.off()
+
+# ----
+permTrees<-list()
+permFG_list<-list()
+inFG<-c()
+sisters_list<-list("clade1"=c("Pseudomys_novaehollandiae_ABTC08140","Pseudomys_delicatulus_U1509"), "clade2"=c("Notomys_alexis_U1308","Notomys_fuscus_M22830"), "clade3"=c("clade2","Notomys_mitchellii_M21518"), "clade4"=c("Bandicota_indica_ABTC119185","Nesokia_indica_ABTC117074"), "clade5"=c("Paruromys_dominator_JAE4870", "Eropeplus_canus_NMVZ21733"))
+fg_vec = fgspec
+root_sp = trees$masterTree$tip.label[[1]]
+Sys.time()
+pdf("Results/Emily/emilyLegacyPermulationPlot.pdf", onefile=TRUE, height=8.5, width=11)
+for(i in 1:numPerms){
+  
+  permulated.binphens = generatePermulatedBinPhen(trees$masterTree, 1, trees, root_sp, fg_vec, sisters_list, pathvec, permmode="cc")
+  permTree = permulated.binphens[[1]][[1]]
+  #permTree<-getPermsBinary(1, fgspec, NA, myTrees$masterTree$tip.label[1], myRER, myTrees, myTrees$masterTree, permmode = "cc")
+  permTrees[[i]]<-permTree
+  fgEdges<-permTree$edge[which(permTree$edge.length==1),2]
+  permFgs<-permTree$tip.label[fgEdges]
+  permFG_list[[i]]<-permFgs
+  inFG<-cbind(inFG, unlist(sapply(myTrees$masterTree$tip.label, function(x) if(x %in% permFgs){1} else{0})))
+}
+dev.off()
+Sys.time()
+#inFGNew <- apply(inFG, 2, as.numeric)
+#rownames(inFGNew) = rownames(inFG)
+inFG_sums<-rowSums(inFG)
+inFG_props<-inFG_sums/numPerms
+shortnames<-unlist(sapply(names(inFG_sums), function(x) paste(strsplit(x, "_")[[1]][1:2], collapse="_")))
+names(inFG_sums)<-shortnames
+names(inFG_props)<-shortnames
+pdf("Results/Emily/legacyCCBarPlot.pdf", onefile=TRUE, height=8.5, width=11)
+barplot(height=inFG_sums, main=paste("Number of times each species appeared in the foreground out of", numPerms, "permulations\nccLegacy Permulations"), las=2, cex.names=0.5)
+barplot(height=inFG_props, main=paste("Proportion of times each species appeared in the foreground out of", numPerms, "permulations\nccLegacy Permulations"), las=2, cex.names=0.5, ylim=c(0,0.8))
+dev.off()
+
+
+
+# ------------------------------------------------------------------
+# --- Looking into differecen between liam and non-liam results  ----- 
+# ------------------------------------------------------------------
+
+
+
+
+
+nonLiamResults = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGeneResults.rds")
+liamResults = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGeneResults.rds")
+
+which(!rownames(liamResults) %in% rownames(nonLiamResults))
+
+liamHI = rownames(liamResults)[which(liamResults$`HI-p.adj` <0.05)]
+nonliamHI = rownames(nonLiamResults)[which(nonLiamResults$`HI-p.adj` <0.05)]
+
+length(which(liamHI %in% nonliamHI))
+
+
+nonLiamResultsGO = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsvertivoreTreecombinedGOResults-KeggReactome.rds")
+liamResultsGO = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsvertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+
+
+
+liamHIGO = rownames(liamResultsGO)[which(liamResultsGO$`HI-p.adj` <0.1)]
+nonliamHIGO = rownames(nonLiamResultsGO)[which(nonLiamResultsGO$`HI-p.adj` <0.1)]
+
+
+length(which(liamHIGO %in% nonliamHIGO))
+
+
+names(liamResults) = paste0("liam-", names(liamResults))
+names(liamResultsGO) = paste0("liam-", names(liamResultsGO))
+
+
+
+which(liamResults$`HI-significant`)
+
+
+# Get significance values for genes
+significanceColumns = names(liamResults)[grep("significant", names(liamResults))]
+geneSignificanceResults = liamResults[, names(liamResults) %in% significanceColumns]
+colSums(geneSignificanceResults, na.rm = T)
+
+significanceColumns = names(nonLiamResults)[grep("significant", names(nonLiamResults))]
+geneSignificanceResultsNL = nonLiamResults[, names(nonLiamResults) %in% significanceColumns]
+colSums(geneSignificanceResultsNL, na.rm = T)
+#Remove the ch column from the non-liam results
+geneSignificanceResultsNL = geneSignificanceResultsNL[,-1]
+
+
+matchGeneSignificant = geneSignificanceResults == geneSignificanceResultsNL
+matchGeneSignificant[!geneSignificanceResults & !geneSignificanceResultsNL] = NA
+totalSignificant = colSums(!is.na(matchGeneSignificant))
+sharedSignificant = colSums(matchGeneSignificant, na.rm = T)
+
+sharedSignificant/totalSignificant 
+
+
+
+significanceColumnsGO = names(liamResultsGO)[grep("significant", names(liamResultsGO))]
+geneSignificanceResultsGO = liamResultsGO[, names(liamResultsGO) %in% significanceColumnsGO]
+colSums(geneSignificanceResultsGO, na.rm = T)
+
+significanceColumnsGO = names(nonLiamResultsGO)[grep("significant", names(nonLiamResultsGO))]
+geneSignificanceResultsGONL = nonLiamResultsGO[, names(nonLiamResultsGO) %in% significanceColumnsGO]
+colSums(geneSignificanceResultsGONL, na.rm = T)
+
+geneSignificanceResultsGONL = geneSignificanceResultsGONL[,c(1,4,2,3,5,6)]
+
+matchGeneSignificantGO = geneSignificanceResultsGO == geneSignificanceResultsGONL
+matchGeneSignificantGO[!geneSignificanceResultsGO & !geneSignificanceResultsGONL] = NA
+totalSignificantGO = colSums(!is.na(matchGeneSignificantGO))
+sharedSignificantGO = colSums(matchGeneSignificantGO, na.rm = T)
+
+sharedSignificantGO/totalSignificantGO 
+
+
+
+# ------------------------------------------------------------------
+# --- Making liam vs non-liam tree plot  ----- 
+# ------------------------------------------------------------------
+
+liamTree = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+nonliamTree = readRDS("Output/CategoricalInsVertivoreTree/CategoricalInsVertivoreTreeCategoricalTree.rds")
+
+all.equal(liamTree$edge, nonliamTree$edge)
+which(! liamTree$edge == nonliamTree$edge)
+
+
+
+which(liamTree$edge.length != nonliamTree$edge.length)
+length(which(liamTree$edge.length != nonliamTree$edge.length))
+
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+commonMainTrees = mainTrees
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+nameColumn = "ZoonomiaTip"
+spreadSheetLocation = "Data/MergedData.csv" 
+commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+commonLiamTree = ZoonomTreeNameToCommon(liamTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+commonNonliamTree = ZoonomTreeNameToCommon(nonliamTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+
+equalBranchMaster = commonMainTrees$masterTree
+equalBranchMaster$edge.length = rep(1, length(equalBranchMaster$edge.length ))
+
+edgelabelcolor = rep("black", length(liamTree$edge.length))
+edgelabelcolor[which(liamTree$edge.length != nonliamTree$edge.length)] = "purple"
+
+palette(c( "darkgreen", "darkblue","black", "red"))
+
+pdf("results/CompareLiamTrees.pdf", height = length(liamTree$tip.label)/10, width = 20)     
+par(mfrow = c(1,2))
+plotTreeCategorical(commonNonliamTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = equalBranchMaster)
+edgelabels(bg=NULL, frame = "none", col = edgelabelcolor, cex = 0.3)
+
+plotTreeCategorical(commonLiamTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = equalBranchMaster)
+edgelabels(bg=NULL, frame = "none", col = edgelabelcolor, cex = 0.3)
+ 
+
+
+plotTreeCategorical(commonNonliamTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTrees$masterTree)
+edgelabels(bg=NULL, frame = "none", col = edgelabelcolor, cex = 0.3)
+
+plotTreeCategorical(commonLiamTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTrees$masterTree)
+edgelabels(bg=NULL, frame = "none", col = edgelabelcolor, cex = 0.3)
+
+
+dev.off()  
+
+
+
+# ------------------------------------------------------------------
 # --- Looking into tree sizes  ----- 
 # ------------------------------------------------------------------
 
@@ -27,7 +1752,10 @@ function (vals, annotList, alternative = "two.sided", ...)
   }
   reslist
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 652d8ba9c0a657d7102cf486344aac9c2f10ec76
 # ------------------------------------------------------------------
 # --- using liam's zero-length-added-tip ancestral infrence method  ----- 
 # ------------------------------------------------------------------
@@ -369,8 +2097,8 @@ for(i in 1:length(rhoValuesSpecific)){
     if(bothAxis){jStart = 1}else{jStart = i+1}
     for(j in (jStart):length(rhoValuesSpecific)){
       yName = names(rhoValuesSpecific)[j]
-      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), " Dunn Z Statistic")
-      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), " Dunn Z Statistic")
+      yLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", yName))), " Dunn Z Statistic")
+      xLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", xName))), " Dunn Z Statistic")
       
       rhoCorrellPlot = ggplot(rhoValuesSpecific, aes(x = .data[[xName]], y = .data[[yName]])) + 
         geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
@@ -847,8 +2575,12 @@ saveRDS(hillerTreePruned, paste0(outputFolderName, "ZoonomiaMaximalTreeHillerBra
 # --- Making violin plots from the categorical data for presentaiton  ----- 
 # ------------------------------------------------------------------
 
+library(tools)
+library(RERconverge)
 filePrefix = "CategoricalInsVertivoreTree"
 outputFolderName = "Output/CategoricalInsVertivoreTree/"
+phenotypeStyle = "Categorical"
+mainTreesLocation = "data/zoonomiaAllMammalsTrees.rds"
 cat4phenotypeSet = c("Herbivore", "Insectivore",  "Omnivore", "Vertivore")
 cat4colorset = c( "darkgreen", "darkblue","black", "red")
 
@@ -861,9 +2593,30 @@ cat4pathsObject = readRDS(pathsFileName)                                        
 combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
 combinedResults = readRDS(combinedDataFilename)
 
-overlap = combinedResults[combinedResults$`HI-HV-CH-Overlap` & !is.na(combinedResults$`HI-HV-CH-Overlap`) & !combinedResults$`HO-significant`,]
+#This one is for a gene that's significnat in all three predatory diets, it was used fof the volution talk 
+#overlap = combinedResults[combinedResults$`CH-HI-HV-Overlap` & !is.na(combinedResults$`CH-HI-HV-Overlap`) & !combinedResults$`HO-significant`,]
+#overlapGenes = rownames(overlap[order(overlap$`HI-p.adj`),])
 
+
+#This one is for a gene that's significant in the two specific predatory diets but not combined carnivore. It was used in the fellowship proposal 
+overlap = combinedResults[!combinedResults$`CH-HI-Overlap` & 
+                            !combinedResults$`HI-HV-Overlap` & 
+                            !is.na(combinedResults$`HI-HV-Overlap`) & 
+                            !is.na(combinedResults$`CH-HI-HV-Overlap`) & 
+                            !combinedResults$`HO-significant` &
+                            combinedResults$`HI-significant`,]
 overlapGenes = rownames(overlap[order(overlap$`HI-p.adj`),])
+
+
+overlap2 = combinedResults[!combinedResults$`CH-HV-Overlap` & 
+                            !combinedResults$`HI-HV-Overlap` & 
+                            !is.na(combinedResults$`HI-HV-Overlap`) & 
+                            !is.na(combinedResults$`CH-HI-HV-Overlap`) & 
+                            !combinedResults$`HO-significant` &
+                            combinedResults$`HV-significant`,]
+overlapGenes2 = rownames(overlap2[order(overlap$`HV-p.adj`),])
+
+
 
 filePrefix = "CategoricalPrunedCarnivoreTree"
 outputFolderName = "Output/CategoricalPrunedCarnivoreTree/"
@@ -902,6 +2655,10 @@ comboPlot
 i = i+1
 }
 goodGenes = c(1, 8, 10)
+
+png("Output/CategoricalInsVertivoreTree/Visualizations/InvertivoryUniqueGene.png", height = 382, width = 742)
+print(comboPlot)
+dev.off()
 # ------------------------------------------------------------------
 # --- Work on making a tree figure for lalitha  ----- 
 # ------------------------------------------------------------------
@@ -1021,8 +2778,8 @@ for(i in 1:length(rhoValuesPerm)){
   if(i+1 <= length(rhoValuesPerm)){
     for(j in (i+1):length(rhoValuesPerm)){
       yName = names(rhoValuesPerm)[j]
-      yLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", yName))), " Stat")
-      xLabel =  paste0(replacePrefixWithName(addDashes(gsub("-Rho", "", xName))), " Stat")
+      yLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", yName))), " Stat")
+      xLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", xName))), " Stat")
       
       rhoCorrellPlot = ggplot(rhoValuesPerm, aes(x = .data[[xName]], y = .data[[yName]])) + 
         geom_point() + geom_pointdensity() + scale_color_viridis(name = "Number of nearby genes", limits = densityScale) + 

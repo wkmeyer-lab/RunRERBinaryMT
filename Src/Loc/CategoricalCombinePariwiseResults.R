@@ -16,6 +16,21 @@ source("Src/Reu/cmdArgImport.R")
 args = c("r=CategoricalInsvertivoreTree", "p=NULL", "g=gene")
 args = c("r=CategoricalInsvertivoreTree", "p=NULL", "g=KeggReactome")
 
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=gene")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome")
+
+args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=gene", "c=0.05", "s=F")
+args = c("r=CategoricalInsvertivoreTreeCarnivoreLiamInference", "p=NULL", "g=KeggReactome", "c=0.1", "s=T")
+
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=MGI_Mammalian_Phenotype_Level_4", "c=0.05", "s=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=GO_Biological_Process_2023", "c=0.05", "s=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=DisGeNET", "c=0.05", "s=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=tissue_specific", "c=0.05", "s=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=EnrichmentHsSymbolsFile2", "c=0.05", "s=T")
+
+
+
+
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -56,7 +71,7 @@ geneSet = NULL
 usingGo = F
 saveData = T
 usingGene = T
-
+saveCombinedData = T
 
 { # Bracket used for collapsing purposes
   
@@ -82,15 +97,23 @@ usingGene = T
       message("Null geneset specified or gene specified, performing gene correlation.")
     }else{
       usingGo = T
+      usingGene = F
     }
   }else{
     message("No geneset specified or gene specified, performing gene correlation.")
   }
   
+  #cutoffsaveData 
+  if(!is.na(cmdArgImport('c'))){
+    saveData = cmdArgImport('c')
+  }else{
+    message("pvalue cuttoff not specified, using 0.05")
+  }  
+  
   
   #saveData 
   if(!is.na(cmdArgImport('s'))){
-    saveData = cmdArgImport('s')
+    saveData = as.logical(cmdArgImport('s'))
   }else{
     message("saveData not specified, using TRUE")
   }
@@ -156,12 +179,14 @@ if(usingGene){
   }
   
   combinedResults = combinedResults[,-1]
-  combinedDrivers = combinedDrivers[,-1]
-  combinedBinaries = combinedBinaries[,-1]
-  combinedBinaries = combinedBinaries[,-grep(".1", names(combinedBinaries))]
+  if(!is.na(combinedDrivers)){
+    combinedDrivers = combinedDrivers[,-1]
+    combinedBinaries = combinedBinaries[,-1]
+    combinedBinaries = combinedBinaries[,-grep(".1", names(combinedBinaries))]
   
-  combinedResults = cbind(combinedResults, combinedDrivers)
-  combinedResults = cbind(combinedResults, combinedBinaries)
+    combinedResults = cbind(combinedResults, combinedDrivers)
+    combinedResults = cbind(combinedResults, combinedBinaries)
+  }
   rm(combinedDrivers); rm(combinedBinaries)
   
   
@@ -296,3 +321,4 @@ if(usingGo){
     if(saveData){saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))}
   }
 }
+

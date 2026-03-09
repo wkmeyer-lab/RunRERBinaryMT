@@ -20,6 +20,21 @@ args = c("r=CategoricalInsVertivoreTree", "s=Insectivore-Vertivore",
          "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=T")
 
 
+
+args = c("r=CategoricalInsVertivoreTreeLiamInference", "s=Carnivore-Herbivore", 
+         "a=CategoricalBinaryCarnivoreTree", "b=Carnivore", "c=CategoricalBinaryHerbivoreTree", "d=Herbivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=T")
+args = c("r=CategoricalInsVertivoreTreeLiamInference", "s=Herbivore-Vertivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryVertivoreTree", "d=Vertivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=T")
+args = c("r=CategoricalInsVertivoreTreeLiamInference", "s=Herbivore-Insectivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryInsectivoreTree", "d=Insectivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=T")
+
+args = c("r=CategoricalInsVertivoreTreeLiamInference", "s=Insectivore-Vertivore", 
+         "a=CategoricalBinaryInsectivoreTree", "b=Insectivore", "c=CategoricalBinaryVertivoreTree", "d=Vertivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=T")
+
 {
   # --- Standard start-up code ---
   if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -52,7 +67,6 @@ args = c("r=CategoricalInsVertivoreTree", "s=Insectivore-Vertivore",
   }
   
   # --- Import arguments --- 
-  filePrefix = "CategoricalInsVertivoreTree"
   subdirectory = "Carnivore-Herbivore"
   BinaryTreeOne = "CategoricalBinaryHerbivoreTree"
   BinaryPhenotype = "Herbivore"
