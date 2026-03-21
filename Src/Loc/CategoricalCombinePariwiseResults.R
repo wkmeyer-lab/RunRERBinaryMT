@@ -30,6 +30,7 @@ args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=EnrichmentHs
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=gene", "s=T", "l=T")
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome", "s=T", "l=F")
 args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome", "s=T", "l=T")
+args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome", "s=T", "l=T")
 
 
 

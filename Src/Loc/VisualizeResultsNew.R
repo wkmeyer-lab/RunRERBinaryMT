@@ -70,6 +70,7 @@ args = c('r=CategoricalInsVertivoreTree', 'p=F', 'g=T', 's=c("Omnivore-Vertivore
 args = c('r=meanTemp', 'm=data/zoonomiaAllMammalsTrees.rds', 'p=F','v=T')
 args = c('r=Demo', 'v=F', 'g=F', 's=c("Carnivore-Herbivore", "Carnivore-Omnivore", "Herbivore-Omnivore", "Overall")')
 args = c('r=Demo', 'v=F', 'g=T', 's=c("Carnivore-Herbivore", "Carnivore-Omnivore", "Herbivore-Omnivore", "Overall")')
+args = c('r=CategoricalInsVertivoreTreeLiamInference', 'p=F', 'g=T', 's=c("Omnivore-Vertivore", "Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
 
 
 # --- Standard start-up code ---
@@ -440,8 +441,8 @@ for(j in 1:length(subdirectoryValueList)){
     #for(i in 2:enrichmentRange){
     #  enrichmentPlots = plot_grid(genesetPlot1, genesetPlot2, genesetPlot3, genesetPlot4, genesetPlot5, ncol = 1, nrow = 3)
     #}
-    enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, ncol = 1, nrow = 5)
-    #enrichmentPlots= plot_grid(genesetPlot3, genesetPlot2, genesetPlot1, genesetPlot4, genesetPlot5, genesetPlot6, ncol = 1, nrow = 6)
+    #enrichmentPlots= plot_grid(genesetPlot1, genesetPlot2, ncol = 1, nrow = 5)
+    enrichmentPlots= plot_grid(genesetPlot3, genesetPlot2, genesetPlot1, genesetPlot4, genesetPlot5, genesetPlot6, ncol = 1, nrow = 6)
     enrichmentRows = pmax(length(enrichmentRange), enrichmentRange)
   }
   
