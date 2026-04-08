@@ -3,6 +3,33 @@ library(RERconverge)
 library(tools)
 library(scales)
 
+#---------------------------------------------------------------------
+# --- Associate drivingbrahces with eltontraits values  --- 
+# --------------------------------------------------------------------
+source("Src/Loc/Dev/DisplayCategoricalRERTree.R")
+mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
+RERObject = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceRERFile.rds")
+pathsObject = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPathsFile.rds")
+palette(c( "darkgreen", "darkblue","black", "red"))
+
+indexVal = "IDO2"
+
+
+rerTree = displayCategoricalRERTree(mainTrees, RERObject, indexVal, phenv = pathsObject)
+
+terminalBranches = which(rerTree$edge[,2] < length(rerTree$tip.label))
+names(terminalBranches) = rerTree$tip.label[rerTree$edge[,2][which(rerTree$edge[,2] < length(rerTree$tip.label))]]
+terminalBranches = rerTree$edge.length[terminalBranches]
+
+mergedData = read.csv("Data/MergedData.csv")
+mainData = mergedData
+maindata =  mainData[which(mainData$ZoonomiaTip %in% names(terminalBranches)),]
+terminalBranches = terminalBranches[match(maindata$ZoonomiaTip, names(terminalBranches))]
+
+maindata = cbind(maindata, terminalBranches)
+
+ggplot(maindata, aes(x = terminalBranches, y = Diet.Scav)) +
+  geom_point()
 
 #---------------------------------------------------------------------
 # --- useDrivingBranches script  --- 
@@ -15,7 +42,6 @@ palette(c( "darkgreen", "darkblue","black", "red"))
 
 indexVal = "SDS"
 
-indexVal = "GRB14"
 
 
 displayCategoricalRERTree(mainTrees, RERObject, indexVal, phenv = pathsObject, tipCol = "ZoonomiaTip")
