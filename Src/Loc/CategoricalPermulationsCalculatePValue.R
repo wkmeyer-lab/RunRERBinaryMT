@@ -266,8 +266,15 @@ if(!onlyCalulateValue){
             #Moving this function into the main code body to save on memory use 
             #combinedPermulationsData = combineCategoricalPermulationIntermediates(combinedPermulationsData, iteratingPermulationsData)
             
-            CombinedIntermediates$numMoreExtremePerms = CombinedIntermediates$numMoreExtremePerms + iteratingPermulationsData$numMoreExtremePerms  
-            CombinedIntermediates$numTotalPerms = CombinedIntermediates$numTotalPerms + iteratingPermulationsData$numTotalPerms  
+            CombinedIntermediates[[1]]$numMoreExtremePerms = CombinedIntermediates[[1]]$numMoreExtremePerms + iteratingPermulationsData[[1]]$numMoreExtremePerms  
+            CombinedIntermediates[[1]]$numTotalPerms = CombinedIntermediates[[1]]$numTotalPerms + iteratingPermulationsData[[1]]$numTotalPerms  
+            
+            
+            for (j in 1:length(CombinedIntermediates[[2]])) {
+              CombinedIntermediates[[2]][[j]]$numMoreExtremePerms = CombinedIntermediates[[2]][[j]]$numMoreExtremePerms + iteratingPermulationsData[[2]][[j]]$numMoreExtremePerms
+              CombinedIntermediates[[2]][[j]]$numTotalPerms = CombinedIntermediates[[2]][[j]]$numTotalPerms + iteratingPermulationsData[[2]][[j]]$numTotalPerms
+            }
+            
             
             iteratingPermulationCombineEnd = Sys.time()
             iteratingPermulationCombineTime = iteratingPermulationCombineEnd - iteratingPermulationLoadEnd
