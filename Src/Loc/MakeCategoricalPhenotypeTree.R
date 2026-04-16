@@ -1385,7 +1385,7 @@ useLiam = F
 
   #use Liam Infrence
   if(!is.na(cmdArgImport('l'))){
-    useLiam = cmdArgImport('l')
+    useLiam = as.logical(cmdArgImport('l'))
     message("Using Liam infrence -- DO NOT DO THIS UNLESS USING A SPECIFIC LIAM PHENOTYPE")
   }else{
     message("Liam infrence not used.")
