@@ -3908,13 +3908,7 @@ function (vals, annotList, alternative = "two.sided", ...)
   }
   reslist
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> 652d8ba9c0a657d7102cf486344aac9c2f10ec76
-=======
->>>>>>> 8e4f93b320bad196744f94c679d4ddadf6e6ac6a
 # ------------------------------------------------------------------
 # --- using liam's zero-length-added-tip ancestral infrence method  ----- 
 # ------------------------------------------------------------------

@@ -180,6 +180,61 @@ CategoricalCollectIntermediateResults = function(realCors, intermediateList, ini
   
 }
 
+
+CategoricalCollectIntermediateResults = function(realCors, intermediateList, start=1, end=NULL, report=F){
+  {totalStart = Sys.time()}
+  corsMatEffSize = intermediateList[[1]]
+  Peffsize = intermediateList[[2]]
+  corsMatPvals = intermediateList[[3]]
+  Ppvals = intermediateList[[4]]
+  message("Combining previously collected intermediates")
+  N = nrow(realCors[[1]]) #
+  
+  #Start updating the correlations
+  if(is.null(end)){ #if no end specified
+    stop = N
+  }else{
+    stop = end
+  }
+  for (gene in start:stop) {
+    if(report){geneStart = Sys.time()}
+    if (is.na(realCors[[1]]$Rho[gene])) {
+      p = NA
+    }
+    else {
+      signVal = sign(realCors[[1]]$Rho[gene])
+      MatEffSizes = corsMatEffSize[gene, ]
+      signedMatEffSizes = MatEffSizes[which(sign(MatEffSizes) == signVal)]
+      newMoreExtreme = sum(abs(signedMatEffSizes) > abs(realCors[[1]]$Rho[gene]), na.rm = TRUE)
+      newTotal = (sum(!is.na(signedMatEffSizes)))
+      realCors[[1]]$numMoreExtremePerms[gene] = realCors[[1]]$numMoreExtremePerms[gene] + newMoreExtreme 
+      realCors[[1]]$numTotalPerms[gene] =  realCors[[1]]$numTotalPerms[gene] + newTotal
+    }
+    for (j in 1:length(realCors[[2]])) {
+      if (is.na(realCors[[2]][[j]]$Rho[gene])) {
+        p = NA
+      }
+      else {
+        realValue = realCors[[2]][[j]]$Rho[gene]
+        signValue = sign(realValue)
+        peffValues = Peffsize[[names(realCors[[2]][j])]][gene, ]
+        signedPeffValues = peffValues[which( sign(peffValues) == signValue)]
+        newMoreExtreme = (sum(abs(signedPeffValues) > abs(realValue), na.rm = TRUE))
+        newTotal = (sum(!is.na(signedPeffValues))+1)
+        realCors[[2]][[j]]$numMoreExtremePerms[gene] = realCors[[2]][[j]]$numMoreExtremePerms[gene] + newMoreExtreme
+        realCors[[2]][[j]]$numTotalPerms[gene] = realCors[[2]][[j]]$numTotalPerms[gene] + newTotal
+      }
+      
+    }
+    if(report){geneEnd = Sys.time(); geneDuration = geneEnd - geneStart;message(paste("Completed Gene", gene, "Duration", geneDuration, attr(geneDuration, "units")))}
+  }
+  message("Done")
+  {totalEnd = Sys.time(); totalDuration = totalEnd - totalStart;message(paste("Completed p-Values; Duration", totalDuration, attr(totalDuration, "units")))}
+  return(realCors)
+  
+}
+
+
 CategoricalCalculatePValueFromCollectedIntermediates = function(CollectedIntermediates, start=1, end=NULL, report=F){
   realCors = CollectedIntermediates
   N = nrow(realCors[[1]]) #
