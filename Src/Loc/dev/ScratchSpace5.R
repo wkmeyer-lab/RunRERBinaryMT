@@ -4,6 +4,48 @@ library(tools)
 library(scales)
 
 #---------------------------------------------------------------------
+# --- Try to debug errors with partially pruned liam tree --- 
+# --------------------------------------------------------------------
+c(339,347,351,353,387,388,389,393,509,513,514,515,584,586,587,608,609,611,614,617,620)
+
+c(339,347,351,353,387,388,389,393,509,513,514,515,584,586,587,608,609,611,614,617,620)
+
+
+
+prunedSpecies
+
+commonPrunedSpecies = ZonomNameConvertVectorCommon(prunedSpecies, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+
+length(commonPrunedSpecies)
+length(commonSpeciesFilter)
+
+commonSpeciesFilter %in% commonPrunedSpecies
+
+commonCategoricalTree$tip.label %in% commonPrunedSpecies
+
+
+plot(commonCategoricalTree)
+
+ZonomNameConvertVectorCommon("vs_HLpanOnc1", annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+
+commonCategoricalTree
+
+"vs_HLpumYag1"
+
+report= mainTrees$report
+speciesGeneNumber = colSums(report)
+
+speciesGeneNumber[which(names(speciesGeneNumber) == "vs_HLpumYag1")]
+
+commonCategoricalTree$edge.length
+edgelabels(bg = NULL, adj = c(0.5,0.9), frame = 'none', font =2)
+
+
+test = plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTrees$masterTree)
+
+
+
+#---------------------------------------------------------------------
 # --- Associate drivingbrahces with eltontraits values  --- 
 # --------------------------------------------------------------------
 source("Src/Loc/Dev/DisplayCategoricalRERTree.R")
