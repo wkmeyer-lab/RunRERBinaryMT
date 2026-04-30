@@ -1142,7 +1142,10 @@ args = c('r=CategoricalSlimMainInsVertivoreTree', 'm=data/CategoricalInsVertivor
           "vs_panTro6", "vs_HLrhiRox2", "LangurClade", "vs_HLallNig1", "PrimateTransitionsContinued",
           "vs_HLeryPat1", "vs_chlSab2", "geunonClade", "vs_HLtheGel1", "PrimateTransitionsContinuedAgain",
           "vs_HLpapAnu5", "vs_HLmanSph1", "DrillMandrillClade", "vs_cerAty1", "Drilltransitions",
-          "vs_HLmarFla1", "marmotClade", "DoormouseTransition"
+          "vs_HLmarFla1", "marmotClade", "DoormouseTransition",
+          "vs_HLtraJav1", "MouseDeerUsedInOtherAnalysis",
+          "vs_mm10", "humans",
+          "vs_HLlniGeo1", "amazonRiverDolphinFromYeast"
          )',
          'p=c(
           "vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1", "voleClade",
@@ -1449,6 +1452,7 @@ pruningPrefrenceColumn = NA
 pruningProtection = F
 manualPruningSpecies = NULL
 useLiam = F
+generateAlternates = F
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){

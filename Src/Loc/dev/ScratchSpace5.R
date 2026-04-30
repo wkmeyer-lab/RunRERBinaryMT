@@ -13,17 +13,102 @@ ogAnalysis = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/Categorica
 newAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencePairwiseCorrelationFile.rds")
 
 
-test = readRDS("Output/CategoricalInsVertivoreTreeNoYeastCarnivoreLiamInference/CategoricalInsVertivoreTreeNoYeastCarnivoreLiamInferenceCategoricalPhenotypeVector.rds")
+ogAnalysis = ogAnalysis[-c(7,8)]
 
-outputFolderNameNoSlash
+ogAnalysis = ogAnalysis[-c(2,3,6)]
+newAnalysis = newAnalysis[-c(2,3,6)]
 
-carnivoreImport = readRDS(paste0(outputFolderNameNoSlash, "Carnivore/", filePrefix, "Carnivore"))
+
+compareAnalyses = function(ogAnalysis, newAnalysis){
+
+results <- tibble(
+  index = integer(),
+  correlation = numeric(),
+  rhoRankcorrelation = numeric()
+  numMismatchedNAs = integer(),
+  mismatchedNAs = I(list()),
+  pCorrelation = numeric(),
+  numMismatchedPs = integer(),
+  mismatchedPs = I(list()),
+  padjCorrelation = numeric(),
+  numMismatchedPadjs = integer(),
+  mismatchedPadjs = I(list()),
+  totalOgSigPadjs = integer(), 
+  totalNewSigPadjs = integer()
+)
+
+for (i in seq_along(ogAnalysis)) {
   
-  ("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/Carnivore-Herbivore/CategoricalInsVertivoreTreeNoYeastCarnivoreLiamInferenceCarnivore-HerbivoreCorrelationFile.rds")
+  correlation <- cor(ogAnalysis[[i]][[1]], newAnalysis[[i]][[1]], use = "complete.obs")
+  
+  mismiatchedNAs <- which(!is.na(ogAnalysis[[i]][[1]]) %in% is.na(newAnalysis[[i]][[1]]))
+  
+  ogAnalysis[[i]] = ogAnalysis[[i]] %>% mutate(rhoRank = rank(ogAnalysis[[i]][[1]])) 
+  newAnalysis[[i]] = newAnalysis[[i]] %>% mutate(rhoRank = rank(newAnalysis[[i]][[1]]))
+  
+  rhoRankcorrelation <- cor(ogAnalysis[[i]][[4]], newAnalysis[[i]][[4]], use = "complete.obs")
+  
+  pCorrelation <- cor(ogAnalysis[[i]][[2]], newAnalysis[[i]][[2]], use = "complete.obs")
+  
+  mismiatchedPs <- which(!which(ogAnalysis[[i]][[2]] < 0.05) %in% 
+                           which(newAnalysis[[i]][[2]] < 0.05))
+  
+  padjCorrelation <- cor(ogAnalysis[[i]][[3]], newAnalysis[[i]][[3]], use = "complete.obs")
+  
+  mismiatchedPadjs <- which(!which(ogAnalysis[[i]][[3]] < 0.05) %in% 
+                              which(newAnalysis[[i]][[3]] < 0.05))
+  
+  totalOgSigPadjs = length(which(ogAnalysis[[i]][[3]] < 0.05))
+  totalNewSigPadjs = length(which(newAnalysis[[i]][[3]] < 0.05))
+  
+  results <- rbind(results, tibble(
+    index = i,
+    correlation = correlation,
+    rhoRankcorrelation = rhoRankcorrelation
+    numMismatchedNAs = length(mismiatchedNAs),
+    mismatchedNAs = list(mismiatchedNAs),
+    pCorrelation = pCorrelation,
+    numMismatchedPs = length(mismiatchedPs),
+    mismatchedPs = list(mismiatchedPs),
+    padjCorrelation = padjCorrelation,
+    numMismatchedPadjs = length(mismiatchedPadjs),
+    mismatchedPadjs = list(mismiatchedPadjs),
+    totalOgSigPadjs = totalOgSigPadjs,
+    totalNewSigPadjs = totalNewSigPadjs
+  ))
+}
+row.names(results) = names(ogAnalysis)
+return(results)
+}
 
 
-test2 = append(newAnalysis, test)
 
+#---------------------------------------------------------------------
+# --- comparing new and old carnivory  --- 
+# --------------------------------------------------------------------
+
+mergedPairwiseCorrelation = readRDS(paste0(pairwiseCorrelationFileName, ".rds"))
+
+ogCarn = mainPairwiseCategorical[c(7,8,2)]
+
+names(ogCarn)
+names(mergedPairwiseCorrelation)
+
+carnCompare = compareAnalyses(ogCarn, mergedPairwiseCorrelation)
+
+
+ogCarnTree = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsVertivoreTreeCarnivoreLiamInferenceCategoricalTree.rds")
+newCarnTree = readRDS("Output/CategoricalInsVertivoreTreeDuplicateLiamInference/CategoricalInsVertivoreTreeDuplicateLiamInferenceMergedCategoricalTree.rds")
+
+ogLiamTree  = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+dupLiamTree = readRDS("Output/CategoricalInsVertivoreTreeDuplicateLiamInference/CategoricalInsVertivoreTreeDuplicateLiamInferenceCategoricalTree.rds")
+
+ogLiamTree$tip.label[which(!ogLiamTree$tip.label %in% dupLiamTree$tip.label)]
+
+
+all.equal(ogLiamTree, categoricalTree)
+
+phenotypeTree$edge.length
 #---------------------------------------------------------------------
 # --- Looking into the number of species in various trees--- 
 # --------------------------------------------------------------------
