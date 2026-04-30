@@ -4,8 +4,9 @@ library(tools)
 library(scales)
 
 
+
 #---------------------------------------------------------------------
-# --- Fixing enrichment code and working on making new trees --- 
+# --- Cluster debugging--- 
 # --------------------------------------------------------------------
 library(xlsx)
 
@@ -16,6 +17,17 @@ testdf = data.frame(c(1,2,3), c("a","b","c"))
 write.xlsx(enrichmentResult[[1]], file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T)
 
 
+args = commandArgs()
+marker= "s"                                                         #send the marker value
+markerWhole = paste("^", marker, "=", sep='')                    #convert marker to grep format
+commandLineValue = grep(markerWhole, args, value = TRUE)         #get a string based on the identifier   
+commandLineValue
+
+
+
+#---------------------------------------------------------------------
+# --- Fixing enrichment code and working on making new trees --- 
+# --------------------------------------------------------------------
 
 plot(categoricalTree)
 
@@ -31,8 +43,60 @@ plotTreeCategorical(demoTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivo
 demoTree$edge.length
 
 
+highFamilyTips = c("vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1","vs_HLmicAgr2", "vs_HLmyoGla2", "vs_HLondZib1", "voleClade", "6Herb",
+  "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "vs_HLmyoCoy1", "vs_HLhydHyd1", "vs_HLcavTsc1", "gundiGuineaPigClade", "14Herb",
+  "vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1",  "vs_bisBis1", "vs_HLoviNivLyd1", "vs_HLproPrz1", "Bovidae", "13Herb",
+  "vs_HLhydIne1", "vs_HLmunMun1", "vs_HLodoHem1", "vs_HLantAme1", "vs_HLgirCam1", "Cervidae", "5Herb",
+  "vs_HLmacSob1", "vs_HLpteGig1", "FoxLongTounge", "vs_HLeidHel2", "vs_HLcynBra1", "outerPeropodidae", "vs_HLeonSpe1", "vs_HLrouLes1", "Roussetinae", "Peropodidae", "6Herb")
 
 
+categoricalTree
+
+length(which(highFamilyTips %in% categoricalTree$tip.label))
+
+mergedData = read.csv("Data/mergedData.csv")
+
+mergedData$ZoonomiaTip %in% mainTrees$masterTree$tip.label
+
+fullTree = readRDS("Output/PredatorFullTree/PredatorFullTreeCategoricalTree.rds")
+fullPhenVec = readRDS("Output/PredatorFullTree/PredatorFullTreeCategoricalPhenotypeVector.rds")
+length(fullPhenVec)
+
+ogPhenVec = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPhenotypeVector.rds")
+
+dataPhenVec = fullPhenVec[names(fullPhenVec) %in% fullTree$tip.label]
+
+phenData = mergedData[c(mergedData$ZoonomiaTip %in% fullTree$tip.label),]
+
+
+phenData = phenData %>% mutate(diet = dataPhenVec)
+
+familyByDiet = phenData[,c(1,2,5,9)]
+familyByDiet = familyByDiet %>% mutate(diet = dataPhenVec)
+
+table(familyByDiet$diet)
+table(familyByDiet$MSWC_Family[familyByDiet$diet == "Herbivore"])[order(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Herbivore"]))]
+length(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Herbivore"])[order(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Herbivore"]))])
+
+table(familyByDiet$MSWC_Family[familyByDiet$diet == "Insectivore"])[order(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Insectivore"]))]
+length(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Insectivore"])[order(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Insectivore"]))])
+
+
+prunedFamilyByDiet = familyByDiet
+prunedFamilyByDiet = prunedFamilyByDiet[prunedFamilyByDiet$ZoonomiaTip %in% names(ogPhenVec),]
+
+
+table(prunedFamilyByDiet$diet)
+table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Herbivore"])[order(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Herbivore"]))]
+length(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Herbivore"])[order(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Herbivore"]))])
+
+table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectivore"])[order(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectivore"]))]
+length(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectivore"])[order(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectivore"]))])
+
+  
+length(ogPhenVec)
+
+table(prunedTree$edge[,1])
 #---------------------------------------------------------------------
 # --- Writing code to compare phenotypes --- 
 # --------------------------------------------------------------------

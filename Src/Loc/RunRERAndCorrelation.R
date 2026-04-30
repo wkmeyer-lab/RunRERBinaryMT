@@ -73,7 +73,7 @@ args = c('r=Demo', 'v=F', 'm=demoTreeFile', 's=g')
 
 args = c('r=Demo', 'v=T', 'm=demoTreeFile', 's=g')
 
-args = c("r=TestFullTree", 'm=', "s=g", "v=F", "l=170")
+args = c("r=PredatorFullTree", 'm=', "s=g", "v=F", "l=170")
 
 
 # --- Standard start-up code ---
