@@ -160,7 +160,7 @@ if(!onlyCalulateValue){
       firstPermLoadTime = firstPermLoadEnd - firstPermLoadStart
       message("First permulation load time: ", firstPermLoadTime, attr(firstPermLoadTime, "units"))
       
-      CombinedIntermediates = CategoricalCollectIntermediateResults(correlationsObject, firstPermulationsData, initial = T)
+      CombinedIntermediates = CategoricalCollectIntermediateResults(correlationsObject, firstPermulationsData)
       
       rm(firstPermulationsData)
       # -- Do all subsequent combinations (loop) --
@@ -187,7 +187,7 @@ if(!onlyCalulateValue){
               #Moving this function into the main code body to save on memory use 
               #combinedPermulationsData = combineCategoricalPermulationIntermediates(combinedPermulationsData, iteratingPermulationsData)
               
-              CombinedIntermediates = CategoricalCollectIntermediateResults(CombinedIntermediates, iteratingPermulationsData, initial = F)
+              CombinedIntermediates = CategoricalCollectIntermediateResults(CombinedIntermediates, iteratingPermulationsData)
               
               
               
