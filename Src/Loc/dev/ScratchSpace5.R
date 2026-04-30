@@ -5,6 +5,35 @@ library(scales)
 
 
 #---------------------------------------------------------------------
+# --- Fixing enrichment code and working on making new trees --- 
+# --------------------------------------------------------------------
+library(xlsx)
+
+test = enrichmentResult[[1]]
+
+testdf = data.frame(c(1,2,3), c("a","b","c"))
+
+write.xlsx(enrichmentResult[[1]], file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T)
+
+
+
+plot(categoricalTree)
+
+demoTree = categoricalTree
+
+
+demoTree = drop.tip(demoTree, demoTree$tip.label[-seq(from = 2, to = 196, by = 2)])
+
+plotTreeCategorical(demoTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+
+
+
+demoTree$edge.length
+
+
+
+
+#---------------------------------------------------------------------
 # --- Writing code to compare phenotypes --- 
 # --------------------------------------------------------------------
 
@@ -18,13 +47,14 @@ ogAnalysis = ogAnalysis[-c(7,8)]
 ogAnalysis = ogAnalysis[-c(2,3,6)]
 newAnalysis = newAnalysis[-c(2,3,6)]
 
+out = compareAnalyses(ogAnalysis, newAnalysis)
 
 compareAnalyses = function(ogAnalysis, newAnalysis){
 
 results <- tibble(
   index = integer(),
   correlation = numeric(),
-  rhoRankcorrelation = numeric()
+  rhoRankcorrelation = numeric(),
   numMismatchedNAs = integer(),
   mismatchedNAs = I(list()),
   pCorrelation = numeric(),
@@ -64,7 +94,7 @@ for (i in seq_along(ogAnalysis)) {
   results <- rbind(results, tibble(
     index = i,
     correlation = correlation,
-    rhoRankcorrelation = rhoRankcorrelation
+    rhoRankcorrelation = rhoRankcorrelation,
     numMismatchedNAs = length(mismiatchedNAs),
     mismatchedNAs = list(mismiatchedNAs),
     pCorrelation = pCorrelation,
@@ -88,13 +118,15 @@ return(results)
 # --------------------------------------------------------------------
 
 mergedPairwiseCorrelation = readRDS(paste0(pairwiseCorrelationFileName, ".rds"))
-
+mergedPairwiseCorrelation = pairwiseCategorical
 ogCarn = mainPairwiseCategorical[c(7,8,2)]
 
 names(ogCarn)
 names(mergedPairwiseCorrelation)
 
 carnCompare = compareAnalyses(ogCarn, mergedPairwiseCorrelation)
+
+all.equal(ogCarn[[1]][[1]], mergedPairwiseCorrelation[[1]][[1]])
 
 
 ogCarnTree = readRDS("Output/CategoricalInsVertivoreTreeCarnivoreLiamInference/CategoricalInsVertivoreTreeCarnivoreLiamInferenceCategoricalTree.rds")
