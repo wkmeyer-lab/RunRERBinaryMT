@@ -1675,9 +1675,9 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
 }
 
 # - Phenotype Vector - 
-relevantSpecies = relevantSpecies[relevantSpecies[[nameColumn]] %in% speciesFilter, ] 
-speciesNames = relevantSpecies[[nameColumn]]                                         #Exract the tip name of each species
-speciesCategories = relevantSpecies[[annotColumn]]                              #extract the category of each species (in same order)
+filteredSpecies = relevantSpecies[relevantSpecies[[nameColumn]] %in% speciesFilter, ] 
+speciesNames = filteredSpecies[[nameColumn]]                                         #Exract the tip name of each species
+speciesCategories = filteredSpecies[[annotColumn]]                              #extract the category of each species (in same order)
 
 phenotypeVector = speciesCategories                                             #combine those into⌄
 names(phenotypeVector) = speciesNames                                           #the format the functions expect
@@ -1776,55 +1776,109 @@ saveRDS(scientificCategoricalTree, scientificCategoricalTreeFilename)
 
 
 
-# - Paths -  
-#(Section is disabled so that paths are created based on tree (edits included) in other scripts and not just the phenotype vector)
-#pathsFilename = paste(outputFolderName, filePrefix, "CategoricalPathsFile.rds", sep= "") #make a filename based on the prefix
-#paths = char2PathsCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait) #make a path based on the phenotype vector
-#saveRDS(paths, file = pathsFilename)                                            #save the path 
+if(generateAlternates){
+  phenotypeSizes = table(phenotypeVector)
+  
+  fullSpeciesNames = relevantSpecies[[nameColumn]]                                         #Exract the tip name of each species
+  fullSpeciesCategories = relevantSpecies[[annotColumn]]                              #extract the category of each species (in same order)
+  fullDataPhenotype = fullSpeciesCategories
+  names(fullDataPhenotype) = fullSpeciesNames 
+  if(!is.null(substitutions) & !all(is.na(substitutions))){
+    for( i in 1:length(substitutions)){
+      substitutePhenotypes = substitutions[[i]]
+      message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
+      fullDataPhenotype = gsub(substitutePhenotypes[1], substitutePhenotypes[2], fullDataPhenotype)
+    }
+  }
+  length(fullDataPhenotype)
+  
+  fullPhenotypeSizes = table(fullDataPhenotype)
+  
+  mastertreeDataPhenotype = fullDataPhenotype[names(fullDataPhenotype) %in% mainTrees$masterTree$tip.label]
+  length(mastertreeDataPhenotype)
+  masterTreePhenotypeSizes = table(mastertreeDataPhenotype)
+  
+  
+  alternateSets = list()
+  i=1
+  while(length(alternateSets) < 50){
+    
+    randomizedSpeciesSet = character()
+    for(j in 1:length(phenotypeSizes)){
+      numberOfSpecies = phenotypeSizes[j]
+      speciesSet = mastertreeDataPhenotype[which(mastertreeDataPhenotype == names(phenotypeSizes)[j])]
+      chosenSpecies = sample(speciesSet, numberOfSpecies)
+      randomizedSpeciesSet = append(randomizedSpeciesSet, chosenSpecies)
+    }
+    
+    testTree = mainTrees$masterTree
+    tipsToDrop = testTree$tip.label[!testTree$tip.label %in% names(randomizedSpeciesSet)]
+    testTree = drop.tip(testTree, tipsToDrop)
+    i=i+1
+    if(i %% 10000 == 0){message(i)}
+    if(min(testTree$edge.length) < pruningCutoff){
+      message("Found Valid Alternate")
+      message(i)
+      alternateTips = testTree$tip.label
+      alternateTips = list(alternateTips)
+      alternateSets = append(alternateSets, alternateTips)
+    }
+  }
+  
+saveRDS(alternateSets, paste(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
+  
 
-
-
-
-
-# -- Convert Tree to Binary (Manual only) --
-convertToBinary = T
-convertToBinary = F
-convertToBinaryStandalone = T
-convertToBinaryStandalone = F
-foreground = "Insectivore"
-
-if(convertToBinaryStandalone){
-  categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
-  categoricalTree = readRDS(categoricalTreeFilename)
-  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
-  speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
-  relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
-  speciesFilter = relevantSpecieslist                                           #make the speciesFilter object for later 
+if(!dir.exists(paste0("Output/", filePrefix, "/Alternates"))){                                      #Make output directory if it does not exist
+  dir.create(paste0("Output/", filePrefix, "/Alternates"))
 }
 
-if(convertToBinary){
+
+for(i in 1:length(alternateSets)){
   
-  binaryTree = categoricalTree
-  phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
-  categories = map_to_state_space(phenotypeVector) 
-  categoryNames = categories$name2index                                         #store the length-phenotype connection
-  foregroundInt = categoryNames[which(names(categoryNames) == foreground)]
-  binaryTree$edge.length[-(which(binaryTree$edge.length == foregroundInt))] = 0
-  binaryTree$edge.length[(which(binaryTree$edge.length == foregroundInt))] = 1
+  currentSet = alternateSets[[i]]
+  alternateFilePrefix = paste0("/Alternates/Alternate", i)
   
-  binaryTreeImageFilename = paste(outputFolderName, filePrefix, "BinaryTree.pdf", sep="") #make a filename based on the prefix
-  pdf(binaryTreeImageFilename, height = length(phenotypeVector)/7)                     #make a pdf to store the plot, sized based on tree size
-  source("Src/Reu/plotBinaryTree.R")
-  plotBinaryTree(mainTrees, binaryTree, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameColumn)
-  plotBinaryTree(mainTrees, binaryTree, convertNames = F, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameColumn)
-  plotTree(binaryTree)
-  dev.off()                                                                       #save the plot to the pdf
+  phenotypeVector = fullDataPhenotype[which(names(fullDataPhenotype) %in% currentSet)]
   
-  binaryTreeFilename = paste(outputFolderName, filePrefix, "BinaryTree.rds", sep="") #make a filename based on the prefix
-  saveRDS(binaryTree, binaryTreeFilename)                               #save the tree
   
-  # - Paths - 
-  binaryPathsFilename = paste(outputFolderName, filePrefix, "PathsFile.rds", sep= "") #make a filename based on the prefix
-  binaryPaths = tree2Paths(binaryTree, mainTrees, binarize = T, speciesFilter) #make a path based on the phenotype vector
-  saveRDS(binaryPaths, file = binaryPathsFilename) 
+  commonMainTrees = mainTrees
+  commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+  commonPhenotypeVector = phenotypeVector
+  names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+  commonSpeciesFilter = ZonomNameConvertVectorCommon(currentSet, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+  
+  # - Categorical Tree - 
+  treeImageFilename = paste(outputFolderName, alternateFilePrefix, filePrefix,"CategoricalTree.pdf", sep="") #make a filename based on the prefix
+  palette(c( "darkgreen", "darkblue","black", "red"))
+  
+  pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
+  commonCategoricalTree = char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = F)
+  categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, currentSet, model = modelType, anctrait = ancestralTrait, plot = F) #use the phenotype vector to make a tree
+  
+  commonCategoricalTreeExtraTip = commonCategoricalTree
+  categoricalTreeExtraTip = categoricalTree
+  
+  commonCategoricalTree = drop.tip(commonCategoricalTree, names(nodesToAdd))
+  categoricalTree = drop.tip(categoricalTree, names(nodesToAdd))
+  mainTrees$masterTree = drop.tip(mainTrees$masterTree, names(nodesToAdd))
+  commonMasterAdded = commonMainTrees$masterTree
+  commonMainTrees$masterTree = drop.tip(commonMainTrees$masterTree, names(nodesToAdd))
+  
+  plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTrees$masterTree)
+  plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+  
+  plotTreeCategorical(commonCategoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMasterAdded)
+  plotTreeCategorical(categoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = masterTreeAdded)
+  dev.off()  
+  
+  categoricalTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+  saveRDS(categoricalTree, categoricalTreeFilename)                               #save the tree
+  categoricalCommonTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
+  saveRDS(commonCategoricalTree, categoricalCommonTreeFilename)
 }
+
+
+  
+}
+
+

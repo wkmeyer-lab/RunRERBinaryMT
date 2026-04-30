@@ -3,6 +3,71 @@ library(RERconverge)
 library(tools)
 library(scales)
 
+
+#---------------------------------------------------------------------
+# --- Writing code to compare phenotypes --- 
+# --------------------------------------------------------------------
+
+
+ogAnalysis = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencePairwiseCorrelationFile.rds")
+newAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencePairwiseCorrelationFile.rds")
+
+
+test = readRDS("Output/CategoricalInsVertivoreTreeNoYeastCarnivoreLiamInference/CategoricalInsVertivoreTreeNoYeastCarnivoreLiamInferenceCategoricalPhenotypeVector.rds")
+
+outputFolderNameNoSlash
+
+carnivoreImport = readRDS(paste0(outputFolderNameNoSlash, "Carnivore/", filePrefix, "Carnivore"))
+  
+  ("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/Carnivore-Herbivore/CategoricalInsVertivoreTreeNoYeastCarnivoreLiamInferenceCarnivore-HerbivoreCorrelationFile.rds")
+
+
+test2 = append(newAnalysis, test)
+
+#---------------------------------------------------------------------
+# --- Looking into the number of species in various trees--- 
+# --------------------------------------------------------------------
+
+
+
+testTree = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+
+length(testTree$tip.label)
+
+#---------------------------------------------------------------------
+# --- test code during creation of generate alternates --- 
+# --------------------------------------------------------------------
+
+ogAnnotCOl = manualAnnots[[annotColumn]] 
+newAnnotCol = manualAnnots[[annotColumn]]
+new2AnnotCOl = manualAnnots[[annotColumn]]
+
+all.equal(new2AnnotCOl, newAnnotCol)
+
+nrow(relevantSpecies)
+nrow(manualAnnots)
+
+
+nonrelSpecies = manualAnnots[!manualAnnots[[annotColumn]] %in% categoryList,]
+nrow(nonrelSpecies)
+
+
+"vs_NA" %in% categoricalTree$tip.label
+"vs_NA" %in% droppedTips
+"vs_NA" %in% names(fullDataPhenotype)
+"vs_NA" %in% mainTrees$masterTree$tip.label
+
+savedSpeciesSet = randomizedSpeciesSet
+saved2 = randomizedSpeciesSet
+saved3 = randomizedSpeciesSet
+
+all.equal(saved2, saved3)
+
+
+length(which(alternateSets[[1]] %in% alternateSets[[6]]))/length(alternateSets[[1]])
+
+
+names(phenotypeVector)[which(!names(phenotypeVector) %in% categoricalTree$tip.label)]
 #---------------------------------------------------------------------
 # --- Try to debug errors with partially pruned liam tree --- 
 # --------------------------------------------------------------------
