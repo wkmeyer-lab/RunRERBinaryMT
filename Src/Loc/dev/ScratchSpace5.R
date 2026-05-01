@@ -3,7 +3,82 @@ library(RERconverge)
 library(tools)
 library(scales)
 
+#---------------------------------------------------------------------
+# --- Comapring results from various pehnotype versions --- 
+# --------------------------------------------------------------------
 
+ogAnalysis = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencePairwiseCorrelationFile.rds")
+noYeastAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencePairwiseCorrelationFile.rds")
+noManualAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoManualLiamInference/CategoricalInsVertivoreTreeNoManualLiamInferencePairwiseCorrelationFile.rds")
+familyAgnosticAnalysis =readRDS("Output/CategoricalInsVertivoreTreeFamilyAgnostictLiamInference/CategoricalInsVertivoreTreeFamilyAgnostictLiamInferencePairwiseCorrelationFile.rds")
+fullTreeAnalysis = readRDS("Output/PredatorFullTree/PredatorFullTreePairwiseCorrelationFile.rds")
+
+compareAnalyses = function(ogAnalysis, newAnalysis){
+  
+  results <- tibble(
+    index = integer(),
+    correlation = numeric(),
+    rhoRankcorrelation = numeric(),
+    numMismatchedNAs = integer(),
+    mismatchedNAs = I(list()),
+    pCorrelation = numeric(),
+    numMismatchedPs = integer(),
+    mismatchedPs = I(list()),
+    padjCorrelation = numeric(),
+    numMismatchedPadjs = integer(),
+    mismatchedPadjs = I(list()),
+    totalOgSigPadjs = integer(), 
+    totalNewSigPadjs = integer()
+  )
+  
+  for (i in seq_along(ogAnalysis)) {
+    
+    correlation <- cor(ogAnalysis[[i]][[1]], newAnalysis[[i]][[1]], use = "complete.obs")
+    
+    mismiatchedNAs <- which(!is.na(ogAnalysis[[i]][[1]]) %in% is.na(newAnalysis[[i]][[1]]))
+    
+    ogAnalysis[[i]] = ogAnalysis[[i]] %>% mutate(rhoRank = rank(ogAnalysis[[i]][[1]])) 
+    newAnalysis[[i]] = newAnalysis[[i]] %>% mutate(rhoRank = rank(newAnalysis[[i]][[1]]))
+    
+    rhoRankcorrelation <- cor(ogAnalysis[[i]][[4]], newAnalysis[[i]][[4]], use = "complete.obs")
+    
+    pCorrelation <- cor(ogAnalysis[[i]][[2]], newAnalysis[[i]][[2]], use = "complete.obs")
+    
+    mismiatchedPs <- which(!which(ogAnalysis[[i]][[2]] < 0.05) %in% 
+                             which(newAnalysis[[i]][[2]] < 0.05))
+    
+    padjCorrelation <- cor(ogAnalysis[[i]][[3]], newAnalysis[[i]][[3]], use = "complete.obs")
+    
+    mismiatchedPadjs <- which(!which(ogAnalysis[[i]][[3]] < 0.05) %in% 
+                                which(newAnalysis[[i]][[3]] < 0.05))
+    
+    totalOgSigPadjs = length(which(ogAnalysis[[i]][[3]] < 0.05))
+    totalNewSigPadjs = length(which(newAnalysis[[i]][[3]] < 0.05))
+    
+    results <- rbind(results, tibble(
+      index = i,
+      correlation = correlation,
+      rhoRankcorrelation = rhoRankcorrelation,
+      numMismatchedNAs = length(mismiatchedNAs),
+      mismatchedNAs = list(mismiatchedNAs),
+      pCorrelation = pCorrelation,
+      numMismatchedPs = length(mismiatchedPs),
+      mismatchedPs = list(mismiatchedPs),
+      padjCorrelation = padjCorrelation,
+      numMismatchedPadjs = length(mismiatchedPadjs),
+      mismatchedPadjs = list(mismiatchedPadjs),
+      totalOgSigPadjs = totalOgSigPadjs,
+      totalNewSigPadjs = totalNewSigPadjs
+    ))
+  }
+  row.names(results) = names(ogAnalysis)
+  return(results)
+}
+
+
+
+
+compareAnalyses(ogAnalysis, familyAgnosticAnalysis)
 
 #---------------------------------------------------------------------
 # --- Cluster debugging--- 
@@ -24,9 +99,57 @@ commandLineValue = grep(markerWhole, args, value = TRUE)         #get a string b
 commandLineValue
 
 
-
 #---------------------------------------------------------------------
-# --- Fixing enrichment code and working on making new trees --- 
+# --- Setup for split-both  // finding out no specific herbivory data --- 
+# --------------------------------------------------------------------
+
+treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
+palette(c(  "darkblue","black", "lightgreen", "darkgreen", "red"))
+
+pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
+commonCategoricalTree = char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = F)
+categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = F) #use the phenotype vector to make a tree
+
+commonCategoricalTreeExtraTip = commonCategoricalTree
+categoricalTreeExtraTip = categoricalTree
+
+commonCategoricalTree = drop.tip(commonCategoricalTree, names(nodesToAdd))
+categoricalTree = drop.tip(categoricalTree, names(nodesToAdd))
+mainTrees$masterTree = drop.tip(mainTrees$masterTree, names(nodesToAdd))
+commonMasterAdded = commonMainTrees$masterTree
+commonMainTrees$masterTree = drop.tip(commonMainTrees$masterTree, names(nodesToAdd))
+
+plotTreeCategorical(commonCategoricalTree, c("Insectivore", "Omnivore", "SugarHigh", "SugarLow", "Vertivore"), master = commonMainTrees$masterTree)
+plotTreeCategorical(categoricalTree, c("Insectivore", "Omnivore", "SugarHigh", "SugarLow", "Vertivore"), master = mainTrees$masterTree)
+
+plotTreeCategorical(commonCategoricalTreeExtraTip, c("Insectivore", "Omnivore", "SugarHigh", "SugarLow", "Vertivore"), master = commonMasterAdded)
+plotTreeCategorical(categoricalTreeExtraTip, c("Insectivore", "Omnivore", "SugarHigh", "SugarLow", "Vertivore"), master = masterTreeAdded)
+dev.off()  
+
+
+mergedData = read.csv("Data/mergedData.csv")
+fullTree = readRDS("Output/PredatorFullTree/PredatorFullTreeCategoricalTree.rds")
+
+phenData = mergedData[c(mergedData$ZoonomiaTip %in% fullTree$tip.label),]
+
+fullPhenVec = readRDS("Output/PredatorFullTree/PredatorFullTreeCategoricalPhenotypeVector.rds")
+dataPhenVec = fullPhenVec[names(fullPhenVec) %in% fullTree$tip.label]
+phenData = phenData %>% mutate(diet = dataPhenVec)
+
+herbData = phenData[phenData$diet == "Herbivore",]
+nrow(herbData)
+length(which(herbData$Diet.PlantO > 99))
+
+length(which(herbData$Diet.PlantO > 99))/nrow(herbData)
+
+length(which(herbData$Diet.PlantO < 10))
+otherHerbs = herbData[which(herbData$Diet.PlantO < 10),]
+
+table(phenData$DerekDietClassification90InsVertivoreSorting)
+
+table(phenData$DerekDietClassification90InsVertivoreSorting)
+#---------------------------------------------------------------------
+# --- Comapring the percentages of species in the pruned over-large families --- 
 # --------------------------------------------------------------------
 
 plot(categoricalTree)
@@ -97,6 +220,13 @@ length(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectiv
 length(ogPhenVec)
 
 table(prunedTree$edge[,1])
+
+
+
+
+
+
+
 #---------------------------------------------------------------------
 # --- Writing code to compare phenotypes --- 
 # --------------------------------------------------------------------

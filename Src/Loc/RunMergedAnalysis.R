@@ -16,6 +16,7 @@ library(data.table)
 
 
 args = c('r=CategoricalInsVertivoreTreeDuplicateLiamInference', 'm=data/zoonomiaAllMammalsTrees.rds')
+args = c('r=CategoricalInsVertivoreTreeNoYeastLiamInference', 'm=data/zoonomiaAllMammalsTrees.rds')
 
 
 # --- Standard start-up code ---
@@ -247,5 +248,5 @@ for(i in 1:length(mergeUniquePairwiseNames)){
 
 
 
-write.csv(pairwiseCategorical, file= paste(mainPairwiseCorrelationFileName, ".csv", sep=""), row.names = T, quote = F) #save the correlations as a csv
-saveRDS(pairwiseCategorical, paste(mainPairwiseCorrelationFileName, ".rds", sep="")) #and as an rds 
+write.csv(mainPairwiseCategorical, file= paste(mainPairwiseCorrelationFileName, ".csv", sep=""), row.names = T, quote = F) #save the correlations as a csv
+saveRDS(mainPairwiseCategorical, paste(mainPairwiseCorrelationFileName, ".rds", sep="")) #and as an rds 
