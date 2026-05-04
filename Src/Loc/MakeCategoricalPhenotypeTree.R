@@ -1495,6 +1495,61 @@ args = c('r=CategoricalSlimMainInsVertivoreTree', 'm=data/CategoricalInsVertivor
             c("O-Generalist", "Omnivore")
           )')
   
+  args = c('r=SplitBothFullTree', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=T',
+           'c=c(
+              "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "C-InsVertivore-Mixed", "C-InsVertivore-Piscivore", "C-InsVertivore-Insectivore","C-InsVertivore-Carnivore",
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+           'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
+            c("C-InsVertivore-Mixed", "Omnivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "H-High-sugar-plants-Eater"), 
+            c("H-Nectarivore", "H-High-sugar-plants-Eater"), 
+            c("H-High-sugar-plants-Eater", "SugarHigh"),
+            c("H-Granivore", "H-Low-sugar-plants-Eater"), c("H-Nonspecific-Herbivore", "H-Low-sugar-plants-Eater"), 
+            c("H-Low-sugar-plants-Eater", "SugarLow"), 
+            c("H-All-plants-Eater", "Omnivore"),
+            c("O-Generalist", "Omnivore")
+          )')
+  args = c('r=SplitBothPruned', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=T','z=0.01',
+           'c=c(
+              "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "C-InsVertivore-Mixed", "C-InsVertivore-Piscivore", "C-InsVertivore-Insectivore","C-InsVertivore-Carnivore",
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+           'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
+            c("C-InsVertivore-Mixed", "Omnivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "H-High-sugar-plants-Eater"), 
+            c("H-Nectarivore", "H-High-sugar-plants-Eater"), 
+            c("H-High-sugar-plants-Eater", "SugarHigh"),
+            c("H-Granivore", "H-Low-sugar-plants-Eater"), c("H-Nonspecific-Herbivore", "H-Low-sugar-plants-Eater"), 
+            c("H-Low-sugar-plants-Eater", "SugarLow"), 
+            c("H-All-plants-Eater", "SugarHigh"),
+            c("O-Generalist", "Omnivore")
+          )')
+  
   
   
 }
