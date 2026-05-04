@@ -16,8 +16,12 @@ source("Src/Reu/cmdArgImport.R")
 # -- argument setup  -- 
 significanceCutoff = 0.05
 prefix = "CategoricalInsvertivoreTreeLiamInference"
+prefix = "CategoricalInsvertivoreTreeFamilyAgnostictLiamInference"
+
 pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
 geneSet = "KeggReactome"
+geneSet = NULL
+
 vennDiagramSet = c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")  
 vennColorset = c("darkblue", "red", "orange")
 usingGo = !is.null(geneSet)
@@ -33,6 +37,7 @@ usePermulations = F
 
 args = c("r=CategoricalInsvertivoreTree")
 args = c("r=CategoricalInsvertivoreTreeLiamInference")
+args = c("r=CategoricalInsvertivoreTreeFamilyAgnostictLiamInference")
 
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -135,84 +140,6 @@ addDashes = function(vector) {
 
 # ----- Make Plots ------ 
 
-# -- Make rho value corrleation plots --- 
-{
-  
-corrleationColumnType = "-Rho"
-  
-  
-grep(corrleationColumnType, names(combinedResults))
-rhoValues = combinedResults[,grep(corrleationColumnType, names(combinedResults))]
-
-rhoComparisions = names(rhoValues)
-rhoPhenotypes = strsplit(gsub(corrleationColumnType, "", rhoComparisions), split = "")
-commonBackground = Reduce(intersect, rhoPhenotypes)
-
-if(length(commonBackground) == 1){
-  for(i in 1:length(rhoPhenotypes)){ #invert tho if background in second postion so rho has consistent meaning relative to background
-    if(rhoPhenotypes[[i]][1] != commonBackground){
-      cat("Inverting rho of ", rhoPhenotypes[[i]] , "becuase background is in first position.")
-      rhoValues[i] = -1*rhoValues[i]
-    }
-  }
-}
-
-densityScaleSet = NULL
-
-#generate the plots slim-ly to get the desired density scale 
-for(i in 1:length(rhoValues)){
-  xName = names(rhoValues)[i]
-  if(i+1 <= length(rhoValues)){
-    for(j in (i+1):length(rhoValues)){
-      yName = names(rhoValues)[j]
-      
-      rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
-        geom_point() + geom_pointdensity() + scale_color_viridis()
-      
-      
-      denstiyScaleValue = ggplot_build(rhoCorrellPlot)$plot$scales$scales[[1]]$get_limits()[2]
-      densityScaleSet = append(densityScaleSet, denstiyScaleValue)
-      rm(rhoCorrellPlot)
-    }
-  }
-}
-densityScale = c(1, max(densityScaleSet))
-
-
-rhoPlotSet = list()
-netIndex= 0
-for(i in 1:length(rhoValues)){
-  xName = names(rhoValues)[i]
-  if(i <= length(rhoValues)){
-    if(bothAxis){jStart = 1}else{jStart = i+1}
-    for(j in (jStart):length(rhoValues)){
-      yName = names(rhoValues)[j]
-      yLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", yName))), " Dunn Z Statistic")
-      xLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", xName))), " Dunn Z Statistic")
-      
-      rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
-        geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
-        stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE, size = 6) +
-        theme_classic()+
-        xlab(xLabel) + ylab(yLabel)+
-        theme(axis.title.x = element_text(size = 16), axis.title.y = element_text(size = 16))
-      
-      netIndex = netIndex +1
-      rhoPlotSet[[netIndex]] = rhoCorrellPlot
-      names(rhoPlotSet)[netIndex] = paste(xName, yName, sep="-")
-      rm(rhoCorrellPlot)
-    }
-  }
-}
-# add a null plot by using two using permulations as a comparision 
-
-#pdf()
-print(rhoPlotSet)
-#dev.off()
-}
-
-
-
 # -- Make proportional venn diagram via eulerr ---
 { 
   vennPhenotypes = (strsplit(vennDiagramSet, "-"))
@@ -222,9 +149,10 @@ print(rhoPlotSet)
   
   trimSignificanceToVenn = function(significanceResults){
     trimableComparisions = gsub("Significant", "", names(significanceResults))
-    trimableComparisions = gsub("significant", "", names(significanceResults))
-    trimableComparisions = gsub("-unperm", "", names(significanceResults))
-    trimableComparisions = gsub("-perm", "", names(significanceResults))
+    trimableComparisions = gsub("significant", "", trimableComparisions)
+    trimableComparisions = gsub("unperm", "", trimableComparisions)
+    trimableComparisions = gsub("perm", "", trimableComparisions)
+    trimableComparisions = gsub("-", "", trimableComparisions)
     trimableComparisions = addDashes(trimableComparisions)
     trimableComparisions = sapply(trimableComparisions, replacePrefixWithName)
     vennSignificanceResults = significanceResults[match(vennDiagramSet, trimableComparisions)]
@@ -291,6 +219,85 @@ if(length(pairwiseSets)==3){ #can simply run directly if only running on three c
     goVenn = makeVennPlot(vennGoSignificanceResults, paste0("GO Categories (p.adj < ", significanceCutoff, ")"))
   }
   
+}
+
+
+
+
+# -- Make rho value corrleation plots --- 
+{
+  
+  corrleationColumnType = "-Rho"
+  
+  
+  grep(corrleationColumnType, names(combinedResults))
+  rhoValues = combinedResults[,grep(corrleationColumnType, names(combinedResults))]
+  
+  rhoComparisions = names(rhoValues)
+  rhoPhenotypes = strsplit(gsub(corrleationColumnType, "", rhoComparisions), split = "")
+  commonBackground = Reduce(intersect, rhoPhenotypes)
+  
+  if(length(commonBackground) == 1){
+    for(i in 1:length(rhoPhenotypes)){ #invert tho if background in second postion so rho has consistent meaning relative to background
+      if(rhoPhenotypes[[i]][1] != commonBackground){
+        cat("Inverting rho of ", rhoPhenotypes[[i]] , "becuase background is in first position.")
+        rhoValues[i] = -1*rhoValues[i]
+      }
+    }
+  }
+  
+  densityScaleSet = NULL
+  
+  #generate the plots slim-ly to get the desired density scale 
+  for(i in 1:length(rhoValues)){
+    xName = names(rhoValues)[i]
+    if(i+1 <= length(rhoValues)){
+      for(j in (i+1):length(rhoValues)){
+        yName = names(rhoValues)[j]
+        
+        rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
+          geom_point() + geom_pointdensity() + scale_color_viridis()
+        
+        
+        denstiyScaleValue = ggplot_build(rhoCorrellPlot)$plot$scales$scales[[1]]$get_limits()[2]
+        densityScaleSet = append(densityScaleSet, denstiyScaleValue)
+        rm(rhoCorrellPlot)
+      }
+    }
+  }
+  densityScale = c(1, max(densityScaleSet))
+  
+  
+  rhoPlotSet = list()
+  netIndex= 0
+  for(i in 1:length(rhoValues)){
+    xName = names(rhoValues)[i]
+    if(i <= length(rhoValues)){
+      if(bothAxis){jStart = 1}else{jStart = i+1}
+      for(j in (jStart):length(rhoValues)){
+        yName = names(rhoValues)[j]
+        yLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", yName))), " Dunn Z Statistic")
+        xLabel =  paste0(replacePrefixWithName(addDashes(gsub(corrleationColumnType, "", xName))), " Dunn Z Statistic")
+        
+        rhoCorrellPlot = ggplot(rhoValues, aes(x = .data[[xName]], y = .data[[yName]])) + 
+          geom_point() + geom_pointdensity() + scale_color_viridis(name = "Density of genes", limits = densityScale) + 
+          stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),formula = y ~ x,parse = TRUE, size = 6) +
+          theme_classic()+
+          xlab(xLabel) + ylab(yLabel)+
+          theme(axis.title.x = element_text(size = 16), axis.title.y = element_text(size = 16))
+        
+        netIndex = netIndex +1
+        rhoPlotSet[[netIndex]] = rhoCorrellPlot
+        names(rhoPlotSet)[netIndex] = paste(xName, yName, sep="-")
+        rm(rhoCorrellPlot)
+      }
+    }
+  }
+  # add a null plot by using two using permulations as a comparision 
+  
+  #pdf()
+  print(rhoPlotSet)
+  #dev.off()
 }
 
 

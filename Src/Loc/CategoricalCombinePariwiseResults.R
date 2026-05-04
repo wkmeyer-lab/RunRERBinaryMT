@@ -34,6 +34,17 @@ args = c("r=CategoricalInsvertivoreTreeLiamInference", "p=NULL", "g=KeggReactome
 
 
 args = c("r=CategoricalInsvertivoreTreeNoYeastLiamInference", "p=NULL", "g=gene", "s=T", "l=F")
+args = c("r=CategoricalInsvertivoreTreeNoYeastLiamInference", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+
+args = c("r=CategoricalInsvertivoreTreeNoManualLiamInference", "p=NULL", "g=gene", "s=T", "l=F")
+args = c("r=CategoricalInsvertivoreTreeNoManualLiamInference", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+
+args = c("r=PredatorFullTree", "p=NULL", "g=gene", "s=T", "l=F")
+args = c("r=PredatorFullTree", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+
+
+args = c("r=CategoricalInsvertivoreTreeFamilyAgnostictLiamInference", "p=NULL", "g=gene", "s=T", "l=F")
+args = c("r=CategoricalInsvertivoreTreeFamilyAgnostictLiamInference", "p=NULL", "g=KeggReactome", "s=T", "l=F")
 
 
 
@@ -165,7 +176,12 @@ if(usingGene){
   { # load in the data 
     for(i in 1:length(pairwiseSets)){
       currentSet = pairwiseSets[i]
-      correlationSubsetName = gsub("-", " - ", currentSet)
+      if(grepl(" ", currentSet)){
+        correlationSubsetName = gsub("-", " - ", currentSet)
+      }else{
+        correlationSubsetName = currentSet
+      }
+      
       correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
       prefixEntry = correlationPrefix; names(prefixEntry) = currentSet; prefixSet = append(prefixSet, prefixEntry)
       for(j in 1:2){
@@ -245,10 +261,31 @@ if(usingGene){
       }
       rm(combinations)
     }
+    
+    #Unpermulated
+    significanceColumns = names(combinedResults)[grep("unpermSignificant", names(combinedResults))]
+    geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
+    
+    for(i in 2:length(significanceColumns)){
+      combinations = combn(significanceColumns, i, simplify = FALSE)
+      for(j in 1:length(combinations)){
+        currentCombination = combinations[[j]]
+        headers = gsub("-.*","",  currentCombination)
+        comboName = paste0(paste0(headers, collapse = "-"), "-UnpermOverlap")
+        
+        colsToCompare = geneSignificanceResults[,names(geneSignificanceResults) %in% currentCombination]
+        
+        comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
+        which(comboValue)
+        combinedResults$newOverlapColumn = comboValue
+        names(combinedResults)[length(names(combinedResults))] = comboName
+        rm(colsToCompare)
+      }
+    }
   }
     
   #Unpermulated
-  significanceColumns = names(combinedResults)[grep("unpermSignificant", names(combinedResults))]
+  significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
   geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
   
   for(i in 2:length(significanceColumns)){
@@ -363,30 +400,54 @@ if(usingGo){
   
   # -- Add overlap information -- 
   
-  #Permulated
-  permGoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
-  permGoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% permGoSignificanceColumns]
-  
-  for(i in 2:length(permGoSignificanceColumns)){
-    combinations = combn(permGoSignificanceColumns, i, simplify = FALSE)
-    for(j in 1:length(combinations)){
-      currentCombination = combinations[[j]]
-      headers = gsub("-.*","",  currentCombination)
-      comboName = paste0(paste0(headers, collapse = "-"), "-PermOverlap")
-      
-      colsToCompare = permGoSignificanceResults[,names(permGoSignificanceResults) %in% currentCombination]
-      
-      comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
-      which(comboValue)
-      GoCombinedResults$newOverlapColumn = comboValue
-      names(GoCombinedResults)[length(names(GoCombinedResults))] = comboName
-      rm(colsToCompare)
+  if(usePermulations){
+    #Permulated
+    permGoSignificanceColumns = names(GoCombinedResults)[grep("PermSignificant", names(GoCombinedResults))]
+    permGoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% permGoSignificanceColumns]
+    
+    for(i in 2:length(permGoSignificanceColumns)){
+      combinations = combn(permGoSignificanceColumns, i, simplify = FALSE)
+      for(j in 1:length(combinations)){
+        currentCombination = combinations[[j]]
+        headers = gsub("-.*","",  currentCombination)
+        comboName = paste0(paste0(headers, collapse = "-"), "-PermOverlap")
+        
+        colsToCompare = permGoSignificanceResults[,names(permGoSignificanceResults) %in% currentCombination]
+        
+        comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
+        which(comboValue)
+        GoCombinedResults$newOverlapColumn = comboValue
+        names(GoCombinedResults)[length(names(GoCombinedResults))] = comboName
+        rm(colsToCompare)
+      }
+      rm(combinations)
     }
-    rm(combinations)
+    
+    #unpermulated
+    unpermGoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
+    unpermGoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% unpermGoSignificanceColumns]
+    
+    for(i in 2:length(unpermGoSignificanceColumns)){
+      combinations = combn(unpermGoSignificanceColumns, i, simplify = FALSE)
+      for(j in 1:length(combinations)){
+        currentCombination = combinations[[j]]
+        headers = gsub("-.*","",  currentCombination)
+        comboName = paste0(paste0(headers, collapse = "-"), "-UnpermOverlap")
+        
+        colsToCompare = unpermGoSignificanceResults[,names(unpermGoSignificanceResults) %in% currentCombination]
+        
+        comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
+        which(comboValue)
+        GoCombinedResults$newOverlapColumn = comboValue
+        names(GoCombinedResults)[length(names(GoCombinedResults))] = comboName
+        rm(colsToCompare)
+      }
+      rm(combinations)
+    }
   }
   
   #unpermulated
-  unpermGoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
+  unpermGoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
   unpermGoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% unpermGoSignificanceColumns]
   
   for(i in 2:length(unpermGoSignificanceColumns)){
