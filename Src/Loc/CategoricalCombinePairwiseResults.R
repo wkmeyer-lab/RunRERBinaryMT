@@ -1,17 +1,10 @@
 clusterRun = F
 clusterRun = T
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
 library(RERconverge)
-library(ggvenn)
-library(stats)
-library(combinat)
-library(ggpointdensity)
-library(viridis)
-library(ggpmisc)
-library(eulerr)
-library(gridExtra)
-library(grid)
-library(gridGraphics)
 source("Src/Reu/cmdArgImport.R")
+
+
 
 args = c("r=CategoricalInsvertivoreTree", "p=NULL", "g=gene")
 args = c("r=CategoricalInsvertivoreTree", "p=NULL", "g=KeggReactome")
