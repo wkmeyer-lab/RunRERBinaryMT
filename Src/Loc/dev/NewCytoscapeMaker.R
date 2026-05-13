@@ -35,6 +35,29 @@ args = c("r=CategoricalInsVertivoreTreeLiamInference", "s=Insectivore-Vertivore"
          "a=CategoricalBinaryInsectivoreTree", "b=Insectivore", "c=CategoricalBinaryVertivoreTree", "d=Vertivore",
          "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=T")
 
+
+args = c("r=CategoricalInsVertivoreTreeNoYeastLiamInference", "s=Carnivore-Herbivore", 
+         "a=CategoricalBinaryCarnivoreTree", "b=Carnivore", "c=CategoricalBinaryHerbivoreTree", "d=Herbivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
+args = c("r=CategoricalInsVertivoreTreeNoYeastLiamInference", "s=Herbivore-Vertivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryVertivoreTree", "d=Vertivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
+args = c("r=CategoricalInsVertivoreTreeNoYeastLiamInference", "s=Herbivore-Insectivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryInsectivoreTree", "d=Insectivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
+
+
+args = c("r=CategoricalInsVertivoreTreeFamilyAgnostictLiamInference", "s=Carnivore-Herbivore", 
+         "a=CategoricalBinaryCarnivoreTree", "b=Carnivore", "c=CategoricalBinaryHerbivoreTree", "d=Herbivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
+args = c("r=CategoricalInsVertivoreTreeFamilyAgnostictLiamInference", "s=Herbivore-Vertivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryVertivoreTree", "d=Vertivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
+args = c("r=CategoricalInsVertivoreTreeFamilyAgnostictLiamInference", "s=Herbivore-Insectivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryInsectivoreTree", "d=Insectivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
+
+
 {
   # --- Standard start-up code ---
   if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -168,7 +191,7 @@ args = c("r=CategoricalInsVertivoreTreeLiamInference", "s=Insectivore-Vertivore"
 }
 
 
-
+{
 # -- setup output files ---
 cytoscapeDirectory = paste0("Output/", filePrefix, "/", subdirectory, "/", "Cytoscape")
 if(!dir.exists(cytoscapeDirectory)){                       #create that directory if it does not exist
@@ -177,6 +200,33 @@ if(!dir.exists(cytoscapeDirectory)){                       #create that director
 
 gmtFilename = paste0("Data/", GOGroup, ".gmt")
 file.copy(gmtFilename, paste0(cytoscapeDirectory, "/", GOGroup, ".gmt")) #make a copy in the cytoscape direcotry for easy cytoscape work 
+}
+
+
+# -- Basic version, no driver ---
+{
+goTableFilename = paste0("Output/", filePrefix, "/", subdirectory, "/", filePrefix, subdirectory, "Enrichment-", GOGroup, ".rds")
+goTable = readRDS(goTableFilename)[[1]]
+goTable$ID = rownames(goTable)
+goTable = goTable[,c(6,1:5)]
+
+GOCytoscape = goTable[,c(1,1,3,4,2,6)]
+colnames(GOCytoscape) = c("GO.ID", "Description", "pVal", "p.adj", "Phenotype", "Gene.vals")
+GOCytoscape$Phenotype = sign(GOCytoscape$Phenotype)
+#GOCytoscape$Phenotype[GOCytoscape$Phenotype == 1] = "1"
+write.table(GOCytoscape, paste0(cytoscapeDirectory, "/CytoscapeInput.txt"), sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+
+GOCytoscapePositive = GOCytoscape[which(GOCytoscape$Phenotype >0),]
+GOCytoscapePositiveFilename = paste0(cytoscapeDirectory, "/Cytoscape", BinaryPhenotype,"AcceleratedInput.txt")
+write.table(GOCytoscapePositive, GOCytoscapePositiveFilename, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+GOCytoscapeNegative = GOCytoscape[which(GOCytoscape$Phenotype <0),]
+GOCytoscapeNegativeFilename = paste0(cytoscapeDirectory, "/Cytoscape", BinaryPhenotypeTwo,"AcceleratedInput.txt")
+write.table(GOCytoscapeNegative, GOCytoscapeNegativeFilename, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+#Use that cytoscape input file as the data in Cytoscape, on the generic setting
+}  
+
 
 
 

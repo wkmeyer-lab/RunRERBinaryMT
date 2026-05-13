@@ -17,6 +17,8 @@ source("Src/Reu/cmdArgImport.R")
 significanceCutoff = 0.05
 prefix = "CategoricalInsvertivoreTreeLiamInference"
 prefix = "CategoricalInsvertivoreTreeFamilyAgnostictLiamInference"
+prefix = "CategoricalInsvertivoreTreeNoYeastLiamInference"
+
 
 pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
 geneSet = "KeggReactome"
@@ -38,6 +40,7 @@ usePermulations = F
 args = c("r=CategoricalInsvertivoreTree")
 args = c("r=CategoricalInsvertivoreTreeLiamInference")
 args = c("r=CategoricalInsvertivoreTreeFamilyAgnostictLiamInference")
+args = c("r=CategoricalInsvertivoreTreeNoYeastLiamInference")
 
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)

@@ -2,33 +2,471 @@ a = b #prevent full runs
 library(RERconverge)
 library(tools)
 library(scales)
+library(data.table)
 
+source("Src/Reu/ZoonomTreeNameToCommon.R")
 #---------------------------------------------------------------------
-# --- Comapring results from various pehnotype versions --- 
+# --- Looking into categorical pruning  --- 
 # --------------------------------------------------------------------
 
-ogAnalysis = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencePairwiseCorrelationFile.rds")
+
+?drop.tip
+UseMethod
+
+getS3method("drop.tip", "phylo")
+
+fullTree = readRDS("Output/PredatorFullTree/PredatorFullTreeCategoricalTree.rds")
+dupFullTree = readRDS("Output/DuplicatePredatorFullTree/DuplicatePredatorFullTreeCategoricalTree.rds")
+
+fullPhenVec = readRDS("Output/PredatorFullTree/PredatorFullTreeCategoricalPhenotypeVector.rds")
+ogPhenVec = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPhenotypeVector.rds")
+ogTips = names(ogPhenVec)
+dropTips = fullTree$tip.label[!fullTree$tip.label %in% ogTips]
+
+phy = fullTree
+tip = dropTips
+trim.internal = TRUE
+subtree = FALSE
+root.edge = 0
+rooted = is.rooted(phy)
+collapse.singles = TRUE
+interactive = FALSE
+
+phy = categoricalDropTip(fullTree, dropTips)
+
+tree$edge[which(tree$edge[,2] == 510),]
+tree$edge[which(tree$edge[,1] == 510),]
+
+tree$edge[which(tree$edge[,1] == 501),]
+tree$edge[which(tree$edge[,2] == 501),]
+
+tree$edge[which(tree$edge[,1] == 510),]
+tree$edge[which(tree$edge[,2] == 510),]
+
+table(e1)
+
+ii[1]
+
+tree$edge[502,]
+tree$edge[501,]
+
+which(e1 == 207)
+which(e2 == 510)
+
+str(fullTree)
+
+mainTrees = readRDS('data/zoonomiaAllMammalsTrees.rds')
+
+palette(c( "darkgreen", "darkblue","black", "red"))
+
+
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+nameColumn = "ZoonomiaTip"
+
+commonMainTrees = mainTrees
+commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, tipCol = nameColumn)
+commonFullTree = ZoonomTreeNameToCommon(fullTree, tipCol = nameColumn)
+commonPhy = ZoonomTreeNameToCommon(phy, tipCol = nameColumn)
+
+
+
+
+
+commonCategoricalTree$tip.label
+commonMainTrees$masterTree$tip.label
+
+fullTree$tip.label
+dupFullTree$tip.label
+mainTrees$masterTree$tip.label
+phy$tip.label
+
+
+
+
+
+
+commonPhyFlipped = commonPhy
+
+ntips = length(commonPhyFlipped$tip.label)
+commonPhyFlipped$edge[c(commonPhyFlipped$edge[,2] < ntips), ]
+
+phy$edge[,2]
+
+tipVal = "vs_monDom5"
+which(fullTree$tip.label == tipVal)
+which(fullTree$edge[,2] == which(fullTree$tip.label == tipVal))
+fullTree$edge.length[which(fullTree$edge[,2] == which(fullTree$tip.label == tipVal))]
+
+
+which(phy$tip.label == tipVal)
+which(phy$edge[,2] == which(phy$tip.label == tipVal))
+phy$edge.length[which(phy$edge[,2] == which(phy$tip.label == tipVal))]
+
+tipVal = "Opossum"
+which(commonPhy$tip.label == tipVal)
+which(commonPhy$edge[,2] == which(commonPhy$tip.label == tipVal))
+commonPhy$edge.length[which(commonPhy$edge[,2] == which(commonPhy$tip.label == tipVal))]
+
+
+
+
+which(commonPhy$tip.label == "Opossum")
+which(commonMainTrees$masterTree$tip.label == "Opossum")
+which(commonFullTree$tip.label == "Opossum")
+
+
+length(commonFullTree$tip.label)
+mainTrees$masterTree
+commonMainTrees$masterTree
+
+
+tree = commonPhy
+master = commonMainTrees$masterTree
+
+
+cm = intersect(master$tip.label, tree$tip.label)
+tipsToDrop = master$tip.label[!master$tip.label %in% cm]
+master1 = drop.tip(master, tipsToDrop)
+master2 = pruneTree(master, cm)
+
+
+cm2 = intersect(master$tip.label, commonFullTree$tip.label)
+master3 = pruneTree(master, cm2)
+cm3 = intersect(master3$tip.label, tree$tip.label)
+master4 = master3 = pruneTree(master3, cm3)
+
+all.equal(master1, master2)
+
+tipVal = "Opossum"
+which(tree$tip.label == tipVal)
+which(tree$edge[,2] == which(tree$tip.label == tipVal))
+
+which(master$tip.label == tipVal)
+which(master$edge[,2] == which(master$tip.label == tipVal))
+
+which(master1$tip.label == tipVal)
+which(master1$edge[,2] == which(master1$tip.label == tipVal))
+
+which(master4$tip.label == tipVal)
+which(master4$edge[,2] == which(master1$tip.label == tipVal))
+
+length(master4$edge[,2])
+length(tree$edge[,2])
+
+
+tab2 = tab <- tabulate(e2)
+
+
+
+
+
+
+pdf()
+plotTree(commonPhy)
+nodelabels(cex=0.6, col= "green", frame="none")
+tiplabels(cex=0.6, col= "green", frame="none")
+plotTreeCategorical(commonPhy, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTrees$masterTree)
+nodelabels(cex=0.6, col= "green", frame="none")
+tiplabels(cex=0.6, col= "green", frame="none")
+plotTreeCategorical(phy, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+nodelabels(cex=0.6, col= "green", frame="none")
+tiplabels(cex=0.6, col= "green", frame="none")
+dev.off()
+
+
+ogTree = ogPhenVec = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalTree.rds")
+oldPhy = phy
+
+oldPhy = categoricalDropTip(fullTree, dropTips)
+phy = categoricalDropTip(dupFullTree, dropTips)
+
+all.equal(phy$tip.label, ogTree$tip.label)
+all.equal(phy$edge.length, ogTree$edge.length)
+all.equal(phy$edge[,1], ogTree$edge[,1])
+all.equal(phy$edge[,2], ogTree$edge[,2])
+phy$edge.length == ogTree$edge.length
+
+disagreeingBranches = which(!phy$edge.length == ogTree$edge.length)
+
+commonPhy = ZoonomTreeNameToCommon(phy, tipCol = nameColumn)
+
+
+pdf(width = 15)  
+par(mfrow = c(1,2))
+plotTreeCategorical(commonPhy, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTrees$masterTree)
+edgelabels(edge = disagreeingBranches, cex=0.4, col= "purple", frame="none")
+plotTreeCategorical(ogTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+edgelabels(edge = disagreeingBranches, cex=0.4, col= "purple", frame="none")
+
+dev.off()
+
+
+disagreements = data.frame(disagreeingBranches, phy$edge.length[disagreeingBranches], ogTree$edge.length[disagreeingBranches])
+names(disagreements) = c("branch", "newPhen", "OgPhen")
+disagreements
+
+
+
+phy$edge[98,]
+
+phy$edge[which(phy$edge[,1] == 243),]
+
+
+
+phy=dupFullTree
+
+pdf()
+plotTreeCategorical(phyUnmerged, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+nodelabels(cex=0.2, col= "purple", frame="none")
+dev.off()
+singles
+
+
+closestSpecies = which(phyUnmerged$tip.label == "vs_mesAur1")
+
+edgeFrame$index
+edgeFrame[98,]
+
+
+phyUnmerged$edge[which(phyUnmerged$edge[,1] == 269),]
+phyUnmerged$edge[which(phyUnmerged$edge[,1] == 278),]
+phyUnmerged$edge[which(phyUnmerged$edge[,1] == 279),]
+phyUnmerged$edge[which(phyUnmerged$edge[,1] == 280),]
+
+all.equal(tree$tip.label, ogTree$tip.label)
+all.equal(tree$edge.length, ogTree$edge.length)
+all.equal(tree$edge[,1], ogTree$edge[,1])
+all.equal(tree$edge[,2], ogTree$edge[,2])
+tree$edge.length == ogTree$edge.length
+
+disagreeingBranches = which(!tree$edge.length == ogTree$edge.length)
+
+
+tree$edge[98,]
+tree$edge.length[98]
+ogTree$edge.length[98]
+
+firstBranch = which(phyUnmerged$edge[,2] == closestSpecies)
+firstParent = phyUnmerged$edge[firstBranch,1]
+
+firstParent %in% singles 
+
+which(phyUnmerged$edge[,1] == 277)
+
+
+phyUnmerged$edge[which(phyUnmerged$edge[,2] == 255),]
+phyUnmerged$edge[which(phyUnmerged$edge[,2] == 254),]
+
+phyUnmerged$edge[which(phyUnmerged$edge[,1] == phyUnmerged$edge[,2])]
+
+phyUnmerged$edge.length[c(82,83)]
+
+problemBranch = 98
+problemDaughter = phy$edge[problemBranch,2]
+
+problemii = which(ii == problemDaughter)
+problemjj = jj[problemii]
+phyUnmerged$edge[problemjj,]
+
+which(phyUnmerged$edge[,1] == 239)
+
+
+all.equal(e1, edgeFrame$e1)
+
+edgeFrame[1,]
+
+singles
+jj[120]
+ii[120]
+
+phyUnmerged$edge[15,]
+phyUnmerged$edge[16,]
+
+phyUnmerged$edge.length[16]
+phyUnmerged$tip.label[2]
+
+fullPhenVec[names(fullPhenVec) %in% phyUnmerged$tip.label[2]]
+
+#Okay, that one's really weird -- it seems to be a bug in the originalPredatorFullTree? Because it's not there on the duplicate. 
+
+fullTree = readRDS("Output/PredatorFullTree/PredatorFullTreeCategoricalTree.rds")
+dupFullTree = readRDS("Output/DuplicatePredatorFullTree/DuplicatePredatorFullTreeCategoricalTree.rds")
+
+all.equal(fullTree, dupFullTree)
+
+all.equal(fullTree$tip.label, dupFullTree$tip.label)
+all.equal(fullTree$edge.length, dupFullTree$edge.length)
+all.equal(fullTree$edge[,1], dupFullTree$edge[,1])
+all.equal(fullTree$edge[,2], dupFullTree$edge[,2])
+fullTree$edge.length == dupFullTree$edge.length
+
+disagreeingBranchesFull = which(!fullTree$edge.length == dupFullTree$edge.length)
+
+pdf(width = 15)  
+par(mfrow = c(1,2))
+plotTreeCategorical(fullTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+edgelabels(edge = disagreeingBranchesFull, cex=0.4, col= "purple", frame="none")
+plotTreeCategorical(dupFullTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+edgelabels(edge = disagreeingBranchesFull, cex=0.4, col= "purple", frame="none")
+
+dev.off()
+
+
+all.equal(args1[2:10], args2[2:10])
+
+#those in thoery SHOULD Be identical, because the args are identical, but they... aren't. Which is very odd. 
+
+
+beforeCollapeEdgeLengths = phy$edge.length
+
+
+phy$edge.length
+
+unique(table(phy$edge[,2]))
+
+collapse.singles
+
+
+rm(collapse.singles)
+
+oldTree = tree
+all.equal(oldTree, tree)
+
+table(e1)
+
+#---------------------------------------------------------------------
+# --- Making cytoscape plots  --- 
+# --------------------------------------------------------------------
+
+
+GOOutput = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/Carnivore-Herbivore/CategoricalInsVertivoreTreeNoYeastLiamInferenceCarnivore-HerbivoreEnrichment-KeggReactome.rds")
+
+which(GoSignificanceResults$`HV-significant` & GoSignificanceResults$`HI-significant` &! GoSignificanceResults$`CH-significant`)
+GoSignificanceResults[635,]
+
+
+#Looking into overrepresented family ratios of total mammals
+
+mammalDatabase = read.csv("../../MiscData/MDD/MDD/Species_Syn_v2.4.csv")
+
+familySizes = table(mammalDatabase$MDD_family)
+
+bigFamilies = familySizes[names(familySizes) %in% c("Bovidae", "Cervidae", "Pteropodidae", "Cercopithecidae", "Cricetidae")]
+
+sum(bigFamilies)/sum(familySizes)
+
+FullHerbivoreData = table(familyByDiet$MSWC_Family[familyByDiet$diet == "Herbivore"])
+HerbvioreFamilies = familyByDiet[familyByDiet$MSWC_Family %in% names(FullHerbivoreData),]
+HerbvioreFamiliySize = table(HerbvioreFamilies$MSWC_Family)
+
+as.integer(FullHerbivoreData)/as.integer(HerbvioreFamiliySize)
+
+herbivoreRatio = (FullHerbivoreData/HerbvioreFamiliySize)
+
+FullHerbivoreData[names(FullHerbivoreData) %in% c("Megalonychidae",  "Myocastoridae")]
+
+names(FullHerbivoreData)
+
+herbFamilies = familySizes[names(familySizes) %in% names(FullHerbivoreData)]
+
+herbFamilies * herbivoreRatio
+names(herbFamilies) %in% names(herbivoreRatio)
+herbivoreRatio[!names(herbivoreRatio) %in% names(herbFamilies)]
+
+herbivoreRatio = herbivoreRatio[names(herbivoreRatio) %in% names(herbFamilies)]
+
+all.equal(names(herbivoreRatio), names(herbFamilies))
+
+length(herbFamilies)
+length(herbivoreRatio)
+
+estimatedHerbivores = herbFamilies * herbivoreRatio
+estimatedHerbivores = estimatedHerbivores + 2 # Adding back the species removed ddue ot the family mismatch
+
+sum(bigFamilies)/ sum(estimatedHerbivores)
+
+
+
+
+
+table(HerbvioreFamilies$MSWC_Family)
+table(FullHerbivoreData)
+
+for(i in 1:length(herbFamilies)){
+  currentFamily = herbFamilies[i]
+  
+  
+}
+
+#---------------------------------------------------------------------
+# --- Comapring GO results from various pehnotype versions --- 
+# --------------------------------------------------------------------
+paperGOAnalysis = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+familyAgnosticGOAnalysis =readRDS("Output/CategoricalInsVertivoreTreeFamilyAgnostictLiamInference/CategoricalInsVertivoreTreeFamilyAgnostictLiamInferencecombinedGOResults-KeggReactome.rds")
+noYeastGOAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencecombinedGOResults-KeggReactome.rds")
+noManualGOAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoManualLiamInference/CategoricalInsVertivoreTreeNoManualLiamInferencecombinedGOResults-KeggReactome.rds")
+fullTreeGOAnalysis = readRDS("Output/PredatorFullTree/PredatorFullTreecombinedGOResults-KeggReactome.rds")
+
+
+
+paperAnalysis = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencePairwiseCorrelationFile.rds")
 noYeastAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencePairwiseCorrelationFile.rds")
 noManualAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoManualLiamInference/CategoricalInsVertivoreTreeNoManualLiamInferencePairwiseCorrelationFile.rds")
 familyAgnosticAnalysis =readRDS("Output/CategoricalInsVertivoreTreeFamilyAgnostictLiamInference/CategoricalInsVertivoreTreeFamilyAgnostictLiamInferencePairwiseCorrelationFile.rds")
 fullTreeAnalysis = readRDS("Output/PredatorFullTree/PredatorFullTreePairwiseCorrelationFile.rds")
 
-compareAnalyses = function(ogAnalysis, newAnalysis){
+
+paperAnalysis = paperAnalysis[-c(2,3,6,8)]
+noYeastAnalysis = noYeastAnalysis[-c(2,3,6,8)]
+noManualAnalysis = noManualAnalysis[-c(2,3,6,8)]
+familyAgnosticAnalysis = familyAgnosticAnalysis[-c(2,3,6,8)]
+fullTreeAnalysis = fullTreeAnalysis[-c(2,3,6,8)]
+
+
+compareAnalyses = function(ogAnalysis, newAnalysis, prefix = NULL, pCuttof = 0.05){
+  
+  if(!is.null(prefix)){
+    outputOGAnalysis = list()
+    outputNewAnalysis = list()
+    for(i in 1:length(prefix)){
+      currentCols = grep(prefix[i], names(ogAnalysis))
+      currentCols = currentCols[1:3]
+      
+      tempOGAnalysis = ogAnalysis[,currentCols]
+      tempNewAnalysis = newAnalysis[,currentCols]
+      
+      tempOGAnalysis = list(tempOGAnalysis)
+      names(tempOGAnalysis) = prefix[i]
+      
+      tempNewAnalysis = list(tempNewAnalysis)
+      names(tempNewAnalysis) = prefix[i]
+      
+      
+      outputOGAnalysis = append(outputOGAnalysis, tempOGAnalysis)
+      outputNewAnalysis = append(outputNewAnalysis, tempNewAnalysis)
+    }
+    
+    newAnalysis = outputNewAnalysis
+    ogAnalysis = outputOGAnalysis
+  }
+  
+  
   
   results <- tibble(
     index = integer(),
     correlation = numeric(),
     rhoRankcorrelation = numeric(),
     numMismatchedNAs = integer(),
-    mismatchedNAs = I(list()),
     pCorrelation = numeric(),
     numMismatchedPs = integer(),
-    mismatchedPs = I(list()),
     padjCorrelation = numeric(),
     numMismatchedPadjs = integer(),
-    mismatchedPadjs = I(list()),
     totalOgSigPadjs = integer(), 
-    totalNewSigPadjs = integer()
+    totalNewSigPadjs = integer(),
+    missingFraction = integer(),
+    mismatchedNAs = I(list()),
+    mismatchedPs = I(list()),
+    mismatchedPadjs = I(list())
   )
   
   for (i in seq_along(ogAnalysis)) {
@@ -44,31 +482,34 @@ compareAnalyses = function(ogAnalysis, newAnalysis){
     
     pCorrelation <- cor(ogAnalysis[[i]][[2]], newAnalysis[[i]][[2]], use = "complete.obs")
     
-    mismiatchedPs <- which(!which(ogAnalysis[[i]][[2]] < 0.05) %in% 
-                             which(newAnalysis[[i]][[2]] < 0.05))
+    mismiatchedPs <- which(ogAnalysis[[i]][[2]] < pCuttof)[which(!which(ogAnalysis[[i]][[2]] < pCuttof) %in% 
+                                                                which(newAnalysis[[i]][[2]] < pCuttof))]
     
     padjCorrelation <- cor(ogAnalysis[[i]][[3]], newAnalysis[[i]][[3]], use = "complete.obs")
     
-    mismiatchedPadjs <- which(!which(ogAnalysis[[i]][[3]] < 0.05) %in% 
-                                which(newAnalysis[[i]][[3]] < 0.05))
+    mismiatchedPadjs <- which(ogAnalysis[[i]][[3]] < pCuttof)[which(!which(ogAnalysis[[i]][[3]] < pCuttof) %in% 
+                                                                   which(newAnalysis[[i]][[3]] < pCuttof))]
     
-    totalOgSigPadjs = length(which(ogAnalysis[[i]][[3]] < 0.05))
-    totalNewSigPadjs = length(which(newAnalysis[[i]][[3]] < 0.05))
+    totalOgSigPadjs = length(which(ogAnalysis[[i]][[3]] < pCuttof))
+    totalNewSigPadjs = length(which(newAnalysis[[i]][[3]] < pCuttof))
+    
+    missingFraction = length(mismiatchedPadjs) / length(which(ogAnalysis[[i]][[3]] < pCuttof))
     
     results <- rbind(results, tibble(
       index = i,
       correlation = correlation,
       rhoRankcorrelation = rhoRankcorrelation,
       numMismatchedNAs = length(mismiatchedNAs),
-      mismatchedNAs = list(mismiatchedNAs),
       pCorrelation = pCorrelation,
-      numMismatchedPs = length(mismiatchedPs),
-      mismatchedPs = list(mismiatchedPs),
+      numMissingPs = length(mismiatchedPs),
       padjCorrelation = padjCorrelation,
-      numMismatchedPadjs = length(mismiatchedPadjs),
-      mismatchedPadjs = list(mismiatchedPadjs),
+      numMissingPadjs = length(mismiatchedPadjs),
       totalOgSigPadjs = totalOgSigPadjs,
-      totalNewSigPadjs = totalNewSigPadjs
+      totalNewSigPadjs = totalNewSigPadjs,
+      missingFraction = missingFraction,
+      mismatchedNAs = list(mismiatchedNAs),
+      missingPs = list(mismiatchedPs),
+      missingPadjs = list(mismiatchedPadjs),
     ))
   }
   row.names(results) = names(ogAnalysis)
@@ -78,7 +519,76 @@ compareAnalyses = function(ogAnalysis, newAnalysis){
 
 
 
-compareAnalyses(ogAnalysis, familyAgnosticAnalysis)
+newAnalysis = fullTreeAnalysis
+newGOAnalysis = fullTreeGOAnalysis
+
+goMissingInNewAnalysis = compareAnalyses(paperGOAnalysis, newGOAnalysis, c("HI", "HV", "IV", "CH"), pCuttof = 0.1)
+goMissingInOldAnalysis = compareAnalyses(newGOAnalysis, paperGOAnalysis, c("HI", "HV", "IV", "CH"), pCuttof = 0.1)
+geneMissingInNewAnalysis = compareAnalyses(paperAnalysis, newAnalysis)
+
+
+
+test$mismatchedPadjs[[1]]
+
+
+rownames(ogGOAnalysis)[test$mismatchedPadjs[[1]]]
+
+sum(newAnalysis$`HV-significant`)
+sum(ogGOAnalysis$`HV-significant`)
+
+sum(ogAnalysis[[4]][,3] < 0.05, na.rm = T)
+sum(newAnalysis[[4]][,3] < 0.05, na.rm = T)
+
+compare = compareAnalyses(ogAnalysis, newAnalysis)
+
+
+
+
+
+
+
+difGenes = rownames(ogAnalysis[[1]])[compare$mismatchedPadjs[[1]]]
+
+
+ogRERs = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceRERFile.rds")
+commonOgRERs = ogRERs
+colnames(commonOgRERs) = ZonomNameConvertVectorCommon(colnames(commonOgRERs), tipColumn = "ZoonomiaTip")
+ogPaths = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPathsFile.rds")
+
+
+
+familyAgnosticRERs = readRDS("Output/CategoricalInsVertivoreTreeFamilyAgnostictLiamInference/CategoricalInsVertivoreTreeFamilyAgnostictLiamInferenceRERFile.rds")
+commonFaRERs = familyAgnosticRERs
+colnames(commonFaRERs) = ZonomNameConvertVectorCommon(colnames(commonFaRERs), tipColumn = "ZoonomiaTip")
+familyAgnosticPaths = readRDS("Output/CategoricalInsVertivoreTreeFamilyAgnostictLiamInference/CategoricalInsVertivoreTreeFamilyAgnostictLiamInferenceCategoricalPathsFile.rds")
+
+palette(c( "darkgreen", "darkblue","black", "red"))
+library(gridExtra)
+
+
+
+
+i=1
+i = i+1
+{
+a = plotRers(commonOgRERs, difGenes[i], ogPaths)
+b = plotRers(commonFaRERs, difGenes[i], familyAgnosticPaths)
+grid.arrange(a,b, ncol=2)
+
+}
+ogAnalysis[[1]][compare$mismatchedPadjs[[1]][i],]
+familyAgnosticAnalysis[[1]][compare$mismatchedPadjs[[1]][i],]
+
+
+
+
+{
+  a = grid.arrange(plotRers(commonOgRERs, difGenes[i], ogPaths),plotRers(commonFaRERs, difGenes[i], familyAgnosticPaths), ncol=2)
+  b = grid.arrange(plotRers(ogRERs, difGenes[i], ogPaths),plotRers(familyAgnosticRERs, difGenes[i], familyAgnosticPaths), ncol=2)
+  grid.arrange(a,b, nrow=2)
+}
+
+significanceResults = geneSignificanceResults
 
 #---------------------------------------------------------------------
 # --- Cluster debugging--- 
