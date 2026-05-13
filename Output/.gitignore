@@ -12,3 +12,4 @@ CategoricalInsVertivoreTreeTestLiamInference
 TestFullTree
 SplitBothFullTree
 SplitBothPruned
+DuplicatePredatorFullTree
