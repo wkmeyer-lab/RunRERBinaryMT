@@ -10,6 +10,39 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # --------------------------------------------------------------------
 
 
+
+
+
+alternateSets = readRDS(paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
+which(names(currentCommonPhenotypeVector) %in% "Bushbaby")
+
+currentCommonPhenotypeVector[77]
+
+
+which(currentCommonCategoricalTree$tip.label %in% "Bushbaby")
+
+which(currentCommonCategoricalTree$edge[,2] == 16)
+
+currentCommonCategoricalTree$edge.length[56]
+currentCommonCategoricalTree$edge.length[57]
+currentCommonCategoricalTree$edge.length[55]
+currentCommonCategoricalTree$edge[57,]
+currentCommonCategoricalTree$edge[56,]
+currentCommonCategoricalTree$edge[55,]
+
+
+which(currentCommonCategoricalTree$edge[,1] == 225)
+currentCommonCategoricalTree$edge[58,]
+currentCommonCategoricalTree$edge[133,]
+
+
+allSpeciesTree = readRDS("Output/DuplicatePredatorFullTree/DuplicatePredatorFullTreeCategoricalTree.rds")
+
+testPhenVec = readRDS("Output/DuplicatePredatorFullTree/DuplicatePredatorFullTreeCategoricalPhenotypeVector.rds")
+write.csv(phenotypeVectorSaving, "Test.csv")
+
+phenotypeVector = testPhenVec
+
 ?drop.tip
 UseMethod
 

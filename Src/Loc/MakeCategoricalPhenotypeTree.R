@@ -28,7 +28,7 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
 # p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
 # l = <T or F>                                           DO NOT USE UNLESS SPECIFIED -- This determines if the liam infrence nodes should be added 
-
+# e = <T or F>                                           This sets is alternate species sets should be created. 
 #----------------
 {
 args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
@@ -1577,6 +1577,94 @@ args = c('r=CategoricalSlimMainInsVertivoreTree', 'm=data/CategoricalInsVertivor
             c("H-All-plants-Eater", "SugarHigh"),
             c("O-Generalist", "Omnivore")
           )')
+}
+{
+  args = c('r=ComplexDietCentralAnalysisAllSpecies', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=T',
+           'c=c(
+              "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "C-InsVertivore-Mixed", "C-InsVertivore-Piscivore", "C-InsVertivore-Insectivore","C-InsVertivore-Carnivore",
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+           'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
+            c("C-InsVertivore-Mixed", "Omnivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Herbivore"), 
+            c("H-Nectarivore", "Herbivore"), 
+            c("H-High-sugar-plants-Eater", "Herbivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Omnivore")
+          )')
+  
+  args = c('r=ComplexDietCentralAnalysis', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=DerekDietClassification90InsVertivoreSorting', 'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01', 'l=T', 'e=T',
+           'c=c(
+              "C-Invertebrate-eater", "C-Endotherm-Carnivore", "C-Herpetivore", "C-Piscivore", "C-Nonspecific-Vertebrate-eater", "C-Scavenger", 
+              "O-For Examination", "O-Scavenger", 
+              "H-Frugivore", "H-Nectarivore", "H-Granivore", "H-Nonspecific-Herbivore", 
+              "C-Terrestrial-vertebrates-eater", "C-All-vertebrate-eater", "C-All-Animals-Eater", 
+              "H-High-sugar-plants-Eater", "H-Low-sugar-plants-Eater", "H-All-plants-Eater", 
+              "O-Generalist", 
+              "C-InsVertivore-Mixed", "C-InsVertivore-Piscivore", "C-InsVertivore-Insectivore","C-InsVertivore-Carnivore",
+              "Insectivore", "Herpetivore", "Piscivore", "Vertivore", "InsVertivore", "Omnivore", "Frugivore", "Nectarivore", "Glucivore", "Herbivore", "Generalist"
+            )', 
+           'u=list(
+            c("C-Invertebrate-eater", "Insectivore"), c("C-InsVertivore-Insectivore", "Insectivore"),
+            c("C-Herpetivore", "Vertivore"),
+            c("C-Piscivore", "Vertivore"), c("C-InsVertivore-Piscivore", "Vertivore"),
+            c("C-Endotherm-Carnivore", "Vertivore"), c("C-Scavenger", "Vertivore"), c("C-Nonspecific-Vertebrate-eater", "Vertivore"),
+            c("C-Terrestrial-vertebrates-eater", "Vertivore"), c("C-All-vertebrate-eater", "Vertivore"), c("C-InsVertivore-Carnivore", "Vertivore"),
+            c("C-InsVertivore-Mixed", "Omnivore"), 
+            c("O-For Examination", "Omnivore"), c("O-Scavenger", "Omnivore"),
+            c("H-Frugivore", "Herbivore"), 
+            c("H-Nectarivore", "Herbivore"), 
+            c("H-High-sugar-plants-Eater", "Herbivore"),
+            c("H-Granivore", "Herbivore"), c("H-Nonspecific-Herbivore", "Herbivore"), 
+            c("H-Low-sugar-plants-Eater", "Herbivore"), c("H-All-plants-Eater", "Herbivore"),
+            c("O-Generalist", "Omnivore")
+          )', 
+          'y=c(
+          "vs_HLornAna3", "vs_HLtacAcu1",  "PreserveMonotremeBranches",
+          "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1", "MarsupialTransitionPreservation",
+          "vs_HLmyrTri1", "vs_HLchoDid1", "vs_HLchoHof3", "vs_HLproCap3", "AfrotheriaPreserveTransitions",
+          "vs_HLursThi1", "vs_ursMar1", "vs_HLursArc1", "vs_HLailMel2", "UrsaPreserveTransition",
+          "vs_lepWed1", "vs_HLmirAng2", "vs_HLphoVit1", "vs_HLeriBar1", "SealPreserveTransitions",
+          "vs_HLodoRos1", "vs_HLcalUrs1", "vs_HLzalCal1", "SealSeaLionPreserveTransitions",
+          "vs_HLmelCap1", "vs_HLgulGul1", "vs_HLneoVis1", "MustelidPreserveTransitions",
+          "vs_HLlycPic2", "CanidPreserveTransision",
+          "vs_HLgloMel1", "vs_HLpepEle1", "vs_HLturAdu1", "DolphinClade", "vs_orcOrc1", "vs_HLescRob1", "vs_HLlniGeo1", "amazonRiverDolphinFromYeast","vs_HLbalEde1", "vs_HLmegNov1", "vs_HLcynGun1", "CetaceaPreserveTransitions",
+          "vs_HLmerUng1", "BankVoleTransition",
+          "vs_HLeulMon1", "vs_HLeulFul1", "LemurTransition",
+          "vs_panTro6", "vs_HLrhiRox2", "LangurClade", "vs_HLallNig1", "PrimateTransitionsContinued",
+          "vs_HLeryPat1", "vs_chlSab2", "geunonClade", "vs_HLtheGel1", "PrimateTransitionsContinuedAgain",
+          "vs_HLpapAnu5", "vs_HLmanSph1", "DrillMandrillClade", "vs_cerAty1", "Drilltransitions",
+          "vs_HLmarFla1", "marmotClade", "DoormouseTransition",
+          "vs_eulMac1", "vs_ponAbe3", "PrimateTransitions"
+          
+         )',
+         'p=c(
+          "vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1", "voleClade",
+          "vs_HLmusSpi1", "vs_HLmusCar1", "vs_HLmasCou1", "vs_HLmusPah1", "mouseClade",
+          "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "gundiGuineaPigClade",
+          "vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1", "Bovidae",
+          "vs_HLhydIne1", "vs_HLmunMun1", "Cervidae",
+          "vs_HLmurAurFea1", "outerVespert",
+          "vs_HLmyoLuc1", "Nearctic",
+          "vs_myoDav1", "Myotis",
+          "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "Vespertilioninae",
+          "vs_HLmacSob1", "FoxLongTounge",
+          "vs_HLeidHel2", "outerPeropodidae",
+          "vs_HLeonSpe1", "Roussetinae"
+         )')
   
   
   
@@ -1748,6 +1836,14 @@ generateAlternates = F
     message("Using Liam infrence -- DO NOT DO THIS UNLESS USING A SPECIFIC LIAM PHENOTYPE")
   }else{
     message("Liam infrence not used.")
+  }
+
+  #generate alternates
+  if(!is.na(cmdArgImport('e'))){
+    generateAlternates = as.logical(cmdArgImport('e'))
+    message("Generating Alternates")
+  }else{
+    message("Not Generating Alternates.")
   }
 
 
@@ -1960,109 +2056,164 @@ saveRDS(commonCategoricalTree, categoricalCommonTreeFilename)
 scientificCategoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalScientificTree.rds", sep="") #make a filename based on the prefix
 saveRDS(scientificCategoricalTree, scientificCategoricalTreeFilename)
 
+phenotypeVectorSaving = data.frame(names(phenotypeVector), names(commonPhenotypeVector), phenotypeVector)
+directReadablePhenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.csv",sep="")
+write.csv(phenotypeVectorSaving, directReadablePhenotypeVectorFilename)
+
 
 
 if(generateAlternates){
-  phenotypeSizes = table(phenotypeVector)
-  
-  fullSpeciesNames = relevantSpecies[[nameColumn]]                                         #Exract the tip name of each species
-  fullSpeciesCategories = relevantSpecies[[annotColumn]]                              #extract the category of each species (in same order)
-  fullDataPhenotype = fullSpeciesCategories
-  names(fullDataPhenotype) = fullSpeciesNames 
-  if(!is.null(substitutions) & !all(is.na(substitutions))){
-    for( i in 1:length(substitutions)){
-      substitutePhenotypes = substitutions[[i]]
-      message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
-      fullDataPhenotype = gsub(substitutePhenotypes[1], substitutePhenotypes[2], fullDataPhenotype)
+    
+    #Load in necessary script
+    source("Src/Reu/CategoricalDropTip.R")
+    
+    #Load in the full tree with all species
+    fullTreePrefix = paste0(filePrefix, "AllSpecies")
+    fullTreeOutputFolder = paste0(outputFolderNameNoSlash, "AllSpecies", "/")
+    tryCatch({
+      allSpeciesTreeFilename = paste(fullTreeOutputFolder, fullTreePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+      allSpeciesTree = readRDS(allSpeciesTreeFilename)
+      haveAllSpeciesTree = T
+    }, 
+    error=function(i){
+      haveAllSpeciesTree = F
+      message("No All Species tree found. Generating alternates, but not creating trees for them. ")
     }
+    )
+    
+    
+    phenotypeSizes = table(phenotypeVector)
+    
+    fullSpeciesNames = relevantSpecies[[nameColumn]]                                         #Exract the tip name of each species
+    fullSpeciesCategories = relevantSpecies[[annotColumn]]                              #extract the category of each species (in same order)
+    fullDataPhenotype = fullSpeciesCategories
+    names(fullDataPhenotype) = fullSpeciesNames 
+    if(!is.null(substitutions) & !all(is.na(substitutions))){
+      for( i in 1:length(substitutions)){
+        substitutePhenotypes = substitutions[[i]]
+        message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
+        fullDataPhenotype = gsub(substitutePhenotypes[1], substitutePhenotypes[2], fullDataPhenotype)
+      }
+    }
+    length(fullDataPhenotype)
+    
+    fullPhenotypeSizes = table(fullDataPhenotype)
+    
+    mastertreeDataPhenotype = fullDataPhenotype[names(fullDataPhenotype) %in% mainTrees$masterTree$tip.label]
+    length(mastertreeDataPhenotype)
+    masterTreePhenotypeSizes = table(mastertreeDataPhenotype)
+    
+    
+    alternateSets = list()
+    i=1
+    while(length(alternateSets) < 100){
+      
+      randomizedSpeciesSet = character()
+      for(j in 1:length(phenotypeSizes)){
+        numberOfSpecies = phenotypeSizes[j]
+        speciesSet = mastertreeDataPhenotype[which(mastertreeDataPhenotype == names(phenotypeSizes)[j])]
+        chosenSpecies = sample(speciesSet, numberOfSpecies)
+        randomizedSpeciesSet = append(randomizedSpeciesSet, chosenSpecies)
+      }
+      
+      testTree = mainTrees$masterTree
+      tipsToDrop = testTree$tip.label[!testTree$tip.label %in% names(randomizedSpeciesSet)]
+      testTree = drop.tip(testTree, tipsToDrop)
+      i=i+1
+      if(i %% 10000 == 0){message(i)}
+      if(min(testTree$edge.length) < pruningCutoff){
+        message("Found Valid Alternate")
+        message(i)
+        alternateTips = testTree$tip.label
+        alternateTips = list(alternateTips)
+        alternateSets = append(alternateSets, alternateTips)
+      }
+    }
+    
+  saveRDS(alternateSets, paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
+    
+  
+  if(!dir.exists(paste0("Output/", filePrefix, "/Alternates"))){                                      #Make output directory if it does not exist
+    dir.create(paste0("Output/", filePrefix, "/Alternates"))
   }
-  length(fullDataPhenotype)
-  
-  fullPhenotypeSizes = table(fullDataPhenotype)
-  
-  mastertreeDataPhenotype = fullDataPhenotype[names(fullDataPhenotype) %in% mainTrees$masterTree$tip.label]
-  length(mastertreeDataPhenotype)
-  masterTreePhenotypeSizes = table(mastertreeDataPhenotype)
   
   
-  alternateSets = list()
-  i=1
-  while(length(alternateSets) < 50){
+  for(i in 1:length(alternateSets)){
+    currentSet = alternateSets[[i]]
+    alternateFilePrefix = paste0("/Alternates/Alternate", i)
     
-    randomizedSpeciesSet = character()
-    for(j in 1:length(phenotypeSizes)){
-      numberOfSpecies = phenotypeSizes[j]
-      speciesSet = mastertreeDataPhenotype[which(mastertreeDataPhenotype == names(phenotypeSizes)[j])]
-      chosenSpecies = sample(speciesSet, numberOfSpecies)
-      randomizedSpeciesSet = append(randomizedSpeciesSet, chosenSpecies)
-    }
     
-    testTree = mainTrees$masterTree
-    tipsToDrop = testTree$tip.label[!testTree$tip.label %in% names(randomizedSpeciesSet)]
-    testTree = drop.tip(testTree, tipsToDrop)
-    i=i+1
-    if(i %% 10000 == 0){message(i)}
-    if(min(testTree$edge.length) < pruningCutoff){
-      message("Found Valid Alternate")
+    currentPhenotypeVector = fullDataPhenotype[which(names(fullDataPhenotype) %in% currentSet)]
+    currentCommonPhenotypeVector = currentPhenotypeVector
+    names(currentCommonPhenotypeVector) = ZonomNameConvertVectorCommon(names(currentCommonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+    
+    
+    currentPhenotypeVectorSaving = data.frame(names(currentPhenotypeVector), names(currentCommonPhenotypeVector), currentPhenotypeVector)
+    currentDirectReadablePhenotypeVectorFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPhenotypeVector.csv",sep="")
+    write.csv(currentPhenotypeVectorSaving, currentDirectReadablePhenotypeVectorFilename) 
+    
+    currentSpeciesFilterFilename =  paste(outputFolderName, alternateFilePrefix, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
+    currentSpeciesFilter = currentSet
+    saveRDS(currentSpeciesFilter, currentSpeciesFilterFilename)
+  }
+  
+  
+  if(haveAllSpeciesTree){
+    mainTrees = readRDS(mainTreesLocation) #refreshes the main tree from any changes made during pruning step 
+    
+    
+    commonMainTrees = mainTrees
+    commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+    
+    for(i in 1:length(alternateSets)){
       message(i)
-      alternateTips = testTree$tip.label
-      alternateTips = list(alternateTips)
-      alternateSets = append(alternateSets, alternateTips)
+      currentSet = alternateSets[[i]]
+      alternateFilePrefix = paste0("/Alternates/Alternate", i)
+      
+      
+      currentPhenotypeVector = fullDataPhenotype[which(names(fullDataPhenotype) %in% currentSet)]
+      currentCommonPhenotypeVector = currentPhenotypeVector
+      names(currentCommonPhenotypeVector) = ZonomNameConvertVectorCommon(names(currentCommonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+      
+      
+      currentPhenotypeVectorSaving = data.frame(names(currentPhenotypeVector), names(currentCommonPhenotypeVector), currentPhenotypeVector)
+      currentDirectReadablePhenotypeVectorFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPhenotypeVector.csv",sep="")
+      write.csv(currentPhenotypeVectorSaving, currentDirectReadablePhenotypeVectorFilename)  
+      
+      currentPhenotypeVectorFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
+      saveRDS(currentPhenotypeVector, file = currentPhenotypeVectorFilename)                        #save the phenotype vector
+      
+      
+      
+      tipsToRemove = allSpeciesTree$tip.label[!allSpeciesTree$tip.label %in% currentSet]
+      currentTree = categoricalDropTip(allSpeciesTree, tipsToRemove)
+      currentCommonSpeciesFilter = ZonomNameConvertVectorCommon(currentSet, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+      
+      # - Categorical Tree - 
+      currentCategoricalTree = currentTree
+      currentCommonCategoricalTree = currentTree
+      currentCommonCategoricalTree$tip.label = ZonomNameConvertVectorCommon(currentCommonCategoricalTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+      
+      if(useLiam){
+      
+        treeImageFilename = paste(outputFolderName, alternateFilePrefix, filePrefix,"CategoricalTree.pdf", sep="") #make a filename based on the prefix
+        pdf(treeImageFilename, height = length(currentPhenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
+        palette(c( "darkgreen", "darkblue","black", "red"))
+
+        plotTreeCategorical(currentCommonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTrees$masterTree)
+        plotTreeCategorical(currentCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
+        
+        dev.off()  
+      }
+      
+      
+      currentCategoricalTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+      saveRDS(currentCategoricalTree, currentCategoricalTreeFilename)                               #save the tree
+      currentCategoricalCommonTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
+      saveRDS(currentCommonCategoricalTree, currentCategoricalCommonTreeFilename)
+      
     }
   }
-  
-saveRDS(alternateSets, paste(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
-  
-
-if(!dir.exists(paste0("Output/", filePrefix, "/Alternates"))){                                      #Make output directory if it does not exist
-  dir.create(paste0("Output/", filePrefix, "/Alternates"))
-}
-
-
-for(i in 1:length(alternateSets)){
-  
-  currentSet = alternateSets[[i]]
-  alternateFilePrefix = paste0("/Alternates/Alternate", i)
-  
-  phenotypeVector = fullDataPhenotype[which(names(fullDataPhenotype) %in% currentSet)]
-  
-  
-  commonMainTrees = mainTrees
-  commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
-  commonPhenotypeVector = phenotypeVector
-  names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
-  commonSpeciesFilter = ZonomNameConvertVectorCommon(currentSet, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
-  
-  # - Categorical Tree - 
-  treeImageFilename = paste(outputFolderName, alternateFilePrefix, filePrefix,"CategoricalTree.pdf", sep="") #make a filename based on the prefix
-  palette(c( "darkgreen", "darkblue","black", "red"))
-  
-  pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
-  commonCategoricalTree = char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = F)
-  categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, currentSet, model = modelType, anctrait = ancestralTrait, plot = F) #use the phenotype vector to make a tree
-  
-  commonCategoricalTreeExtraTip = commonCategoricalTree
-  categoricalTreeExtraTip = categoricalTree
-  
-  commonCategoricalTree = drop.tip(commonCategoricalTree, names(nodesToAdd))
-  categoricalTree = drop.tip(categoricalTree, names(nodesToAdd))
-  mainTrees$masterTree = drop.tip(mainTrees$masterTree, names(nodesToAdd))
-  commonMasterAdded = commonMainTrees$masterTree
-  commonMainTrees$masterTree = drop.tip(commonMainTrees$masterTree, names(nodesToAdd))
-  
-  plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTrees$masterTree)
-  plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTrees$masterTree)
-  
-  plotTreeCategorical(commonCategoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMasterAdded)
-  plotTreeCategorical(categoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = masterTreeAdded)
-  dev.off()  
-  
-  categoricalTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
-  saveRDS(categoricalTree, categoricalTreeFilename)                               #save the tree
-  categoricalCommonTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
-  saveRDS(commonCategoricalTree, categoricalCommonTreeFilename)
-}
-
 
   
 }
