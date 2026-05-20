@@ -3,16 +3,16 @@
 #SBATCH -p rapids
 #SBATCH -n 1
 #SBATCH -N 1
+#SBATCH --mem=4G
 #SBATCH -t 48:00:00
-#SBATCH -J hyphyCluster
-#SBATCH -o /share/ceph/wym219group/shared/erroutfiles/seaverErrors/%j.%N.out
+#SBATCH -J clusterHyphy
+#SBATCH -o /share/ceph/wym219group/shared/erroutfiles/seaverErrors/clusterHyphy_%j.%N.out
 #SBATCH --open-mode=append
 #SBATCH --mail-type=TIME_LIMIT
 #SBATCH --mail-user=aws519@lehigh.edu
 
-
 #--------ERROR HANDLING--------#
-local job_id=${SLURM_JOB_ID:-"NOT_A_SLURM_JOB"}
+job_id=${SLURM_JOB_ID:-"NOT_A_SLURM_JOB"}
 
 #define a progress tracking variable
 CURRENT_STEP="Initialization"
@@ -42,7 +42,7 @@ module load r
 module load hyphy
 
 #set paths to alignment files
-ALIGNMENTPATH="/share/ceph/wym219group/shared/data/filtered_alignments"
+ALIGNMENTPATH="/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/masked_genes"
 TRANSLATEDPATH="/share/ceph/wym219group/shared/data/fixed_filtered_translated_alignments"
 echo AlignmentPath: $ALIGNMENTPATH
 
@@ -77,7 +77,7 @@ if [ $? -ne 0 ]; then #Checks if exit status of last command does not equal 0
 fi
 
 #sets the name of the FASTA file to either the nucleotide alignment that matches the translated alignment or the only available nucleotide alignement
-GENENAMESEARCH="${GENENAME}."
+GENENAMESEARCH="${GENENAME}"
 count=$(find | grep $GENENAMESEARCH |wc -l) #counts nucleotide alignment files corresponding to the input gene
 echo count: $count
 
@@ -87,10 +87,10 @@ echo count: $count
 
 #if [ $count -gt 1 ]; then #if more than one alignment exists, selects nucleotide alignment that has matching translated alignment
     cd $TRANSLATEDPATH
-    FASTAFILEBASE=$(find | grep $GENENAMESEARCH | head -n 1) #Searches translated alignments for the input gene
+    FASTAFILEBASE=$(find . -maxdepth 1 -name "*.$GENENAMESEARCH.aa.filt.fa" | head -n 1) #Searches translated alignments for the input gene
     echo FASTAFILEBASE: $FASTAFILEBASE
     FASTAFILEBASE="${FASTAFILEBASE#./}" #Trims prefix from file name
-    FASTAFILEBASE="${FASTAFILEBASE%%.*}" #Trims file extension
+    FASTAFILEBASE="${FASTAFILEBASE%.aa.filt.fa}" #Trims file extension
     FASTAFILE="${FASTAFILEBASE}.filt.fa" #Set desired file name to format of nucleotide alignment
 #else #If only one nucleotide alignment file exists, set FASTAFILE to it
     #FASTAFILE=$(find | grep $GENENAMESEARCH | head -n 1)
@@ -136,7 +136,10 @@ if [ -f $HYPHYINPUTFILENAME ] ; then #Checks if the input file is already genera
     echo "Input File exists"
 else
     echo "Generating Input file"
+    echo "R --no-save --args g=$GENENAME a=$FASTAFILEPATH r=$FILEPREFIX f=$FOREGROUNDPATHVALUE b=$BINARIZEVALUE </share/ceph/wym219group/shared/projects/seaverProjects/$PROJECTNAME/Src/Reu/hyphyFileMake.R"
     R --no-save --args g=$GENENAME a=$FASTAFILEPATH r=$FILEPREFIX f=$FOREGROUNDPATHVALUE b=$BINARIZEVALUE </share/ceph/wym219group/shared/projects/seaverProjects/$PROJECTNAME/Src/Reu/hyphyFileMake.R
+
+
     if [ $? -ne 0 ]; then
       echo "ERROR: hyphyFileMake.R failed. Exiting."
       exit 1
@@ -154,7 +157,7 @@ if [[ "$TOOLNAME" == "relax" ]] ; then
   #check if binarization is set to TRUE
   BINARIZEVALUE=$(echo "$BINARIZEVALUE" | tr '[:upper:]' '[:lower:]')
   if [[ "$BINARIZEVALUE" == "t" || "$BINARIZEVALUE" == "true" ]] ; then
-    hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference Background --output $OUTPUTFILENAME
+    hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference Background --output $OUTPUTFILENAME --starting-points 10 --grid-size 250
   else
     hyphy $TOOLNAME --alignment $HYPHYINPUTFILENAME --test $FOREGROUNDPATHVALUE --reference $BACKGROUNDVALUE --output $OUTPUTFILENAME
   fi

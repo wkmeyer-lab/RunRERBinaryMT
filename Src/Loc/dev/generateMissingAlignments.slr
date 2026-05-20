@@ -15,6 +15,8 @@ source biopython_env/bin/activate
 pip install biopython
 
 GENE_FILE="/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/Hyphy/MissingAlignmentList.txt"
+LIST_FILE="/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/Summary_Phase3Alns/ListAllFasWithPath.txt"
+REF_DIR="/share/ceph/wym219group/shared/data/filtered_translated_alignments"
 
 if [[ ! -f "$GENE_FILE" ]]; then
     echo "Error: Gene file not found at: $GENE_FILE"
@@ -24,13 +26,31 @@ fi
 while IFS= read -r line; do
     gene=$(echo "$line" | awk '{print $1}')
     echo "Processing: $gene"
-    
-    # Find the gene in the list file and get its path
-    gene_path=$(grep -F -- "$gene" "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/Summary_Phase3Alns/ListAllFasWithPath.txt" | head -n1)
-    
+
+    #look for a file that matches the pattern *.GENE_NAME.* in translated alignments
+    ref_match=$(find "$REF_DIR" -maxdepth 1 -name "*.$gene.*" | head -n1)
+
+    if [[ -z "$ref_match" ]]; then
+        echo "Warning: No reference transcript found for gene $gene in $REF_DIR. Skipping."
+        continue
+    fi
+
+    #extract the transcript ID
+    target_transcript=$(basename "$ref_match" | cut -d'.' -f1)
+
+    echo "   -> Matched Transcript ID: $target_transcript"
+
+    #match transcript ID for filtering
+    gene_path=$(grep -F "$target_transcript" "$LIST_FILE" | head -n1)
+
     if [[ -n "$gene_path" ]]; then
-        python filterAlignments.py "$gene_path"
+        #check if file is empty before running python script
+        if [[ -s "$gene_path" ]]; then
+             python filterAlignments.py "$gene_path"
+        else
+             echo "   -> Skipping: Input alignment file is empty (0 bytes)."
+        fi
     else
-        echo "Warning: Path not found for gene: $gene"
+        echo "Warning: Path not found in ListAllFasWithPath.txt for transcript: $target_transcript"
     fi
 done < "$GENE_FILE"

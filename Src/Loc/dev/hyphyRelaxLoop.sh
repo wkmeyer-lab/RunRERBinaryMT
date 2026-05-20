@@ -1,21 +1,24 @@
 #!/bin/bash
 
-#The full path to your file containing the list of gene names.
+#full path to your file containing the list of gene names
 GENE_FILE="/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/combinedSignificantGenes.txt"
 
-#The name of the script Slurm will run for each job.
+#name of the script Slurm will run for each job.
 JOB_SCRIPT="clusterHyphy.slr"
 
-#The partition to run on.
+#partition to run on.
 PARTITION="rapids"
 
-#The foreground value to use.
-FOREGROUNDVALUE=1
+#foreground value to use.
+FOREGROUNDVALUE=2
 
-#The maximum number of jobs to run at the same time.
+#maximum number of jobs to run at the same time.
 MAX_CONCURRENT_JOBS=100
 
-# Count the total number of genes
+#base output directory for RERBinaryMT Hyphy runs.
+OUTPUT_DIR="/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/Hyphy"
+
+#count the total number of genes
 NUM_GENES=$(wc -l < "$GENE_FILE" | xargs)
 if [[ "$NUM_GENES" -eq 0 ]]; then
     echo "Error: Gene file is empty or not found at: $GENE_FILE"
@@ -37,10 +40,20 @@ for (( i=1; i<=$NUM_GENES; i++ )); do
         echo "Warning: Empty line at $i, skipping."
         continue
     fi
-    
+
+    #construct the expected output filename.
+    #pattern: /.../Hyphy/CategoricalInsVertivoreTree-Hyphy-relax-GENE-Foreground_VALUE.Rds
+    EXPECTED_FILE="$OUTPUT_DIR/CategoricalInsVertivoreTree-Hyphy-relax-${CURRENT_GENE}-Foreground_${FOREGROUNDVALUE}.Rds"
+
+    #check if the file already exists.
+    if [ -s "$EXPECTED_FILE" ]; then
+        echo "Output found for $CURRENT_GENE (Line $i), skipping job submission."
+        continue #skip to the next gene in the loop
+    fi
+
     # Calculate the "job slot" (from 0 to 99)
     JOB_SLOT=$(($i % $MAX_CONCURRENT_JOBS))
-    
+
     #Submit the job
     sbatch \
       -N 1 \
@@ -67,8 +80,4 @@ echo ""
 echo "========================================================"
 echo "All $NUM_GENES jobs have been submitted."
 echo "Slurm will manage the queue to run max $MAX_CONCURRENT_JOBS at a time."
-echo ""
-echo "To CANCEL all jobs (if needed):"
-echo "  scancel -u $USER -n hyphy_slot_"
 echo "========================================================"
-echo "Use 'squeue -u $USER' to monitor your jobs."
