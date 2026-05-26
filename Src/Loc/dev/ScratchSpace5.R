@@ -737,7 +737,7 @@ phenData = mergedData[c(mergedData$ZoonomiaTip %in% fullTree$tip.label),]
 
 phenData = phenData %>% mutate(diet = dataPhenVec)
 
-familyByDiet = phenData[,c(1,2,5,9)]
+familyByDiet = phenData[,c(1,2,5,8,9)]
 familyByDiet = familyByDiet %>% mutate(diet = dataPhenVec)
 
 table(familyByDiet$diet)
@@ -747,6 +747,18 @@ length(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Herbivore"])[order(t
 table(familyByDiet$MSWC_Family[familyByDiet$diet == "Insectivore"])[order(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Insectivore"]))]
 length(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Insectivore"])[order(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Insectivore"]))])
 
+
+table(familyByDiet$MSWC_Family)[order(table(familyByDiet$MSWC_Family))]
+
+which(familyByDiet$ZoonomiaTip == "vs_HLellTal1")
+familyByDiet[62,]
+
+set = which(familyByDiet$ZoonomiaTip %in% c("vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1","vs_HLmicAgr2", "vs_HLmyoGla2", "vs_HLondZib1", "voleClade", "6Herb"))
+set = which(familyByDiet$ZoonomiaTip %in% c(  "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "vs_HLmyoCoy1", "vs_HLhydHyd1", "vs_HLcavTsc1", "gundiGuineaPigClade", "14Herb"))
+set = which(familyByDiet$ZoonomiaTip %in% c(          "vs_HLmusSpi1", "vs_HLmusCar1", "vs_HLmasCou1", "vs_HLmusPah1", "vs_HLratNor7", "vs_HLarvNil1", "vs_mm10", "mouseClade", "7Omni,1Herb"))
+familyByDiet[set,]
+
+phenData[which(phenData$ZoonomiaTip %in% c("vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "vs_HLmyoCoy1", "vs_HLhydHyd1", "vs_HLcavTsc1", "gundiGuineaPigClade", "14Herb")),]
 
 prunedFamilyByDiet = familyByDiet
 prunedFamilyByDiet = prunedFamilyByDiet[prunedFamilyByDiet$ZoonomiaTip %in% names(ogPhenVec),]
@@ -759,6 +771,8 @@ length(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Herbivor
 table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectivore"])[order(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectivore"]))]
 length(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectivore"])[order(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectivore"]))])
 
+
+table(prunedFamilyByDiet$MSWC_Family)[order(table(prunedFamilyByDiet$MSWC_Family))]
   
 length(ogPhenVec)
 
