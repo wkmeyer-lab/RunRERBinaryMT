@@ -2237,26 +2237,33 @@ if(generateAlternates){
       i=i+1
       if(i %% 10000 == 0){message(i)}
       if(min(testTree$edge.length) < pruningCutoff){
+        message("Found Possible Alternate")
         if(useLiam){
           
-          Bovidae = c("vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1",  "vs_bisBis1", "vs_HLoviNivLyd1", "vs_HLproPrz1", "Bovidae", "13Herb")
-          Pteropodidae = c("vs_HLmacSob1", "vs_HLpteGig1", "FoxLongTounge", "vs_HLeidHel2", "vs_HLcynBra1", "outerPeropodidae", "vs_HLeonSpe1", "vs_HLrouLes1", "Roussetinae", "Peropodidae", "6Herb")
-          Cervidae = c("vs_HLhydIne1", "vs_HLmunMun1", "vs_HLodoHem1", "vs_HLantAme1", "vs_HLgirCam1", "Cervidae", "5Herb",)
-          Cercopithecidae = c()
-          Cricetidae = c("vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1","vs_HLmicAgr2", "vs_HLmyoGla2", "vs_HLondZib1", "voleClade", "6Herb",)
-          Vespertilionidae = c("vs_HLmurAurFea1", "Murina", "vs_HLmyoLuc1", "Nearctic", "vs_myoDav1", "vs_HLmyoMyo6", "vs_HLmyoSep1", "vs_HLmyoLuc1", "Myotis", "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "vs_eptFus1", "Vespertilioninae","Vespertilionidae", "10Inse")
-          Muridae = c("vs_HLmusSpi1", "vs_HLmusCar1", "vs_HLmasCou1", "vs_HLmusPah1", "vs_HLratNor7", "vs_HLarvNil1", "vs_mm10", "mouseClade", "7Omni,1Herb")  
-          Hystricognathi = c("vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "vs_HLmyoCoy1", "vs_HLhydHyd1", "vs_HLcavTsc1", "gundiGuineaPigClade", "14Herb")
+          Bovidae = manualAnnots[manualAnnots$MSWC_Family %in% "Bovidae",][[nameColumn]]
+          Pteropodidae = manualAnnots[manualAnnots$MSWC_Family %in% "Pteropodidae",][[nameColumn]]
+          Cervidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cervidae",][[nameColumn]]
+          Cricetidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cricetidae",][[nameColumn]]
           
+          Vespertilionidae = manualAnnots[manualAnnots$MSWC_Family %in% "Vespertilionidae",][[nameColumn]]
           
-
-
+          HystricognathiFamilies =  c("Caviidae", "Chinchillidae", "Ctenomyidae", "Dasyproctidae", "Dinomyidae", "Caviidae", "Bathyergidae", "Caviidae", "Hystricidae", "Myocastoridae", "Octodontidae", "Petromuridae", "Thryonomyidae", "Erethizontidae")
+          Hystricognathi = manualAnnots[manualAnnots$MSWC_Family %in% HystricognathiFamilies,][[nameColumn]]
           
-
-        
+          numBovidae = length(which(testTree$tip.label %in% Bovidae))
+          numPteropodidae = length(which(testTree$tip.label %in% Pteropodidae))
+          numCervidae = length(which(testTree$tip.label %in% Cervidae))
+          numCricetidae = length(which(testTree$tip.label %in% Cricetidae))
+          numVespertilionidae = length(which(testTree$tip.label %in% Vespertilionidae))
           
+          numHystricognathi= length(which(testTree$tip.label %in% Hystricognathi))
           
+          if(max(numBovidae, numPteropodidae, numCervidae, numCricetidae, numVespertilionidae, numHystricognathi) > 3){
+            message("Alternate was enriched for a trimmed family, and skipped.")
+            next
           }
+          
+        }
         
         
         
