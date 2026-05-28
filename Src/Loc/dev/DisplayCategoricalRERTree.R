@@ -1,4 +1,4 @@
-
+library(scales)
 source("Src/Reu/ZonomNameConvertVectorCommon.R")
 displayCategoricalRERTree = function(treesObj, rermat, index, phenv = NULL, subsetTree = T, equalLengths = T, minWidth = 1, maxWidth = 6, tipCol = "tipColumn"){
   treesObj$trees[[index]]$tip.label = ZonomNameConvertVectorCommon(treesObj$trees[[index]]$tip.label, tipColumn = tipCol)
@@ -42,7 +42,7 @@ returnRersAsTreeNew <- function(treesObj, rermat, index, phenv = NULL, rer.cex =
     rerWidth = rescale(clampedRelativeRER, c(minWidth,maxWidth))
     rerWidth[is.na(rerWidth)] = 1
     
-    par(mar = c(1,1,1,0))
+    par(mar = c(1,0,1,0))
     edgcols <- rep('black', nrow(trgene$edge))
     edgwds <- rep(1, nrow(trgene$edge))
     if(!is.null(phenv)){

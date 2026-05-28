@@ -3,8 +3,298 @@ library(RERconverge)
 library(tools)
 library(scales)
 library(data.table)
+library(geiger)
 
 source("Src/Reu/ZoonomTreeNameToCommon.R")
+
+
+#---------------------------------------------------------------------
+# --- Comapring GO results from the histriognathi versions --- 
+# --------------------------------------------------------------------
+noYeastGOspecies = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencespeciesFilter.rds")
+noRodentspecies = readRDS("Output/ComplexDietCentralAnalysisNoRodent/ComplexDietCentralAnalysisNoRodentspeciesFilter.rds")
+
+noYeastGOspecies %in% noRodentspecies
+noRodentspecies %in% noYeastGOspecies
+noRodentspecies[!noRodentspecies %in% noYeastGOspecies]
+
+noRodentPhen = readRDS("Output/ComplexDietCentralAnalysisNoRodent/ComplexDietCentralAnalysisNoRodentcategoricalphenotypeVector.rds")
+
+noRodentPhen[names(noRodentPhen) %in% noRodentspecies[!noRodentspecies %in% noYeastGOspecies]]
+
+
+paperGOAnalysis = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+noYeastGOAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencecombinedGOResults-KeggReactome.rds")
+noRodentGOAnalysis = readRDS("Output/ComplexDietCentralAnalysisNoRodent/ComplexDietCentralAnalysisNoRodentcombinedGOResults-KeggReactome.rds")
+
+
+
+
+
+
+
+
+paperAnalysis = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencePairwiseCorrelationFile.rds")
+noYeastAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencePairwiseCorrelationFile.rds")
+
+noRodentAnalysis = readRDS("Output/ComplexDietCentralAnalysisNoRodent/ComplexDietCentralAnalysisNoRodentPairwiseCorrelationFile.rds")
+
+paperAnalysis = paperAnalysis[-c(2,3,6,8)]
+noYeastAnalysis = noYeastAnalysis[-c(2,3,6,8)]
+noRodentAnalysis = noRodentAnalysis[-c(2,3,6,8)]
+
+compareAnalyses = function(ogAnalysis, newAnalysis, prefix = NULL, pCuttof = 0.05){
+  
+  if(!is.null(prefix)){
+    outputOGAnalysis = list()
+    outputNewAnalysis = list()
+    for(i in 1:length(prefix)){
+      currentCols = grep(prefix[i], names(ogAnalysis))
+      currentCols = currentCols[1:3]
+      
+      tempOGAnalysis = ogAnalysis[,currentCols]
+      tempNewAnalysis = newAnalysis[,currentCols]
+      
+      tempOGAnalysis = list(tempOGAnalysis)
+      names(tempOGAnalysis) = prefix[i]
+      
+      tempNewAnalysis = list(tempNewAnalysis)
+      names(tempNewAnalysis) = prefix[i]
+      
+      
+      outputOGAnalysis = append(outputOGAnalysis, tempOGAnalysis)
+      outputNewAnalysis = append(outputNewAnalysis, tempNewAnalysis)
+    }
+    
+    newAnalysis = outputNewAnalysis
+    ogAnalysis = outputOGAnalysis
+  }
+  
+  
+  
+  results <- tibble(
+    index = integer(),
+    correlation = numeric(),
+    rhoRankcorrelation = numeric(),
+    numMismatchedNAs = integer(),
+    pCorrelation = numeric(),
+    numMismatchedPs = integer(),
+    padjCorrelation = numeric(),
+    numMismatchedPadjs = integer(),
+    totalOgSigPadjs = integer(), 
+    totalNewSigPadjs = integer(),
+    missingFraction = integer(),
+    mismatchedNAs = I(list()),
+    mismatchedPs = I(list()),
+    mismatchedPadjs = I(list())
+  )
+  
+  for (i in seq_along(ogAnalysis)) {
+    
+    correlation <- cor(ogAnalysis[[i]][[1]], newAnalysis[[i]][[1]], use = "complete.obs")
+    
+    mismiatchedNAs <- which(!is.na(ogAnalysis[[i]][[1]]) %in% is.na(newAnalysis[[i]][[1]]))
+    
+    ogAnalysis[[i]] = ogAnalysis[[i]] %>% mutate(rhoRank = rank(ogAnalysis[[i]][[1]])) 
+    newAnalysis[[i]] = newAnalysis[[i]] %>% mutate(rhoRank = rank(newAnalysis[[i]][[1]]))
+    
+    rhoRankcorrelation <- cor(ogAnalysis[[i]][[4]], newAnalysis[[i]][[4]], use = "complete.obs")
+    
+    pCorrelation <- cor(ogAnalysis[[i]][[2]], newAnalysis[[i]][[2]], use = "complete.obs")
+    
+    mismiatchedPs <- which(ogAnalysis[[i]][[2]] < pCuttof)[which(!which(ogAnalysis[[i]][[2]] < pCuttof) %in% 
+                                                                   which(newAnalysis[[i]][[2]] < pCuttof))]
+    
+    padjCorrelation <- cor(ogAnalysis[[i]][[3]], newAnalysis[[i]][[3]], use = "complete.obs")
+    
+    mismiatchedPadjs <- which(ogAnalysis[[i]][[3]] < pCuttof)[which(!which(ogAnalysis[[i]][[3]] < pCuttof) %in% 
+                                                                      which(newAnalysis[[i]][[3]] < pCuttof))]
+    
+    totalOgSigPadjs = length(which(ogAnalysis[[i]][[3]] < pCuttof))
+    totalNewSigPadjs = length(which(newAnalysis[[i]][[3]] < pCuttof))
+    
+    missingFraction = length(mismiatchedPadjs) / length(which(ogAnalysis[[i]][[3]] < pCuttof))
+    
+    results <- rbind(results, tibble(
+      index = i,
+      correlation = correlation,
+      rhoRankcorrelation = rhoRankcorrelation,
+      numMismatchedNAs = length(mismiatchedNAs),
+      pCorrelation = pCorrelation,
+      numMissingPs = length(mismiatchedPs),
+      padjCorrelation = padjCorrelation,
+      numMissingPadjs = length(mismiatchedPadjs),
+      totalOgSigPadjs = totalOgSigPadjs,
+      totalNewSigPadjs = totalNewSigPadjs,
+      missingFraction = missingFraction,
+      mismatchedNAs = list(mismiatchedNAs),
+      missingPs = list(mismiatchedPs),
+      missingPadjs = list(mismiatchedPadjs),
+    ))
+  }
+  row.names(results) = names(ogAnalysis)
+  return(results)
+}
+
+
+length(which(noYeastGOAnalysis$`HI-significant`))
+length(which(noRodentGOAnalysis$`HI-significant`))
+
+
+
+
+newAnalysis = fullTreeAnalysis
+newGOAnalysis = fullTreeGOAnalysis
+
+
+
+geneMissingInNewAnalysis = compareAnalyses(noYeastAnalysis, noRodentAnalysis)
+geneMissingInOldAnalysis = compareAnalyses(noRodentAnalysis, noYeastAnalysis)
+
+
+noRodentAnalysis[[3]]$Rho
+noYeastAnalysis[[3]]$Rho
+
+
+rhoDifference = noRodentAnalysis[[3]]$Rho - noYeastAnalysis[[3]]$Rho
+
+which(rhoDifference == max(rhoDifference, na.rm = T))
+
+rownames(noYeastAnalysis[[3]])[which(rhoDifference == max(rhoDifference, na.rm = T))]
+maxDifGene = rownames(noRodentAnalysis[[3]])[which(rhoDifference == max(rhoDifference, na.rm = T))]
+
+
+noRodentRER =  readRDS("Output/ComplexDietCentralAnalysisNoRodent/ComplexDietCentralAnalysisNoRodentRERFile.rds")
+noYeastRER =  readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferenceRERFile.rds")
+noRodentPaths =  readRDS("Output/ComplexDietCentralAnalysisNoRodent/ComplexDietCentralAnalysisNoRodentCategoricalPathsFile.rds")
+noYeastPaths =  readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferenceCategoricalPathsFile.rds")
+
+
+plotRers(noRodentRER, maxDifGene, phenv = noRodentPaths)
+plotRers(noYeastRER, maxDifGene, phenv = noYeastPaths)
+
+
+
+
+source("Src/Loc/Dev/DisplayCategoricalRERTree.R")
+
+pdf(height = 10, width = 15)
+par(mfrow=c(1,2))
+displayCategoricalRERTree(mainTrees, noRodentRER, maxDifGene, noRodentPaths, subsetTree = T)
+displayCategoricalRERTree(mainTrees, noYeastRER, maxDifGene, noYeastPaths, subsetTree = T)
+dev.off()
+
+displayCategoricalRERTree(mainTrees, noRodentRER, maxDifGene, noRodentPaths, subsetTree = F)
+
+
+
+goMissingInNewAnalysis = compareAnalyses(noYeastGOAnalysis, noRodentGOAnalysis, c("HI", "HV", "IV", "CH"), pCuttof = 0.1)
+goMissingInOldAnalysis = compareAnalyses(noRodentGOAnalysis, noYeastGOAnalysis, c("HI", "HV", "IV", "CH"), pCuttof = 0.1)
+
+goMissingInNewAnalysis = compareAnalyses(noYeastGOAnalysis, noRodentGOAnalysis, c("IV"), pCuttof = 0.1)
+goMissingInOldAnalysis = compareAnalyses(noRodentGOAnalysis, noYeastGOAnalysis, c("IV"), pCuttof = 0.1)
+
+
+
+#---------------------------------------------------------------------
+# --- Looking into Hystriognathi results  --- 
+# --------------------------------------------------------------------
+
+histiCorrleaitons = readRDS("Output/CladeBinaryHystricognathi/0-1/CladeBinaryHystricognathi0-1CorrelationFile.rds")
+
+histiCorrleaitons[order(histiCorrleaitons$p.adj),]
+
+
+length(which(histiCorrleaitons$p.adj < 0.05))
+
+histiEnrich = readRDS("Output/CladeBinaryHystricognathi/0-1/CladeBinaryHystricognathi0-1Enrichment-KeggReactome.rds")
+histiEnrich = histiEnrich[[1]]
+
+which(histiEnrich$p.adj < 0.05)
+
+#---------------------------------------------------------------------
+# --- Setting up clade listing in mergeData  --- 
+# --------------------------------------------------------------------
+
+inMergeData = read.csv("Data/mergedData.csv")
+
+inMergeData$isBovidae = rep(0)
+inMergeData$isCricetidae = rep(0)
+inMergeData$isCervidae = rep(0)
+inMergeData$isHystricognathi = rep(0)
+inMergeData$isVespertilionidae = rep(0)
+inMergeData$isPeropdidae = rep(0)
+inMergeData$isInAllSpeciesAnalysis = rep(0)
+inMergeData$isInAnalysisWithFullFamilies = rep(0)
+
+
+bovidaeList = c("vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1",  "vs_bisBis1", "vs_HLoviNivLyd1", "vs_HLproPrz1", "Bovidae", "13Herb")
+
+CricetidaeList = c("vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1","vs_HLmicAgr2", "vs_HLmyoGla2", "vs_HLondZib1", "voleClade", "6Herb")
+CervidaeList = c("vs_HLhydIne1", "vs_HLmunMun1", "vs_HLodoHem1", "vs_HLantAme1", "vs_HLgirCam1", "Cervidae", "5Herb")
+
+HystricognathiList = c("vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "vs_HLmyoCoy1", "vs_HLhydHyd1", "vs_HLcavTsc1", "gundiGuineaPigClade", "14Herb")
+
+VespertilionidaeList = c("vs_HLmurAurFea1", "Murina", "vs_HLmyoLuc1", "Nearctic", "vs_myoDav1", "vs_HLmyoMyo6", "vs_HLmyoSep1", "vs_HLmyoLuc1", "Myotis", "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "vs_eptFus1", "Vespertilioninae","Vespertilionidae", "10Inse")
+Peropodidae = c("vs_HLmacSob1", "vs_HLpteGig1", "FoxLongTounge", "vs_HLeidHel2", "vs_HLcynBra1", "outerPeropodidae", "vs_HLeonSpe1", "vs_HLrouLes1", "Roussetinae", "Peropodidae", "6Herb")
+
+complexDietAllSpecies = readRDS("Output/ComplexDietCentralAnalysisAllSpecies/ComplexDietCentralAnalysisAllSpeciesSpeciesFilter.rds")
+complexDietFullFamily = readRDS("Output/ComplexDietCentralAnalysisNoFamilyPrune/ComplexDietCentralAnalysisNoFamilyPruneSpeciesFilter.rds")
+
+
+
+inMergeData[inMergeData$ZoonomiaTip %in% complexDietAllSpecies,]$isInAllSpeciesAnalysis =1
+inMergeData[inMergeData$ZoonomiaTip %in% complexDietFullFamily,]$isInAnalysisWithFullFamilies =1
+inMergeData[inMergeData$ZoonomiaTip %in% bovidaeList,]$isBovidae =1
+inMergeData[inMergeData$ZoonomiaTip %in% CricetidaeList,]$isCricetidae =1
+inMergeData[inMergeData$ZoonomiaTip %in% CervidaeList,]$isCervidae =1
+inMergeData[inMergeData$ZoonomiaTip %in% HystricognathiList,]$isHystricognathi =1
+inMergeData[inMergeData$ZoonomiaTip %in% VespertilionidaeList,]$isVespertilionidae =1
+inMergeData[inMergeData$ZoonomiaTip %in% Peropodidae,]$isPeropdidae =1
+
+
+inMergeData[inMergeData$isBovidae ==1,]
+
+
+test3 = inMergeData[inMergeData$isHystricognathi ==1,]
+
+cat(test3$MSWC_Family)
+
+#write.csv(inMergeData, "Data/mergedData.csv")
+
+inMergeData[inMergeData$ZoonomiaTip %in% bovidaeList,]$MSWC_Family
+
+
+test1 = inMergeData[inMergeData$ZoonomiaTip %in% bovidaeList,]
+test2 = inMergeData[inMergeData$MSWC_Family == "Bovidae" & !is.na(inMergeData$MSWC_Family) & inMergeData$isInAllSpeciesAnalysis,]
+
+test2 = inMergeData[inMergeData$MSWC_Family == "Bovidae" & !is.na(inMergeData$MSWC_Family) & inMergeData$isInMainAnalysis,]
+
+testTree = categoricalTree
+annotColumn = "DerekDietClassification90InsVertivoreSorting"
+
+all.equal(test1, test2)
+
+
+noYeastSpecies = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferenceSpeciesFilter.rds")
+mainAnalysisSpecies = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisSpeciesFilter.rds")
+mainAnalysisPhenotypes = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscategoricalphenotypevector.rds")
+
+
+
+which(!mainAnalysisSpecies %in% noYeastSpecies)
+which(!noYeastSpecies %in% mainAnalysisSpecies)
+
+mainAnalysisSpecies[which(!mainAnalysisSpecies %in% noYeastSpecies)]
+
+
+mainAnalysisPhenotypes[names(mainAnalysisPhenotypes) %in% mainAnalysisSpecies[which(!mainAnalysisSpecies %in% noYeastSpecies)]]
+
+noYeastTree = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferenceCategoricalTree.rds")
+mainAnalysisTree = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisCategoricalTree.rds")
+
+all.equal(noYeastTree, mainAnalysisTree)
+
 #---------------------------------------------------------------------
 # --- Looking into categorical pruning  --- 
 # --------------------------------------------------------------------
@@ -439,7 +729,10 @@ familyAgnosticGOAnalysis =readRDS("Output/CategoricalInsVertivoreTreeFamilyAgnos
 noYeastGOAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencecombinedGOResults-KeggReactome.rds")
 noManualGOAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoManualLiamInference/CategoricalInsVertivoreTreeNoManualLiamInferencecombinedGOResults-KeggReactome.rds")
 fullTreeGOAnalysis = readRDS("Output/PredatorFullTree/PredatorFullTreecombinedGOResults-KeggReactome.rds")
+noRodentGOAnalysis = readRDS("Output/ComplexDietCentralAnalysisNoRodent/ComplexDietCentralAnalysisNoRodentcombinedGOResults-KeggReactome.rds")
 
+
+ComplexDietCentralAnalysisNoRodent
 
 
 paperAnalysis = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencePairwiseCorrelationFile.rds")
@@ -447,14 +740,14 @@ noYeastAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInferenc
 noManualAnalysis = readRDS("Output/CategoricalInsVertivoreTreeNoManualLiamInference/CategoricalInsVertivoreTreeNoManualLiamInferencePairwiseCorrelationFile.rds")
 familyAgnosticAnalysis =readRDS("Output/CategoricalInsVertivoreTreeFamilyAgnostictLiamInference/CategoricalInsVertivoreTreeFamilyAgnostictLiamInferencePairwiseCorrelationFile.rds")
 fullTreeAnalysis = readRDS("Output/PredatorFullTree/PredatorFullTreePairwiseCorrelationFile.rds")
-
+noRodentAnalysis = readRDS("Output/ComplexDietCentralAnalysisNoRodent/ComplexDietCentralAnalysisNoRodentPairwiseCorrelationFile.rds")
 
 paperAnalysis = paperAnalysis[-c(2,3,6,8)]
 noYeastAnalysis = noYeastAnalysis[-c(2,3,6,8)]
 noManualAnalysis = noManualAnalysis[-c(2,3,6,8)]
 familyAgnosticAnalysis = familyAgnosticAnalysis[-c(2,3,6,8)]
 fullTreeAnalysis = fullTreeAnalysis[-c(2,3,6,8)]
-
+noRodentAnalysis = noRodentAnalysis[-c(2,3,6,8)]
 
 compareAnalyses = function(ogAnalysis, newAnalysis, prefix = NULL, pCuttof = 0.05){
   
@@ -552,12 +845,37 @@ compareAnalyses = function(ogAnalysis, newAnalysis, prefix = NULL, pCuttof = 0.0
 
 
 
+length(which(noYeastGOAnalysis$`HI-significant`))
+length(which(noRodentGOAnalysis$`HI-significant`))
+
+
+
+
 newAnalysis = fullTreeAnalysis
 newGOAnalysis = fullTreeGOAnalysis
+
+
+
+
+goMissingInNewAnalysis = compareAnalyses(noYeastGOAnalysis, noRodentGOAnalysis, c("HI", "HV", "IV", "CH"), pCuttof = 0.1)
+goMissingInOldAnalysis = compareAnalyses(noRodentGOAnalysis, noYeastGOAnalysis, c("HI", "HV", "IV", "CH"), pCuttof = 0.1)
+geneMissingInNewAnalysis = compareAnalyses(paperAnalysis, newAnalysis)
+
+
+goMissingInNewAnalysis = compareAnalyses(noYeastGOAnalysis, noRodentGOAnalysis, c("HI"), pCuttof = 0.1)
+
+goMissingInNewAnalysis$missingPadjs
+
+rownames(noRodentGOAnalysis)[goMissingInNewAnalysis$missingPadjs[[1]]]
+rownames(noRodentGOAnalysis)[goMissingInOldAnalysis$missingPadjs[[1]]]
+
 
 goMissingInNewAnalysis = compareAnalyses(paperGOAnalysis, newGOAnalysis, c("HI", "HV", "IV", "CH"), pCuttof = 0.1)
 goMissingInOldAnalysis = compareAnalyses(newGOAnalysis, paperGOAnalysis, c("HI", "HV", "IV", "CH"), pCuttof = 0.1)
 geneMissingInNewAnalysis = compareAnalyses(paperAnalysis, newAnalysis)
+
+
+
 
 
 
@@ -729,6 +1047,8 @@ fullPhenVec = readRDS("Output/PredatorFullTree/PredatorFullTreeCategoricalPhenot
 length(fullPhenVec)
 
 ogPhenVec = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferenceCategoricalPhenotypeVector.rds")
+noFamPhenVec  = readRDS("Output/CategoricalInsVertivoreTreeFamilyAgnostictLiamInference/CategoricalInsVertivoreTreeFamilyAgnostictLiamInferenceCategoricalPhenotypeVector.rds")
+
 
 dataPhenVec = fullPhenVec[names(fullPhenVec) %in% fullTree$tip.label]
 
@@ -756,6 +1076,8 @@ familyByDiet[62,]
 set = which(familyByDiet$ZoonomiaTip %in% c("vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1","vs_HLmicAgr2", "vs_HLmyoGla2", "vs_HLondZib1", "voleClade", "6Herb"))
 set = which(familyByDiet$ZoonomiaTip %in% c(  "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "vs_HLmyoCoy1", "vs_HLhydHyd1", "vs_HLcavTsc1", "gundiGuineaPigClade", "14Herb"))
 set = which(familyByDiet$ZoonomiaTip %in% c(          "vs_HLmusSpi1", "vs_HLmusCar1", "vs_HLmasCou1", "vs_HLmusPah1", "vs_HLratNor7", "vs_HLarvNil1", "vs_mm10", "mouseClade", "7Omni,1Herb"))
+set = which(familyByDiet$ZoonomiaTip %in% c("vs_HLmusSpi1", "vs_HLmusCar1", "vs_HLmasCou1", "vs_HLmusPah1", "mouseClade"))
+
 familyByDiet[set,]
 
 phenData[which(phenData$ZoonomiaTip %in% c("vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "vs_HLmyoCoy1", "vs_HLhydHyd1", "vs_HLcavTsc1", "gundiGuineaPigClade", "14Herb")),]
@@ -773,10 +1095,18 @@ length(table(prunedFamilyByDiet$MSWC_Family[prunedFamilyByDiet$diet == "Insectiv
 
 
 table(prunedFamilyByDiet$MSWC_Family)[order(table(prunedFamilyByDiet$MSWC_Family))]
-  
-length(ogPhenVec)
 
-table(prunedTree$edge[,1])
+noFamPruningFamilyByDiet = familyByDiet
+noFamPruningFamilyByDiet = noFamPruningFamilyByDiet[noFamPruningFamilyByDiet$ZoonomiaTip %in% names(noFamPhenVec),]
+table(noFamPruningFamilyByDiet$diet)
+table(noFamPruningFamilyByDiet$MSWC_Family[noFamPruningFamilyByDiet$diet == "Herbivore"])[order(table(noFamPruningFamilyByDiet$MSWC_Family[noFamPruningFamilyByDiet$diet == "Herbivore"]))]
+table(noFamPruningFamilyByDiet$MSWC_Family[noFamPruningFamilyByDiet$diet == "Insectivore"])[order(table(noFamPruningFamilyByDiet$MSWC_Family[noFamPruningFamilyByDiet$diet == "Insectivore"]))]
+
+
+table(familyByDiet$MSWC_Family[familyByDiet$diet == "Omnivore"])[order(table(familyByDiet$MSWC_Family[familyByDiet$diet == "Omnivore"]))]
+
+table(noFamPruningFamilyByDiet$MSWC_Family[noFamPruningFamilyByDiet$diet == "Omnivore"])[order(table(noFamPruningFamilyByDiet$MSWC_Family[noFamPruningFamilyByDiet$diet == "Omnivore"]))]
+length(table(noFamPruningFamilyByDiet$MSWC_Family[noFamPruningFamilyByDiet$diet == "Omnivore"])[order(table(noFamPruningFamilyByDiet$MSWC_Family[noFamPruningFamilyByDiet$diet == "Omnivore"]))])
 
 
 
@@ -1038,6 +1368,10 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 tipCol = "ZoonomiaTip"
 
 
+treesObj = mainTrees
+rermat = RERObject
+phenv = pathsObject
+index = "SDS"
 
 displayCategoricalRERTree = function(treesObj, rermat, index, phenv = NULL, subsetTree = T, equalLengths = T, minWidth = 1, maxWidth = 6, tipCol = "tipColumn"){
   treesObj$trees[[index]]$tip.label = ZonomNameConvertVectorCommon(treesObj$trees[[index]]$tip.label, tipColumn = tipCol)
@@ -1091,8 +1425,8 @@ returnRersAsTreeNew <- function(treesObj, rermat, index, phenv = NULL, rer.cex =
     if(!is.null(phenv)){
       edgcols <- rep('black', nrow(trgene$edge))
       edgwds <- rerWidth
-      if(length(unique(pathsObject) < length(palette()))){ # add a catch for continuous phenotypes and not run it in that case
-        for(j in unique(pathsObject)[!is.na(unique(pathsObject))]){
+      if(length(unique(phenv) < length(palette()))){ # add a catch for continuous phenotypes and not run it in that case
+        for(j in unique(phenv)[!is.na(unique(phenv))]){
           edgcols[phenv[ii]==j] <- palette()[j]
         }      
       }
@@ -1108,7 +1442,7 @@ returnRersAsTreeNew <- function(treesObj, rermat, index, phenv = NULL, rer.cex =
     rerlab <- round(rertree,3)
     rerlab[is.na(rerlab)] <- nalab
     if(!is.null(phenv)){ #reset the color so that the RER labels still have the correct palette color even with the pink warning
-      for(j in unique(pathsObject)[!is.na(unique(pathsObject))]){
+      for(j in unique(phenv)[!is.na(unique(phenv))]){
         edgcols[phenv[ii]==j] <- palette()[j]
       }
     }

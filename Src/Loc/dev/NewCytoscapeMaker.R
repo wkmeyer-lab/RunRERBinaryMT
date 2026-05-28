@@ -57,6 +57,15 @@ args = c("r=CategoricalInsVertivoreTreeFamilyAgnostictLiamInference", "s=Herbivo
          "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryInsectivoreTree", "d=Insectivore",
          "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
 
+args = c("r=ComplexDietCentralAnalysisNoRodent", "s=Carnivore-Herbivore", 
+         "a=CategoricalBinaryCarnivoreTree", "b=Carnivore", "c=CategoricalBinaryHerbivoreTree", "d=Herbivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
+args = c("r=ComplexDietCentralAnalysisNoRodent", "s=Herbivore-Vertivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryVertivoreTree", "d=Vertivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
+args = c("r=ComplexDietCentralAnalysisNoRodent", "s=Herbivore-Insectivore", 
+         "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryInsectivoreTree", "d=Insectivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
 
 {
   # --- Standard start-up code ---

@@ -1781,6 +1781,9 @@ args = c('r=ComplexDietCentralAnalysisNoFamilyPrune', 'm=data/zoonomiaAllMammals
   args = c('r=CladeBinaryPeropdidae', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=F', 'e=T',
            'c=c(0, 1)',
            'a=isPeropdidae','s=isInAnalysisWithFullFamilies') 
+  args = c('r=CladeBinaryCervidae', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=F', 'e=T',
+           'c=c(0, 1)',
+           'a=isCervidae','s=isInAnalysisWithFullFamilies') 
   
 }
 

@@ -18,7 +18,7 @@ library(data.table)
 # m = mainTreeFilename.txt or .rds                                             This sets the location of the maintrees file
 # s = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the type of phenotype being supplied
 # l = <min.sp value>                                                           This sets the min.sp value to be used in the correlation. 
-
+# i = run instance                                                             This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. 
 #----------------
 
 
@@ -62,6 +62,8 @@ phenotypeStyle = "continuous"
 continousMetric = "diff"
 validMetrics = c("diff", "mean", "last")
 minSpValue = 10
+alternatesSpecified = F
+usedAlternates = NULL
 
 { # Bracket used for collapsing purposes
   
@@ -89,6 +91,15 @@ minSpValue = 10
   }else{
     message("min.sp not specified, using 10")
   }
+  
+  #alternate set
+  if(!is.na(cmdArgImport('i'))){
+    usedAlternates = cmdArgImport('i')
+    alternatesSpecified = T
+  }else{
+    message("instance not specified, running on all alternates.")
+    
+  }
 }
 
 
@@ -110,7 +121,11 @@ primaryFilePrefix = filePrefix
 
 #                   ------- Code Body -------- 
 
-for(i in 1:length(alternateSets)){
+if(!alternatesSpecified){
+  usedAlternates = 1:length(alternateSets)
+}
+
+for(i in usedAlternates){
   currentSet = alternateSets[[i]]
   alternateFilePrefix = paste0("/Alternates/Alternate", i)
   filePrefix = paste0("Alternate", i, primaryFilePrefix)
