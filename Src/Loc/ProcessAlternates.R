@@ -113,7 +113,7 @@ if(file_ext(mainTreesLocation) == "rds"){
 
 # ---- Make required adjustments to run on alternates properly ---- 
 
-alternateSets = readRDS(paste(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
+alternateSets = readRDS(paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
 
 outputFolderName = paste0(outputFolderName, "Alternates/")
 primaryFilePrefix = filePrefix
