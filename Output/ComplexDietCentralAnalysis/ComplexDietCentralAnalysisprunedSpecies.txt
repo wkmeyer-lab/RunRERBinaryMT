@@ -158,11 +158,6 @@ vs_HLellTal1
 vs_HLellLut1
 vs_HLarvAmp1
 voleClade
-vs_HLmusSpi1
-vs_HLmusCar1
-vs_HLmasCou1
-vs_HLmusPah1
-mouseClade
 vs_HLhysCri1
 vs_HLthrSwi1
 vs_HLpetTyp1

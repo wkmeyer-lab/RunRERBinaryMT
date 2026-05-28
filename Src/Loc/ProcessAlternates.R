@@ -21,6 +21,8 @@ library(data.table)
 # i = run instance                                                             This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. 
 #----------------
 
+args = c('r=ComplexDietCentralAnalysis', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=1')
+
 
 
 # --- Standard start-up code ---
@@ -134,10 +136,10 @@ for(i in usedAlternates){
   #Phenotype tree
   phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "Tree.rds", sep="")
   
-  if(file_ext(phenotypeTreeLocation) == "rds"){                                   #if the tree is an RDS file
-    phenotypeTree = readRDS(phenotypeTreeLocation)                                #Read as RDS
+  if(file_ext(phenotypeTreeFilename) == "rds"){                                   #if the tree is an RDS file
+    phenotypeTree = readRDS(phenotypeTreeFilename)                                #Read as RDS
   }else{                                                                          #Otherwise
-    phenotypeTree = readTrees(phenotypeTreeLocation)                              #read as text
+    phenotypeTree = readTrees(phenotypeTreeFilename)                              #read as text
   }
   
   speciesFilterFileName = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
