@@ -119,7 +119,10 @@ subdirectoryValueList = NULL
     subdirectoryValueList = cmdArgImport('s')
     #message(paste("Using subdirectory", subdirectoryValue, "."))
     
-    if(length(subdirectoryValueList ==1)){outputFolderName = paste(outputFolderName, subdirectoryValueList[1], "/", sep=""); subdirectoryValue = subdirectoryValueList[1]}
+    #if(length(subdirectoryValueList ==1)){
+      #outputFolderName = paste(outputFolderName, subdirectoryValueList[1], "/", sep=""); 
+      #subdirectoryValue = subdirectoryValueList[1]
+      #}
     
   }else{
     message("No subdirectory specified.")
@@ -139,7 +142,9 @@ if(!is.na(cmdArgImport('i'))){
 
 # ---- Make required adjustments to run on alternates properly ---- 
 
-alternateSets = readRDS(paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
+alternateSets = readRDS(paste0("Output/",filePrefix,"/", filePrefix, "AlternatePruningSpecies.rds"))
+
+mainOutputFolderName = outputFolderName
 
 outputFolderName = paste0(outputFolderName, "Alternates/")
 primaryFilePrefix = filePrefix
@@ -160,7 +165,7 @@ for(i in usedAlternates){
 
   #                   ------- Code Body -------- 
   for(i in 1:length(subdirectoryValueList)){
-    outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+    outputFolderName = paste("Output/",filePrefix,"/", "Alternates/", sep = "")
     message(paste("Using subdirectory", subdirectoryValueList[i], "."))
     if(useSubdirectory){
       outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
