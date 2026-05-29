@@ -187,123 +187,155 @@ subdirectoryValueList = NULL
 }
 
 
-#                   ------- Code Body -------- 
-for(i in 1:length(subdirectoryValueList)){
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  message(paste("Using subdirectory", subdirectoryValueList[i], "."))
-  if(useSubdirectory){
-    outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
-  }
-  subdirectoryValue = subdirectoryValueList[i]
+#alternate set
+if(!is.na(cmdArgImport('i'))){
+  usedAlternates = cmdArgImport('i')
+  alternatesSpecified = T
+}else{
+  message("instance not specified, running on all alternates.")
   
-  #Load correlation file
-  correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "CorrelationFile.rds", sep= "") #get the correlation file location based on prefix 
-  if(useCategoricalPermulations){
-    correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile", ".rds", sep= "")
-  }
-  if(useCorrelationOverride){                                                     #if a correlation override was specified, replace it with that
-    correlationFileLocation = paste(outputFolderName, correlationOverride, sep="")                                      
-  }
-  correlationData = readRDS(correlationFileLocation)                              #Import the correlation data (non-permulated)
-  
-  if(usePermulations){                                                            #If permualtions are being used   
-    if(useCategoricalPermulations){
-      if(exists(correlationData$PermP.adj)){
-        correlationData$P = correlationData$permP.adj
-      }else{
-        correlationData$P = correlationData$permP
-      }
-    }else{
-      if(usePermulationPValOverride){                                               #check for a location override
-        permulationFileLocation = paste(outputFolderName, permulationPValOverride, sep="")                           #if so, use it 
-      }else{                                                                        #if not, use the default 
-        permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "") #get the default location based on prefix 
-      }
-      permulationValues = readRDS(permulationFileLocation)                          #read the permulation file
-      if(ncol(permulationValues)>1){                                              # add handling for continuous permulations having two columns
-        correlationData$P = permulationValues$permpval                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
-        #correlationData$Rho = permulationValues$permstats
-      }else{
-        correlationData$P = permulationValues                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
-      }
-      comparePermulationsTable = cbind(readRDS(correlationFileLocation), permulationValues)
-    }
-  }
-  
-  rerStats = getStat(correlationData)                                             #processes the RERs somewhat into stat values. only uses the P column, and the sign of the Rho column. 
-  
-  if(usePermulations == F){
-    enrichmentCsvName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
-  }else{
-    enrichmentCsvName = paste(outputFolderName, filePrefix, subdirectoryValue, "Permulation-Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
-  }
-  if(!clusterRun){file.remove(enrichmentCsvName)}
-  for(j in 1:length(gmtFileLocation)){
-    #Load the gmt annotations 
-    gmtAnnotations = read.gmt(gmtFileLocation[j])                                      #read the gmt file
-    annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
-    enrichmentListName = substring(gmtFileLocation[j], 6, last = (nchar(gmtFileLocation[j]) - 4)) #make a geneset name based on the filename 
-    names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
-    
-    enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
-    
-    #save the enrichment output
-    if(usePermulations == F){
-      enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
-    }else{
-      enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-Permulation-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
-    }
-    saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
-    gc()
-    if(!i == 0){ #stops from writing two copies of the same sheet when no subdirectories. 
-      if(!clusterRun){write.xlsx(enrichmentResult[[1]], file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T, append = T)}
-    }
-  }
 }
-# --- Visualize the enrichment ----
 
-{
-  #This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
-  #For a script version, use PvQvGoVisualize.R 
-  visualize = T
-  visualize = F
-  clean = T
-  clean = F
-  
-  if(visualize){
-    library(stringr)
-    library(insight)
-    enrichmentResult2 = enrichmentResult[[1]]
-    makeGOTable = function(data, collumn){
-      ValueHead = head(data[order(collumn, decreasing = T),], n=20)
-      ValueHead$num.genes = as.character(ValueHead$num.genes)
-      ValueHead$stat = round(ValueHead$stat, digits = 5)
-      ValueHead$stat = as.character(ValueHead$stat)
-      ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
-      ValueHead
+
+# ---- Make required adjustments to run on alternates properly ---- 
+
+alternateSets = readRDS(paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
+
+outputFolderName = paste0(outputFolderName, "Alternates/")
+primaryFilePrefix = filePrefix
+
+
+#                   ------- Code Body -------- 
+
+if(!alternatesSpecified){
+  usedAlternates = 1:length(alternateSets)
+}
+
+for(i in usedAlternates){
+  currentSet = alternateSets[[i]]
+  alternateFilePrefix = paste0("/Alternates/Alternate", i)
+  filePrefix = paste0("Alternate", i, primaryFilePrefix)
+
+
+
+  #                   ------- Code Body -------- 
+  for(i in 1:length(subdirectoryValueList)){
+    outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+    message(paste("Using subdirectory", subdirectoryValueList[i], "."))
+    if(useSubdirectory){
+      outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
     }
-    enrichHead = makeGOTable(enrichmentResult2, abs(enrichmentResult2$stat))
-    enrichHead
-    textplot(enrichHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
-    if(usePermulations){
-      title(main = paste("Top pathways by permulation"))
-    }else{
-      title(main = paste("Top pathways by non-permulation"))
+    subdirectoryValue = subdirectoryValueList[i]
+    
+    #Load correlation file
+    correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "CorrelationFile.rds", sep= "") #get the correlation file location based on prefix 
+    if(useCategoricalPermulations){
+      correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile", ".rds", sep= "")
+    }
+    if(useCorrelationOverride){                                                     #if a correlation override was specified, replace it with that
+      correlationFileLocation = paste(outputFolderName, correlationOverride, sep="")                                      
+    }
+    correlationData = readRDS(correlationFileLocation)                              #Import the correlation data (non-permulated)
+    
+    if(usePermulations){                                                            #If permualtions are being used   
+      if(useCategoricalPermulations){
+        if(exists(correlationData$PermP.adj)){
+          correlationData$P = correlationData$permP.adj
+        }else{
+          correlationData$P = correlationData$permP
+        }
+      }else{
+        if(usePermulationPValOverride){                                               #check for a location override
+          permulationFileLocation = paste(outputFolderName, permulationPValOverride, sep="")                           #if so, use it 
+        }else{                                                                        #if not, use the default 
+          permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "") #get the default location based on prefix 
+        }
+        permulationValues = readRDS(permulationFileLocation)                          #read the permulation file
+        if(ncol(permulationValues)>1){                                              # add handling for continuous permulations having two columns
+          correlationData$P = permulationValues$permpval                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
+          #correlationData$Rho = permulationValues$permstats
+        }else{
+          correlationData$P = permulationValues                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
+        }
+        comparePermulationsTable = cbind(readRDS(correlationFileLocation), permulationValues)
+      }
     }
     
-    if(clean){
-      # ---- enrichment cleaning ----
-      pathwaysToRemove = grep("CANCER", rownames(enrichHead))
-      rowsToKeep = (!1:nrow(enrichHead) %in% pathwaysToRemove)
-      cleanedHead = enrichHead[rowsToKeep,]
-      textplot(cleanedHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
+    rerStats = getStat(correlationData)                                             #processes the RERs somewhat into stat values. only uses the P column, and the sign of the Rho column. 
+    
+    if(usePermulations == F){
+      enrichmentCsvName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
+    }else{
+      enrichmentCsvName = paste(outputFolderName, filePrefix, subdirectoryValue, "Permulation-Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
+    }
+    if(!clusterRun){file.remove(enrichmentCsvName)}
+    for(j in 1:length(gmtFileLocation)){
+      #Load the gmt annotations 
+      gmtAnnotations = read.gmt(gmtFileLocation[j])                                      #read the gmt file
+      annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
+      enrichmentListName = substring(gmtFileLocation[j], 6, last = (nchar(gmtFileLocation[j]) - 4)) #make a geneset name based on the filename 
+      names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
+      
+      enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
+      
+      #save the enrichment output
+      if(usePermulations == F){
+        enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+      }else{
+        enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-Permulation-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+      }
+      saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
+      gc()
+      if(!i == 0){ #stops from writing two copies of the same sheet when no subdirectories. 
+        if(!clusterRun){write.xlsx(enrichmentResult[[1]], file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T, append = T)}
+      }
+    }
+  }
+  # --- Visualize the enrichment ----
+  
+  {
+    #This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
+    #For a script version, use PvQvGoVisualize.R 
+    visualize = T
+    visualize = F
+    clean = T
+    clean = F
+    
+    if(visualize){
+      library(stringr)
+      library(insight)
+      enrichmentResult2 = enrichmentResult[[1]]
+      makeGOTable = function(data, collumn){
+        ValueHead = head(data[order(collumn, decreasing = T),], n=20)
+        ValueHead$num.genes = as.character(ValueHead$num.genes)
+        ValueHead$stat = round(ValueHead$stat, digits = 5)
+        ValueHead$stat = as.character(ValueHead$stat)
+        ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
+        ValueHead
+      }
+      enrichHead = makeGOTable(enrichmentResult2, abs(enrichmentResult2$stat))
+      enrichHead
+      textplot(enrichHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
       if(usePermulations){
         title(main = paste("Top pathways by permulation"))
       }else{
         title(main = paste("Top pathways by non-permulation"))
       }
-      CleanheadFileName = paste(outputFolderName, filePrefix, "CleanedEnrichmentHead.csv", sep= "")
-      write.csv(cleanedHead, CleanheadFileName)
+      
+      if(clean){
+        # ---- enrichment cleaning ----
+        pathwaysToRemove = grep("CANCER", rownames(enrichHead))
+        rowsToKeep = (!1:nrow(enrichHead) %in% pathwaysToRemove)
+        cleanedHead = enrichHead[rowsToKeep,]
+        textplot(cleanedHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
+        if(usePermulations){
+          title(main = paste("Top pathways by permulation"))
+        }else{
+          title(main = paste("Top pathways by non-permulation"))
+        }
+        CleanheadFileName = paste(outputFolderName, filePrefix, "CleanedEnrichmentHead.csv", sep= "")
+        write.csv(cleanedHead, CleanheadFileName)
+      }
     }
-  }
-}  
+  }  
+}

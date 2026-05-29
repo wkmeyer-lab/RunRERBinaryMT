@@ -12,6 +12,10 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # --- Comapring GO results from the histriognathi versions --- 
 # --------------------------------------------------------------------
 noYeastGOspecies = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencespeciesFilter.rds")
+
+cat(ZonomNameConvertVectorCommon(noYeastGOspecies, tipColumn = "ZoonomiaTip"), sep = ", ")
+
+
 noRodentspecies = readRDS("Output/ComplexDietCentralAnalysisNoRodent/ComplexDietCentralAnalysisNoRodentspeciesFilter.rds")
 
 noYeastGOspecies %in% noRodentspecies
@@ -212,6 +216,29 @@ histiEnrich = histiEnrich[[1]]
 
 which(histiEnrich$p.adj < 0.05)
 
+
+# --- -other binaries
+
+clade= "Hystricognathi"
+clade= "Bovidae"
+clade= "Cricetidae"
+clade= "Vespertilionidae"
+clade= "Peropdidae"
+
+
+binaryCorrelations = readRDS(paste0("Output/CladeBinary",clade,"/0-1/CladeBinary", clade, "0-1CorrelationFile.rds"))
+binaryEnrich = readRDS(paste0("Output/CladeBinary",clade,"/0-1/CladeBinary", clade, "0-1Enrichment-KeggReactome.rds"))
+binaryEnrich = binaryEnrich[[1]]
+
+
+length(which(binaryCorrelations$p.adj < 0.05))
+which(binaryEnrich$p.adj < 0.05)
+length(which(binaryEnrich$p.adj < 0.05))
+
+
+#binaryCorrelations[order(binaryCorrelations$p.adj),]
+
+
 #---------------------------------------------------------------------
 # --- Setting up clade listing in mergeData  --- 
 # --------------------------------------------------------------------
@@ -243,6 +270,7 @@ complexDietFullFamily = readRDS("Output/ComplexDietCentralAnalysisNoFamilyPrune/
 
 
 
+
 inMergeData[inMergeData$ZoonomiaTip %in% complexDietAllSpecies,]$isInAllSpeciesAnalysis =1
 inMergeData[inMergeData$ZoonomiaTip %in% complexDietFullFamily,]$isInAnalysisWithFullFamilies =1
 inMergeData[inMergeData$ZoonomiaTip %in% bovidaeList,]$isBovidae =1
@@ -269,6 +297,8 @@ test1 = inMergeData[inMergeData$ZoonomiaTip %in% bovidaeList,]
 test2 = inMergeData[inMergeData$MSWC_Family == "Bovidae" & !is.na(inMergeData$MSWC_Family) & inMergeData$isInAllSpeciesAnalysis,]
 
 test2 = inMergeData[inMergeData$MSWC_Family == "Bovidae" & !is.na(inMergeData$MSWC_Family) & inMergeData$isInMainAnalysis,]
+
+
 
 testTree = categoricalTree
 annotColumn = "DerekDietClassification90InsVertivoreSorting"
