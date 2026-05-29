@@ -165,7 +165,7 @@ for(i in usedAlternates){
 
   #                   ------- Code Body -------- 
   for(i in 1:length(subdirectoryValueList)){
-    outputFolderName = paste("Output/",filePrefix,"/", "Alternates/", sep = "")
+    outputFolderName = paste("Output/",primaryFilePrefix,"/", "Alternates/", sep = "")
     message(paste("Using subdirectory", subdirectoryValueList[i], "."))
     if(useSubdirectory){
       outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
