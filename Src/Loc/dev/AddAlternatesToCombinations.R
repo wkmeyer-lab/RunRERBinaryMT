@@ -6,7 +6,7 @@ library(purrr)
 source("Src/Reu/cmdArgImport.R")
 
 args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=gene", "s=T", "l=F")
-
+args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=KeggReactome", "s=T", "l=F")
 
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -47,7 +47,6 @@ geneSet = NULL
 usingGo = F
 saveData = T
 usingGene = T
-saveCombinedData = T
 
 
 { # Bracket used for collapsing purposes
@@ -110,7 +109,7 @@ if(usingGene){
   
 }else{
   combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
-  combinedGOData = readRDS(combinedGODataFilename)
+  combinedData = readRDS(combinedGODataFilename)
   
   alternatesFilename = paste0(outputFolderName, filePrefix, "AlternatesCombinedEnrichments-" , geneSet, ".rds")
   alternatesData = readRDS(alternatesFilename)
@@ -190,12 +189,12 @@ if(saveData){
   
   if(usingGene){
     combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults")
-    write.csv(combinedResults, paste0(combinedDataFilename, ".csv"))
-    saveRDS(combinedResults, paste0(combinedDataFilename, ".rds"))    
+    write.csv(combinedData, paste0(combinedDataFilename, ".csv"))
+    saveRDS(combinedData, paste0(combinedDataFilename, ".rds"))    
   }else{
     combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet)
-    write.csv(GoCombinedResults, paste0(combinedGODataFilename, ".csv"))
-    saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))
+    write.csv(combinedData, paste0(combinedGODataFilename, ".csv"))
+    saveRDS(combinedData, paste0(combinedGODataFilename, ".rds"))
   }
 
 }
