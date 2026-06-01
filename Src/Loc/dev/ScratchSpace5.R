@@ -9,6 +9,74 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 
 
 #---------------------------------------------------------------------
+# --- Writring code to combine the alternates together  --- 
+# --------------------------------------------------------------------
+
+CorrTest = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisPairwiseCorrelationFile.rds")
+CorrTest2 = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisPairwiseCorrelationFile.rds")
+
+
+combined <- lapply(names(runs[[1]]), function(nm) {
+  
+  # Extract list of data frames for this comparison
+  dfs <- lapply(runs, function(x) x[[nm]])
+  
+  n <- nrow(dfs[[1]])
+  
+  data.frame(
+    Rho   = I(lapply(seq_len(n), function(i) sapply(dfs, function(df) df$Rho[i]))),
+    P     = I(lapply(seq_len(n), function(i) sapply(dfs, function(df) df$P[i]))),
+    p.adj = I(lapply(seq_len(n), function(i) sapply(dfs, function(df) df$p.adj[i])))
+  )
+})
+names(combined) <- names(runs[[1]])
+
+
+
+
+combined <- lapply(combined, function(df) {
+  
+  df$P_lt_0.05_count <- sapply(df$P, function(x) sum(x < 0.05, na.rm = TRUE))
+  
+  df$Padj_lt_0.05_count <- sapply(df$p.adj, function(x) sum(x < 0.05, na.rm = TRUE))
+  
+  df$Rho_max_diff <- sapply(df$Rho, function(x) {
+    if (all(is.na(x))) return(NA_real_)
+    max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+  })
+  
+  df$P_max_diff <- sapply(df$P, function(x) {
+    if (all(is.na(x))) return(NA_real_)
+    max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+  })
+  
+  df$Padj_max_diff <- sapply(df$p.adj, function(x) {
+    if (all(is.na(x))) return(NA_real_)
+    max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+  })
+  
+  df
+})
+
+
+
+
+combined <- lapply(names(runs[[1]]), function(nm) {
+  
+  dfs <- lapply(runs, function(x) x[[nm]])
+  
+  list(
+    Rho   = do.call(cbind, lapply(dfs, `[[`, "Rho")),
+    P     = do.call(cbind, lapply(dfs, `[[`, "P")),
+    p.adj = do.call(cbind, lapply(dfs, `[[`, "p.adj"))
+  )
+})
+
+names(combined) <- names(runs[[1]])
+
+
+
+#---------------------------------------------------------------------
 # --- Comapring GO results from the histriognathi versions --- 
 # --------------------------------------------------------------------
 noYeastGOspecies = readRDS("Output/CategoricalInsVertivoreTreeNoYeastLiamInference/CategoricalInsVertivoreTreeNoYeastLiamInferencespeciesFilter.rds")

@@ -221,18 +221,18 @@ if(useGO){
   
   combinedEnrichment <- lapply(combinedEnrichment, function(df) {
     
-    df$p_lt_0.05 <- sapply(df$pval, function(x) sum(x < 0.05, na.rm = TRUE))
-    df$padj_lt_0.05 <- sapply(df$p.adj, function(x) sum(x < 0.05, na.rm = TRUE))
+    df$pNumSignificant <- sapply(df$pval, function(x) sum(x < 0.05, na.rm = TRUE))
+    df$padjNUmSignificant <- sapply(df$p.adj, function(x) sum(x < 0.05, na.rm = TRUE))
     
-    df$stat_max_diff <- sapply(df$stat, function(x)
+    df$statMaxDiff <- sapply(df$stat, function(x)
       if (all(is.na(x))) NA_real_ else diff(range(x, na.rm = TRUE))
     )
     
-    df$pval_max_diff <- sapply(df$pval, function(x)
+    df$pMaxDiff <- sapply(df$pval, function(x)
       if (all(is.na(x))) NA_real_ else diff(range(x, na.rm = TRUE))
     )
     
-    df$padj_max_diff <- sapply(df$p.adj, function(x)
+    df$padjMaxDiff <- sapply(df$p.adj, function(x)
       if (all(is.na(x))) NA_real_ else diff(range(x, na.rm = TRUE))
     )
     
