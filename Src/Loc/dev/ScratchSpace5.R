@@ -8,9 +8,71 @@ library(geiger)
 source("Src/Reu/ZoonomTreeNameToCommon.R")
 
 
+#---------------------------------------------------------------------
+# --- look into alterante affecting gene rank    --- 
+# --------------------------------------------------------------------
+combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResults.rds")
+
+
+
+
+
+
+
 
 #---------------------------------------------------------------------
-# --- Look into alternate resutls   --- 
+# --- look into alterante results   --- 
+# --------------------------------------------------------------------
+combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResults.rds")
+
+combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResults-KeggReactome.rds")
+
+
+
+df <- combinedCorrelations
+
+# extract prefixes (CH, CO, HI, etc.)
+prefixes <- unique(sub("-.*", "", grep("-", names(df), value = TRUE)))
+
+# initialize result table
+sigResultAlternateTable <- data.frame(
+  gene = rownames(df)
+)
+
+# loop through prefixes
+for (p in prefixes) {
+  
+  sig_col <- paste0(p, "-significant")
+  padj_col <- paste0(p, "-PadjNumSignificant")
+  
+  # safety check (in case some prefixes are missing columns)
+  if (!all(c(sig_col, padj_col) %in% names(df))) next
+  
+  sigResultAlternateTable[[paste0(p, "_padjSigCount")]] <-
+    ifelse(df[[sig_col]] == TRUE,
+           df[[padj_col]],
+           0)
+}
+
+rownames(sigResultAlternateTable) = sigResultAlternateTable$gene
+
+importantCols = c(2,4,6,8)
+
+par(mfrow= c(2,2))
+for(i in importantCols){
+  imporantRows = which(sigResultAlternateTable[i] > 0 & !is.na(sigResultAlternateTable[i]))
+  sigResultAlternateTable[imporantRows,c(1,i)]
+  mean(sigResultAlternateTable[imporantRows,c(i)])
+  length(sigResultAlternateTable[imporantRows,c(i)] >50)
+  length(sigResultAlternateTable[imporantRows,c(i)])
+  hist(sigResultAlternateTable[imporantRows,c(i)], main = paste(colnames(sigResultAlternateTable)[i], "Mean:", mean(sigResultAlternateTable[imporantRows,c(i)])))
+}
+
+
+
+?hist
+#---------------------------------------------------------------------
+# --- code to add alternates to main    --- 
 # --------------------------------------------------------------------
 library(purrr)
 
@@ -19,7 +81,8 @@ CorrAlternates = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAn
 EnrichAlternates = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisAlternatesCombinedEnrichments-KeggReactome.rds")
 
 
-
+list = EnrichAlternates$`Carnivore-Herbivore`$p.adj
+counts <- rowSums(sapply(list, function(x) x < 0.05))
 
 
 CorrSummaries = map(CorrAlternates, ~ .x[, (ncol(.x) - 4):ncol(.x), drop = FALSE])
@@ -67,11 +130,11 @@ combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCen
 
 combinedCorrelationsWithAlternates = cbind(combinedCorrelations, CorSumSingle)
 
-if(saveData){
-  combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults")
-  write.csv(combinedResults, paste0(combinedDataFilename, ".csv"))
-  saveRDS(combinedResults, paste0(combinedDataFilename, ".rds"))
-}
+
+
+
+
+
 
 
 #---------------------------------------------------------------------

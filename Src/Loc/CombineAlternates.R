@@ -190,7 +190,7 @@ if(useGO){
   
   EnrichmentFilenames = paste0(primaryOutputFolderName, "Alternates/", EnrichmentFilenames)
   
-  EnrichmentRuns = lapply(EnrichmentFilenames[1:4], readRDS)
+  EnrichmentRuns = lapply(EnrichmentFilenames[1:length(EnrichmentFilenames)], readRDS)
   
   combinedEnrichment <- lapply(seq_along(EnrichmentRuns[[1]]), function(g) {
     
