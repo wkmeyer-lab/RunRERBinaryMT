@@ -1,0 +1,208 @@
+clusterRun = F
+clusterRun = T
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+library(RERconverge)
+library(purrr)
+source("Src/Reu/cmdArgImport.R")
+
+args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=gene", "s=T", "l=F")
+
+
+# -- Standard Startup code -- 
+if(clusterRun)args = commandArgs(trailingOnly = TRUE)
+{  # Bracket used for collapsing purposes
+  #File Prefix
+  if(!is.na(cmdArgImport('r'))){
+    filePrefix = cmdArgImport('r')
+  }else{
+    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
+  }
+  
+  #  Output Directory 
+  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
+    dir.create("Output")
+  }
+  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
+  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
+    dir.create(outputFolderNameNoSlash)
+  }
+  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+  
+  #  Force update argument
+  forceUpdate = FALSE
+  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
+    forceUpdate = cmdArgImport('v')
+    forceUpdate = as.logical(forceUpdate)
+  }else{
+    message("Force update not specified, not forcing update")
+  }
+}
+
+
+
+# --- Argument Imports ---
+# Defaults
+significanceCutoff = 0.05
+geneSet = NULL
+usingGo = F
+saveData = T
+usingGene = T
+saveCombinedData = T
+
+
+{ # Bracket used for collapsing purposes
+  
+  #geneset
+  if(!is.na(cmdArgImport('g'))){
+    geneSet = cmdArgImport('g')
+    if(is.null(geneSet) | geneSet == "NULL" | geneSet == "gene" | geneSet == "Gene"){
+      usingGene = T
+      message("Null geneset specified or gene specified, performing gene correlation.")
+    }else{
+      usingGo = T
+      usingGene = F
+    }
+  }else{
+    message("No geneset specified or gene specified, performing gene correlation.")
+  }
+  
+  #cutoffsaveData 
+  if(!is.na(cmdArgImport('c'))){
+    saveData = cmdArgImport('c')
+  }else{
+    message("pvalue cuttoff not specified, using 0.05")
+  }  
+  
+  
+  #saveData 
+  if(!is.na(cmdArgImport('s'))){
+    saveData = as.logical(cmdArgImport('s'))
+  }else{
+    message("saveData not specified, using TRUE")
+  }
+  
+  #Use Permualtions 
+  if(!is.na(cmdArgImport('l'))){
+    usePermulations = as.logical(cmdArgImport('l'))
+  }else{
+    message("use Permulations not specified, using FLASE")
+  }
+}
+
+
+
+
+#----- 
+#Main Gene code
+
+
+
+if(usingGene){
+  #Read in the files
+  combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
+  combinedData = readRDS(combinedDataFilename)
+
+  alternatesFilename = paste0(outputFolderName, filePrefix, "AlternatesCombinedCorrelations.rds")
+  alternatesData = readRDS(alternatesFilename)
+  
+  
+  
+  
+}else{
+  combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
+  combinedGOData = readRDS(combinedGODataFilename)
+  
+  alternatesFilename = paste0(outputFolderName, filePrefix, "AlternatesCombinedEnrichments-" , geneSet, ".rds")
+  alternatesData = readRDS(alternatesFilename)
+  
+}
+  
+
+#Reformat the alternates   
+alternateSummaryColumns = map(alternatesData, ~ .x[, (ncol(.x) - 4):ncol(.x), drop = FALSE])
+
+alternatesSingleDF <- imap(alternateSummaryColumns, function(df, nm) {
+  parts <- strsplit(nm, "-")[[1]]
+  prefix <- paste0(substr(parts[1], 1, 1),
+                   substr(parts[2], 1, 1))
+  
+  df %>% rename_with(~ paste0(prefix, "-", .x))
+}) %>%
+  bind_cols()
+
+
+#Add the alternate data to the main dataframe 
+combinedData = cbind(combinedData, alternatesSingleDF)
+
+
+
+
+{  #Reorder the columns
+
+  cols <- colnames(combinedData)
+  
+  # get all prefixes (e.g., CH, CO, HI, etc.)
+  prefixes <- unique(sub("-.*", "", cols))
+  
+  # function to order columns for one prefix
+  
+  if(usingGene){
+    order_prefix <- function(p) {
+      c(
+        paste0(p, "-Rho"),
+        paste0(p, "-P"),
+        paste0(p, "-p.adj"),
+        paste0(p, "-significant"),
+        paste0(p, "-PNumSignificant"),
+        paste0(p, "-PadjNumSignificant")
+      )
+    }
+  }else{
+    order_prefix <- function(p) {
+      c(
+        paste0(p, "-stat"),
+        paste0(p, "-pval"),
+        paste0(p, "-p.adj"),
+        paste0(p, "-significant"),
+        paste0(p, "-PNumSignificant"),
+        paste0(p, "-PadjNumSignificant")
+      )
+    }
+  }
+
+  
+  # build desired order for all prefixes
+  ordered_main <- unlist(lapply(prefixes, order_prefix))
+  
+  # keep only columns that actually exist (important!)
+  ordered_main <- ordered_main[ordered_main %in% cols]
+  
+  # everything else (overlaps, deltas, etc.)
+  remaining <- setdiff(cols, ordered_main)
+  
+  # final order
+  combinedData <- combinedData[, c(ordered_main, remaining)]
+}
+
+
+
+if(saveData){
+  
+  if(usingGene){
+    combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults")
+    write.csv(combinedResults, paste0(combinedDataFilename, ".csv"))
+    saveRDS(combinedResults, paste0(combinedDataFilename, ".rds"))    
+  }else{
+    combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet)
+    write.csv(GoCombinedResults, paste0(combinedGODataFilename, ".csv"))
+    saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))
+  }
+
+}
+
+
+
+
+
+
+#Main code

@@ -8,6 +8,72 @@ library(geiger)
 source("Src/Reu/ZoonomTreeNameToCommon.R")
 
 
+
+#---------------------------------------------------------------------
+# --- Look into alternate resutls   --- 
+# --------------------------------------------------------------------
+library(purrr)
+
+
+CorrAlternates = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisAlternatesCombinedCorrelations.rds")
+EnrichAlternates = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisAlternatesCombinedEnrichments-KeggReactome.rds")
+
+
+
+
+
+CorrSummaries = map(CorrAlternates, ~ .x[, (ncol(.x) - 4):ncol(.x), drop = FALSE])
+EnrichSummaries = map(EnrichAlternates, ~ .x[, (ncol(.x) - 4):ncol(.x), drop = FALSE])
+
+
+
+CorSumSingle <- imap(CorrSummaries, function(df, nm) {
+  parts <- strsplit(nm, "-")[[1]]
+  prefix <- paste0(substr(parts[1], 1, 1),
+                   substr(parts[2], 1, 1))
+  
+  df %>% rename_with(~ paste0(prefix, "-", .x))
+}) %>%
+  bind_cols()
+
+EnrichSumSingle <- imap(CorrSummaries, function(df, nm) {
+  parts <- strsplit(nm, "-")[[1]]
+  prefix <- paste0(substr(parts[1], 1, 1),
+                   substr(parts[2], 1, 1))
+  
+  df %>% rename_with(~ paste0(prefix, "-", .x))
+}) %>%
+  bind_cols()
+
+
+
+CorrMain = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisPairwiseCorrelationFile.rds")
+
+
+CorrComare = Map(cbind, CorrMain, CorrSummaries)
+
+CorrComare <- lapply(CorrComare, function(df) {
+  df$significant <- df$p.adj < 0.05
+  df
+})
+
+lapply(CorrComare, function(dataframe){
+  significantGenes = which(dataframe$significant)
+  numSigAlternates = dataframe$PadjNumSignificant[significantGenes]
+})
+
+
+combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResults.rds")
+
+combinedCorrelationsWithAlternates = cbind(combinedCorrelations, CorSumSingle)
+
+if(saveData){
+  combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults")
+  write.csv(combinedResults, paste0(combinedDataFilename, ".csv"))
+  saveRDS(combinedResults, paste0(combinedDataFilename, ".rds"))
+}
+
+
 #---------------------------------------------------------------------
 # --- Writring code to combine the alternates together  --- 
 # --------------------------------------------------------------------
