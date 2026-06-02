@@ -67,6 +67,10 @@ args = c("r=ComplexDietCentralAnalysisNoRodent", "s=Herbivore-Insectivore",
          "a=CategoricalBinaryHerbivoreTree", "b=Herbivore", "c=CategoricalBinaryInsectivoreTree", "d=Insectivore",
          "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
 
+args = c("r=ComplexDietCentralAnalysis", "s=Insectivore-Vertivore", 
+         "a=CategoricalBinaryInsectivoreTree", "b=Insectivore", "c=CategoricalBinaryVertivoreTree", "d=Vertivore",
+         "o=T", 'l=c("HV", "HI", "CH")', "k=H", "i=F")
+
 {
   # --- Standard start-up code ---
   if(clusterRun)args = commandArgs(trailingOnly = TRUE)
