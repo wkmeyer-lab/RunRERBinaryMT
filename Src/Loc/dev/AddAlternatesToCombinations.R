@@ -148,23 +148,59 @@ combinedData = cbind(combinedData, alternatesSingleDF)
   if(usingGene){
     order_prefix <- function(p) {
       c(
-        paste0(p, "-Rho"),
-        paste0(p, "-P"),
-        paste0(p, "-p.adj"),
         paste0(p, "-significant"),
+        paste0(p, "-Rho"),
+        paste0(p, "-RhoMedian"),
+        paste0(p, "-RhoMean"),
+        paste0(p, "-RhoSD"),
+        paste0(p, "-RhoCI95"),
+        paste0(p, "-RhoIQR"),
+        paste0(p, "-RhoMaxDiff"),
+        paste0(p, "-P"),
         paste0(p, "-PNumSignificant"),
-        paste0(p, "-PadjNumSignificant")
+        paste0(p, "-PMedian"),
+        paste0(p, "-PMean"),
+        paste0(p, "-PSD"),
+        paste0(p, "-PCI95"),
+        paste0(p, "-PIQR"),
+        paste0(p, "-PMaxDiff"),
+        paste0(p, "-p.adj"),
+        paste0(p, "-PadjNumSignificant"),
+        paste0(p, "-PadjMedian"),
+        paste0(p, "-PadjMean"),
+        paste0(p, "-PadjSD"),
+        paste0(p, "-PadjCI95"),
+        paste0(p, "-PadjIQR"),
+        paste0(p, "-PadjMaxDiff"),
       )
     }
   }else{
     order_prefix <- function(p) {
       c(
-        paste0(p, "-stat"),
-        paste0(p, "-pval"),
-        paste0(p, "-p.adj"),
         paste0(p, "-significant"),
+        paste0(p, "-stat"),
+        paste0(p, "-statMedian"),
+        paste0(p, "-statMean"),
+        paste0(p, "-statSD"),
+        paste0(p, "-statCI95"),
+        paste0(p, "-statIQR"),
+        paste0(p, "-statMaxDiff"),
+        paste0(p, "-P"),
         paste0(p, "-PNumSignificant"),
-        paste0(p, "-PadjNumSignificant")
+        paste0(p, "-PMedian"),
+        paste0(p, "-PMean"),
+        paste0(p, "-PSD"),
+        paste0(p, "-PCI95"),
+        paste0(p, "-PIQR"),
+        paste0(p, "-PMaxDiff"),
+        paste0(p, "-p.adj"),
+        paste0(p, "-PadjNumSignificant"),
+        paste0(p, "-PadjMedian"),
+        paste0(p, "-PadjMean"),
+        paste0(p, "-PadjSD"),
+        paste0(p, "-PadjCI95"),
+        paste0(p, "-PadjIQR"),
+        paste0(p, "-PadjMaxDiff"),
       )
     }
   }
@@ -188,11 +224,11 @@ combinedData = cbind(combinedData, alternatesSingleDF)
 if(saveData){
   
   if(usingGene){
-    combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults")
+    combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResultsWithAlternates")
     write.csv(combinedData, paste0(combinedDataFilename, ".csv"))
     saveRDS(combinedData, paste0(combinedDataFilename, ".rds"))    
   }else{
-    combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet)
+    combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResultsWithAlternates-", geneSet)
     write.csv(combinedData, paste0(combinedGODataFilename, ".csv"))
     saveRDS(combinedData, paste0(combinedGODataFilename, ".rds"))
   }

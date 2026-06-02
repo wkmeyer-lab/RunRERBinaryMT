@@ -41,6 +41,7 @@ args = c("r=CategoricalInsvertivoreTreeFamilyAgnostictLiamInference", "p=NULL", 
 
 
 args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=gene", "s=T", "l=F")
+args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=KeggReactome", "s=T", "l=F")
 
 
 # -- Standard Startup code -- 
