@@ -171,7 +171,7 @@ combinedData = cbind(combinedData, alternatesSingleDF)
         paste0(p, "-PadjSD"),
         paste0(p, "-PadjCI95"),
         paste0(p, "-PadjIQR"),
-        paste0(p, "-PadjMaxDiff"),
+        paste0(p, "-PadjMaxDiff")
       )
     }
   }else{
@@ -200,7 +200,7 @@ combinedData = cbind(combinedData, alternatesSingleDF)
         paste0(p, "-PadjSD"),
         paste0(p, "-PadjCI95"),
         paste0(p, "-PadjIQR"),
-        paste0(p, "-PadjMaxDiff"),
+        paste0(p, "-PadjMaxDiff")
       )
     }
   }
@@ -216,7 +216,8 @@ combinedData = cbind(combinedData, alternatesSingleDF)
   remaining <- setdiff(cols, ordered_main)
   
   # final order
-  combinedData <- combinedData[, c(ordered_main, remaining)]
+  #combinedData <- combinedData[, c(ordered_main, remaining)]
+  combinedData <- combinedData[, c(ordered_main)]
 }
 
 
@@ -240,4 +241,3 @@ if(saveData){
 
 
 
-#Main code
