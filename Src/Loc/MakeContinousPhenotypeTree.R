@@ -6,7 +6,6 @@ library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/ZoonomTreeNameToCommon.R")
-source("Src/Reu/ZonomNameConvertVector.R")
 # -- Usage:
 # This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
 # In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is named "FaName", and the column with common names is named "Common.Name.Or.Group". 
@@ -32,6 +31,18 @@ args = c('r=MaturityLogRaw', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLi
 args = c('r=PankajBodysize', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=combinedBodysize','v=T', 'n=FaName')
 
 args = c('r=meanTemp', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=panTheriaTemperature','v=T', 'n=ZoonomiaTip')
+
+args = c('r=ContinousCdcaInv', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Inv','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaVend', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vend','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaVect', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vect','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaVfish', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vfish','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaVunk', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vunk','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaScav', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Scav','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaFruit', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Fruit','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaNect', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Nect','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaSeed', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Seed','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaPlantO', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.PlantO','v=F', 'n=ZoonomiaTip')
+
 
 
 # --- Standard start-up code ---

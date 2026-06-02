@@ -2227,12 +2227,67 @@ if(generateAlternates){
     while(length(alternateSets) < 100){
       
       randomizedSpeciesSet = character()
-      for(j in 1:length(phenotypeSizes)){
-        numberOfSpecies = phenotypeSizes[j]
-        speciesSet = mastertreeDataPhenotype[which(mastertreeDataPhenotype == names(phenotypeSizes)[j])]
-        chosenSpecies = sample(speciesSet, numberOfSpecies)
-        randomizedSpeciesSet = append(randomizedSpeciesSet, chosenSpecies)
+      if(useLiam){
+        
+        Bovidae = manualAnnots[manualAnnots$MSWC_Family %in% "Bovidae",][[nameColumn]]
+        Pteropodidae = manualAnnots[manualAnnots$MSWC_Family %in% "Pteropodidae",][[nameColumn]]
+        Cervidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cervidae",][[nameColumn]]
+        Cricetidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cricetidae",][[nameColumn]]
+        
+        Vespertilionidae = manualAnnots[manualAnnots$MSWC_Family %in% "Vespertilionidae",][[nameColumn]]
+        
+        HystricognathiFamilies =  c("Caviidae", "Chinchillidae", "Ctenomyidae", "Dasyproctidae", "Dinomyidae", "Caviidae", "Bathyergidae", "Caviidae", "Hystricidae", "Myocastoridae", "Octodontidae", "Petromuridae", "Thryonomyidae", "Erethizontidae")
+        Hystricognathi = manualAnnots[manualAnnots$MSWC_Family %in% HystricognathiFamilies,][[nameColumn]]
+        
+        numPerClade = 3
+        
+        selectedBovids = sample(Bovidae, numPerClade)
+        selectedPteropodidae = sample(Pteropodidae, numPerClade)
+        selectedCervidae = sample(Cervidae, numPerClade)
+        selectedCricetidae = sample(Cricetidae, numPerClade)
+        selectedHystricognathi = sample(Hystricognathi, numPerClade)
+        
+        selectedVespertilionidae = sample(Vespertilionidae, numPerClade)
+        
+        speciesInLargeFamilies = c(Bovidae, Pteropodidae, Cervidae, Cricetidae, Hystricognathi, Vespertilionidae)
+        
+        randomizedSpeciesSet = append(randomizedSpeciesSet, selectedBovids)
+        randomizedSpeciesSet = append(randomizedSpeciesSet, selectedPteropodidae)
+        randomizedSpeciesSet = append(randomizedSpeciesSet, selectedCervidae)
+        randomizedSpeciesSet = append(randomizedSpeciesSet, selectedCricetidae)
+        randomizedSpeciesSet = append(randomizedSpeciesSet, selectedHystricognathi)
+        
+        randomizedSpeciesSet = append(randomizedSpeciesSet, selectedVespertilionidae)
+        
+        
+        
+        
+        
+        for(j in 1:length(phenotypeSizes)){
+          numberOfSpecies = phenotypeSizes[j]
+          speciesSet = mastertreeDataPhenotype[which(mastertreeDataPhenotype == names(phenotypeSizes)[j])]
+          
+          speciesInLargeFamilies = which(names(speciesSet) %in% speciesInLargeFamilies)
+          preselectedSpecies = speciesSet[which(names(speciesSet) %in% randomizedSpeciesSet)]
+          speciesSet = speciesSet[-speciesInLargeFamilies]
+          
+          
+          numberOfSpecies = numberOfSpecies - length(preselectedSpecies)
+          
+          
+          chosenSpecies = sample(speciesSet, numberOfSpecies)
+          randomizedSpeciesSet = append(randomizedSpeciesSet, chosenSpecies)
+        }
+      
+      }else{
+        for(j in 1:length(phenotypeSizes)){
+          numberOfSpecies = phenotypeSizes[j]
+          speciesSet = mastertreeDataPhenotype[which(mastertreeDataPhenotype == names(phenotypeSizes)[j])]
+          chosenSpecies = sample(speciesSet, numberOfSpecies)
+          randomizedSpeciesSet = append(randomizedSpeciesSet, chosenSpecies)
+        } 
       }
+
       
       testTree = mainTrees$masterTree
       tipsToDrop = testTree$tip.label[!testTree$tip.label %in% names(randomizedSpeciesSet)]
@@ -2240,36 +2295,6 @@ if(generateAlternates){
       i=i+1
       if(i %% 10000 == 0){message(i)}
       if(min(testTree$edge.length) < pruningCutoff){
-        message("Found Possible Alternate")
-        if(useLiam){
-          
-          Bovidae = manualAnnots[manualAnnots$MSWC_Family %in% "Bovidae",][[nameColumn]]
-          Pteropodidae = manualAnnots[manualAnnots$MSWC_Family %in% "Pteropodidae",][[nameColumn]]
-          Cervidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cervidae",][[nameColumn]]
-          Cricetidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cricetidae",][[nameColumn]]
-          
-          Vespertilionidae = manualAnnots[manualAnnots$MSWC_Family %in% "Vespertilionidae",][[nameColumn]]
-          
-          HystricognathiFamilies =  c("Caviidae", "Chinchillidae", "Ctenomyidae", "Dasyproctidae", "Dinomyidae", "Caviidae", "Bathyergidae", "Caviidae", "Hystricidae", "Myocastoridae", "Octodontidae", "Petromuridae", "Thryonomyidae", "Erethizontidae")
-          Hystricognathi = manualAnnots[manualAnnots$MSWC_Family %in% HystricognathiFamilies,][[nameColumn]]
-          
-          numBovidae = length(which(testTree$tip.label %in% Bovidae))
-          numPteropodidae = length(which(testTree$tip.label %in% Pteropodidae))
-          numCervidae = length(which(testTree$tip.label %in% Cervidae))
-          numCricetidae = length(which(testTree$tip.label %in% Cricetidae))
-          numVespertilionidae = length(which(testTree$tip.label %in% Vespertilionidae))
-          
-          numHystricognathi= length(which(testTree$tip.label %in% Hystricognathi))
-          
-          if(max(numBovidae, numPteropodidae, numCervidae, numCricetidae, numVespertilionidae, numHystricognathi) > 3){
-            message("Alternate was enriched for a trimmed family, and skipped.")
-            next
-          }
-          
-        }
-        
-        
-        
         message("Found Valid Alternate")
         message(i)
         alternateTips = testTree$tip.label
