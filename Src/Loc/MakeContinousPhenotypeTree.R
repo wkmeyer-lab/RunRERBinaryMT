@@ -43,6 +43,12 @@ args = c('r=ContinousCdcaNect', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Ne
 args = c('r=ContinousCdcaSeed', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Seed','v=F', 'n=ZoonomiaTip')
 args = c('r=ContinousCdcaPlantO', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.PlantO','v=F', 'n=ZoonomiaTip')
 
+args = c('r=ContinousCdcaCp', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=cp','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaEe', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=ee','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaCf', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=cf','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaAsh', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=ash','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaNfe', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=nfe','v=F', 'n=ZoonomiaTip')
+
 
 
 # --- Standard start-up code ---
@@ -264,6 +270,9 @@ phenotypeVector = speciesValues                                                 
 phenotypeVector = as.numeric(phenotypeVector)
 names(phenotypeVector) = speciesNames                                           #the format the functions expect
 
+#remove species with an NA phenotype
+speciesMissingPhenotypeData = which(is.na(phenotypeVector))
+phenotypeVector = phenotypeVector[-speciesMissingPhenotypeData]
 
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "ContinuousPhenotypeVector.rds",sep="") #make a filename based on the prefix
 saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        #save the phenotype vector
