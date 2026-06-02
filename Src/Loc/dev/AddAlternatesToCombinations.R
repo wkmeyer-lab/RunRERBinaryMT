@@ -118,7 +118,7 @@ if(usingGene){
   
 
 #Reformat the alternates   
-alternateSummaryColumns = map(alternatesData, ~ .x[, (ncol(.x) - 4):ncol(.x), drop = FALSE])
+alternateSummaryColumns = map(alternatesData, ~ .x[, 4:ncol(.x), drop = FALSE])
 
 alternatesSingleDF <- imap(alternateSummaryColumns, function(df, nm) {
   parts <- strsplit(nm, "-")[[1]]

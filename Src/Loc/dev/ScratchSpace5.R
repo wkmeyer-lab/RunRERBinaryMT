@@ -23,7 +23,7 @@ combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCen
 #---------------------------------------------------------------------
 # --- look into alterante results   --- 
 # --------------------------------------------------------------------
-combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResults.rds")
+combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
 
 combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResults-KeggReactome.rds")
 
@@ -34,6 +34,92 @@ df <- combinedCorrelations
 # extract prefixes (CH, CO, HI, etc.)
 prefixes <- unique(sub("-.*", "", grep("-", names(df), value = TRUE)))
 
+
+targetCol = "-PadjMedian"
+
+
+
+# initialize result table
+resultAlternateTable <- data.frame(
+  gene = rownames(df)
+)
+
+# loop through prefixes
+for (p in prefixes) {
+  
+  sig_col <- paste0(p, "-significant")
+  testCol <- paste0(p, targetCol)
+  
+  
+  
+  
+  # safety check (in case some prefixes are missing columns)
+  if (!all(c(sig_col, testCol) %in% names(df))) next
+  
+  resultAlternateTable[[paste0(p, "_testCol")]] <-
+    ifelse(df[[sig_col]] == TRUE,
+           df[[testCol]],
+           0)
+}
+rownames(resultAlternateTable) = resultAlternateTable$gene
+
+importantCols = c(2,4,6,8)
+
+par(mfrow= c(2,2))
+for(i in importantCols){
+  imporantRows = which(resultAlternateTable[i] > 0 & !is.na(resultAlternateTable[i]))
+  hist(resultAlternateTable[imporantRows,c(i)], main = paste0(substr(colnames(resultAlternateTable)[i],0, 2), targetCol, " Num sig:", length(which(resultAlternateTable[imporantRows,c(i)] < 0.05)), " Fraction sig:", (round(length(which(resultAlternateTable[imporantRows,c(i)] < 0.05))/length(imporantRows),3 ))), breaks = c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.60, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0), xlim = c(0,1))
+}
+
+# ?hist
+
+#plot pvalues 
+
+# initialize result table
+resultAlternateTable <- data.frame(
+  gene = rownames(df)
+)
+
+# loop through prefixes
+for (p in prefixes) {
+  
+  sig_col <- paste0(p, "-significant")
+  mainCol <- paste0(p, "-p.adj")
+  alternateCol <- paste0(p, "-PadjMean")
+  
+  
+  
+  
+  # safety check (in case some prefixes are missing columns)
+  if (!all(c(sig_col, alternateCol) %in% names(df))) next
+  resultAlternateTable[[paste0(p, "mainCol")]] <-
+    ifelse(df[[sig_col]] == TRUE,
+           df[[mainCol]],
+           0)
+  resultAlternateTable[[paste0(p, "alternateCol")]] <-
+    ifelse(df[[sig_col]] == TRUE,
+           df[[alternateCol]],
+           0)
+}
+
+
+rownames(resultAlternateTable) = resultAlternateTable$gene
+
+importantCols = c(2,6,10,14)
+
+par(mfrow= c(2,2))
+for(i in importantCols){
+  
+  
+  imporantRows = which(resultAlternateTable[i] > 0 & !is.na(resultAlternateTable[i]))
+  plot(resultAlternateTable[imporantRows, i], resultAlternateTable[imporantRows,(i+1)])
+  
+  #hist(resultAlternateTable[imporantRows,c(i)], main = paste(colnames(resultAlternateTable)[i], "Mean:", mean(resultAlternateTable[imporantRows,c(i)])))
+}
+
+
+
+#OG HIstogram 
 # initialize result table
 sigResultAlternateTable <- data.frame(
   gene = rownames(df)
@@ -44,6 +130,9 @@ for (p in prefixes) {
   
   sig_col <- paste0(p, "-significant")
   padj_col <- paste0(p, "-PadjNumSignificant")
+  
+  
+  
   
   # safety check (in case some prefixes are missing columns)
   if (!all(c(sig_col, padj_col) %in% names(df))) next
@@ -59,6 +148,16 @@ rownames(sigResultAlternateTable) = sigResultAlternateTable$gene
 importantCols = c(2,4,6,8)
 
 par(mfrow= c(2,2))
+for(i in importantCols){
+  imporantRows = which(sigResultAlternateTable[i] > 0 & !is.na(sigResultAlternateTable[i]))
+  sigResultAlternateTable[imporantRows,c(1,i)]
+  mean(sigResultAlternateTable[imporantRows,c(i)])
+  length(sigResultAlternateTable[imporantRows,c(i)] >50)
+  length(sigResultAlternateTable[imporantRows,c(i)])
+  hist(sigResultAlternateTable[imporantRows,c(i)], main = paste(colnames(sigResultAlternateTable)[i], "Mean:", mean(sigResultAlternateTable[imporantRows,c(i)])))
+}
+
+
 for(i in importantCols){
   imporantRows = which(sigResultAlternateTable[i] > 0 & !is.na(sigResultAlternateTable[i]))
   sigResultAlternateTable[imporantRows,c(1,i)]
