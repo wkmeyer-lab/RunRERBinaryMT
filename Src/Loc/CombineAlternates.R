@@ -97,10 +97,11 @@ names(combinedCorrelations) <- names(correlationRuns[[1]])
 
 combinedCorrelations <- lapply(combinedCorrelations, function(df) {
   
+  #Number of significant
   df$PNumSignificant<- sapply(df$P, function(x) sum(x < 0.05, na.rm = TRUE))
-  
   df$PadjNumSignificant <- sapply(df$p.adj, function(x) sum(x < 0.05, na.rm = TRUE))
   
+  #Max difference
   df$RhoMaxDiff <- sapply(df$Rho, function(x) {
     if (all(is.na(x))) return(NA_real_)
     max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
@@ -115,6 +116,43 @@ combinedCorrelations <- lapply(combinedCorrelations, function(df) {
     if (all(is.na(x))) return(NA_real_)
     max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
   })
+  
+  
+  # -------- Rho stats --------
+  df$RhoMean   <- sapply(df$Rho, function(x) mean(x, na.rm = TRUE))
+  df$RhoMedian <- sapply(df$Rho, function(x) median(x, na.rm = TRUE))
+  df$RhoSD     <- sapply(df$Rho, function(x) sd(x, na.rm = TRUE))
+  df$RhoCI95   <- sapply(df$Rho, function(x) {
+    x <- x[!is.na(x)]
+    if (length(x) < 2) return(NA_real_)
+    1.96 * sd(x) / sqrt(length(x))
+  })
+  df$RhoIQR    <- sapply(df$Rho, function(x) IQR(x, na.rm = TRUE))
+  
+  # -------- P stats --------
+  df$PMean   <- sapply(df$P, function(x) mean(x, na.rm = TRUE))
+  df$PMedian <- sapply(df$P, function(x) median(x, na.rm = TRUE))
+  df$PSD     <- sapply(df$P, function(x) sd(x, na.rm = TRUE))
+  df$PCI95   <- sapply(df$P, function(x) {
+    x <- x[!is.na(x)]
+    if (length(x) < 2) return(NA_real_)
+    1.96 * sd(x) / sqrt(length(x))
+  })
+  df$PIQR    <- sapply(df$P, function(x) IQR(x, na.rm = TRUE))
+  
+  # -------- p.adj stats --------
+  df$PadjMean   <- sapply(df$p.adj, function(x) mean(x, na.rm = TRUE))
+  df$PadjMedian <- sapply(df$p.adj, function(x) median(x, na.rm = TRUE))
+  df$PadjSD     <- sapply(df$p.adj, function(x) sd(x, na.rm = TRUE))
+  df$PadjCI95   <- sapply(df$p.adj, function(x) {
+    x <- x[!is.na(x)]
+    if (length(x) < 2) return(NA_real_)
+    1.96 * sd(x) / sqrt(length(x))
+  })
+  df$PadjIQR    <- sapply(df$p.adj, function(x) IQR(x, na.rm = TRUE))
+  
+  df
+  
   
   df
 })
@@ -224,6 +262,7 @@ if(useGO){
     df$PNumSignificant <- sapply(df$pval, function(x) sum(x < 0.05, na.rm = TRUE))
     df$PadjNumSignificant <- sapply(df$p.adj, function(x) sum(x < 0.05, na.rm = TRUE))
     
+    
     df$statMaxDiff <- sapply(df$stat, function(x)
       if (all(is.na(x))) NA_real_ else diff(range(x, na.rm = TRUE))
     )
@@ -235,6 +274,41 @@ if(useGO){
     df$padjMaxDiff <- sapply(df$p.adj, function(x)
       if (all(is.na(x))) NA_real_ else diff(range(x, na.rm = TRUE))
     )
+    
+    # -------- Rho stats --------
+    df$statMean   <- sapply(df$stat, function(x) mean(x, na.rm = TRUE))
+    df$statMedian <- sapply(df$stat, function(x) median(x, na.rm = TRUE))
+    df$statSD     <- sapply(df$stat, function(x) sd(x, na.rm = TRUE))
+    df$statCI95   <- sapply(df$stat, function(x) {
+      x <- x[!is.na(x)]
+      if (length(x) < 2) return(NA_real_)
+      1.96 * sd(x) / sqrt(length(x))
+    })
+    df$statIQR    <- sapply(df$stat, function(x) IQR(x, na.rm = TRUE))
+    
+    # -------- P stats --------
+    df$PMean   <- sapply(df$pval, function(x) mean(x, na.rm = TRUE))
+    df$PMedian <- sapply(df$pval, function(x) median(x, na.rm = TRUE))
+    df$PSD     <- sapply(df$pval, function(x) sd(x, na.rm = TRUE))
+    df$PCI95   <- sapply(df$pval, function(x) {
+      x <- x[!is.na(x)]
+      if (length(x) < 2) return(NA_real_)
+      1.96 * sd(x) / sqrt(length(x))
+    })
+    df$PIQR    <- sapply(df$pval, function(x) IQR(x, na.rm = TRUE))
+    
+    # -------- p.adj stats --------
+    df$PadjMean   <- sapply(df$p.adj, function(x) mean(x, na.rm = TRUE))
+    df$PadjMedian <- sapply(df$p.adj, function(x) median(x, na.rm = TRUE))
+    df$PadjSD     <- sapply(df$p.adj, function(x) sd(x, na.rm = TRUE))
+    df$PadjCI95   <- sapply(df$p.adj, function(x) {
+      x <- x[!is.na(x)]
+      if (length(x) < 2) return(NA_real_)
+      1.96 * sd(x) / sqrt(length(x))
+    })
+    df$PadjIQR    <- sapply(df$p.adj, function(x) IQR(x, na.rm = TRUE))
+    
+    df
     
     df
   })
