@@ -14,7 +14,8 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResults.rds")
 
 
-
+readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisCategoricalTree.rds")
+readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisSpeciesFilter.rds")
 
 
 
