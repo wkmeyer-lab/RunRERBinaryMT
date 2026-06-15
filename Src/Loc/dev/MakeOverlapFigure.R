@@ -18,6 +18,7 @@ significanceCutoff = 0.05
 prefix = "CategoricalInsvertivoreTreeLiamInference"
 prefix = "CategoricalInsvertivoreTreeFamilyAgnostictLiamInference"
 prefix = "CategoricalInsvertivoreTreeNoYeastLiamInference"
+prefix = "ComplexDietCentralAnalysis"
 
 
 pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
@@ -26,6 +27,7 @@ geneSet = NULL
 
 vennDiagramSet = c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")  
 vennColorset = c("darkblue", "red", "orange")
+vennColorset = c("#7570B3", "#E7298A", "orange")
 usingGo = !is.null(geneSet)
 saveCombinedData = T
 saveCombinedData = F
@@ -41,6 +43,7 @@ args = c("r=CategoricalInsvertivoreTree")
 args = c("r=CategoricalInsvertivoreTreeLiamInference")
 args = c("r=CategoricalInsvertivoreTreeFamilyAgnostictLiamInference")
 args = c("r=CategoricalInsvertivoreTreeNoYeastLiamInference")
+args = c("r=ComplexDietCentralAnalysis")
 
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -180,9 +183,10 @@ addDashes = function(vector) {
     )
     
     comparisonPrefixes = gsub("Significant", "", names(vennInputDataframe))
-    comparisonPrefixes = gsub("significant", "", names(vennInputDataframe))
-    comparisonPrefixes = gsub("-unperm", "", names(vennInputDataframe))
-    comparisonPrefixes = gsub("-perm", "", names(vennInputDataframe))
+    comparisonPrefixes = gsub("significant", "", comparisonPrefixes)
+    comparisonPrefixes = gsub("-unperm", "", comparisonPrefixes)
+    comparisonPrefixes = gsub("-perm", "", comparisonPrefixes)
+    comparisonPrefixes = gsub("-", "", comparisonPrefixes)
     comparisonPrefixes = gsub(commonBackground, "", comparisonPrefixes)
     comparisonNames = sapply(comparisonPrefixes, replacePrefixWithName)
     names(vennCounts)=c(comparisonNames[1], comparisonNames[2], comparisonNames[3], paste(comparisonNames[1], comparisonNames[2], sep="&"),paste(comparisonNames[1], comparisonNames[3], sep="&"),paste(comparisonNames[2], comparisonNames[3], sep="&"), paste(comparisonNames[1], comparisonNames[2], comparisonNames[3], sep="&"))
