@@ -228,8 +228,17 @@ if(length(pairwiseSets)==3){ #can simply run directly if only running on three c
   
 }
 
+if(usingGo){
+  combinedVenn = grid.arrange(geneVenn, goVenn, nrow = 1, padding = unit(1, "line"))
+}else{
+  combinedVenn = geneVenn
+}
 
 
+vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
+pdf(vennDiagramFilename, height = 12, width = 16)
+plot(combinedVenn)
+dev.off()
 
 # -- Make rho value corrleation plots --- 
 {

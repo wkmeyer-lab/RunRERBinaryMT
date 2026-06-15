@@ -9,6 +9,45 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 
 
 #---------------------------------------------------------------------
+# --- Misc results review as part of paper refresh   --- 
+# --------------------------------------------------------------------
+
+fullPredatorPhenotypes = readRDS("Output/ComplexDietCentralAnalysisAllSpecies/ComplexDietCentralAnalysisAllSpeciesCategoricalPhenotypeVector.rds")
+
+table(fullPredatorPhenotypes)
+
+
+mainPhenotypes = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisCategoricalPhenotypeVector.rds")
+length(mainPhenotypes)
+table(mainPhenotypes)
+
+
+mainCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
+mainCorrelations[(which(mainCorrelations$`IV-significant`)),]
+
+
+mainEnrichments = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternates-KeggReactome.rds")
+length(which(mainEnrichments$`IV-significant`))
+
+length(which(mainEnrichments$`IV-p.adj` <0.1))
+
+
+oldEnrichments = readRDS("Output/CategoricalInsVertivoreTreeLiamInference/CategoricalInsVertivoreTreeLiamInferencecombinedGOResults-KeggReactome.rds")
+length(which(oldEnrichments$`IV-p.adj` <0.1))
+
+
+mainCorrelations[,grep("significant", names(mainCorrelations))]
+
+colSums(mainCorrelations[,grep("significant", names(mainCorrelations))], na.rm = T)
+
+#---------------------------------------------------------------------
+# --- Look into continuous results    --- 
+# --------------------------------------------------------------------
+protienEnrichments = readRDS("Output/ContinousCdcaCp/ContinousCdcaCpEnrichment-KeggReactome.rds")[[1]]
+
+
+
+#---------------------------------------------------------------------
 # --- look into alterante affecting gene rank    --- 
 # --------------------------------------------------------------------
 combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResults.rds")
