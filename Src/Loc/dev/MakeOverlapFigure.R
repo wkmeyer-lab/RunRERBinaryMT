@@ -386,7 +386,7 @@ if(makeDirectional){
     
     #Positive
     vennGeneSignificanceResultsPositive = trimSignificanceToVenn(genePositiveSignificance)
-    geneVennPositive = makeVennPlot(vennGeneSignificanceResultsPositive, paste0(positiveLabel,"Genes (p.adj < ", significanceCutoff, ")"))
+    geneVennPositive = makeVennPlot(vennGeneSignificanceResultsPositive, paste0(positiveLabel," Genes (p.adj < ", significanceCutoff, ")"))
     if(usingGo){
       vennGoSignificanceResultsPositive = trimSignificanceToVenn(GoPositiveSignificance)
       goVennPositive = makeVennPlot(vennGoSignificanceResultsPositive, paste0(positiveLabel," GO Categories (p.adj < ", significanceCutoff, ")"))
