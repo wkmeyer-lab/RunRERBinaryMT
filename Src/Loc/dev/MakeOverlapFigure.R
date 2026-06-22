@@ -14,28 +14,17 @@ library(gridGraphics)
 source("Src/Reu/cmdArgImport.R")
 
 # -- argument setup  -- 
-significanceCutoff = 0.05
-prefix = "CategoricalInsvertivoreTreeLiamInference"
-prefix = "CategoricalInsvertivoreTreeFamilyAgnostictLiamInference"
-prefix = "CategoricalInsvertivoreTreeNoYeastLiamInference"
-prefix = "ComplexDietCentralAnalysis"
 
 
-pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
-geneSet = "KeggReactome"
-geneSet = NULL
 
-vennDiagramSet = c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")  
+
 vennColorset = c("darkblue", "red", "orange")
 vennColorset = c("#7570B3", "#E7298A", "orange")
-usingGo = !is.null(geneSet)
-saveCombinedData = T
-saveCombinedData = F
-bothAxis = T
-saveData = T
-saveData = F
 
-usePermulations = F
+
+
+
+
 
 
 
@@ -43,7 +32,10 @@ args = c("r=CategoricalInsvertivoreTree")
 args = c("r=CategoricalInsvertivoreTreeLiamInference")
 args = c("r=CategoricalInsvertivoreTreeFamilyAgnostictLiamInference")
 args = c("r=CategoricalInsvertivoreTreeNoYeastLiamInference")
-args = c("r=ComplexDietCentralAnalysis")
+args = c("r=ComplexDietCentralAnalysis", 
+         "g=KeggReactome", 
+         'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
+         "d=T",'l=c("H>P", "P>H")')
 
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -77,6 +69,88 @@ if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 
 
 
+# --- Argument Imports ---
+# Defaults
+significanceCutoff = 0.05
+geneSet = NULL
+usingGo = F
+pairwiseSets = NULL
+vennDiagramSet = NULL
+usePermulations = F
+makeDirectional = T
+positiveLabel = NULL
+negativeLabel = NULL
+bothAxis = T
+
+
+
+
+
+{ # Bracket used for collapsing purposes
+  
+  #significance -- -NOTE THAT THIS IS ONLY FOR THE LABEL, actual numbers are based on the columns
+  if(!is.na(cmdArgImport('z'))){
+    significanceCutoff = cmdArgImport('z')
+    significanceCutoff = as.numeric(significanceCutoff)
+  }else{
+    message("Significance value not specified, using 0.05")
+  }
+  
+  #geneset
+  if(!is.na(cmdArgImport('g'))){
+    geneSet = cmdArgImport('g')
+  }else{
+    message("No geneset specified, running only on genes")
+  }
+  
+  #pairwise Directories
+  if(!any(is.na(cmdArgImport('s')))){
+    pairwiseSets = cmdArgImport('s')
+  }else{
+    subdirectories = list.dirs(outputFolderName, recursive = F, full.names = F)
+    pairwiseSets = subdirectories[grep("-", subdirectories)]
+    message("No pairwise directories specified, using all.")
+  }
+  
+  #Venn Directories
+  if(!any(is.na(cmdArgImport('n')))){
+    vennDiagramSet = cmdArgImport('n')
+  }else{
+    message("No Venn directories specified, not suing venn directories.")
+  }
+  
+  #Use Permulations
+  if(!any(is.na(cmdArgImport('p')))){
+    usePermulations = cmdArgImport('p')
+  }else{
+    message("No permulations use specified, not using permulations.")
+  }
+  
+  #Make Directional
+  if(!any(is.na(cmdArgImport('d')))){
+    makeDirectional = cmdArgImport('d')
+  }else{
+    message("No makeDirectional specified, not making directional.")
+  }
+  
+  #Make Directional
+  if(!any(is.na(cmdArgImport('l')))){
+    labelSet = cmdArgImport('l')
+    positiveLabel = labelSet[1]
+    negativeLabel = labelSet[2]
+  }else{
+    message("No directiona labels specified, not using positive and negative.")
+  }
+
+}
+
+usingGo = !is.null(geneSet)
+if(is.null(positiveLabel)){
+  positiveLabel = "Positive"
+}
+if(is.null(positiveLabel)){
+  positiveLabel = "Negative"
+}
 
 #------------------------------------------------
 # -- OVerlap Figure exclusive code -- 
@@ -100,21 +174,27 @@ if(length(grep("permSignificant", names(combinedResults))) == 0 && length(grep("
 
 geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
 
-
-combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
-GoCombinedResults = readRDS(combinedGODataFilename)
-
-if(usePermulations){
-  GoSignificanceColumns = names(GoCombinedResults)[grep("permSignificant", names(GoCombinedResults))]
-}else{
-  GoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
+if(usingGo){
+  combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
+  GoCombinedResults = readRDS(combinedGODataFilename)
+  
+  if(usePermulations){
+    GoSignificanceColumns = names(GoCombinedResults)[grep("permSignificant", names(GoCombinedResults))]
+  }else{
+    GoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
+  }
+  #backward compatibility to load in old files if the new names don't exist 
+  if(length(grep("permSignificant", names(GoCombinedResults))) == 0 && length(grep("unpermSignificant", names(GoCombinedResults))) == 0){
+    GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
+  }
+  
+  GoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% GoSignificanceColumns]
 }
-#backward compatibility to load in old files if the new names don't exist 
-if(length(grep("permSignificant", names(GoCombinedResults))) == 0 && length(grep("unpermSignificant", names(GoCombinedResults))) == 0){
-  GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
-}
 
-GoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% GoSignificanceColumns]
+
+
+
+
 
 
 # -- make resources to prefix-phenotype conversion 
@@ -143,6 +223,11 @@ replacePrefixWithName = function(x) {
 addDashes = function(vector) {
   sapply(vector, function(s) paste(strsplit(s, "")[[1]], collapse = "-"))
 }
+
+
+
+
+
 
 # ----- Make Plots ------ 
 
@@ -212,9 +297,62 @@ addDashes = function(vector) {
     if(plot){print(outPlot)}
     return(outPlot)
   }
+  
+  makeDirectionalResults = function(directionData, usedStatCols){
+    sigDirectionDataPositive = directionData
+    sigDirectionDataNegative = directionData
+    for(i in usedStatCols){
+      currentPrefix = substr(i, 1, 2)
+      
+      # get matching significant column
+      statCol = names(directionData)[grep(currentPrefix, names(directionData))][1]
+      sigCol = names(directionData)[grep(currentPrefix, names(directionData))][2]
+      
+      #make sure that the direction is reported the same because the common background is in the same order
+      positionOfBackground = as.integer(regexpr(commonBackground, currentPrefix))
+      if(positionOfBackground == 2){
+        sigDirectionDataPositive[[statCol]] = -1*sigDirectionDataPositive[[statCol]] 
+        sigDirectionDataNegative[[statCol]] = -1*sigDirectionDataNegative[[statCol]] 
+      }
+      
+      # set significance to F when the stat is wrong 
+      
+      sigDirectionDataPositive[[sigCol]][sigDirectionDataPositive[[statCol]] < 0] <- F
+      
+      sigDirectionDataNegative[[sigCol]][sigDirectionDataNegative[[statCol]] > 0] <- F
+      
+    } 
+    sigDirectionDataNegative = sigDirectionDataNegative[, -which(names(sigDirectionDataNegative) %in% usedStatCols)]
+    sigDirectionDataPositive = sigDirectionDataPositive[, -which(names(sigDirectionDataPositive) %in% usedStatCols)]
+    directionalResults = list(sigDirectionDataPositive, sigDirectionDataNegative)
+    return(directionalResults)
+  }
+  
+
 }
 
 
+#Make the directional data if using it 
+if(makeDirectional){
+  statColumns = names(combinedResults)[grep("Rho", names(combinedResults))]
+  geneSignificanceResultsDirection = combinedResults[, names(combinedResults) %in% c(significanceColumns, statColumns)]
+  
+  geneDirectionalSignificanceResults = makeDirectionalResults(geneSignificanceResultsDirection, statColumns)
+  genePositiveSignificance = geneDirectionalSignificanceResults[[1]]
+  geneNegativeSignificance = geneDirectionalSignificanceResults[[2]]
+  
+  if(usingGo){
+    GoStatColumns = names(GoCombinedResults)[grep("stat", names(GoCombinedResults))]
+    GoSignificanceResultsDirection = GoCombinedResults[, names(GoCombinedResults) %in% c(GoSignificanceColumns, GoStatColumns)]
+    
+    GoDirectionalSignificanceResults = makeDirectionalResults(GoSignificanceResultsDirection, GoStatColumns)
+    GoPositiveSignificance = GoDirectionalSignificanceResults[[1]]
+    GoNegativeSignificance = GoDirectionalSignificanceResults[[2]]
+  }
+}
+
+
+#Make the main plots 
 if(length(pairwiseSets)==3){ #can simply run directly if only running on three categories. 
   geneVenn = makeVennPlot(geneSignificanceResults, paste0("Genes (p.adj < ", significanceCutoff, ")"))
   if(usingGo){goVenn = makeVennPlot(GoSignificanceResults, paste0("GO Categories (p.adj < ", significanceCutoff, ")"))}
@@ -227,18 +365,101 @@ if(length(pairwiseSets)==3){ #can simply run directly if only running on three c
   }
   
 }
-
 if(usingGo){
   combinedVenn = grid.arrange(geneVenn, goVenn, nrow = 1, padding = unit(1, "line"))
 }else{
   combinedVenn = geneVenn
 }
 
+if(makeDirectional){
+  
+  if(length(pairwiseSets)==3){ #can simply run directly if only running on three categories. 
+    
+    #Positive
+    geneVennPositive = makeVennPlot(genePositiveSignificance, paste0(positiveLabel, " Genes (p.adj < ", significanceCutoff, ")"))
+    if(usingGo){goVennPositive = makeVennPlot(GoPositiveSignificance, paste0(positiveLabel, " GO Categories (p.adj < ", significanceCutoff, ")"))}
+    
+    #Negtive
+    geneVennNegative = makeVennPlot(geneNegativeSignificance, paste0(negativeLabel, " Genes (p.adj < ", significanceCutoff, ")"))
+    if(usingGo){goVennNegative = makeVennPlot(GoNegativeSignificance, paste0(negativeLabel," GO Categories (p.adj < ", significanceCutoff, ")"))}
+  }else if(length(vennDiagramSet)==3){ #if a correct set of three categories has been given for the venn diagram set, narrow down a larger selection to that set, then run the vennDiagram. 
+    
+    #Positive
+    vennGeneSignificanceResultsPositive = trimSignificanceToVenn(genePositiveSignificance)
+    geneVennPositive = makeVennPlot(vennGeneSignificanceResultsPositive, paste0(positiveLabel,"Genes (p.adj < ", significanceCutoff, ")"))
+    if(usingGo){
+      vennGoSignificanceResultsPositive = trimSignificanceToVenn(GoPositiveSignificance)
+      goVennPositive = makeVennPlot(vennGoSignificanceResultsPositive, paste0(positiveLabel," GO Categories (p.adj < ", significanceCutoff, ")"))
+    }
+    
+    #Negative
+    vennGeneSignificanceResultsNegative = trimSignificanceToVenn(geneNegativeSignificance)
+    geneVennNegative = makeVennPlot(vennGeneSignificanceResultsNegative, paste0(negativeLabel, " Genes (p.adj < ", significanceCutoff, ")"))
+    if(usingGo){
+      vennGoSignificanceResultsNegative = trimSignificanceToVenn(GoNegativeSignificance)
+      goVennNegative = makeVennPlot(vennGoSignificanceResultsNegative, paste0(negativeLabel, " GO Categories (p.adj < ", significanceCutoff, ")"))
+    }
+    
+  }
+  
+  if(usingGo){
+    combinedDirectionVenn = grid.arrange(geneVennPositive, goVennPositive, geneVennNegative,  goVennNegative, nrow = 2, padding = unit(1, "line"))
+  }else{
+    combinedDirectionVenn = grid.arrange(geneVennPositive, geneVennNegative, nrow = 1, padding = unit(1, "line"))
+  }
+  
+  allVenn = grid.arrange(combinedVenn, combinedDirectionVenn, nrow = 1, padding = unit(1, "line"))
+  allVenn = grid.arrange(geneVenn,goVenn, combinedDirectionVenn, nrow = 1, padding = unit(1, "line"))
+  
+  vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
+  pdf(vennDiagramFilename, height = 12, width = 16)
+  plot(combinedVenn)
+  dev.off()
+  
+  vennDirectionalDiagramFilename = paste0(outputFolderName, filePrefix, "VennDirectionalDiagram", geneSet, ".pdf")
+  pdf(vennDirectionalDiagramFilename, height = 12, width = 12)
+  plot(combinedDirectionVenn)
+  dev.off()
+  
+  vennCombinedDiagramFilename = paste0(outputFolderName, filePrefix, "VennCombinedDiagram", geneSet, ".pdf")
+  pdf(vennCombinedDiagramFilename, height = 12, width = 32)
+  plot(allVenn)
+  dev.off()
+  
+  
+}else{
+  vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
+  pdf(vennDiagramFilename, height = 12, width = 16)
+  plot(combinedVenn)
+  dev.off() 
+}
 
-vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
-pdf(vennDiagramFilename, height = 12, width = 16)
-plot(combinedVenn)
-dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # -- Make rho value corrleation plots --- 
 {
@@ -418,205 +639,7 @@ overlapResults
 
 
 
-#------------------------------------------------
-# -- Make combined data - now in other script -- 
-#------------------------------------------------
-{
-  # -- Make central RERData object 
-  
-  getComparisionDifference = function(dataframe, colOne, colTwo){
-    colOneIndex = names(dataframe)[which(names(dataframe) == colOne)]
-    colTwoIndex = names(dataframe)[which(names(dataframe) == colTwo)]
-    distanceFromEqual = abs(dataframe[colOneIndex] - dataframe[colTwoIndex]) / sqrt(2)
-    distanceFromEqual
-  }
-  
-  pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile.rds", sep= "") #make a name for the pairwise comparisons based on prefix
-  correlationResults = readRDS(pairwiseCorrelationFileName)
-  
-  {
-    combinedResults = NA
-    combinedDrivers = NA
-    combinedBinaries = NA
-    prefixSet = NULL
-    prefixList = NULL
-    
-    { # load in the data 
-      for(i in 1:length(pairwiseSets)){
-        currentSet = pairwiseSets[i]
-        correlationSubsetName = gsub("-", " - ", currentSet)
-        correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
-        prefixEntry = correlationPrefix; names(prefixEntry) = currentSet; prefixSet = append(prefixSet, prefixEntry)
-        for(j in 1:2){
-          prefixSingle = strsplit(correlationPrefix, split = "")[[1]][j]; names(prefixSingle) = strsplit(currentSet, split="-")[[1]][j]; prefixList = append(prefixList, prefixSingle)
-        }
-        currentDataframe = which(names(correlationResults) == correlationSubsetName) 
-        
-        currentResults = correlationResults[[currentDataframe]]
-        currentResults$significant = currentResults$p.adj < significanceCutoff
-        
-        
-        names(currentResults) = paste0(correlationPrefix, "-", names(currentResults))
-        combinedResults = cbind(combinedResults, currentResults)
-        
-        driverFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet, "DriverTable.rds")
-        if(file.exists(driverFilename)){
-          driverTable = readRDS(driverFilename)
-          driverTable = driverTable[,-grep("main", names(driverTable))]
-          names(driverTable)[which(names(driverTable) == "Driver")] = paste0(correlationPrefix, "-", "Driver")
-          names(driverTable)[which(names(driverTable) == "DriverNumeric")] = paste0(correlationPrefix, "-", "DriverNumeric")    
-          
-          combinedDrivers = cbind(combinedDrivers, driverTable[,grep(paste0(correlationPrefix,"-"), names(driverTable))])
-          combinedBinaries = cbind(combinedBinaries, driverTable[,-grep(paste0(correlationPrefix,"-"), names(driverTable))])
-          rm(driverTable)
-        }
-        rm(currentResults)
-        
-      }
-    }
-    
-    combinedResults = combinedResults[,-1]
-    combinedDrivers = combinedDrivers[,-1]
-    combinedBinaries = combinedBinaries[,-1]
-    combinedBinaries = combinedBinaries[,-grep(".1", names(combinedBinaries))]
-    
-    combinedResults = cbind(combinedResults, combinedDrivers)
-    combinedResults = cbind(combinedResults, combinedBinaries)
-    rm(combinedDrivers); rm(combinedBinaries)
-    
-    
-    
-    # -- Add overlap information -- 
-    significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
-    geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
-    
-    for(i in 2:length(significanceColumns)){
-      combinations = combn(significanceColumns, i, simplify = FALSE)
-      for(j in 1:length(combinations)){
-        currentCombination = combinations[[j]]
-        headers = gsub("-.*","",  currentCombination)
-        comboName = paste0(paste0(headers, collapse = "-"), "-Overlap")
-        
-        colsToCompare = geneSignificanceResults[,names(geneSignificanceResults) %in% currentCombination]
-        
-        comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
-        which(comboValue)
-        combinedResults$newOverlapColumn = comboValue
-        names(combinedResults)[length(names(combinedResults))] = comboName
-        rm(colsToCompare)
-      }
-      rm(combinations)
-    }
-    
-    # -- Add Delta information -- 
-    rhoColumns = names(combinedResults)[grep(corrleationColumnType, names(combinedResults))]
-    geneRhoColumns = combinedResults[, names(combinedResults) %in% rhoColumns]
-    for(i in 2:length(rhoColumns)){
-      combinations = combn(rhoColumns, i, simplify = FALSE)
-      for(j in 1:length(combinations)){
-        currentCombination = combinations[[j]]
-        if(length(currentCombination) > 2){next}
-        headers = gsub("-.*","",  currentCombination)
-        comboName = paste0(paste0(headers, collapse = "-"), "-Delta")
-        
-        colsToCompare = geneRhoColumns[,names(geneRhoColumns) %in% currentCombination]
-        
-        deltaValue = abs(colsToCompare[1] - colsToCompare[2]) / sqrt(2)
-        
-        
-        
-        combinedResults$newDeltaColumn = deltaValue[,1]
-        names(combinedResults)[length(names(combinedResults))] = comboName
-        rm(colsToCompare)
-      }
-      rm(combinations)
-    }
-    
-    # -- save combination -- 
-    if(saveCombinedData){
-      combinedDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults")
-      write.csv(combinedResults, paste0(combinedDataFilename, ".csv"))
-      if(saveData){saveRDS(combinedResults, paste0(combinedDataFilename, ".rds"))}
-    }
-  }
-  
-  
-  # --- Import GO Data --- 
-  if(usingGo){
-    GOResults = list()
-    for(i in 1:length(pairwiseSets)){
-      currentSet = pairwiseSets[i]
-      correlationSubsetName = gsub("-", " - ", currentSet)
-      correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
-      
-      goFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet,"Enrichment-", geneSet, ".rds")
-      currentGoData = readRDS(goFilename)[[1]]
-      currentGoData$significant = currentGoData$p.adj < significanceCutoff
-      
-      
-      names(currentGoData) = paste0(correlationPrefix, "-", names(currentGoData))
-      
-      
-      driverFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet, "GoDriverTable-", geneSet, ".rds")
-      if(file.exists(driverFilename)){
-        driverTable = readRDS(driverFilename)
-        if(all(rownames(driverTable) == rownames(currentGoData))){
-          currentGoData$Driver = driverTable[which(names(driverTable) == "Driver")][[1]]
-          currentGoData$DriverNumeric = driverTable[which(names(driverTable) == "DriverNumeric")][[1]]
-          
-          names(currentGoData)[which(names(currentGoData) == "Driver")] = paste0(correlationPrefix, "-", "Driver")
-          names(currentGoData)[which(names(currentGoData) == "DriverNumeric")] = paste0(correlationPrefix, "-", "DriverNumeric")    
-          
-        }
-        rm(driverTable)
-      }
-      GOResults[[i]] = currentGoData
-      names(GOResults)[i] = correlationPrefix
-      
-    }
-    rm(currentGoData)
-    
-    GoCombinedResults = NA
-    for(i in 1:length(GOResults)){
-      if(all(rownames(GOResults[[1]]) == rownames(GOResults[[i]]))){
-        cat("Combining GO Data", i, "\n")
-        GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
-      }else{
-        stop("Rownames of GO results are not the same, there is an issue with the GO data.")
-      }
-    }
-    GoCombinedResults = GoCombinedResults[,-1]
-    rm(GOResults)
-    
-    # -- Add overlap information -- 
-    GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
-    GoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% GoSignificanceColumns]
-    
-    for(i in 2:length(GoSignificanceColumns)){
-      combinations = combn(GoSignificanceColumns, i, simplify = FALSE)
-      for(j in 1:length(combinations)){
-        currentCombination = combinations[[j]]
-        headers = gsub("-.*","",  currentCombination)
-        comboName = paste0(paste0(headers, collapse = "-"), "-Overlap")
-        
-        colsToCompare = GoSignificanceResults[,names(GoSignificanceResults) %in% currentCombination]
-        
-        comboValue = apply(colsToCompare, 1, function(row) all(row == TRUE) == 1)
-        which(comboValue)
-        GoCombinedResults$newOverlapColumn = comboValue
-        names(GoCombinedResults)[length(names(GoCombinedResults))] = comboName
-        rm(colsToCompare)
-      }
-      rm(combinations)
-    }
-    
-    if(saveCombinedData){
-      combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet)
-      write.csv(GoCombinedResults, paste0(combinedGODataFilename, ".csv"))
-      if(saveData){saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))}
-    }
-  }
-}
+
 
 
 
