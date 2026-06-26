@@ -86,6 +86,7 @@ args = c('r=CategoricalInsVertivoreTreeLiamInference', 'm=c("Data/KeggReactome.g
 
 args = c('r=CategoricalInsVertivoreTreeDuplicateLiamInference', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
 
+args = c('r=ComplexDietCentralAnalysis', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Carnivore-Herbivore", "Overall")' )
 
 
 # --- Standard start-up code ---

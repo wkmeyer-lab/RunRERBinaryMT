@@ -7,6 +7,270 @@ library(geiger)
 
 source("Src/Reu/ZoonomTreeNameToCommon.R")
 
+par(mfrow=c(1,1))
+
+#---------------------------------------------------------------------
+# --- making supplement tree files  --- 
+# --------------------------------------------------------------------
+
+oldmasterTree = read.newick("Results/TempTree.txt")
+
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+masterTree = mainTrees$masterTree
+
+
+fourPhenotypeTree = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisCategoricalTree.rds")
+
+write.tree(fourPhenotypeTree)
+
+threePhenotypeTree = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisMergedCategoricalTree.rds")
+
+write.tree(threePhenotypeTree)
+
+
+#---------------------------------------------------------------------
+# --- helping wynn  --- 
+# --------------------------------------------------------------------
+
+harshalMainTree = read.newick("Data/roadies_v1.1.16b.nwk")
+HarshalFakeMainTrees = list()
+HarshalFakeMainTrees$masterTree = harshalMainTree
+saveRDS(HarshalFakeMainTrees, "Data/HarshalFakeMainTrees.rds")
+
+harhsalCategoricalTree = readRDS(categoricalTreeFilename)
+
+plotTree(harhsalCategoricalTree)
+plotTree(commonMainTrees$masterTree)
+nodelabels(cex=0.6, col= "green", frame="none")
+
+ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+
+TmmDataOg = read.table("Data/VGP_ALDH1A1_Accession.tsv")
+tmmData = as.data.frame(t(TmmDataOg))
+names(tmmData) = c("Accession", "ALDH1A1")
+tmmData = tmmData[-1,]
+write.csv(tmmData, "Data/VGP_ALDH1A1_Accession.csv")
+#---------------------------------------------------------------------
+# --- overlap counting  --- 
+# --------------------------------------------------------------------
+
+geneResults = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisCombinedGeneResults.rds")
+length(which(geneResults$`CH-significant`))
+length(which(geneResults$`CH-HI-UnpermOverlap`))
+length(which(geneResults$`CH-HV-UnpermOverlap`))
+
+length(which(geneResults$`HI-significant`))
+length(which(geneResults$`HV-significant`))
+length(which(geneResults$`HI-HV-UnpermOverlap`))
+
+
+GoResults = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisCombinedGoResults-KEggReactome.rds")
+length(which(GoResults$`CH-significant`))
+length(which(GoResults$`CH-HI-UnpermOverlap`))
+length(which(GoResults$`CH-HV-UnpermOverlap`))
+
+#---------------------------------------------------------------------
+# --- ceteacean counting  --- 
+# --------------------------------------------------------------------
+
+mergedData = read.csv("Data/mergedData.csv")
+
+psiciSpecies = which(mergedData$DerekDietClassification90InsVertivoreSorting == "C-InsVertivore-Piscivore")
+
+psiciSpeciesNames = mergedData$ZoonomiaTip[psiciSpecies]
+
+
+speciesFilter = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisSpeciesFilter.rds")
+
+length(which(psiciSpeciesNames %in% speciesFilter))
+
+
+which(as.logical(mergedData$isCricetidae))
+
+cricedidaeVector = readRDS("Output/CladeBinaryCricetidae/CladeBinaryCricetidaeCategoricalPhenotypeVector.rds")
+which(cricedidaeVector ==1)
+
+#---------------------------------------------------------------------
+# --- looking into geneset distribution  --- 
+# --------------------------------------------------------------------
+
+gmtAnnotations = read.gmt("Data/KeggReactome.gmt")
+
+
+signalingWords = c("Signaling", "Methylation", "Ubiquitination")
+metabolismWords = c("Metabolism", "Catabolism", "Anabolism", "Biosynthesis")
+
+genesetNames = gmtAnnotations$geneset.names
+
+metabolismPathways = c()
+
+metabolismPathways = append(metabolismPathways, grep(metabolismWords[1], genesetNames, ignore.case = T))
+metabolismPathways = append(metabolismPathways,grep(metabolismWords[2], genesetNames, ignore.case = T))
+metabolismPathways = append(metabolismPathways,grep(metabolismWords[3], genesetNames, ignore.case = T))
+metabolismPathways = append(metabolismPathways,grep(metabolismWords[4], genesetNames, ignore.case = T))
+metabolismPathways = unique(metabolismPathways)
+
+signalingPathways = c()
+signalingPathways = append(signalingPathways, grep(signalingWords[1], genesetNames, ignore.case = T))
+signalingPathways = append(signalingPathways,grep(signalingWords[2], genesetNames, ignore.case = T))
+signalingPathways = append(signalingPathways,grep(signalingWords[3], genesetNames, ignore.case = T))
+signalingPathways = unique(signalingPathways)
+
+#---------------------------------------------------------------------
+# --- alternate visualization --- 
+# --------------------------------------------------------------------
+
+
+
+combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternates-KeggReactome.rds")
+combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
+
+combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisAlternatesCombinedCorrelations.rds")
+
+
+names(combinedCorrelations)
+IndexesToRun = c(7, 1, 4, 5)
+
+
+for(i in IndexesToRun){
+  currentDataset = combinedCorrelations[i]
+  currentName = names(currentDataset)
+  
+  currentDataset = combinedCorrelations[[i]]
+  
+  names(currentDataset)
+  
+}
+
+
+
+
+
+targetCol = "-PadjMedian"
+
+alternateTable = dataframe()
+
+for (p in prefixes) {
+  
+  ogValCol = paste0(p, "-p.adj")
+  sig_col <- paste0(p, "-significant")
+  testCol <- paste0(p, targetCol)
+  
+  which(names(combinedCorrelations) %in% c(ogValCol, sig_col, testCol))
+  
+  alternateTable = cbind(alternateTable, combinedCorrelations[,which(names(combinedCorrelations) %in% c(ogValCol, sig_col, testCol))])
+  
+
+  ggplot()  
+  
+  
+  
+}
+
+
+
+
+
+
+
+# initialize result table
+resultAlternateTable <- data.frame(
+  gene = rownames(df)
+)
+
+# loop through prefixes
+for (p in prefixes) {
+  
+  sig_col <- paste0(p, "-significant")
+  testCol <- paste0(p, targetCol)
+  
+  
+  
+  
+  # safety check (in case some prefixes are missing columns)
+  if (!all(c(sig_col, testCol) %in% names(df))) next
+  
+  resultAlternateTable[[paste0(p, "_testCol")]] <-
+    ifelse(df[[sig_col]] == TRUE,
+           df[[testCol]],
+           0)
+}
+rownames(resultAlternateTable) = resultAlternateTable$gene
+
+importantCols = c(2,4,6,8)
+
+par(mfrow= c(2,2))
+for(i in importantCols){
+  imporantRows = which(resultAlternateTable[i] > 0 & !is.na(resultAlternateTable[i]))
+  hist(resultAlternateTable[imporantRows,c(i)], main = paste0(substr(colnames(resultAlternateTable)[i],0, 2), targetCol, " Num sig:", length(which(resultAlternateTable[imporantRows,c(i)] < 0.05)), " Fraction sig:", (round(length(which(resultAlternateTable[imporantRows,c(i)] < 0.05))/length(imporantRows),3 ))), breaks = c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.60, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0), xlim = c(0,1))
+}
+
+
+
+
+
+#---------------------------------------------------------------------
+# --- Look into semantic similarity  --- 
+# --------------------------------------------------------------------
+require(devtools)
+
+install_github("TranslationalBioinformaticsUnit/GeneSetCluster")
+
+
+
+
+
+
+
+#---------------------------------------------------------------------
+# --- Make code to split significance results by direction  --- 
+# --------------------------------------------------------------------
+
+combinedResults
+
+statColumns = names(combinedResults)[grep("Rho", names(combinedResults))]
+GoStatColumns = names(GoCombinedResults)[grep("stat", names(GoCombinedResults))]
+
+geneSignificanceResultsDirection = combinedResults[, names(combinedResults) %in% c(significanceColumns, statColumns)]
+
+GoSignificanceResultsDirection = GoCombinedResults[, names(GoCombinedResults) %in% c(GoSignificanceColumns, GoStatColumns)]
+
+
+
+sigDirectionData  =geneSignificanceResultsDirection
+sigDirectionData  =GoSignificanceResultsDirection
+
+usedStatCols = GoStatColumns
+usedStatCols = statColumns
+
+directionData = GoSignificanceResultsDirection
+
+
+
+makeDirectionalResults = function(directionData, usedStatCols){
+  sigDirectionDataPositive = directionData
+  sigDirectionDataNegative = directionData
+  for(i in usedStatCols){
+    currentPrefix = substr(i, 1, 2)
+    
+    # get matching significant column
+    statCol = names(directionData)[grep(currentPrefix, names(directionData))][1]
+    sigCol = names(directionData)[grep(currentPrefix, names(directionData))][2]
+    
+    # set significance to NA where Rho > 0
+    
+    sigDirectionDataPositive[[sigCol]][sigDirectionDataPositive[[statCol]] > 0] <- NA
+    
+    sigDirectionDataNegative[[sigCol]][sigDirectionDataNegative[[statCol]] < 0] <- NA
+    
+  } 
+  sigDirectionDataNegative = sigDirectionDataNegative[, -which(names(sigDirectionDataNegative) %in% usedStatCols)]
+  sigDirectionDataPositive = sigDirectionDataPositive[, -which(names(sigDirectionDataPositive) %in% usedStatCols)]
+  directionalResults = list(sigDirectionDataPositive, sigDirectionDataNegative)
+  return(directionalResults)
+}
+
+testOut = makeDirectionalResults(geneSignificanceResultsDirection, statColumns)
 
 #---------------------------------------------------------------------
 # --- Misc results review as part of paper refresh   --- 
@@ -65,18 +329,38 @@ readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisSpeciesFilt
 # --------------------------------------------------------------------
 combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
 
-combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResults-KeggReactome.rds")
+combinedCorrelations = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternates-KeggReactome.rds")
 
 
+
+prefixes <- unique(sub("-.*", "", colnames(combinedCorrelations)))
+
+for (p in prefixes) {
+  mean_col <- paste0(p, "-PadjMean")
+  sd_col   <- paste0(p, "-PadjSD")
+  new_col  <- paste0(p, "-PadjMeanMinusSD")
+  
+  # only create if both columns exist
+  if (mean_col %in% colnames(combinedCorrelations) & sd_col %in% colnames(combinedCorrelations)) {
+    combinedCorrelations[[new_col]] <- combinedCorrelations[[mean_col]] - combinedCorrelations[[sd_col]]
+  }
+}
+
+
+
+combinedCorrelations
+
+str(combinedCorrelations)
 
 df <- combinedCorrelations
 
 # extract prefixes (CH, CO, HI, etc.)
 prefixes <- unique(sub("-.*", "", grep("-", names(df), value = TRUE)))
 
-
+targetCol = "-PadjMean"
+targetCol = "-PadjMeanMinusSD"
 targetCol = "-PadjMedian"
-
+targetCol = "-PadjNumSignificant"
 
 
 # initialize result table
@@ -91,8 +375,6 @@ for (p in prefixes) {
   testCol <- paste0(p, targetCol)
   
   
-  
-  
   # safety check (in case some prefixes are missing columns)
   if (!all(c(sig_col, testCol) %in% names(df))) next
   
@@ -100,16 +382,102 @@ for (p in prefixes) {
     ifelse(df[[sig_col]] == TRUE,
            df[[testCol]],
            0)
+
 }
 rownames(resultAlternateTable) = resultAlternateTable$gene
 
 importantCols = c(2,4,6,8)
 
+sigInfo = data.frame(row.names = c("numTotal", "numSig", "FractionSig", "numSigPlus", "FractionSigPlus"))
+
 par(mfrow= c(2,2))
 for(i in importantCols){
-  imporantRows = which(resultAlternateTable[i] > 0 & !is.na(resultAlternateTable[i]))
-  hist(resultAlternateTable[imporantRows,c(i)], main = paste0(substr(colnames(resultAlternateTable)[i],0, 2), targetCol, " Num sig:", length(which(resultAlternateTable[imporantRows,c(i)] < 0.05)), " Fraction sig:", (round(length(which(resultAlternateTable[imporantRows,c(i)] < 0.05))/length(imporantRows),3 ))), breaks = c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.60, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0), xlim = c(0,1))
+  imporantRows = which(resultAlternateTable[i] != 0 & !is.na(resultAlternateTable[i]))
+  hist(resultAlternateTable[imporantRows,c(i)], main = paste0(substr(colnames(resultAlternateTable)[i],0, 2), targetCol, " Num sig:", length(which(resultAlternateTable[imporantRows,c(i)] < 0.05)), " Fraction sig:", (round(length(which(resultAlternateTable[imporantRows,c(i)] < 0.05))/length(imporantRows),3 ))), breaks = c(-1, 0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.60, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0), xlim = c(0,1))
+  #hist(resultAlternateTable[imporantRows,c(i)], main = paste0(substr(colnames(resultAlternateTable)[i],0, 2), targetCol, " Over 50:", round(length(which(resultAlternateTable[imporantRows,c(i)] > 50))/length(imporantRows),2), " Mean sig:", round((mean(resultAlternateTable[imporantRows,c(i)])), 0)))
+  
+  
+  numTotal = length(imporantRows)
+  numSig =  length(which(resultAlternateTable[imporantRows,c(i)] < 0.05))
+  FractionSig = length(which(resultAlternateTable[imporantRows,c(i)] < 0.05))/length(imporantRows)
+  numSigPlus = length(which(resultAlternateTable[imporantRows,c(i)] < 0.1 & resultAlternateTable[imporantRows,c(i)] > 0.05))
+  fractionSigPlus = length(which(resultAlternateTable[imporantRows,c(i)] < 0.1 & resultAlternateTable[imporantRows,c(i)] > 0.05))/length(imporantRows)
+  sigInfo = cbind(sigInfo, c(numTotal, numSig, FractionSig, numSigPlus, fractionSigPlus))
 }
+
+
+sum(sigInfo[2,])/sum(sigInfo[1,])
+sum(sigInfo[4,])/sum(sigInfo[1,])
+
+
+importantCols = c(2,4,6,8)
+importantCols = c(2,4,6)
+outVals = numeric()
+par(mfrow= c(2,2))
+for(i in importantCols){
+  imporantRows = which(resultAlternateTable[i] != 0 & !is.na(resultAlternateTable[i]))
+  outVals = append(outVals, resultAlternateTable[imporantRows,c(i)])
+  hist(resultAlternateTable[imporantRows,c(i)], main = paste0(substr(colnames(resultAlternateTable)[i],0, 2), targetCol, " Over 50:", round(length(which(resultAlternateTable[imporantRows,c(i)] > 50))/length(imporantRows),2), " Mean sig:", round((mean(resultAlternateTable[imporantRows,c(i)])), 0)))
+  
+}
+sum(outVals)/length(outVals)
+length(which(outVals > 50))/length(outVals)
+
+sum(sigInfo[2,])/sum(sigInfo[1,])
+sum(sigInfo[4,])/sum(sigInfo[1,])
+
+
+library(dplyr)
+library(ggplot2)
+library(ggpmisc)
+library(gridExtra)
+
+
+
+
+df = combinedCorrelations
+
+prefixes <- c("CH", "HI", "HV", "IV")
+
+plots <- lapply(prefixes, function(pref) {
+  
+  x_col <- paste0(pref, "-p.adj")
+  y_col <- paste0(pref, "-PadjMedian")
+  
+  df_clean <- df %>%
+    filter(!is.na(.data[[x_col]]), !is.na(.data[[y_col]]))
+  
+  p_all <- ggplot(df_clean, aes(x = .data[[x_col]], y = .data[[y_col]])) +
+    geom_point(alpha = 0.5) +
+    geom_smooth(method = "lm", se = TRUE) +
+    ggtitle(paste(pref, "- All Points")) +
+    stat_poly_eq(
+      aes(label = paste(..rr.label.., ..eq.label.., sep = "~~~")),
+      formula = y ~ x,
+      parse = TRUE
+    ) +
+    theme_minimal()+ scale_x_log10()+ scale_y_log10()
+  
+  p_sig <- df_clean %>%
+    filter(.data[[x_col]] < 0.05) %>%
+    ggplot(aes(x = .data[[x_col]], y = .data[[y_col]])) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(method = "lm", se = TRUE) +
+    ggtitle(paste(pref, "- p.adj < 0.05")) +
+    stat_poly_eq(
+      aes(label = paste(..rr.label.., ..eq.label.., sep = "~~~")),
+      formula = y ~ x,
+      parse = TRUE
+    ) +
+    theme_minimal()+ scale_x_log10() + scale_y_log10()
+  
+  list(all = p_all, sig = p_sig)
+})
+
+j=4
+grid.arrange(plots[[j]][[1]], plots[[j]][[2]], nrow=1)
+
+
 
 # ?hist
 

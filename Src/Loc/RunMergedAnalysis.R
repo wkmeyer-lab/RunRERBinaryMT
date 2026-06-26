@@ -18,6 +18,7 @@ library(data.table)
 args = c('r=CategoricalInsVertivoreTreeDuplicateLiamInference', 'm=data/zoonomiaAllMammalsTrees.rds')
 args = c('r=CategoricalInsVertivoreTreeNoYeastLiamInference', 'm=data/zoonomiaAllMammalsTrees.rds')
 
+args = c('r=ComplexDietCentralAnalysis', 'm=data/zoonomiaAllMammalsTrees.rds')
 
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)

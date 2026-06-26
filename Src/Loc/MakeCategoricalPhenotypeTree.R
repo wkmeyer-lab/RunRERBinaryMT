@@ -28,7 +28,7 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
 # p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
 # l = <T or F>                                           DO NOT USE UNLESS SPECIFIED -- This determines if the liam infrence nodes should be added 
-# e = <T or F>                                           This sets is alternate species sets should be created. 
+# e = <T or F>                                           This sets if alternate species sets should be created. 
 #----------------
 {
 args = c('r=CategoricalInsectRoot4Phen', 'a=Meyer.Lab.Classification', 'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore")', 'u=list(c("Generalist","_Omnivore"),c("Omnivore","_Omnivore"), c("Piscivore", "Carnivore"))',   'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=T', 't=ER', "n=Insectivore")
@@ -1787,6 +1787,15 @@ args = c('r=ComplexDietCentralAnalysisNoFamilyPrune', 'm=data/zoonomiaAllMammals
   
 }
 
+
+args = c('r=HarshalCategoricalRER', 'm=Data/HarshalFakeMainTrees.rds', 
+'d=Data/VGP_mammals_Diet.csv', 
+'n=Accession',
+'a=trophic_level',
+'c=c("Herbivore", "Carnivore", "Omnivore")',
+'v=T', 't=ER', 'l=T')
+
+
 #args = c('r=Demo', 'v=T', 'm=C:/Users/mit221/AppData/Local/R/win-library/4.2/RERconverge/extdata/SubsetMammalGeneTrees.txt', 'd=Results/DemoMergedData.csv', 'a=DemoDietPhenotype', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'n=demoTreeTipName')
 
 
@@ -2112,8 +2121,12 @@ if(!useLiam){
   
   masterTree = mainTrees$masterTree
   
-  nodesToAdd = c(455, 457, 471, 650, 492)
-  names(nodesToAdd) = c("Mammalia", "Marsupalia", "Placentalia", "Chiroptera", "Primates")
+  #nodesToAdd = c(455, 457, 471, 650, 492)
+  #names(nodesToAdd) = c("Mammalia", "Marsupalia", "Placentalia", "Chiroptera", "Primates")
+  #phenToAdd = c("Insectivore", "Insectivore", "Insectivore", "Insectivore", "Omnivore")
+  nodesToAdd = c(785)
+  names(nodesToAdd) = c("Placentalia")
+  phenToAdd = c("Carnivore")
   
   masterTreeAdded = masterTree
   for(i in 1:length(nodesToAdd)){
@@ -2123,7 +2136,7 @@ if(!useLiam){
   }
   mainTrees$masterTree = masterTreeAdded
   
-  phenToAdd = c("Insectivore", "Insectivore", "Insectivore", "Insectivore", "Omnivore")
+  
   names(phenToAdd) = names(nodesToAdd)
   
   phenotypeVector = append(phenotypeVector, phenToAdd)
