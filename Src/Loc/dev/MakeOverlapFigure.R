@@ -19,8 +19,10 @@ source("Src/Reu/cmdArgImport.R")
 
 
 vennColorset = c("darkblue", "red", "orange")
-vennColorset = c("#7570B3", "#E7298A", "orange")
 
+geneVennColorset = c("#7570B3", "#E7298A", "#FFA500")
+
+goVennColorset= c("#514c8e", "#b71568", "#bf7c00")
 
 
 
@@ -32,11 +34,45 @@ args = c("r=CategoricalInsvertivoreTree")
 args = c("r=CategoricalInsvertivoreTreeLiamInference")
 args = c("r=CategoricalInsvertivoreTreeFamilyAgnostictLiamInference")
 args = c("r=CategoricalInsvertivoreTreeNoYeastLiamInference")
+
+
+
+args = c("r=CategoricalInsvertivoreTreeLiamInference", 
+         "g=KeggReactome", 
+         'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
+         "d=T",'l=c("H>P", "P>H")')
+args = c("r=CategoricalInsvertivoreTreeLiamInference", 
+         "g=GO_Biological_Process_2023", 
+         'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
+         "d=T",'l=c("H>P", "P>H")')
+args = c("r=CategoricalInsvertivoreTreeLiamInference", 
+         "g=EnrichmentHsSymbolsFile2", 
+         'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
+         "d=T",'l=c("H>P", "P>H")')
+args = c("r=CategoricalInsvertivoreTreeLiamInference", 
+         "g=MGI_Mammalian_Phenotype_Level_4", 
+         'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
+         "d=T",'l=c("H>P", "P>H")')
+args = c("r=CategoricalInsvertivoreTreeLiamInference", 
+         "g=DisGeNET", 
+         'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
+         "d=T",'l=c("H>P", "P>H")')
+args = c("r=CategoricalInsvertivoreTreeLiamInference", 
+         "g=tissue_specific", 
+         'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
+         "d=T",'l=c("H>P", "P>H")')
+
 args = c("r=ComplexDietCentralAnalysis", 
          "g=KeggReactome", 
          'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
          "d=T",'l=c("H>P", "P>H")')
 
+args = c("r=ComplexDietCentralAnalysis", 
+         'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
+         "d=T",'l=c("H>P", "P>H")')
+
+
+{
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -354,14 +390,18 @@ if(makeDirectional){
 
 #Make the main plots 
 if(length(pairwiseSets)==3){ #can simply run directly if only running on three categories. 
+  vennColorset = geneVennColorset
   geneVenn = makeVennPlot(geneSignificanceResults, paste0("Genes (p.adj < ", significanceCutoff, ")"))
-  if(usingGo){goVenn = makeVennPlot(GoSignificanceResults, paste0("GO Categories (p.adj < ", significanceCutoff, ")"))}
+  vennColorset = goVennColorset
+  if(usingGo){goVenn = makeVennPlot(GoSignificanceResults, paste0("Gene Sets (p.adj < ", significanceCutoff, ")"))}
 }else if(length(vennDiagramSet)==3){ #if a correct set of three categories has been given for the venn diagram set, narrow down a larger selection to that set, then run the vennDiagram. 
   vennGeneSignificanceResults = trimSignificanceToVenn(geneSignificanceResults)
+  vennColorset = geneVennColorset
   geneVenn = makeVennPlot(vennGeneSignificanceResults, paste0("Genes (p.adj < ", significanceCutoff, ")"))
   if(usingGo){
     vennGoSignificanceResults = trimSignificanceToVenn(GoSignificanceResults)
-    goVenn = makeVennPlot(vennGoSignificanceResults, paste0("GO Categories (p.adj < ", significanceCutoff, ")"))
+    vennColorset = goVennColorset
+    goVenn = makeVennPlot(vennGoSignificanceResults, paste0("Gene Sets (p.adj < ", significanceCutoff, ")"))
   }
   
 }
@@ -376,55 +416,118 @@ if(makeDirectional){
   if(length(pairwiseSets)==3){ #can simply run directly if only running on three categories. 
     
     #Positive
+    vennColorset = geneVennColorset
     geneVennPositive = makeVennPlot(genePositiveSignificance, paste0(positiveLabel, " Genes (p.adj < ", significanceCutoff, ")"))
-    if(usingGo){goVennPositive = makeVennPlot(GoPositiveSignificance, paste0(positiveLabel, " GO Categories (p.adj < ", significanceCutoff, ")"))}
+    vennColorset = goVennColorset
+    if(usingGo){goVennPositive = makeVennPlot(GoPositiveSignificance, paste0(positiveLabel, " Gene Sets (p.adj < ", significanceCutoff, ")"))}
     
     #Negtive
+    vennColorset = geneVennColorset
     geneVennNegative = makeVennPlot(geneNegativeSignificance, paste0(negativeLabel, " Genes (p.adj < ", significanceCutoff, ")"))
-    if(usingGo){goVennNegative = makeVennPlot(GoNegativeSignificance, paste0(negativeLabel," GO Categories (p.adj < ", significanceCutoff, ")"))}
+    vennColorset = goVennColorset
+    if(usingGo){goVennNegative = makeVennPlot(GoNegativeSignificance, paste0(negativeLabel," Gene Sets (p.adj < ", significanceCutoff, ")"))}
   }else if(length(vennDiagramSet)==3){ #if a correct set of three categories has been given for the venn diagram set, narrow down a larger selection to that set, then run the vennDiagram. 
     
     #Positive
     vennGeneSignificanceResultsPositive = trimSignificanceToVenn(genePositiveSignificance)
+    vennColorset = geneVennColorset
     geneVennPositive = makeVennPlot(vennGeneSignificanceResultsPositive, paste0(positiveLabel," Genes (p.adj < ", significanceCutoff, ")"))
     if(usingGo){
       vennGoSignificanceResultsPositive = trimSignificanceToVenn(GoPositiveSignificance)
-      goVennPositive = makeVennPlot(vennGoSignificanceResultsPositive, paste0(positiveLabel," GO Categories (p.adj < ", significanceCutoff, ")"))
+      vennColorset = goVennColorset
+      goVennPositive = makeVennPlot(vennGoSignificanceResultsPositive, paste0(positiveLabel," Gene Sets (p.adj < ", significanceCutoff, ")"))
     }
     
     #Negative
     vennGeneSignificanceResultsNegative = trimSignificanceToVenn(geneNegativeSignificance)
+    vennColorset = geneVennColorset
     geneVennNegative = makeVennPlot(vennGeneSignificanceResultsNegative, paste0(negativeLabel, " Genes (p.adj < ", significanceCutoff, ")"))
     if(usingGo){
       vennGoSignificanceResultsNegative = trimSignificanceToVenn(GoNegativeSignificance)
-      goVennNegative = makeVennPlot(vennGoSignificanceResultsNegative, paste0(negativeLabel, " GO Categories (p.adj < ", significanceCutoff, ")"))
+      vennColorset = goVennColorset
+      goVennNegative = makeVennPlot(vennGoSignificanceResultsNegative, paste0(negativeLabel, " Gene Sets (p.adj < ", significanceCutoff, ")"))
     }
     
   }
   
   if(usingGo){
     combinedDirectionVenn = grid.arrange(geneVennPositive, goVennPositive, geneVennNegative,  goVennNegative, nrow = 2, padding = unit(1, "line"))
+    positiveResultsNumber = sum(apply(vennGoSignificanceResultsPositive, 1, function(x) any(x == TRUE, na.rm = TRUE)))
+    negativeResultsNumber = sum(apply(vennGoSignificanceResultsNegative, 1, function(x) any(x == TRUE, na.rm = TRUE)))
+    ratio = positiveResultsNumber/negativeResultsNumber
+    combinedDirectionVenn = grid.arrange(goVennPositive, goVennNegative, nrow = 2, padding = unit(1, "line"), heights = c(ratio, 1))
   }else{
-    combinedDirectionVenn = grid.arrange(geneVennPositive, geneVennNegative, nrow = 1, padding = unit(1, "line"))
+    positiveResultsNumber = sum(apply(vennGeneSignificanceResultsPositive, 1, function(x) any(x == TRUE, na.rm = TRUE)))
+    negativeResultsNumber = sum(apply(vennGeneSignificanceResultsNegative, 1, function(x) any(x == TRUE, na.rm = TRUE)))
+    ratio = positiveResultsNumber/negativeResultsNumber
+    combinedDirectionVenn = grid.arrange(geneVennPositive, geneVennNegative, nrow = 2, padding = unit(1, "line"), heights = c(ratio, 1))
   }
   
-  allVenn = grid.arrange(combinedVenn, combinedDirectionVenn, nrow = 1, padding = unit(1, "line"))
-  allVenn = grid.arrange(geneVenn,goVenn, combinedDirectionVenn, nrow = 1, padding = unit(1, "line"))
+  if(usingGo){
+    allVenn = grid.arrange(geneVenn,goVenn, combinedDirectionVenn, nrow = 1, padding = unit(1, "line"))
+    
+    vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
+    pdf(vennDiagramFilename, height = 12, width = 16)
+    plot(combinedVenn)
+    dev.off()
+    
+    vennDirectionalDiagramFilename = paste0(outputFolderName, filePrefix, "VennDirectionalDiagram", geneSet, ".pdf")
+    pdf(vennDirectionalDiagramFilename, height = 12, width = 12)
+    plot(combinedDirectionVenn)
+    dev.off()
+    
+    vennCombinedDiagramFilename = paste0(outputFolderName, filePrefix, "VennCombinedDiagram", geneSet, ".pdf")
+    pdf(vennCombinedDiagramFilename, height = 16, width = 36)
+    plot(allVenn)
+    dev.off()
+    
+    
+    largerOfDirections = max(positiveResultsNumber, negativeResultsNumber)
+    totalResultsNumber = sum(apply(vennGoSignificanceResults, 1, function(x) any(x == TRUE, na.rm = TRUE)))
+    totalRatio = totalResultsNumber/largerOfDirections
+    allVenn = grid.arrange(goVenn, combinedDirectionVenn, nrow = 1, padding = unit(1, "line"), widths = c(totalRatio, 1))
+    
+    vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
+    pdf(vennDiagramFilename, height = 6, width = 6)
+    plot(combinedVenn)
+    dev.off()
+    
+    vennDirectionalDiagramFilename = paste0(outputFolderName, filePrefix, "VennDirectionalDiagram", geneSet, ".pdf")
+    pdf(vennDirectionalDiagramFilename, height = 6, width = 6)
+    plot(combinedDirectionVenn)
+    dev.off()
+    
+    vennCombinedDiagramFilename = paste0(outputFolderName, filePrefix, "VennCombinedDiagram", geneSet, ".pdf")
+    pdf(vennCombinedDiagramFilename, height = 12, width = 19.2)
+    plot(allVenn)
+    dev.off()
+    
+  }else{
+    largerOfDirections = max(positiveResultsNumber, negativeResultsNumber)
+    totalResultsNumber = sum(apply(geneSignificanceResults, 1, function(x) any(x == TRUE, na.rm = TRUE)))
+    totalRatio = totalResultsNumber/largerOfDirections
+    allVenn = grid.arrange(combinedVenn, combinedDirectionVenn, nrow = 1, padding = unit(1, "line"), widths = c(totalRatio, 1))
+    
+    vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
+    pdf(vennDiagramFilename, height = 6, width = 6)
+    plot(combinedVenn)
+    dev.off()
+    
+    vennDirectionalDiagramFilename = paste0(outputFolderName, filePrefix, "VennDirectionalDiagram", geneSet, ".pdf")
+    pdf(vennDirectionalDiagramFilename, height = 6, width = 6)
+    plot(combinedDirectionVenn)
+    dev.off()
+    
+    vennCombinedDiagramFilename = paste0(outputFolderName, filePrefix, "VennCombinedDiagram", geneSet, ".pdf")
+    pdf(vennCombinedDiagramFilename, height = 12, width = 19.2)
+    plot(allVenn)
+    dev.off()
+  }
   
-  vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
-  pdf(vennDiagramFilename, height = 12, width = 16)
-  plot(combinedVenn)
-  dev.off()
   
-  vennDirectionalDiagramFilename = paste0(outputFolderName, filePrefix, "VennDirectionalDiagram", geneSet, ".pdf")
-  pdf(vennDirectionalDiagramFilename, height = 12, width = 12)
-  plot(combinedDirectionVenn)
-  dev.off()
   
-  vennCombinedDiagramFilename = paste0(outputFolderName, filePrefix, "VennCombinedDiagram", geneSet, ".pdf")
-  pdf(vennCombinedDiagramFilename, height = 12, width = 32)
-  plot(allVenn)
-  dev.off()
+  
+
   
   
 }else{
@@ -433,7 +536,7 @@ if(makeDirectional){
   plot(combinedVenn)
   dev.off() 
 }
-
+}
 
 
 
