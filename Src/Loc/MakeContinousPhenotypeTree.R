@@ -49,7 +49,11 @@ args = c('r=ContinousCdcaCf', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=cf','v=F'
 args = c('r=ContinousCdcaAsh', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=ash','v=F', 'n=ZoonomiaTip')
 args = c('r=ContinousCdcaNfe', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=nfe','v=F', 'n=ZoonomiaTip')
 
-
+args = c('r=HarshalContinousRER', 'm=Data/HarshalFakeMainTrees.rds', 
+         'd=Data/VGP_ALDH1A1_Accession.csv', 
+         'n=Accession',
+         'a=ALDH1A1',
+         'v=T', 't=ER', 'l=T')
 
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -272,7 +276,10 @@ names(phenotypeVector) = speciesNames                                           
 
 #remove species with an NA phenotype
 speciesMissingPhenotypeData = which(is.na(phenotypeVector))
-phenotypeVector = phenotypeVector[-speciesMissingPhenotypeData]
+if(length(speciesMissingPhenotypeData) >0){
+  phenotypeVector = phenotypeVector[-speciesMissingPhenotypeData]
+}
+
 
 phenotypeVectorFilename = paste(outputFolderName, filePrefix, "ContinuousPhenotypeVector.rds",sep="") #make a filename based on the prefix
 saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        #save the phenotype vector
