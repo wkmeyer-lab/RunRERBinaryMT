@@ -1788,12 +1788,19 @@ args = c('r=ComplexDietCentralAnalysisNoFamilyPrune', 'm=data/zoonomiaAllMammals
 }
 
 
-args = c('r=HarshalCategoricalRER', 'm=Data/HarshalFakeMainTrees.rds', 
+args = c('r=HarshalCategoricalRERNew', 'm=Data/HarshalFakeMainTrees.rds', 
 'd=Data/VGP_mammals_Diet.csv', 
 'n=Accession',
 'a=trophic_level',
 'c=c("Herbivore", "Carnivore", "Omnivore")',
 'v=T', 't=ER', 'l=T')
+
+args = c('r=PosterTreeNew', 'm=Data/LeahFakeMainTrees.rds', 
+         'd=Data/LeahPosterData.csv', 
+         'n=ScientificName',
+         'a=Four_Diet',
+         'c=c("Herbivore", "Vertivore", "Invertivore", "Omnivore")',
+         'v=T', 't=ER', 'l=F')
 
 
 #args = c('r=Demo', 'v=T', 'm=C:/Users/mit221/AppData/Local/R/win-library/4.2/RERconverge/extdata/SubsetMammalGeneTrees.txt', 'd=Results/DemoMergedData.csv', 'a=DemoDietPhenotype', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'n=demoTreeTipName')

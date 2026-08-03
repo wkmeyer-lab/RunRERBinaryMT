@@ -21,6 +21,9 @@ args =c("r=makeLalithaTree", 'p=c("darkgreen", "darkblue", "black")', 'c=c("1", 
 args =c("r=CategoricalInsVertivoreTreeLiamInference", 'p=c("darkgreen", "darkblue", "black", "red")', 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
 args =c("r=ComplexDietCentralAnalysis", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
 
+args =c("r=ComplexDietCentralAnalysis", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
+args =c("r=LeahCategoricalRERNew", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=Species', "l=Diet", "i=T", "d=Data/LeahFakeMainTrees.rds")
+args =c("r=PosterTreeNew", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=SciencificName', "l=Diet", "i=T", "m=Data/LeahFakeMainTrees.rds", "d=Data/LeahPosterData.csv")
 
 
 # -- Standard Startup code -- 
@@ -421,15 +424,17 @@ if(!imageAllTips){
 
 #output the tree
 treeOutputLocation = paste0(outputFolderName, filePrefix, "RadialDisplayTree.pdf")
-pdf(treeOutputLocation)
+pdf(treeOutputLocation, width = 18, height = 20)
 #ggTreeClades + rphylopic::geom_phylopic(data = ggTreeClades$data, aes(uuid = phylopic, x = x_new, y= y_new),size = 0.02)
 ggTreeClades + ggimage:: geom_phylopic(data = ggTreeClades$data, aes(image = phylopic, x = x_new, y= y_new),size = 0.02)
+ggTreeClades + geom_tiplab()+ theme(legend.position = "none")
 dev.off()
 
 treeOutputLocation = paste0(outputFolderName, filePrefix, "RadialDisplayTree.png")
-png(treeOutputLocation, 3000, 3000)
+png(treeOutputLocation, 1400, 1400)
 #ggTreeClades + rphylopic::geom_phylopic(data = ggTreeClades$data, aes(uuid = phylopic, x = x_new, y= y_new),size = 0.02)
 ggTreeClades + ggimage:: geom_phylopic(data = ggTreeClades$data, aes(image = phylopic, x = x_new, y= y_new),size = 0.02)
+ggTreeClades + geom_tiplab()
 dev.off()
 
 

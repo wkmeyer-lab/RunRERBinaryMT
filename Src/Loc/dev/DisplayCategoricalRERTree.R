@@ -1,8 +1,8 @@
 library(scales)
 source("Src/Reu/ZonomNameConvertVectorCommon.R")
-displayCategoricalRERTree = function(treesObj, rermat, index, phenv = NULL, subsetTree = T, equalLengths = T, minWidth = 1, maxWidth = 6, tipCol = "tipColumn"){
-  treesObj$trees[[index]]$tip.label = ZonomNameConvertVectorCommon(treesObj$trees[[index]]$tip.label, tipColumn = tipCol)
-  treesObj$masterTree$tip.label = ZonomNameConvertVectorCommon(treesObj$masterTree$tip.label, tipColumn = tipCol)
+displayCategoricalRERTree = function(treesObj, rermat, index, phenv = NULL, subsetTree = T, equalLengths = T, minWidth = 1, maxWidth = 6, tipCol = "tipColumn", annotLocation = "Data/mergedData.csv"){
+  treesObj$trees[[index]]$tip.label = ZonomNameConvertVectorCommon(treesObj$trees[[index]]$tip.label, tipColumn = tipCol, annotationLocation = annotLocation)
+  treesObj$masterTree$tip.label = ZonomNameConvertVectorCommon(treesObj$masterTree$tip.label, tipColumn = tipCol, annotationLocation = annotLocation)
   colnames(rermat) = ZonomNameConvertVectorCommon(colnames(rermat), tipColumn = tipCol)
   returnRersAsTreeNew(treesObj, rermat, index, phenv, 0.7, 0.7, 'NA', T, subsetTree, equalLengths, minWidth, maxWidth)
 }

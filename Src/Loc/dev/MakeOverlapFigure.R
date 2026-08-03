@@ -16,7 +16,7 @@ source("Src/Reu/cmdArgImport.R")
 # -- argument setup  -- 
 
 
-
+palette(c("black", "#514c8e", "#b71568", "#bf7c00"))
 
 vennColorset = c("darkblue", "red", "orange")
 
@@ -69,7 +69,7 @@ args = c("r=ComplexDietCentralAnalysis",
 
 args = c("r=ComplexDietCentralAnalysis", 
          'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
-         "d=T",'l=c("H>P", "P>H")')
+         "d=T",'l=c("H>P", "P>H")', 'z=50')
 
 
 {
@@ -194,36 +194,60 @@ if(is.null(positiveLabel)){
 
 
 # -- Read Data 
-combinedGeneDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
-combinedResults = readRDS(combinedGeneDataFilename)
-
-if(usePermulations){
-  significanceColumns = names(combinedResults)[grep("permSignificant", names(combinedResults))]
+combinedGeneDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResultsWithAlternates.rds")
+if(file.exists(combinedGeneDataFilename)){
+  useAlternates = T
+  combinedResults = readRDS(combinedGeneDataFilename)
+  
 }else{
-  significanceColumns = names(combinedResults)[grep("unpermSignificant", names(combinedResults))]
+  combinedGeneDataFilename = paste0(outputFolderName, filePrefix, "combinedGeneResults.rds")
+  combinedResults = readRDS(combinedGeneDataFilename)
 }
-#backward compatibility to load in old files if the new names don't exist 
-if(length(grep("permSignificant", names(combinedResults))) == 0 && length(grep("unpermSignificant", names(combinedResults))) == 0){
-  significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
+
+if(useAlternates){
+  significanceColumns = names(combinedResults)[grep("PadjNumSignificant", names(combinedResults))]
+}else{
+  if(usePermulations){
+    significanceColumns = names(combinedResults)[grep("permSignificant", names(combinedResults))]
+  }else{
+    significanceColumns = names(combinedResults)[grep("unpermSignificant", names(combinedResults))]
+  }
+  #backward compatibility to load in old files if the new names don't exist 
+  if(length(grep("permSignificant", names(combinedResults))) == 0 && length(grep("unpermSignificant", names(combinedResults))) == 0){
+    significanceColumns = names(combinedResults)[grep("significant", names(combinedResults))]
+  }
 }
+
+
+
+
 
 
 geneSignificanceResults = combinedResults[, names(combinedResults) %in% significanceColumns]
 
 if(usingGo){
-  combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
-  GoCombinedResults = readRDS(combinedGODataFilename)
-  
-  if(usePermulations){
-    GoSignificanceColumns = names(GoCombinedResults)[grep("permSignificant", names(GoCombinedResults))]
+  combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResultsWithAlternates-", geneSet, ".rds")
+  if(file.exists(combinedGODataFilename)){
+    GoCombinedResults = readRDS(combinedGODataFilename)
   }else{
-    GoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
-  }
-  #backward compatibility to load in old files if the new names don't exist 
-  if(length(grep("permSignificant", names(GoCombinedResults))) == 0 && length(grep("unpermSignificant", names(GoCombinedResults))) == 0){
-    GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
+    combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
+    GoCombinedResults = readRDS(combinedGODataFilename)
   }
   
+
+  if(useAlternates){
+    significanceColumns = names(combinedResults)[grep("PadjNumSignificant", names(combinedResults))]
+  }else{
+    if(usePermulations){
+      GoSignificanceColumns = names(GoCombinedResults)[grep("permSignificant", names(GoCombinedResults))]
+    }else{
+      GoSignificanceColumns = names(GoCombinedResults)[grep("unpermSignificant", names(GoCombinedResults))]
+    }
+    #backward compatibility to load in old files if the new names don't exist 
+    if(length(grep("permSignificant", names(GoCombinedResults))) == 0 && length(grep("unpermSignificant", names(GoCombinedResults))) == 0){
+      GoSignificanceColumns = names(GoCombinedResults)[grep("significant", names(GoCombinedResults))]
+    }
+  }
   GoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% GoSignificanceColumns]
 }
 
@@ -275,7 +299,8 @@ addDashes = function(vector) {
   # Make required functions 
   
   trimSignificanceToVenn = function(significanceResults){
-    trimableComparisions = gsub("Significant", "", names(significanceResults))
+    trimableComparisions = gsub("-PadjNumSignificant", "", names(significanceResults))
+    trimableComparisions = gsub("Significant", "", trimableComparisions)
     trimableComparisions = gsub("significant", "", trimableComparisions)
     trimableComparisions = gsub("unperm", "", trimableComparisions)
     trimableComparisions = gsub("perm", "", trimableComparisions)
@@ -287,10 +312,18 @@ addDashes = function(vector) {
   
   
   makeVennPlot = function(vennInputDataframe, mainTitle, plot = T){
-    # Build logical vectors for each set
-    set1 <- vennInputDataframe[1] == TRUE
-    set2 <- vennInputDataframe[2] == TRUE
-    set3 <- vennInputDataframe[3] == TRUE
+    
+    if(useAlternates){
+      set1 <- vennInputDataframe[1] > significanceCutoff
+      set2 <- vennInputDataframe[2] > significanceCutoff
+      set3 <- vennInputDataframe[3] > significanceCutoff
+    }else{
+      # Build logical vectors for each set
+      set1 <- vennInputDataframe[1] == TRUE
+      set2 <- vennInputDataframe[2] == TRUE
+      set3 <- vennInputDataframe[3] == TRUE
+    }
+
     
     # Create the Venn counts for each region
     vennCounts = c(
@@ -304,6 +337,7 @@ addDashes = function(vector) {
     )
     
     comparisonPrefixes = gsub("Significant", "", names(vennInputDataframe))
+    comparisonPrefixes = gsub("-PadjNum", "", comparisonPrefixes)
     comparisonPrefixes = gsub("significant", "", comparisonPrefixes)
     comparisonPrefixes = gsub("-unperm", "", comparisonPrefixes)
     comparisonPrefixes = gsub("-perm", "", comparisonPrefixes)
@@ -370,7 +404,7 @@ addDashes = function(vector) {
 
 #Make the directional data if using it 
 if(makeDirectional){
-  statColumns = names(combinedResults)[grep("Rho", names(combinedResults))]
+  statColumns = names(combinedResults)[grep("Rho$", names(combinedResults))]
   geneSignificanceResultsDirection = combinedResults[, names(combinedResults) %in% c(significanceColumns, statColumns)]
   
   geneDirectionalSignificanceResults = makeDirectionalResults(geneSignificanceResultsDirection, statColumns)
@@ -387,21 +421,29 @@ if(makeDirectional){
   }
 }
 
+if(useAlternates){
+  mainTitle = paste0("All Genes")
+  mainGoTitle = paste0("All Gene sets")
+}else{
+  mainTitle = paste0("All Genes (p.adj < ", significanceCutoff, ")")
+  mainGoTitle = paste0("All Gene sets (p.adj < ", significanceCutoff, ")")
+}
+
 
 #Make the main plots 
 if(length(pairwiseSets)==3){ #can simply run directly if only running on three categories. 
   vennColorset = geneVennColorset
-  geneVenn = makeVennPlot(geneSignificanceResults, paste0("Genes (p.adj < ", significanceCutoff, ")"))
+  geneVenn = makeVennPlot(geneSignificanceResults, mainTitle)
   vennColorset = goVennColorset
-  if(usingGo){goVenn = makeVennPlot(GoSignificanceResults, paste0("Gene Sets (p.adj < ", significanceCutoff, ")"))}
+  if(usingGo){goVenn = makeVennPlot(GoSignificanceResults, mainGoTitle)}
 }else if(length(vennDiagramSet)==3){ #if a correct set of three categories has been given for the venn diagram set, narrow down a larger selection to that set, then run the vennDiagram. 
   vennGeneSignificanceResults = trimSignificanceToVenn(geneSignificanceResults)
   vennColorset = geneVennColorset
-  geneVenn = makeVennPlot(vennGeneSignificanceResults, paste0("Genes (p.adj < ", significanceCutoff, ")"))
+  geneVenn = makeVennPlot(vennGeneSignificanceResults, mainTitle)
   if(usingGo){
     vennGoSignificanceResults = trimSignificanceToVenn(GoSignificanceResults)
     vennColorset = goVennColorset
-    goVenn = makeVennPlot(vennGoSignificanceResults, paste0("Gene Sets (p.adj < ", significanceCutoff, ")"))
+    goVenn = makeVennPlot(vennGoSignificanceResults, mainGoTitle)
   }
   
 }
@@ -412,40 +454,49 @@ if(usingGo){
 }
 
 if(makeDirectional){
+ 
+  if(useAlternates){
+    directionalTitle = paste0(" Genes")
+    directionalGoTitle = paste0(" Gene sets")
+  }else{
+    directionalTitle = paste0(" Genes (p.adj < ", significanceCutoff, ")")
+    directionalGoTitle = paste0(" Gene sets (p.adj < ", significanceCutoff, ")")
+  }
   
+   
   if(length(pairwiseSets)==3){ #can simply run directly if only running on three categories. 
     
     #Positive
     vennColorset = geneVennColorset
-    geneVennPositive = makeVennPlot(genePositiveSignificance, paste0(positiveLabel, " Genes (p.adj < ", significanceCutoff, ")"))
+    geneVennPositive = makeVennPlot(genePositiveSignificance, paste0(positiveLabel, directionalTitle))
     vennColorset = goVennColorset
-    if(usingGo){goVennPositive = makeVennPlot(GoPositiveSignificance, paste0(positiveLabel, " Gene Sets (p.adj < ", significanceCutoff, ")"))}
+    if(usingGo){goVennPositive = makeVennPlot(GoPositiveSignificance, paste0(positiveLabel, directionalGoTitle))}
     
     #Negtive
     vennColorset = geneVennColorset
-    geneVennNegative = makeVennPlot(geneNegativeSignificance, paste0(negativeLabel, " Genes (p.adj < ", significanceCutoff, ")"))
+    geneVennNegative = makeVennPlot(geneNegativeSignificance, paste0(negativeLabel, directionalTitle))
     vennColorset = goVennColorset
-    if(usingGo){goVennNegative = makeVennPlot(GoNegativeSignificance, paste0(negativeLabel," Gene Sets (p.adj < ", significanceCutoff, ")"))}
+    if(usingGo){goVennNegative = makeVennPlot(GoNegativeSignificance, paste0(negativeLabel,directionalGoTitle))}
   }else if(length(vennDiagramSet)==3){ #if a correct set of three categories has been given for the venn diagram set, narrow down a larger selection to that set, then run the vennDiagram. 
     
     #Positive
     vennGeneSignificanceResultsPositive = trimSignificanceToVenn(genePositiveSignificance)
     vennColorset = geneVennColorset
-    geneVennPositive = makeVennPlot(vennGeneSignificanceResultsPositive, paste0(positiveLabel," Genes (p.adj < ", significanceCutoff, ")"))
+    geneVennPositive = makeVennPlot(vennGeneSignificanceResultsPositive, paste0(positiveLabel,directionalTitle))
     if(usingGo){
       vennGoSignificanceResultsPositive = trimSignificanceToVenn(GoPositiveSignificance)
       vennColorset = goVennColorset
-      goVennPositive = makeVennPlot(vennGoSignificanceResultsPositive, paste0(positiveLabel," Gene Sets (p.adj < ", significanceCutoff, ")"))
+      goVennPositive = makeVennPlot(vennGoSignificanceResultsPositive, paste0(positiveLabel,directionalGoTitle))
     }
     
     #Negative
     vennGeneSignificanceResultsNegative = trimSignificanceToVenn(geneNegativeSignificance)
     vennColorset = geneVennColorset
-    geneVennNegative = makeVennPlot(vennGeneSignificanceResultsNegative, paste0(negativeLabel, " Genes (p.adj < ", significanceCutoff, ")"))
+    geneVennNegative = makeVennPlot(vennGeneSignificanceResultsNegative, paste0(negativeLabel, directionalTitle))
     if(usingGo){
       vennGoSignificanceResultsNegative = trimSignificanceToVenn(GoNegativeSignificance)
       vennColorset = goVennColorset
-      goVennNegative = makeVennPlot(vennGoSignificanceResultsNegative, paste0(negativeLabel, " Gene Sets (p.adj < ", significanceCutoff, ")"))
+      goVennNegative = makeVennPlot(vennGoSignificanceResultsNegative, paste0(negativeLabel, directionalGoTitle))
     }
     
   }
