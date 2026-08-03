@@ -221,6 +221,52 @@ combinedData = cbind(combinedData, alternatesSingleDF)
 }
 
 
+# --- Add column which includes the main analysis as an alternate
+
+prefixes <- unique(sub("-.*", "", names(combinedData)))
+
+for (prefix in prefixes) {
+  
+  p_col <- paste0(prefix, "-P")
+  padj_col <- paste0(prefix, "-p.adj")
+  
+  pnum_col <- paste0(prefix, "-PNumSignificant")
+  padjnum_col <- paste0(prefix, "-PadjNumSignificant")
+  
+  # skip if columns don't exist
+  if (!all(c(p_col, padj_col, pnum_col, padjnum_col) %in% names(combinedData))) next
+  
+  # new column names
+  pnum_new <- paste0(prefix, "-PNumSignificant_Inclusive")
+  padjnum_new <- paste0(prefix, "-PadjNumSignificant_Inclusive")
+  
+  # create new values
+  combinedData[[pnum_new]] <- combinedData[[pnum_col]] + 
+    ifelse(combinedData[[p_col]] < 0.05, 1, 0)
+  
+  combinedData[[padjnum_new]] <- combinedData[[padjnum_col]] + 
+    ifelse(combinedData[[padj_col]] < 0.05, 1, 0)
+  
+  # move columns to correct position (after originals)
+  p_index <- match(pnum_col, names(combinedData))
+  padj_index <- match(padjnum_col, names(combinedData))
+  
+  # reorder for PNum
+  combinedData <- combinedData[, append(
+    names(combinedData)[-which(names(combinedData) == pnum_new)],
+    pnum_new,
+    after = p_index
+  )]
+  
+  # reorder for PadjNum
+  combinedResults <- combinedResults[, append(
+    names(combinedResults)[-which(names(combinedResults) == padjnum_new)],
+    padjnum_new,
+    after = padj_index
+  )]
+}
+
+
 
 if(saveData){
   
