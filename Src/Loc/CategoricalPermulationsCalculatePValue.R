@@ -24,6 +24,7 @@ library(data.table)
 #----------------
 args = (c('r=CategoricalDiet3Phen', "n=2", "t=Dev"))
 args = (c('r=CategoricalInsVertivoreTreeLiamInference', "n=2", "s=7"))
+args = (c('r=ComplexDietCentralAnalysis', 'c=T'))
 
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
@@ -327,7 +328,7 @@ if(calulateValue){
     if(metacombineValue == F){
       combinedDataFileName = paste(outputFolderName, filePrefix, "Collected", permulationPrefix,"PermulationsIntermediatesExtemity", runInstanceValue, ".rds", sep="")
     }else{
-      combinedDataFileName = paste(outputFolderName, filePrefix, "Collected", permulationPrefix, "PermulationsIntermediatesExtemity", runInstanceValue, ".rds", sep="")
+      combinedDataFileName = paste(outputFolderName, filePrefix, "MetaCollected", permulationPrefix, "PermulationsIntermediatesExtemity", runInstanceValue, ".rds", sep="")
     }
     CombinedIntermediates = readRDS(combinedDataFileName)
   }

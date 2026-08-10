@@ -89,6 +89,9 @@ args = c('r=CategoricalInsVertivoreTreeDuplicateLiamInference', 'm=c("Data/KeggR
 args = c('r=ComplexDietCentralAnalysis', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Carnivore-Herbivore", "Overall")' )
 
 
+args = c('r=ComplexDietCentralAnalysis', 'm=c("Data/KeggReactome.gmt")', 'p=C', 's=c("Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
+
+
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
 {  # Bracket used for collapsing purposes
@@ -209,9 +212,6 @@ for(i in 1:length(subdirectoryValueList)){
   
   if(usePermulations){                                                            #If permualtions are being used   
     if(useCategoricalPermulations){
-      if(exists(correlationData$PermP.adj)){
-        correlationData$P = correlationData$permP.adj
-      }else{
         correlationData$P = correlationData$permP
       }
     }else{
