@@ -86,6 +86,7 @@ saveData = T
 usingGene = T
 saveCombinedData = T
 usePermulations = F
+addPermulations = F
 
 
 { # Bracket used for collapsing purposes
@@ -133,9 +134,15 @@ usePermulations = F
     message("saveData not specified, using TRUE")
   }
   
-  #Use Permualtions 
+  #Use Permulations 
   if(!is.na(cmdArgImport('l'))){
-    usePermulations = as.logical(cmdArgImport('l'))
+    if(cmdArgImport('l') == "A"){
+      usePermulations = T
+      addPermulations = T
+    }else{
+      usePermulations = as.logical(cmdArgImport('l'))
+    }
+
   }else{
     message("use Permulations not specified, using FLASE")
   }
@@ -194,6 +201,11 @@ if(usingGene){
           currentResults$permSignificant = currentResults$permP < significanceCutoff
           currentResults$unpermSignificant = currentResults$p.adj < significanceCutoff
         }
+        if(addPermulations){
+          currentResults$significant = currentResults$unpermSignificant
+        }else{
+          currentResults$significant = currentResults$permSignificant
+        }
       }else{
         currentResults$significant = currentResults$p.adj < significanceCutoff
       }
@@ -236,7 +248,7 @@ if(usingGene){
   # -- Add overlap information -- 
 
   #Permualted
-  if(usePermulations){
+  if(usePermulations & !addPermulations){
     permSignificanceColumns = names(combinedResults)[grep("permSignificant", names(combinedResults))]
     permGeneSignificanceResults = combinedResults[, names(combinedResults) %in% permSignificanceColumns]
     
@@ -354,6 +366,11 @@ if(usingGo){
         currentGoData$permSignificant = currentGoData$permP < significanceCutoff
         currentGoData$unpermSignificant = currentGoData$p.adj < significanceCutoff
       }
+      if(addPermulations){
+        currentGoData$significant = currentGoData$unpermSignificant
+      }else{
+        currentGoData$significant = currentGoData$permSignificant
+      }
     }else{
       currentGoData$significant = currentGoData$p.adj < significanceCutoff
     }
@@ -396,7 +413,7 @@ if(usingGo){
   
   # -- Add overlap information -- 
   
-  if(usePermulations){
+  if(usePermulations & !addPermulations){
     #Permulated
     permGoSignificanceColumns = names(GoCombinedResults)[grep("PermSignificant", names(GoCombinedResults))]
     permGoSignificanceResults = GoCombinedResults[, names(GoCombinedResults) %in% permGoSignificanceColumns]
