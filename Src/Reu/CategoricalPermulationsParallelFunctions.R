@@ -249,7 +249,7 @@ CategoricalCalculatePValueFromCollectedIntermediates = function(CollectedInterme
 }
 
 
-processPermulatedPValue = function(inputData, adjustMetod = "bh"){
+processPermulatedPValue = function(inputData, adjustMetod = "BH"){
   inputData$permP.adj = p.adjust(inputData$permP, adjustMetod) 
   
   inputData = inputData[order(inputData$permP.adj),]
