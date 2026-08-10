@@ -228,7 +228,7 @@ if(!onlyCalulateValue){
       message("Time to save combine permulations: ", fileSavingTime, attr(fileSavingTime, "units"))
       
   }else{
-    
+    combinationSectionStart = Sys.time()
     basePermulationsFilename = paste(outputFolderName, filePrefix, "Collected", permulationPrefix, "PermulationsIntermediatesExtemity",  sep="")
     
     # - First permulation file
