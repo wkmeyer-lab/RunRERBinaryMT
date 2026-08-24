@@ -65,11 +65,11 @@ args = c("r=CategoricalInsvertivoreTreeLiamInference",
 args = c("r=ComplexDietCentralAnalysis", 
          "g=KeggReactome", 
          'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
-         "d=T",'l=c("H>P", "P>H")')
+         "d=T",'l=c("H>P", "P>H")', 'a=T')
 
 args = c("r=ComplexDietCentralAnalysis", 
          'n=c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore")',
-         "d=T",'l=c("H>P", "P>H")', 'z=50')
+         "d=T",'l=c("H>P", "P>H")', 'z=50', 'a=T')
 
 
 {
@@ -117,6 +117,7 @@ makeDirectional = T
 positiveLabel = NULL
 negativeLabel = NULL
 bothAxis = T
+useMainAndRobust = F
 
 
 
@@ -177,17 +178,25 @@ bothAxis = T
   }else{
     message("No directiona labels specified, not using positive and negative.")
   }
+  
+  #Use Main robust to alternates
+  if(!any(is.na(cmdArgImport('a')))){
+    useMainAndRobust = cmdArgImport('a')
+    useMainAndRobust = as.logical(useMainAndRobust)
+  }else{
+    message("Not using main + robustness; either just main or just alternates.")
+  }
+  
+
+  usingGo = !is.null(geneSet)
+  if(is.null(positiveLabel)){
+    positiveLabel = "Positive"
+  }
+  if(is.null(positiveLabel)){
+    positiveLabel = "Negative"
+  }
 
 }
-
-usingGo = !is.null(geneSet)
-if(is.null(positiveLabel)){
-  positiveLabel = "Positive"
-}
-if(is.null(positiveLabel)){
-  positiveLabel = "Negative"
-}
-
 #------------------------------------------------
 # -- OVerlap Figure exclusive code -- 
 #------------------------------------------------
@@ -205,7 +214,12 @@ if(file.exists(combinedGeneDataFilename)){
 }
 
 if(useAlternates){
-  significanceColumns = names(combinedResults)[grep("PadjNumSignificant", names(combinedResults))]
+  if(useMainAndRobust){
+    significanceColumns = names(combinedResults)[grep("significantRobust", names(combinedResults))]
+  }else{
+    significanceColumns = names(combinedResults)[grep("PadjNumSignificant", names(combinedResults))]
+  }
+
 }else{
   if(usePermulations){
     significanceColumns = names(combinedResults)[grep("permSignificant", names(combinedResults))]
@@ -227,7 +241,7 @@ geneSignificanceResults = combinedResults[, names(combinedResults) %in% signific
 
 if(usingGo){
   combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResultsWithAlternates-", geneSet, ".rds")
-  if(file.exists(combinedGODataFilename)){
+  if(file.exists(combinedGODataFilename) &useAlternates){
     GoCombinedResults = readRDS(combinedGODataFilename)
   }else{
     combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet, ".rds")
@@ -236,7 +250,11 @@ if(usingGo){
   
 
   if(useAlternates){
-    significanceColumns = names(combinedResults)[grep("PadjNumSignificant", names(combinedResults))]
+    if(useMainAndRobust){
+      GoSignificanceColumns = names(combinedResults)[grep("significantRobust", names(combinedResults))]
+    }else{
+      GoSignificanceColumns = names(combinedResults)[grep("PadjNumSignificant", names(combinedResults))]
+    }
   }else{
     if(usePermulations){
       GoSignificanceColumns = names(GoCombinedResults)[grep("permSignificant", names(GoCombinedResults))]
@@ -300,6 +318,7 @@ addDashes = function(vector) {
   
   trimSignificanceToVenn = function(significanceResults){
     trimableComparisions = gsub("-PadjNumSignificant", "", names(significanceResults))
+    trimableComparisions = gsub("significantRobust", "", trimableComparisions)
     trimableComparisions = gsub("Significant", "", trimableComparisions)
     trimableComparisions = gsub("significant", "", trimableComparisions)
     trimableComparisions = gsub("unperm", "", trimableComparisions)
@@ -313,7 +332,7 @@ addDashes = function(vector) {
   
   makeVennPlot = function(vennInputDataframe, mainTitle, plot = T){
     
-    if(useAlternates){
+    if(useAlternates & !useMainAndRobust){
       set1 <- vennInputDataframe[1] > significanceCutoff
       set2 <- vennInputDataframe[2] > significanceCutoff
       set3 <- vennInputDataframe[3] > significanceCutoff
@@ -337,6 +356,7 @@ addDashes = function(vector) {
     )
     
     comparisonPrefixes = gsub("Significant", "", names(vennInputDataframe))
+    comparisonPrefixes = gsub("-significantRobust", "", comparisonPrefixes)
     comparisonPrefixes = gsub("-PadjNum", "", comparisonPrefixes)
     comparisonPrefixes = gsub("significant", "", comparisonPrefixes)
     comparisonPrefixes = gsub("-unperm", "", comparisonPrefixes)
@@ -375,8 +395,9 @@ addDashes = function(vector) {
       currentPrefix = substr(i, 1, 2)
       
       # get matching significant column
-      statCol = names(directionData)[grep(currentPrefix, names(directionData))][1]
-      sigCol = names(directionData)[grep(currentPrefix, names(directionData))][2]
+      relevantCols = grep(currentPrefix, names(directionData))
+      statCol = names(directionData)[relevantCols[which(!names(directionData)[relevantCols] %in% significanceColumns)]]
+      sigCol = names(directionData)[relevantCols[which(names(directionData)[relevantCols] %in% significanceColumns)]]
       
       #make sure that the direction is reported the same because the common background is in the same order
       positionOfBackground = as.integer(regexpr(commonBackground, currentPrefix))
@@ -555,9 +576,13 @@ if(makeDirectional){
     
   }else{
     largerOfDirections = max(positiveResultsNumber, negativeResultsNumber)
-    totalResultsNumber = sum(apply(geneSignificanceResults, 1, function(x) any(x == TRUE, na.rm = TRUE)))
+    totalResultsNumber = sum(apply(vennGeneSignificanceResults, 1, function(x) any(x == TRUE, na.rm = TRUE)))
     totalRatio = totalResultsNumber/largerOfDirections
     allVenn = grid.arrange(combinedVenn, combinedDirectionVenn, nrow = 1, padding = unit(1, "line"), widths = c(totalRatio, 1))
+    grid.text("A", x = unit(0.02, "npc"), y = unit(0.98, "npc"), just = c("left", "top"), gp = gpar(fontsize = 16, fontface = "bold"))
+    grid.text("B", x = unit(totalRatio/ (totalRatio +1), "npc"), y = unit(0.98, "npc"), just = c("left", "top"), gp = gpar(fontsize = 16, fontface = "bold"))
+    grid.text("C", x = unit(totalRatio/ (totalRatio +1), "npc"), y = unit(ratio/(ratio+1), "npc"), just = c("left", "top"), gp = gpar(fontsize = 16, fontface = "bold"))
+    
     
     vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
     pdf(vennDiagramFilename, height = 6, width = 6)
@@ -570,8 +595,11 @@ if(makeDirectional){
     dev.off()
     
     vennCombinedDiagramFilename = paste0(outputFolderName, filePrefix, "VennCombinedDiagram", geneSet, ".pdf")
-    pdf(vennCombinedDiagramFilename, height = 12, width = 19.2)
+    pdf(vennCombinedDiagramFilename, height = 8, width = 13)
     plot(allVenn)
+    grid.text("A", x = unit(0.02, "npc"), y = unit(0.99, "npc"), just = c("left", "top"), gp = gpar(fontsize = 24, fontface = "bold"))
+    grid.text("B", x = unit(totalRatio/ (totalRatio +1), "npc"), y = unit(0.99, "npc"), just = c("left", "top"), gp = gpar(fontsize = 24, fontface = "bold"))
+    grid.text("C", x = unit(totalRatio/ (totalRatio +1), "npc"), y = unit(ratio/(ratio+1), "npc"), just = c("left", "top"), gp = gpar(fontsize = 24, fontface = "bold"))
     dev.off()
   }
   

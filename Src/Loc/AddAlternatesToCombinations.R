@@ -47,7 +47,7 @@ geneSet = NULL
 usingGo = F
 saveData = T
 usingGene = T
-
+alternateCutoff = 50 
 
 { # Bracket used for collapsing purposes
   
@@ -65,7 +65,7 @@ usingGene = T
     message("No geneset specified or gene specified, performing gene correlation.")
   }
   
-  #cutoffsaveData 
+  #cutoff
   if(!is.na(cmdArgImport('c'))){
     saveData = cmdArgImport('c')
   }else{
@@ -178,6 +178,8 @@ combinedData = cbind(combinedData, alternatesSingleDF)
     order_prefix <- function(p) {
       c(
         paste0(p, "-significant"),
+        paste0(p, "-num.genes"),
+        paste0(p, "-gene.vals"),
         paste0(p, "-stat"),
         paste0(p, "-statMedian"),
         paste0(p, "-statMean"),
@@ -237,8 +239,8 @@ for (prefix in prefixes) {
   if (!all(c(p_col, padj_col, pnum_col, padjnum_col) %in% names(combinedData))) next
   
   # new column names
-  pnum_new <- paste0(prefix, "-PNumSignificant_Inclusive")
-  padjnum_new <- paste0(prefix, "-PadjNumSignificant_Inclusive")
+  pnum_new <- paste0(prefix, "-PNumSignificantInclusive")
+  padjnum_new <- paste0(prefix, "-PadjNumSignificantInclusive")
   
   # create new values
   combinedData[[pnum_new]] <- combinedData[[pnum_col]] + 
@@ -259,11 +261,42 @@ for (prefix in prefixes) {
   )]
   
   # reorder for PadjNum
-  combinedResults <- combinedResults[, append(
-    names(combinedResults)[-which(names(combinedResults) == padjnum_new)],
+  combinedData <- combinedData[, append(
+    names(combinedData)[-which(names(combinedData) == padjnum_new)],
     padjnum_new,
     after = padj_index
   )]
+}
+
+
+
+for (prefix in prefixes) {
+  
+  sigCol <- paste0(prefix, "-significant")
+
+  padjnum_col <- paste0(prefix, "-PadjNumSignificant")
+  
+  # skip if columns don't exist
+  if (!all(c(sigCol,  padjnum_col) %in% names(combinedData))) next
+  
+  # new column names
+  newCol <- paste0(prefix, "-significantRobust")
+
+  
+  # create new values
+  combinedData[[newCol]] = combinedData[[sigCol]] & combinedData[[padjnum_col]] > alternateCutoff
+    
+  
+  # move columns to correct position (after originals)
+  sigCol_index <- match(sigCol, names(combinedData))
+  
+  # reorder for PNum
+  combinedData <- combinedData[, append(
+    names(combinedData)[-which(names(combinedData) == newCol)],
+    newCol,
+    after = sigCol_index
+  )]
+  
 }
 
 

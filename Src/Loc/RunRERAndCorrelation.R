@@ -76,6 +76,7 @@ args = c('r=Demo', 'v=T', 'm=demoTreeFile', 's=g')
 
 args = c("r=PredatorFullTree", 'm=', "s=g", "v=F", "l=170")
 
+args = c("r=ComplexDietCentralAnalysisEqualLengthInference", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)

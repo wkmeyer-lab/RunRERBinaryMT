@@ -8,12 +8,541 @@ library(geiger)
 source("Src/Reu/ZoonomTreeNameToCommon.R")
 
 par(mfrow=c(1,1))
+palette(c("#1B9E77","#7570B3", "#000000", "#E7298A"))
+
+
+
 palette(c("#1B9E77", "#000000", "#7570B3", "#E7298A"))
 
+
 #---------------------------------------------------------------------
-# --- Making column that includes main analysis as an alternate   --- 
+# --- set up equal branch length ASR --- 
+# --------------------------------------------------------------------
+
+commonMainTreesBackup = commonMainTrees
+commonMainTrees$masterTree$edge.length = rep(1, length(commonMainTrees$masterTree$edge.length))
+
+mainTreesBackup = mainTrees
+mainTrees$masterTree$edge.length = rep(1, length(mainTrees$masterTree$edge.length))
+
+
+equalCategoricalTree = categoricalTree
+mainCategoricalTree = readRDS("output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisCategoricalTree.rds")
+
+equalCategoricalTree$edge.length == mainCategoricalTree$edge.length
+
+mismatchBranches = which(!equalCategoricalTree$edge.length == mainCategoricalTree$edge.length)
+length(mismatchBranches)
+
+edgelabels(edge = mismatchBranches, cex=0.4, col= "purple", frame="none")
+
+#---------------------------------------------------------------------
+# --- figure out gmt--- 
+# --------------------------------------------------------------------
+
+c2 = read.gmt("Data/c2.all.v2026.1.Hs.symbols.gmt")
+
+hsSymbols = read.gmt("Data/EnrichmentHsSymbolsFile.gmt")
+
+length(which(hsSymbols$geneset.names %in%c2$geneset.names))
+length(hsSymbols$geneset.names)
+#---------------------------------------------------------------------
+# --- top genes look into --- 
+# --------------------------------------------------------------------
+
+geneData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
+
+order(geneData$`CH-PadjNumSignificantInclusive`)
+
+importantFirstCols = c(2,3,4,19,21,22,23)
+importantSecondCols = importantFirstCols +27 +27
+importantThirdCols = importantSecondCols +27 +27
+importantFourthCols = importantThirdCols +27 +27
+
+
+importantCols = c(importantFirstCols, importantSecondCols, importantThirdCols, importantFourthCols)
+
+crits = c(1,3,5,6)
+
+crits+7
+
+criticalCols = importantCols[c(crits, crits+7, crits+14, crits+21)]
+
+geneData[order(geneData$`CH-PadjNumSignificantInclusive`), criticalCols]
+
+
+importantData = geneData[,criticalCols]
+names(importantData) = substr(names(importantData),1, 10)
+importantData
+
+importantData = importantData[c(1,5,9,13,3,7,11,15,2,6,10,14,4,8,12,16)]
+
+importantData[order(importantData$`HV-RhoMed`, decreasing = T),]
+
+HVONlyGenes = importantData[which(importantData$`HV-signifi` & !importantData$`CH-signifi`),]
+HVONlyGenes[order(HVONlyGenes$`HV-RhoMedi`, decreasing = T),]
+
+geneData[which(rownames(geneData) == "DNAH14"),]
+
+
+#---------------------------------------------------------------------
+# --- invert exclusive lookinto --- 
+# --------------------------------------------------------------------
+
+goData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternatesPermulated-KeggReactome.rds")
+goData$ChRhoBoost = abs(goData$`CH-statMedian`) - abs(goData$`HI-statMedian`)
+which(goData$`CH-significantRobust` | goData$`HI-significantRobust` | goData$`HV-significantRobust`)
+
+sigGoData = goData[which(goData$`CH-significantRobust` | goData$`HI-significantRobust` | goData$`HV-significantRobust`),]
+
+
+sigGoData[which(abs(sigGoData$`CH-stat`) < abs(sigGoData$`HI-stat`) & sigGoData$`HI-stat` > 0 & sigGoData$`CH-significantRobust`),c(5, 56)]
+
+
+goData$ChRhoBoost = abs(goData$`CH-statMedian`) - abs(goData$`HI-statMedian`)
+goData$HVRhoBoost = abs(goData$`HI-statMedian`) - abs(goData$`CH-statMedian`) 
+
+sigGoData = sigGoData[order(sigGoData$ChRhoBoost, decreasing = T),]
+
+sigGoData = sigGoData[order(sigGoData$ChRhoBoost, decreasing = T), c(5,6,56,57, 107,108)]
+
+
+goData[which(rownames(goData) == "REACTOME_FATTY_ACIDS"),]
+
+
+smGEnes = c("CYP17A1", "HSD11B1", "HSD17B2", "CYP21A2", "HSD17B3", "HSD3B2", "CYP11A1", "COMT", "SULT1E1", "CYP7B1", "CYP1A1", "HSD17B6")
+#CYP17A1:11, HSD11B1:16, HSD17B2:37, CYP21A2:269, HSD17B3:287, COMT:342, HSD3B2:359, SULT1E1:479, CYP7B1:568, CYP1A1:576, HSD17B6:684, CYP11A1:795, AKR1D1:838, CYP7A1:1215, SRD5A3:2017, HSD11B2:2198, CYP19A1:2378, SULT2B1:8717.5, UGT1A6:8717.5, UGT1A1:8717.5, STS:8717.5, SRD5A1:8717.5, HSD17B12:8717.5, SRD5A2:8717.5, HSD17B1:8717.5, CYP1B1:8717.5, HSD17B8:8717.5, HSD17B7:14164
+
+smeGeneData = importantData[which(rownames(importantData) %in% smGEnes),]
+
+smeGeneData = smeGeneData[order(smeGeneData$`HV-RhoMedi` - smeGeneData$`HI-RhoMedi`, decreasing = T),]
+
+
+sigGoData[1,]$`HV-statMedian`/sigGoData[1,]$`CH-statMedian`
+#---------------------------------------------------------------------
+# --- Update supplement Files --- 
+# --------------------------------------------------------------------
+
+permData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisPermulationsPValueCorrelations.rds")
+mainData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
+
+HIPermData = permData[[2]][[1]][,c(4,5)]
+names(HIPermData) = c("HI-permP", "HI-permP.adj")
+HIPermData$`HI-permSignificant` = HIPermData$`HI-permP.adj` <0.05
+
+HVPermData = permData[[2]][[4]][,c(4,5)]
+names(HVPermData) = c("HV-permP", "HV-permP.adj")
+HVPermData$`HV-permSignificant` = HVPermData$`HV-permP.adj` <0.05
+
+IVPermData = permData[[2]][[5]][,c(4,5)]
+names(IVPermData) = c("IV-permP", "IV-permP.adj")
+IVPermData$`IV-permSignificant` = IVPermData$`IV-permP.adj` <0.05
+
+
+combinedAltAndPermGene = mainData
+combinedAltAndPermGene = combinedAltAndPermGene %>% add_column(HIPermData, 
+                                                               .after ="HI-significantRobust")
+
+combinedAltAndPermGene = combinedAltAndPermGene %>% add_column(HVPermData, 
+                                                               .after ="HV-significantRobust")
+
+combinedAltAndPermGene = combinedAltAndPermGene %>% add_column(IVPermData, 
+                                                               .after ="IV-significantRobust")
+
+saveRDS(combinedAltAndPermGene, "Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternatesPermulated.rds")
+write.csv(combinedAltAndPermGene, "Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternatesPermulated.csv")
+
+
+mainGOData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternates-KeggReactome.rds")
+HIpermImport = readRDS("Output/ComplexDietCentralAnalysis/Herbivore-Insectivore/ComplexDietCentralAnalysisHerbivore-InsectivoreEnrichment-Permulation-KeggReactome.rds")
+HVpermImport = readRDS("Output/ComplexDietCentralAnalysis/Herbivore-Vertivore/ComplexDietCentralAnalysisHerbivore-VertivoreEnrichment-Permulation-KeggReactome.rds")
+IVpermImport = readRDS("Output/ComplexDietCentralAnalysis/Insectivore-Vertivore/ComplexDietCentralAnalysisInsectivore-VertivoreEnrichment-Permulation-KeggReactome.rds")
+
+HIPermData = HIpermImport[[1]][,c(2,3)]
+names(HIPermData) = c("HI-permP", "HI-permP.adj")
+HIPermData$`HI-permSignificant` = HIPermData$`HI-permP.adj` <0.05
+
+HVPermData = HVpermImport[[1]][,c(2,3)]
+names(HVPermData) = c("HV-permP", "HV-permP.adj")
+HVPermData$`HV-permSignificant` = HVPermData$`HV-permP.adj` <0.05
+
+IVPermData = IVpermImport[[1]][,c(2,3)]
+names(IVPermData) = c("IV-permP", "IV-permP.adj")
+IVPermData$`IV-permSignificant` = IVPermData$`IV-permP.adj` <0.05
+
+
+combinedAltAndPermGO = mainGOData
+combinedAltAndPermGO = combinedAltAndPermGO %>% add_column(HIPermData, 
+                                                           .after ="HI-significantRobust")
+
+combinedAltAndPermGO = combinedAltAndPermGO %>% add_column(HVPermData, 
+                                                           .after ="HV-significantRobust")
+
+combinedAltAndPermGO = combinedAltAndPermGO %>% add_column(IVPermData, 
+                                                           .after ="IV-significantRobust")
+
+saveRDS(combinedAltAndPermGO, "Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternatesPermulated-KeggReactome.rds")
+write.csv(combinedAltAndPermGO, "Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternatesPermulated-KeggReactome.csv")
+
+
+# ------
+
+mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
+masterTree = mainTrees$masterTree
+
+fourCatTree = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisCategoricalTree.rds")
+threeCatTree = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisMergedCategoricalTree.rds")
+equalTree = readRDS("Output/ComplexDietCentralAnalysisEqualLengthInference/ComplexDietCentralAnalysisEqualLengthInferenceCategoricalTree.rds")
+
+BovTree = readRDS("Output/CladeBinaryBovidae/CladeBinaryBovidaeCategoricalTree.rds")
+CerTree = readRDS("Output/CladeBinaryCervidae/CladeBinaryCervidaeCategoricalTree.rds")
+CriTree = readRDS("Output/CladeBinaryCricetidae/CladeBinaryCricetidaeCategoricalTree.rds")
+HysTree = readRDS("Output/CladeBinaryHystricognathi/CladeBinaryHystricognathiCategoricalTree.rds")
+PerTree = readRDS("Output/CladeBinaryPeropdidae/CladeBinaryPeropdidaeCategoricalTree.rds")
+VesTree = readRDS("Output/CladeBinaryVespertilionidae/CladeBinaryVespertilionidaeCategoricalTree.rds")
+
+writeLines("----Master Tree----", "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt")
+write.tree(masterTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+cat("\n----Four Category Tree----\n", file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+write.tree(fourCatTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+cat("\n----Three Category Tree----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+write.tree(threeCatTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+
+cat("\n----Alternate Reconstruction Tree----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+write.tree(equalTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+
+cat("\n\n----Clade Binary Trees----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+cat("\n----Bovidae Tree----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+write.tree(BovTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+cat("\n----Cervidae Tree----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+write.tree(CerTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+cat("\n----Cricetidae Tree----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+write.tree(CriTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+cat("\n----Hystricognathi Tree----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+write.tree(HysTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+cat("\n----Peropdidae Tree----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+write.tree(PerTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+cat("\n----Vespertilionidae Tree----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+write.tree(VesTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+
+
+
+cat("\n\n----Alternate Trees----\n",  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+
+for(i in 1:100){
+  alternateTree = readRDS(paste0("Output/ComplexDietCentralAnalysis/Alternates/Alternate", i, "ComplexDietCentralAnalysisCategoricalTree.rds"))
+  
+  cat(paste("\n----Alternate", i, "Trees----\n"),  file ="Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+  write.tree(alternateTree, file = "Output/ComplexDietCentralAnalysis/SupplementaryData5--Trees.txt", append = T)
+
+  
+}
+
+
+alternateTree1 = readRDS(paste0("Output/ComplexDietCentralAnalysis/Alternates/Alternate", 1, "ComplexDietCentralAnalysisCategoricalTree.rds"))
+alternateTree2 = readRDS(paste0("Output/ComplexDietCentralAnalysis/Alternates/Alternate", 2, "ComplexDietCentralAnalysisCategoricalTree.rds"))
+
+alternateTree1$tip.label %in% alternateTree2$tip.label
+
+
+
+
+# --- binary results 
+
+
+BovCor = readRDS("Output/CladeBinaryBovidae/0-1/CladeBinaryBovidae0-1CorrelationFile.rds")
+CerCor = readRDS("Output/CladeBinaryCervidae/0-1/CladeBinaryCervidae0-1CorrelationFile.rds")
+CriCor = readRDS("Output/CladeBinaryCricetidae/0-1/CladeBinaryCricetidae0-1CorrelationFile.rds")
+HysCor = readRDS("Output/CladeBinaryHystricognathi/0-1/CladeBinaryHystricognathi0-1CorrelationFile.rds")
+PerCor = readRDS("Output/CladeBinaryPeropdidae/0-1/CladeBinaryPeropdidae0-1CorrelationFile.rds")
+VesCor = readRDS("Output/CladeBinaryVespertilionidae/0-1/CladeBinaryVespertilionidae0-1CorrelationFile.rds")
+
+
+#---------------------------------------------------------------------
+# --- Looking into msucle results --- 
+# --------------------------------------------------------------------
+moveIndexToNames = function(x){
+  # split at ":"
+  parts <- strsplit(x, ":")
+  
+  # keep only the part after ":"
+  x <- sapply(parts, `[`, 1)
+  
+  # set names to the part before ":"
+  names(x) <- sapply(parts, `[`, 2)
+  x
+}
+
+CHStraitedGenes = c("DES", "ACTC1", "MYH8", "NEB")
+names(CHStraitedGenes) = c(163, 231, 272, 289)
+HIStraitedGenes = c("ES", "MYH8", "TCAP", "TMOD4", "NEB")
+names(HIStraitedGenes) = c(76, 322, 343, 401, 564)
+
+HVStraitedGenes = c("ACTC1:110", "DMD:368", "NEB:455", "MYH8:745")
+HVStraitedGenes = moveIndexToNames(HVStraitedGenes)
+
+CHMuscleGenes = c("CAMK2B:3", "ITPR1:97", "DES:163", "ACTC1:231", "MYH8:272", "CACNB2:280", "NEB:289", "CACNA1G:297")
+CHMuscleGenes = moveIndexToNames(CHMuscleGenes)
+HIMuscleGenes = c("CAMK2B:5", "DES:76", "ITPR1:85", "KCNJ12:212", "KCNJ14:239", "ATP1A3:245", "ATP2B3:269", "MYH8:322", "TCAP:343", "ATP2A2:350", "CAMK2D:385")
+HIMuscleGenes = moveIndexToNames(HIMuscleGenes)
+HVMuscleGenes = c("CAMK2B:20", "ACTC1:110", "CACNA1G:135", "KCNH2:211", "CACNB2:263", "ACTG2:298", "SLC8A3:340", "DMD:368", "ACTA2:381", "NEB:455", "SCN5A:495")
+HVMuscleGenes = moveIndexToNames(HVMuscleGenes)
+
+CHCardiacGenes = c("CAMK2B:3", "ITPR1:97", "CACNB2:280")
+CHCardiacGenes = moveIndexToNames(CHCardiacGenes)
+HICardiacGenes = c("CAMK2B:5", "ITPR1:85", "KCNJ12:212", "KCNJ14:239", "ATP1A3:245", "ATP2B3:269", "ATP2A2:350") 
+HICardiacGenes = moveIndexToNames(HICardiacGenes)
+HVCardiacGenes = c("CAMK2B:20", "KCNH2:211", "CACNB2:263", "SLC8A3:340", "SCN5A:495")
+HVCardiacGenes = moveIndexToNames(HVCardiacGenes)
+
+
+allGenes = list(CHStraitedGenes, HIStraitedGenes, HVStraitedGenes, CHMuscleGenes, HIMuscleGenes, HVMuscleGenes, CHCardiacGenes, HICardiacGenes, HVCardiacGenes)
+names(allGenes) = c("CHStraitedGenes", "HIStraitedGenes", "HVStraitedGenes", "CHMuscleGenes", "HIMuscleGenes", "HVMuscleGenes", "CHCardiacGenes", "HICardiacGenes", "HVCardiacGenes")
+
+
+geneslist = sort(unique(unlist(allGenes)))
+
+geneTable = matrix(nrow = length(geneslist), ncol = length(allGenes))
+geneTable = data.frame(geneTable)
+
+
+rownames(geneTable) = geneslist
+colnames(geneTable) = names(allGenes)
+
+for(i in 1:ncol(geneTable)){
+  geneTable[i] = names(allGenes[[i]])[match(rownames(geneTable), allGenes[[i]])]
+}
+
+geneTable$NumberOfSets <- rowSums(!is.na(geneTable))
+
+
+geneTable = geneTable[order(geneTable$NumberOfSets, decreasing = T),]
+
+#---------------------------------------------------------------------
+# --- looking into permualtions --- 
+# --------------------------------------------------------------------
+library(tibble)
+library(ggvenn)
+library(gridExtra)
+
+
+
+permData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisPermulationsPValueCorrelations.rds")
+mainData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
+
+HIPermData = permData[[2]][[1]][,c(4,5)]
+names(HIPermData) = c("HI-permP", "HI-permP.adj")
+HIPermData$`HI-permSignificant` = HIPermData$`HI-permP.adj` <0.05
+
+HVPermData = permData[[2]][[4]][,c(4,5)]
+names(HVPermData) = c("HV-permP", "HV-permP.adj")
+HVPermData$`HV-permSignificant` = HVPermData$`HV-permP.adj` <0.05
+
+IVPermData = permData[[2]][[5]][,c(4,5)]
+names(IVPermData) = c("IV-permP", "IV-permP.adj")
+IVPermData$`IV-permSignificant` = IVPermData$`IV-permP.adj` <0.05
+
+
+combinedAltAndPermGene = mainData
+combinedAltAndPermGene = combinedAltAndPermGene %>% add_column(HIPermData, 
+                                                       .after ="HI-significantRobust")
+
+combinedAltAndPermGene = combinedAltAndPermGene %>% add_column(HVPermData, 
+                                                       .after ="HV-significantRobust")
+
+combinedAltAndPermGene = combinedAltAndPermGene %>% add_column(IVPermData, 
+                                                       .after ="IV-significantRobust")
+
+
+
+mainGOData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternates-KeggReactome.rds")
+HIpermImport = readRDS("Output/ComplexDietCentralAnalysis/Herbivore-Insectivore/ComplexDietCentralAnalysisHerbivore-InsectivoreEnrichment-Permulation-KeggReactome.rds")
+HVpermImport = readRDS("Output/ComplexDietCentralAnalysis/Herbivore-Vertivore/ComplexDietCentralAnalysisHerbivore-VertivoreEnrichment-Permulation-KeggReactome.rds")
+IVpermImport = readRDS("Output/ComplexDietCentralAnalysis/Insectivore-Vertivore/ComplexDietCentralAnalysisInsectivore-VertivoreEnrichment-Permulation-KeggReactome.rds")
+
+HIPermData = HIpermImport[[1]][,c(2,3)]
+names(HIPermData) = c("HI-permP", "HI-permP.adj")
+HIPermData$`HI-permSignificant` = HIPermData$`HI-permP.adj` <0.05
+
+HVPermData = HVpermImport[[1]][,c(2,3)]
+names(HVPermData) = c("HV-permP", "HV-permP.adj")
+HVPermData$`HV-permSignificant` = HVPermData$`HV-permP.adj` <0.05
+
+IVPermData = IVpermImport[[1]][,c(2,3)]
+names(IVPermData) = c("IV-permP", "IV-permP.adj")
+IVPermData$`IV-permSignificant` = IVPermData$`IV-permP.adj` <0.05
+
+
+combinedAltAndPermGO = mainGOData
+combinedAltAndPermGO = combinedAltAndPermGO %>% add_column(HIPermData, 
+                                                           .after ="HI-significantRobust")
+
+combinedAltAndPermGO = combinedAltAndPermGO %>% add_column(HVPermData, 
+                                                           .after ="HV-significantRobust")
+
+combinedAltAndPermGO = combinedAltAndPermGO %>% add_column(IVPermData, 
+                                                           .after ="IV-significantRobust")
+
+
+
+
+
+currentData = permData[[2]][[1]]
+currentData = permData[[2]][[4]]
+currentData = permData[[2]][[5]]
+
+signedLogBaseP = log10(currentData$P) * sign(currentData$Rho) *-1
+signedLogPermP = log10(currentData$permP) * sign(currentData$Rho) *-1
+cor(signedLogBaseP, signedLogPermP, method = "spearman", use = "complete.obs")
+plot1 = plot(signedLogBaseP, signedLogPermP)
+plot2 = plot(signedLogBaseP, signedLogPermP)
+plot3 = plot(signedLogBaseP, signedLogPermP)
+
+plot1
+
+
+
+
+
+
+combinedAltAndPerm = combinedAltAndPermGene
+combinedAltAndPerm = combinedAltAndPermGO
+
+
+convertColnameToIndex = function(name){
+  output = which(colnames(combinedAltAndPerm)==name)
+  output
+}
+
+prefix = "HI"
+prefix = "HV"
+prefix = "IV"
+
+prefix = prefix
+robustSig = convertColnameToIndex(paste0(prefix, "-significantRobust"))
+permSig = convertColnameToIndex(paste0(prefix, "-permSignificant"))
+mainSig = convertColnameToIndex(paste0(prefix, "-significant"))
+altSig = convertColnameToIndex(paste0(prefix, "-PadjNumSignificantInclusive"))
+
+
+venn_list <- list(
+  Column1 = which(combinedAltAndPerm[,altSig] > 50),
+  Column2 = which(combinedAltAndPerm[,permSig]),
+  Column3 = which(combinedAltAndPerm[,mainSig])
+  
+)
+
+makeVenn = function(infix){
+  robustSig = convertColnameToIndex(paste0(infix, "-significantRobust"))
+  permSig = convertColnameToIndex(paste0(infix, "-permSignificant"))
+  mainSig = convertColnameToIndex(paste0(infix, "-significant"))
+  altSig = convertColnameToIndex(paste0(infix, "-PadjNumSignificant"))
+  
+  
+  venn_list <- list(
+    Alternates = which(combinedAltAndPerm[,altSig] > 50),
+    Permulations = which(combinedAltAndPerm[,permSig]),
+    Main = which(combinedAltAndPerm[,mainSig])
+    
+  )
+  vennout = ggvenn(venn_list) +  labs(title = infix)
+}
+
+
+venn1 = makeVenn("HI")
+venn2 = makeVenn("HV")
+venn3 = makeVenn("IV")
+
+grid.arrange(venn1, venn2, venn3, nrow = 2)
+
+
+combinedAltAndPermGO[which(combinedAltAndPermGO$`IV-significantRobust` & !combinedAltAndPermGO$`IV-permSignificant`),]
+
+
+convertColnameToIndexGene = function(name){
+  output = which(colnames(combinedAltAndPermGene)==name)
+  output
+}
+
+hiPermCol = convertColnameToIndexGene(paste0("HI-permP.adj"))
+hvPermCol = convertColnameToIndexGene(paste0("HV-permP.adj"))
+ivPermCol = convertColnameToIndexGene(paste0("IV-permP.adj"))
+
+
+
+combinedAltAndPermGene
+selectedGene = c("CLDN16", "CPB1", "SLC14A2", "ACADSB", "PNLIP", "SLC13A2") 
+selectedRow = which(rownames(combinedAltAndPermGene) %in% selectedGene)
+
+combinedAltAndPermGene[selectedRow,c(hiPermCol, hvPermCol, ivPermCol)]
+
+
+
+
+
+# all.equal(rownames(mainData), rownames(permData[[1]]))
+
+
+
+#---------------------------------------------------------------------
+# --- Working with alex data  --- 
+# --------------------------------------------------------------------
+
+length(which(raw_data$`IV-significantRobust`))
+
+
+bforePurne = node_data$pathway
+afterPrune = node_data$pathway
+which(!bforePurne %in% afterPrune)
+
+bforePurne[21]
+#---------------------------------------------------------------------
+# --- Debugging making maingRObust venn diagrams   --- 
+# --------------------------------------------------------------------
+
+
+
+length(which(geneSignificanceResults$`CH-significantRobust`))
+
+which(GoSignificanceResults$`HV-significant` & GoSignificanceResults$`HI-significant` & !GoSignificanceResults$`CH-significant`)
+
+GoSignificanceResults[635,]
+
+length(which(geneSignificanceResults$`IV-significantRobust`))
+
+length(which(GoSignificanceResults$`IV-significantRobust`))
+
+length(which(GoCombinedResults$`IV-PadjNumSignificant` > 50))
+
+length(which(GoCombinedResults$`IV-PadjMedian` <= 0.05))
+length(which(GoCombinedResults$`IV-PadjMean` <= 0.05))
+
+
+
+convertColnameToIndex = function(name){
+  output = which(colnames(combinedResults)==name)
+  output
+}
+
+convertColnameToIndexGO = function(name){
+  output = which(colnames(GoCombinedResults)==name)
+  output
+}
+
+
+altOnlyGoIndexes =  which(GoCombinedResults$`IV-PadjNumSignificant` > 50)[!which(GoCombinedResults$`IV-PadjNumSignificant` > 50) %in% which(GoSignificanceResults$`IV-significantRobust`)]
+
+robustGO = GoCombinedResults[which(GoSignificanceResults$`IV-significantRobust`),c(convertColnameToIndexGO("IV-stat"), convertColnameToIndexGO("IV-significantRobust"),convertColnameToIndexGO("IV-PadjNumSignificant"))]
+
+altOnlyGo = GoCombinedResults[altOnlyGoIndexes,c(convertColnameToIndexGO("IV-stat"), convertColnameToIndexGO("IV-significantRobust"),convertColnameToIndexGO("IV-PadjNumSignificant"))]
+
+nrow(robustGO)
+#---------------------------------------------------------------------
+# --- Making column that includes main analysis as an alternate   ---DFDF
 # --------------------------------------------------------------------
 combinedGeneDataFilename = "Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds"
+combinedGeneDataFilename = "Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternates-KeggReactome.rds"
+
 combinedResults = readRDS(combinedGeneDataFilename)
 
 
@@ -65,12 +594,15 @@ saveRDS(combinedResults, combinedGeneDataFilename)
 #---------------------------------------------------------------------
 # --- Looking into the the differences in venn diagrams and generally the difference in alternate genes  --- 
 # --------------------------------------------------------------------
-
+library(ggvenn)
 combinedGeneDataFilename = "Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds"
 combinedResults = readRDS(combinedGeneDataFilename)
 
-significanceColumns = names(combinedResults)[grep("PadjNumSignificant", names(combinedResults))]
+vespertDataFilename = "Output/CladeBinaryVespertilionidae/CladeBinaryVespertilionidaePairwiseCorrelationFile.rds"
+vespertResults = readRDS(vespertDataFilename)
+vespertResults = vespertResults[[1]]
 
+significanceColumns = names(combinedResults)[grep("PadjNumSignificant", names(combinedResults))]
 for(i in significanceColumns){
   currentCol = combinedResults[,names(combinedResults) == i]
   currentCol = (currentCol > 50)
@@ -87,12 +619,15 @@ convertColnameToIndex = function(name){
 }
 
 
-prefix = "CH"
+ChMainSig = convertColnameToIndex(paste0("CH", "-significant"))
+ChAltSig = convertColnameToIndex(paste0("CH", "-AlternateSignificant_Inclusive"))
+
+prefix = "HI"
 
 mainSig = convertColnameToIndex(paste0(prefix, "-significant"))
-altSig = convertColnameToIndex(paste0(prefix, "-AlternateSignificant"))
+altSig = convertColnameToIndex(paste0(prefix, "-AlternateSignificant_Inclusive"))
 pAdj = convertColnameToIndex(paste0(prefix, "-p.adj"))
-numAlts = convertColnameToIndex(paste0(prefix, "-PadjNumSignificant"))
+numAlts = convertColnameToIndex(paste0(prefix, "-PadjNumSignificant_Inclusive"))
 
 
 {
@@ -123,8 +658,62 @@ numAlts = convertColnameToIndex(paste0(prefix, "-PadjNumSignificant"))
   cor(combinedResults[,pAdj], combinedResults[,numAlts], use = "complete.obs", method = "pearson")
   cor(combinedResults[,pAdj], combinedResults[,numAlts], use = "complete.obs", method = "spearman")
   
+  vespertResults$category = rep(NA, nrow(vespertResults))
+  vespertResults$category = ifelse(combinedResults[, mainSig] & combinedResults[, altSig], "both",
+                                   ifelse(combinedResults[, mainSig], "main_only",
+                                          ifelse(combinedResults[, altSig], "alt_only", "neither")))
   
+  vespertResults$categoryByCH = rep(NA, nrow(vespertResults))
+  vespertResults$categoryByCH = ifelse(combinedResults[, mainSig] & combinedResults[, altSig] & combinedResults[, ChMainSig] & combinedResults[, ChAltSig], "both (+CH)",
+                                   ifelse(combinedResults[, mainSig] & combinedResults[, ChMainSig], "main_only (+CH)",
+                                          ifelse(combinedResults[, altSig] & combinedResults[, ChAltSig], "alt_only (+CH)", 
+                                                 ifelse(combinedResults[, mainSig] & combinedResults[, altSig], "both",
+                                                        ifelse(combinedResults[, mainSig], "main_only",
+                                                               ifelse(combinedResults[, altSig], "alt_only", 
+                                                                      "none"))))))
+  
+
+    plot1 = ggplot(vespertResults, aes(x=category, y=p.adj))+
+    geom_violin(adjust=1/3) +
+    geom_jitter(position=position_jitter(0.2)) +
+    theme_classic()+
+    ggtitle(prefix)
+  
+    
+    plot2 = ggplot(vespertResults, aes(x=category, y=Rho))+
+      geom_violin(adjust=1/3) +
+      geom_jitter(position=position_jitter(0.2)) +
+      theme_classic()+
+      ggtitle(prefix) 
+    
+    plot3 = ggplot(vespertResults, aes(x=categoryByCH, y=p.adj))+
+      geom_violin(adjust=1/3) +
+      geom_jitter(position=position_jitter(0.2)) +
+      theme_classic()+
+      ggtitle(prefix)
+    
+    
+    plot4 = ggplot(vespertResults, aes(x=categoryByCH, y=Rho))+
+      geom_violin(adjust=1/3) +
+      geom_jitter(position=position_jitter(0.2)) +
+      theme_classic()+
+      ggtitle(prefix) 
+    
+    plot5 = ggplot(vespertResults, aes(x=factor(categoryByCH, levels = c("alt_only", "both", "main_only", "alt_only (+CH)", "both (+CH)", "main_only (+CH)", "none", "NA")), y=Rho))+
+                     geom_violin(adjust=1/3) +
+                     geom_jitter(position=position_jitter(0.2)) +
+                     theme_classic()+
+                     ggtitle(prefix) 
+    
+    plot5
 }
+
+
+
+
+# -- Look into vespert results --- 
+
+
 
 
 
@@ -134,6 +723,9 @@ numAlts = convertColnameToIndex(paste0(prefix, "-PadjNumSignificant"))
 CHDiffGenes = which(combinedResults$`CH-significant` != combinedResults$`CH-AlternateSignificant`)
 HIDiffGenes = which(combinedResults$`HI-significant` != combinedResults$`HI-AlternateSignificant`)
 HVDiffGenes = which(combinedResults$`HV-significant` != combinedResults$`HV-AlternateSignificant`)
+
+
+
 
 
 length(CHDiffGenes)
@@ -162,8 +754,10 @@ ggvenn(venn_list)
 
 prefix = "CH"
 numAlts = convertColnameToIndex(paste0(prefix, "-PadjNumSignificant"))
-which(combinedResults[numAlts] == 49)
+which(combinedResults[numAlts] == 50)
 
+combinedResults[c(116,161,1137,1471), mainSig]
+which()
 
 #---------------------------------------------------------------------
 # --- Looking into insvertivore sorting   --- 
