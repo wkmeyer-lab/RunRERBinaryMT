@@ -70,6 +70,15 @@ file.rename(
   )
 )
 
+#load in all of the alternates 
+
+alternateSets = list()
+for(i in 1:length(files)){
+  currentSet = readRDS(files[i])
+  alternateSets[[i]] = currentSet
+}
+
+
 #---------------------------------------------------------------------
 # --- Futzing with classification --- 
 # --------------------------------------------------------------------

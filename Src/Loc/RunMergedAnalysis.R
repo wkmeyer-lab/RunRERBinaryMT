@@ -74,7 +74,7 @@ if(!is.na(cmdArgImport('l'))){
 # Make the merged phenotype
 #-------
 
-toMerge = c("Vertivore", "Insectivore")
+toMerge = c("Vertivore", "Insectivore", "Invertivore")
 mergeValue = "Carnivore"
 
 
