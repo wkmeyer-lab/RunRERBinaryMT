@@ -22,7 +22,7 @@ library(data.table)
 #----------------
 
 args = c('r=ComplexDietCentralAnalysis', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=1')
-
+args = c('r=ComplexDietCentralAnalysisSimplify', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=11')
 
 
 # --- Standard start-up code ---
@@ -128,6 +128,7 @@ if(!alternatesSpecified){
 }
 
 for(i in usedAlternates){
+  message(i)
   currentSet = alternateSets[[i]]
   alternateFilePrefix = paste0("/Alternates/Alternate", i)
   filePrefix = paste0("Alternate", i, primaryFilePrefix)
@@ -180,6 +181,13 @@ for(i in usedAlternates){
     pathsObject = readRDS(pathsFileName)                                          #If the file already exists, use the existing one.
   }
   
+  
+  # --- ensure that the species filter and the alternate set match 
+  alternateInFilter = all(currentSet %in% speciesFilter)
+  filterInAlternate = all(speciesFilter %in% currentSet)
+  if(!alternateInFilter & filterInAlternate){
+    stop("Species filter and alterate set do not match. Aborting.")
+  }
   
   # --- CORRELATION ---
   correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "") #Make a correlation filename based on the prefix

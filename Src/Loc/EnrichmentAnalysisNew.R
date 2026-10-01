@@ -90,6 +90,11 @@ args = c('r=ComplexDietCentralAnalysis', 'm=c("Data/MGI_Mammalian_Phenotype_Leve
 
 
 args = c('r=ComplexDietCentralAnalysis', 'm=c("Data/KeggReactome.gmt")', 'p=C', 's=c("Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
+args = c('r=ComplexDietCentralAnalysisSimplify', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Invertivore-Vertivore", "Herbivore-Vertivore", "Invertivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Invertivore", "Overall", "Carnivore-Herbivore", "Carnivore-Omnivore")' )
+
+args = c('r=ComplexDietCentralAnalysisSimplifyNoScav', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Invertivore-Vertivore", "Herbivore-Vertivore", "Invertivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Invertivore", "Overall", "Carnivore-Herbivore", "Carnivore-Omnivore")' )
+args = c('r=ComplexDietCentralAnalysisPiscFix', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Invertivore-Vertivore", "Herbivore-Vertivore", "Invertivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Invertivore", "Overall", "Carnivore-Herbivore", "Carnivore-Omnivore")' )
+args = c('r=ComplexDietCentralAnalysisNoFishbat', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Invertivore-Vertivore", "Herbivore-Vertivore", "Invertivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Invertivore", "Overall", "Carnivore-Herbivore", "Carnivore-Omnivore")' )
 
 
 # --- Standard start-up code ---
@@ -213,8 +218,7 @@ for(i in 1:length(subdirectoryValueList)){
   if(usePermulations){                                                            #If permualtions are being used   
     if(useCategoricalPermulations){
         correlationData$P = correlationData$permP
-      }
-    }else{
+      }else{
       if(usePermulationPValOverride){                                               #check for a location override
         permulationFileLocation = paste(outputFolderName, permulationPValOverride, sep="")                           #if so, use it 
       }else{                                                                        #if not, use the default 

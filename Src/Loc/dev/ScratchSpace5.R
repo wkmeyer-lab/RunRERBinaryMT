@@ -19,8 +19,287 @@ packageVersion("RERconverge")
 
 
 #---------------------------------------------------------------------
+# --- check for alternate mismatch --- 
+# --------------------------------------------------------------------
+
+files <- list.files("Output/ComplexDietCentralAnalysisSimplify2/Alternates", full.names = TRUE)
+
+filters = files[grep("SpeciesFilter.rds", files)]
+#load in all of the alternates 
+filters = filters[order(filters)]
+
+filters <- filters[order(as.numeric(sub(".*Alternate([0-9]+).*", "\\1", filters)))]
+
+filtersSets = list()
+for(i in 1:length(filters)){
+  currentSet = readRDS(filters[i])
+  filtersSets[[i]] = currentSet
+}
+
+phenVecs = files[grep("PhenotypeVector.csv", files)]
+#load in all of the alternates 
+phenVecs <- phenVecs[order(as.numeric(sub(".*Alternate([0-9]+).*", "\\1", phenVecs)))]
+
+PhenSets = list()
+for(i in 1:length(phenVecs)){
+  currentSet = read.csv(phenVecs[i])
+  PhenSets[[i]] = currentSet[,2]
+  #PhenSets[[i]] = PhenSets[[i,2]]
+}
+
+
+
+currentPhenotypeVectorSavingManual = currentPhenotypeVectorSaving
+manualVector = currentPhenotypeVectorSaving[,1]
+
+PhenSets[[i]] %in% manualVector
+
+for(i in 1:100){
+  message(i)
+  print(paste("A-F ", all(alternateSets[[i]] %in% filtersSets[[i]])))
+  print(paste("A-P ", all(alternateSets[[i]] %in% PhenSets[[i]])))
+  print(paste("F-A ", all(filtersSets[[i]] %in% alternateSets[[i]])))
+  print(paste("F-P ", all(filtersSets[[i]] %in% PhenSets[[i]])))
+  print(paste("P-A ", all(PhenSets[[i]] %in% alternateSets[[i]])))
+        
+  
+  
+}
+
+TreeSets = list()
+altTrees = files[grep("CategoricalTree.rds", files)]
+for(i in 1:length(altTrees)){
+  currentSet = readRDS(altTrees[i])
+  TreeSets[[i]] = currentSet
+}
+
+masterTree = mainTrees$masterTree
+shortsNumbers = vector()
+for(i in 1:length(TreeSets)){
+  currentTree = TreeSets[[i]]
+  currentSp = currentTree$tip.label
+  tipsToRemove = masterTree$tip.label[which(!masterTree$tip.label %in% currentSp)]
+  
+  currentLengthTree = drop.tip(masterTree, tipsToRemove)
+  
+  
+  currentTerminals = which(currentLengthTree$edge[,2] <= length(currentLengthTree$tip.label))
+  
+  numShorts = length(which(currentLengthTree$edge.length[currentTerminals] < 0.01))
+  shortsNumbers[i] = numShorts
+}
+max(shortsNumbers)
+
+for(i in 1:length(alternateSets)){
+  currentTree = TreeSets[[i]]
+  currentSp = alternateSets[[i]]
+  tipsToRemove = masterTree$tip.label[which(!masterTree$tip.label %in% currentSp)]
+  
+  currentLengthTree = drop.tip(masterTree, tipsToRemove)
+  
+  
+  currentTerminals = which(currentLengthTree$edge[,2] <= length(currentLengthTree$tip.label))
+  
+  numShorts = length(which(currentLengthTree$edge.length[currentTerminals] < 0.01))
+  shortsNumbers[i] = numShorts
+}
+#---------------------------------------------------------------------
+# --- nebug alternates --- 
+# --------------------------------------------------------------------
+brokenSet = currentSet
+brokenFilter = speciesFilter
+brokenTree = phenotypeTree
+
+"Output/ComplexDietCentralAnalysisSimplify/Alternates/Alternate20ComplexDietCentralAnalysisSimplifySpeciesFilter.rds"
+
+
+
+removalTips = data.frame(startRemoveTips1, startRemoveTips2, startRemoveTips3)
+
+startRemoveTips1 %in% startRemoveTips2
+startRemoveTips1 %in% startRemoveTips3
+startRemoveTips = startRemoveTips1
+
+masterShortTipNames = masterTree$tip.label[masterShortTips]
+
+
+shortPhens = fullDataPhenotype[names(fullDataPhenotype) %in% masterShortTipNames]
+table(shortPhens)
+removePhens = fullDataPhenotype[names(fullDataPhenotype) %in% startRemoveTips] 
+table(removePhens)
+
+
+length(which(speciesSets[[j]] %in% startRemoveTips))
+
+
+phenCHeck = fullDataPhenotype[names(fullDataPhenotype) %in% speciesSets[[j]]] 
+table(phenCHeck)
+
+allAlternates = unlist(alternateSets)
+length(table(allAlternates))
+
+
+
+aoverlapsLengths = integer()
+alengths = integer()
+for(i in 1:100){
+  length = length(alternateSets[[i]])
+  alengths = append(alengths, length)
+  for(j in 2:100){
+    if(i != j){
+      overlap = length(which(alternateSets[[i]] %in% alternateSets[[j]]))
+      aoverlapsLengths = append(aoverlapsLengths, overlap)
+    }
+    
+  }
+}
+
+table(alengths)
+table(aoverlapsLengths)
+
+
+
+
+files <- list.files("Output/ComplexDietCentralAnalysisSimplify/Alternates", full.names = TRUE)
+files <- list.files("Output/ComplexDietCentralAnalysis/Alternates", full.names = TRUE)
+
+
+filters = files[grep("SpeciesFilter.rds", files)]
+
+
+#load in all of the alternates 
+
+filtersSets = list()
+for(i in 1:length(filters)){
+  currentSet = readRDS(filters[i])
+  filtersSets[[i]] = currentSet
+}
+
+foverlapsLengths = integer()
+flengths = integer()
+for(i in 1:100){
+  length = length(filtersSets[[i]])
+  flengths = append(flengths, length)
+  for(j in 2:100){
+    if(i != j){
+      overlap = length(which(filtersSets[[i]] %in% filtersSets[[j]]))
+      foverlapsLengths = append(foverlapsLengths, overlap)
+    }
+    
+  }
+}
+
+table(flengths)
+table(foverlapsLengths)
+
+files <- list.files("Output/ComplexDietCentralAnalysisSimplify/Alternates", full.names = TRUE)
+files <- list.files("Output/ComplexDietCentralAnalysis/Alternates", full.names = TRUE)
+
+
+phenVecs = files[grep("PhenotypeVector.rds", files)]
+
+
+#load in all of the alternates 
+
+PhenSets = list()
+for(i in 1:length(phenVecs)){
+  currentSet = readRDS(phenVecs[i])
+  PhenSets[[i]] = currentSet
+}
+
+
+poverlapsLengths = integer()
+plengths = integer()
+for(i in 1:100){
+  length = length(PhenSets[[i]])
+  plengths = append(plengths, length)
+  for(j in 2:100){
+    if(i != j){
+      overlap = length(which(names(PhenSets[[i]]) %in% names(PhenSets[[j]])))
+      poverlapsLengths = append(poverlapsLengths, overlap)
+    }
+    
+  }
+}
+
+table(plengths)
+table(poverlapsLengths)
+
+
+
+table(alengths)
+table(flengths)
+table(plengths)
+
+table(aoverlapsLengths)
+table(foverlapsLengths)
+table(poverlapsLengths)
+
+filtersSets[[i]] %in% names(PhenSets[[i]])
+
+
+phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="")
+phenotypeVector = readRDS(phenotypeVectorFilename)
+
+
+speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
+
+relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
+speciesFilter = relevantSpecieslist                                           #make the speciesFilter object for later 
+relevantSpecies = manualAnnots[ manualAnnots[[nameColumn]] %in% relevantSpecieslist,] #and select the manual annotations entries in that list (useful if the list is more restrictive than it would be by default) 
+irrelevantSpecies = manualAnnots[! manualAnnots[[nameColumn]] %in% relevantSpecieslist,]
+
+all.equal(speciesFilter, relevantSpecies)
+length(speciesFilter)
+
+
+phenVec = readRDS("")
+
+
+currentSet %in% speciesFilter
+speciesFilter %in%  currentSet
+
+phenotypeTree$tip.label %in% speciesFilter
+
+
+
+
+testTree = mainTrees$masterTree
+tipsToDrop = testTree$tip.label[!testTree$tip.label %in% alternateSets[[1]]]
+testTree = drop.tip(testTree, tipsToDrop)
+i=i+1
+if(i %% 10000 == 0){message(i)}
+if(min(testTree$edge.length) < pruningCutoff){
+  message("Found Valid Alternate")
+  message(i)
+  alternateTips = testTree$tip.label
+  alternateTips = list(alternateTips)
+  alternateSets = append(alternateSets, alternateTips)
+}
+
+prunedTree$edge.length
+
+numTips = length(testTree$tip.label)
+
+edgeBranches = which(testTree$edge[,2] <= numTips)
+edgeBranches2 = which(!testTree$edge[,2] %in% testTree$edge[,1])
+
+
+all.equal(edgeBranches, edgeBranches2)
+
+edgeBranches2[which(!edgeBranches2 %in% edgeBranches)]
+
+testTree$edge[905,]
+
+min(testTree$edge[,1])
+length(testTree$edge)
+
+
+
+#---------------------------------------------------------------------
 # --- Summarize binary analyses --- 
 # --------------------------------------------------------------------
+
 
 
 
@@ -33,6 +312,220 @@ CriCor = readRDS("Output/CladeBinaryCricetidae/0-1/CladeBinaryCricetidae0-1Corre
 HysCor = readRDS("Output/CladeBinaryHystricognathi/0-1/CladeBinaryHystricognathi0-1CorrelationFile.rds")
 PerCor = readRDS("Output/CladeBinaryPeropdidae/0-1/CladeBinaryPeropdidae0-1CorrelationFile.rds")
 VesCor = readRDS("Output/CladeBinaryVespertilionidae/0-1/CladeBinaryVespertilionidae0-1CorrelationFile.rds")
+
+
+#---------------------------------------------------------------------
+# --- Compare diet categorizations  --- 
+# --------------------------------------------------------------------
+
+mergedData = read.csv("Data/MergedData.csv")
+mainSpeciesSet = readRDS("OUtput/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisSpeciesFilter.rds")
+
+mergedData$inMainAnalysis = mergedData$ZoonomiaTip %in% mainSpeciesSet
+
+dietConversions = mergedData[,c(2,22,26,29,37,78,79,80)]
+
+
+
+dietConversions[which(dietConversions$TranslatedDerek != dietConversions$SimplifiedDietConvertNoScav & mergedData$inMainAnalysis),]
+
+dietConversions[which(dietConversions$TranslatedDerek != dietConversions$SimplifiedDietConvert & mergedData$inMainAnalysis),]
+
+dietConversions[which( mergedData$SimplifiedDietConvertNoScav == "MixedPredator" & mergedData$Diet.Vfish >= 50),]
+
+
+
+mainPhenv = readRDS("OUtput/ComplexDietCentralAnalysis/ComplexDietCentralAnalysisCategoricalPhenotypeVector.rds")
+simpPhenv = readRDS("OUtput/ComplexDietCentralAnalysisSimplify/ComplexDietCentralAnalysisSimplifyCategoricalPhenotypeVector.rds")
+
+names(mainPhenv) == names(simpPhenv)
+
+phenvCompare = data.table(names(mainPhenv), mainPhenv, simpPhenv)
+phenvCompare$mainPhenv = gsub("Insectivore", "Invertivore", phenvCompare$mainPhenv)
+
+
+phenvCompare[which(phenvCompare$mainPhenv != phenvCompare$simpPhenv),]
+
+
+
+
+#---------------------------------------------------------------------
+# --- Compare new diet assignment  --- 
+# --------------------------------------------------------------------
+
+
+library(tibble)
+library(ggvenn)
+library(gridExtra)
+
+
+convertColnameToIndex = function(name, df){
+  output = which(colnames(df)==name)
+  output
+}
+makeVenn = function(i, titleName){
+  venn_list <- list(
+    Main = which(mainSigData[,i]),
+    Simplified = which(simpSigData[,i])
+    
+  )
+  vennout = ggvenn(venn_list) +  labs(title = titleName)
+  vennout
+}
+makeComboVenn = function(){
+  venn1 = makeVenn(1, "CH")
+  venn2 = makeVenn(2, "HI")
+  venn3 = makeVenn(3, "HV")
+  venn4 = makeVenn(4, "IV")
+  
+  vennSet = grid.arrange(venn1, venn2, venn3, venn4)
+  vennSet
+}
+
+mainData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
+simpData = readRDS("Output/ComplexDietCentralAnalysisSimplify/ComplexDietCentralAnalysisSimplifycombinedGeneResults.rds")
+simpData = readRDS("Output/ComplexDietCentralAnalysisSimplifyNoScav/ComplexDietCentralAnalysisSimplifyNoScavcombinedGeneResults.rds")
+simpData = readRDS("Output/ComplexDietCentralAnalysisPiscFix/ComplexDietCentralAnalysisPiscFixcombinedGeneResults.rds")
+simpData = readRDS("Output/ComplexDietCentralAnalysisNoFishbat/ComplexDietCentralAnalysisNoFishbatcombinedGeneResults.rds")
+
+
+
+mainData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResults-KeggReactomeOld.rds")
+mainData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternates-KeggReactome.rds")
+simpData = readRDS("Output/ComplexDietCentralAnalysisSimplify/ComplexDietCentralAnalysisSimplifycombinedGOResults-KeggReactome.rds")
+simpData = readRDS("Output/ComplexDietCentralAnalysisSimplifyNoScav/ComplexDietCentralAnalysisSimplifyNoScavcombinedGOResults-KeggReactome.rds")
+simpData = readRDS("Output/ComplexDietCentralAnalysisPiscFix/ComplexDietCentralAnalysisPiscFixcombinedGOResults-KeggReactome.rds")
+simpData = readRDS("Output/ComplexDietCentralAnalysisNoFishbat/ComplexDietCentralAnalysisNoFishbatcombinedGOResults-KeggReactome.rds")
+
+simpData = simpData[,c(1:42)]
+
+mainSigData = mainData[,c(convertColnameToIndex("CH-significant", mainData), convertColnameToIndex("HI-significant", mainData), convertColnameToIndex("HV-significant", mainData), convertColnameToIndex("IV-significant", mainData))]
+mainSigData = mainData[,c(convertColnameToIndex("CH-significantRobust", mainData), convertColnameToIndex("HI-significantRobust", mainData), convertColnameToIndex("HV-significantRobust", mainData), convertColnameToIndex("IV-significantRobust", mainData))]
+
+simpSigData = simpData[,c(convertColnameToIndex("CH-significant", simpData), convertColnameToIndex("HI-significant", simpData), convertColnameToIndex("HV-significant", simpData), convertColnameToIndex("IV-significant", simpData))]
+
+
+makeComboVenn()
+
+
+
+
+
+
+
+convertColnameToIndex("IV-significant", simpData)
+plot(mainData$`IV-p.adj`, simpData$`IV-p.adj`)
+
+which(mainSigData$`CH-significantRobust` & !simpSigData$`CH-significant`)
+
+IvMissingInSimp = which(mainSigData$`IV-significantRobust` & !simpSigData$`IV-significant`)
+IvMissingInSimp = which(mainSigData$`IV-significant` & !simpSigData$`IV-significant`)
+
+IvMissingInMain = which(!mainSigData$`IV-significantRobust` & simpSigData$`IV-significant`)
+
+length(which(mainSigData$`IV-significantRobust` & !simpSigData$`IV-significant`))
+
+simpData[IvMissingInSimp,]
+
+
+simpData[which(mainSigData$`HI-significantRobust` & !simpSigData$`HI-significant`),]
+
+IVData = cbind(mainData[,c(37:42)], simpData[,c(37:42)])
+
+IVData[IvMissingInSimp, c(1,2)]
+
+missingSets = IVData[c(545, 546),]
+
+
+missingSets[1,c(5,11)]
+
+
+get_positions <- function(x) {
+  pairs <- trimws(unlist(strsplit(x, ",")))
+  
+  genes <- sub(":.*", "", pairs)
+  positions <- as.numeric(sub(".*:", "", pairs))
+  
+  setNames(positions, genes)
+}
+
+sumImportantChange
+IVData$sumChange = rep(NA)
+IVData$sumImportantChange = rep(NA)
+
+i=33
+for(i in 1:1803){
+IV_gene_vals = IVData[i,c(5)]
+IV_gene_vals_1 = IVData[i,c(11)]
+  
+
+
+pos1 <- get_positions(IV_gene_vals)
+pos2 <- get_positions(IV_gene_vals_1)
+
+# Genes present in both lists
+common_genes <- intersect(names(pos1), names(pos2))
+
+# Position changes
+position_changes <- data.frame(
+  Gene = common_genes,
+  MainPosition = pos1[common_genes],
+  SimpPosition = pos2[common_genes],
+  Change = pos2[common_genes] - pos1[common_genes]
+)
+
+# Only genes whose position actually changed
+position_changes <- position_changes[
+  position_changes$MainPosition != position_changes$SimpPosition,
+]
+
+position_changes
+numImportantPositions = max(length(which(position_changes$MainPosition < 1000)), length(which(position_changes$SimpPosition < 1000)))
+IVData$sumChange[i] = sum(position_changes$Change)
+IVData$sumImportantChange[i] = sum(head(position_changes$Change,numImportantPositions))
+
+}
+
+IVData$pValChange = (IVData[,3]) - (IVData[,9])
+
+plot(IVData$sumChange, IVData$pValChange)
+abline(v = 0)  # vertical line at x = 0
+abline(h = 0)  # horizontal line at y = 0
+
+plot(IVData$sumImportantChange, IVData$pValChange, xlim = c(min(IVData$sumImportantChange), -min(IVData$sumImportantChange)))
+
+
+
+missingSets = IVData[IvMissingInSimp,]
+
+
+length(which())
+
+confusingCol = mainSigData$`IV-significant`
+
+all.equal(confusingCol,mainSigData[,4])
+
+#---------------------------------------------------------------------
+# --- Debug Alternates --- 
+# --------------------------------------------------------------------
+
+files <- list.files("Output/ComplexDietCentralAnalysisSimplify/Alternates", full.names = TRUE)
+
+phenVecs = files[grep("PhenotypeVector.rds", files)]
+
+
+#load in all of the alternates 
+
+PhenSets = list()
+for(i in 1:length(phenVecs)){
+  currentSet = readRDS(phenVecs[i])
+  PhenSets[[i]] = currentSet
+}
+
+phenFullVec = unlist(PhenSets)
+
+table(phenFullVec)
+
 
 
 #---------------------------------------------------------------------
@@ -158,7 +651,7 @@ mergedData[which(!mergedData$TranslatedDerek == mergedData$SimplifiedDietConvert
 length(which(!mergedData$TranslatedDerek == mergedData$SimplifiedDietConvertNoScav))
 mergedData[15, c(2,77,78)]
 
-write.csv(mergedData, "Data/mergedData.csv")
+#write.csv(mergedData, "Data/mergedData.csv")
 
 #---------------------------------------------------------------------
 # --- inclusion columns for supplement --- 

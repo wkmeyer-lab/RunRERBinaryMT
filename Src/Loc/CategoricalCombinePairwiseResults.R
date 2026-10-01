@@ -44,6 +44,19 @@ args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=gene", "s=T", "l=A")
 args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=KeggReactome", "s=T", "l=A")
 
 
+args = c("r=ComplexDietCentralAnalysisSimplify", "p=NULL", "g=gene", "s=T", "l=F")
+args = c("r=ComplexDietCentralAnalysisSimplify", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+
+args = c("r=ComplexDietCentralAnalysisSimplifyNoScav", "p=NULL", "g=gene", "s=T", "l=F")
+args = c("r=ComplexDietCentralAnalysisSimplifyNoScav", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+
+args = c("r=ComplexDietCentralAnalysisPiscFix", "p=NULL", "g=gene", "s=T", "l=F")
+args = c("r=ComplexDietCentralAnalysisPiscFix", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+
+args = c("r=ComplexDietCentralAnalysisNoFishbat", "p=NULL", "g=gene", "s=T", "l=F")
+args = c("r=ComplexDietCentralAnalysisNoFishbat", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+
+
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
