@@ -644,6 +644,33 @@ mergedData$SimplifiedDietConvert[which( mergedData$SimplifiedDietConvert == "Mix
 mergedData$SimplifiedDietConvert[which( mergedData$SimplifiedDietConvert == "NoData")] = NA
 
 
+mergedData$SimplifiedDietConvertEqualDrop = rep(NA)
+mergedData$SimplifiedDietConvertEqualDrop[which(is.na(mergedData$Diet.Inv))] = "NoData"
+mergedData$SimplifiedDietConvertEqualDrop[which(mergedData$Diet.PlantAll >= 90)] = "Herbivore"
+mergedData$SimplifiedDietConvertEqualDrop[which((mergedData$VertAllPlusScav + mergedData$Diet.Inv) >= 90)] = "zMixedPredator"
+mergedData$SimplifiedDietConvertEqualDrop[which(mergedData$Diet.Inv >= 90)] = "Invertivore"
+mergedData$SimplifiedDietConvertEqualDrop[which(mergedData$VertAllPlusScav >= 90)] = "Vertivore"
+mergedData$SimplifiedDietConvertEqualDrop[is.na(mergedData$SimplifiedDietConvertEqualDrop)] = "Omnivore"
+
+mergedData$SimplifiedDietConvertEqualDrop[which( mergedData$SimplifiedDietConvertEqualDrop == "zMixedPredator" & mergedData$Diet.Inv > 50)] = "Invertivore"
+mergedData$SimplifiedDietConvertEqualDrop[which( mergedData$SimplifiedDietConvertEqualDrop == "zMixedPredator" & mergedData$VertAllPlusScav > 50)] = "Vertivore"
+
+mergedData$SimplifiedDietConvertEqualDrop[which(mergedData$SimplifiedDietConvertEqualDrop == "NoData")] = NA
+
+
+
+mergedData$SimplifiedDietConvertStrictPred = rep(NA)
+mergedData$SimplifiedDietConvertStrictPred[which(is.na(mergedData$Diet.Inv))] = "NoData"
+mergedData$SimplifiedDietConvertStrictPred[which(mergedData$Diet.PlantAll >= 90)] = "Herbivore"
+mergedData$SimplifiedDietConvertStrictPred[which((mergedData$VertAllPlusScav + mergedData$Diet.Inv) >= 90)] = "zMixedPredator"
+mergedData$SimplifiedDietConvertStrictPred[which(mergedData$Diet.Inv >= 90)] = "Invertivore"
+mergedData$SimplifiedDietConvertStrictPred[which(mergedData$VertAllPlusScav >= 90)] = "Vertivore"
+mergedData$SimplifiedDietConvertStrictPred[is.na(mergedData$SimplifiedDietConvertStrictPred)] = "Omnivore"
+
+mergedData$SimplifiedDietConvertStrictPred[which(mergedData$SimplifiedDietConvertStrictPred == "NoData")] = NA
+
+
+
 which( mergedData$SimplifiedDietConvert == "MixedPredator")
 
 mergedData[which(!mergedData$SimplifiedDietConvertNoScav == mergedData$SimplifiedDietConvert),c(2,78,79,80)]

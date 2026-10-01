@@ -260,7 +260,7 @@ for(i in usedAlternates){
   # Make the merged phenotype
   #-------
   
-  toMerge = c("Vertivore", "Insectivore", "Invertivore")
+  toMerge = c("Vertivore", "Insectivore", "Invertivore", "zMixedPredator")
   mergeValue = "Carnivore"
   
   
