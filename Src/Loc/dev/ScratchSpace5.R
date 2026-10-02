@@ -19,6 +19,51 @@ packageVersion("RERconverge")
 
 
 #---------------------------------------------------------------------
+# --- write species filters --- 
+# --------------------------------------------------------------------
+
+
+
+
+{  # Bracket used for collapsing purposes
+  #File Prefix
+  if(!is.na(cmdArgImport('r'))){
+    filePrefix = cmdArgImport('r')
+  }else{
+    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
+  }
+  
+  #  Output Directory 
+  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
+    dir.create("Output")
+  }
+  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
+  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
+    dir.create(outputFolderNameNoSlash)
+  }
+  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+  
+  #  Force update argument
+  forceUpdate = FALSE
+  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
+    forceUpdate = cmdArgImport('v')
+    forceUpdate = as.logical(forceUpdate)
+  }else{
+    message("Force update not specified, not forcing update")
+  }
+}
+
+alternateSets = readRDS(paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
+
+for(i in 1:length(alternateSets)){
+  message(i)
+  alternateFilePrefix = paste0("/Alternates/Alternate", i)
+  currentSet = alternateSets[[i]]
+  currentSpeciesFilterFilename =  paste(outputFolderName, alternateFilePrefix, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
+  saveRDS(currentSet, currentSpeciesFilterFilename)
+}
+
+#---------------------------------------------------------------------
 # --- check for alternate mismatch --- 
 # --------------------------------------------------------------------
 

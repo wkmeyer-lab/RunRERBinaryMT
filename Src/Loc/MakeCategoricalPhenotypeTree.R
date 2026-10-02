@@ -2916,7 +2916,7 @@ if(generateAlternates){
     
     currentPhenotypeVectorSaving = data.frame(names(currentPhenotypeVector), names(currentCommonPhenotypeVector), currentPhenotypeVector)
     currentDirectReadablePhenotypeVectorFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPhenotypeVector.csv",sep="")
-    write.csv(currentPhenotypeVectorSaving, currentDirectReadablePhenotypeVectorFilename) 
+    #write.csv(currentPhenotypeVectorSaving, currentDirectReadablePhenotypeVectorFilename) 
     currentPhenotypeVectorFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
     saveRDS(currentPhenotypeVector, file = currentPhenotypeVectorFilename)                        #save the phenotype vector
     
@@ -2946,11 +2946,14 @@ if(generateAlternates){
       
       currentPhenotypeVectorSaving = data.frame(names(currentPhenotypeVector), names(currentCommonPhenotypeVector), currentPhenotypeVector)
       currentDirectReadablePhenotypeVectorFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPhenotypeVector.csv",sep="")
-      write.csv(currentPhenotypeVectorSaving, currentDirectReadablePhenotypeVectorFilename)  
+      #write.csv(currentPhenotypeVectorSaving, currentDirectReadablePhenotypeVectorFilename)  
       
       currentPhenotypeVectorFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
       saveRDS(currentPhenotypeVector, file = currentPhenotypeVectorFilename)                        #save the phenotype vector
       
+      currentSpeciesFilterFilename =  paste(outputFolderName, alternateFilePrefix, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
+      currentSpeciesFilter = currentSet
+      saveRDS(currentSpeciesFilter, currentSpeciesFilterFilename)
       
       
       tipsToRemove = allSpeciesTree$tip.label[!allSpeciesTree$tip.label %in% currentSet]
@@ -2962,7 +2965,7 @@ if(generateAlternates){
       currentCommonCategoricalTree = currentTree
       currentCommonCategoricalTree$tip.label = ZonomNameConvertVectorCommon(currentCommonCategoricalTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
       
-      if(useLiam){
+      if(useCladeLimit){
       
         treeImageFilename = paste(outputFolderName, alternateFilePrefix, filePrefix,"CategoricalTree.pdf", sep="") #make a filename based on the prefix
         pdf(treeImageFilename, height = length(currentPhenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
@@ -2983,7 +2986,6 @@ if(generateAlternates){
     }
   }
 
-  
 }
 
 
