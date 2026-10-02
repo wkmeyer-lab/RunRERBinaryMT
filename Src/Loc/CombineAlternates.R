@@ -238,7 +238,7 @@ if(useGO){
         
         if(saveCombinedData){
           combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet)
-          saveRDS(GOResults, paste0(combinedGODataFilename, ".rds"))
+          saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))
         }
     }
   }
