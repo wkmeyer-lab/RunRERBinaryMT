@@ -187,14 +187,22 @@ subdirectoryValueList = NULL
     useSubdirectory = TRUE
     subdirectoryValueList = cmdArgImport('s')
     #message(paste("Using subdirectory", subdirectoryValue, "."))
-    
     if(length(subdirectoryValueList ==1)){outputFolderName = paste(outputFolderName, subdirectoryValueList[1], "/", sep=""); subdirectoryValue = subdirectoryValueList[1]}
     
   }else{
     message("No subdirectory specified.")
+    
+    
     folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
-    pairwiseSets = folderNames[grep("-", folderNames)]
-    message("Folders not specified, using all folders. Note that if driver analysis is active, this may cause issues.")
+    if(length(folderNames) >0 ){
+      useSubdirectory = TRUE
+      subdirectoryValueList = folderNames
+      message("Folders not specified, using all folders. Note that if driver analysis is active, this may cause issues.")
+    }else{
+      message("Using main directory")
+    }
+    
+
   }
 }
 
