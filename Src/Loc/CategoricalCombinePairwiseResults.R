@@ -57,6 +57,9 @@ args = c("r=ComplexDietCentralAnalysisNoFishbat", "p=NULL", "g=gene", "s=T", "l=
 args = c("r=ComplexDietCentralAnalysisNoFishbat", "p=NULL", "g=KeggReactome", "s=T", "l=F")
 
 
+args = c("r=ComplexDietCentralAnalysisSimplifyEqualDrop", "g=KeggReactome", "s=T", "l=F", 'p=c("Invertivore-Vertivore","Herbivore-Vertivore","Invertivore-Omnivore","Herbivore-Omnivore","Herbivore-Invertivore","Omnivore-Vertivore","Carnivore-Herbivore","Carnivore-Omnivore","Overall")')
+
+
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -105,7 +108,7 @@ addPermulations = F
 { # Bracket used for collapsing purposes
   
   #pairwise Sets
-  if(!is.na(all(cmdArgImport('p')))){
+  if(!all(is.na(cmdArgImport('p'))) | all(cmdArgImport('p') == "NULL")){
     pairwiseSets = cmdArgImport('p')
   }else{
     folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
@@ -364,11 +367,8 @@ if(usingGo){
     correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
     
     goFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet,"Enrichment-", geneSet, ".rds")
-    if(file.exists(goFilename)){
-      currentGoData = readRDS(goFilename)[[1]]
-    }else{
-      next
-    }
+    currentGoData = readRDS(goFilename)[[1]]
+
     
     
     if(usePermulations){
