@@ -364,7 +364,12 @@ if(usingGo){
     correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
     
     goFilename = paste0(outputFolderName, currentSet, "/", filePrefix, currentSet,"Enrichment-", geneSet, ".rds")
-    currentGoData = readRDS(goFilename)[[1]]
+    if(file.exists(goFilename)){
+      currentGoData = readRDS(goFilename)[[1]]
+    }else{
+      next
+    }
+    
     
     if(usePermulations){
       if(exists(currentGoData$permP.adj)){
