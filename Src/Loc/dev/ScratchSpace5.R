@@ -6,6 +6,7 @@ library(data.table)
 library(geiger)
 
 source("Src/Reu/ZoonomTreeNameToCommon.R")
+source("Src/Reu/RERCOnvergeFunctions.R")
 
 par(mfrow=c(1,1))
 palette(c("#1B9E77","#7570B3", "#000000", "#E7298A"))
@@ -16,6 +17,93 @@ palette(c("#1B9E77", "#000000", "#7570B3", "#E7298A"))
 
 
 packageVersion("RERconverge")
+
+
+
+#---------------------------------------------------------------------
+# --- testing enrichment num genesets  --- 
+# --------------------------------------------------------------------
+
+
+enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
+
+vals = rerStats
+gmt = annotationsList[[1]]
+outputGeneVals = T
+num.g =2
+
+genes=NULL
+simple=T 
+use.all=F
+order=F
+alternative = "two.sided"
+
+fastwilcoxGMT=function(vals, gmt, simple=T, use.all=F, num.g=10,genes=NULL, outputGeneVals=F, order=F,
+                       alternative = "two.sided"){
+  vals=vals[!is.na(vals)]
+  if(is.null(genes)){
+    genes=unique(unlist(gmt$genesets))
+  }
+  out=matrix(nrow=length(gmt$genesets), ncol=5)
+  rownames(out)=gmt$geneset.names
+  colnames(out)=c("stat", "pval", "p.adj","num.genes", "gene.vals")
+  out=as.data.frame(out)
+  genes=intersect(genes, names(vals))
+  
+  valsr=rank(vals[genes])
+  numg=length(vals)+1
+  valsallr=rank(vals)
+  for( i in 1:nrow(out)){
+    
+    curgenes=intersect(genes,gmt$genesets[[i]])
+    
+    bkgenes=setdiff(genes, curgenes)
+    
+    if (length(bkgenes)==0 || use.all){
+      bkgenes=setdiff(names(vals), curgenes)
+    }
+    if(length(curgenes)>=num.g & length(bkgenes)>2){
+      if(!simple){
+        # change alternative = "greater" for the one-sided test
+        res=wilcox.test(x = vals[curgenes], y=vals[bkgenes], exact=F, alternative = alternative)
+        
+        out[i, 1:2]=c(res$statistic/(as.numeric(length(bkgenes))*as.numeric(length(curgenes))), res$p.value)
+      }
+      else{
+        # add an alternative parameter (can be "greater" or "two.sided")
+        out[i, 1:2]=simpleAUCgenesRanks(valsr[curgenes],valsr[bkgenes], alt = alternative)
+        
+      }
+      out[i,"num.genes"]=length(curgenes)
+      if(outputGeneVals){
+        if (out[i,1]>0.5){
+          oo=order(vals[curgenes], decreasing = T)
+          granks=numg-valsallr[curgenes]
+        }
+        else{
+          oo=order(vals[curgenes], decreasing = F)
+          granks=valsallr[curgenes]
+        }
+        
+        
+        nn=paste(curgenes[oo],round((granks[curgenes])[oo],2),sep=':' )
+        out[i,"gene.vals"]=paste(nn, collapse = ", ")
+      }
+    }
+    
+  }
+  # hist(out[,2])
+  out[,1]=out[,1]-0.5
+  out[, "p.adj"]=p.adjust(out[,2], method="BH")
+  
+  out=out[!is.na(out[,2]),]
+  if(order){
+    out=out[order(-abs(out[,1])),]
+  }
+  out
+}
+
+
 
 
 #---------------------------------------------------------------------

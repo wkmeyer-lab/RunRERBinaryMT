@@ -95,7 +95,7 @@ args = c('r=ComplexDietCentralAnalysisSimplify', 'm=c("Data/KeggReactome.gmt")',
 args = c('r=ComplexDietCentralAnalysisSimplifyNoScav', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Invertivore-Vertivore", "Herbivore-Vertivore", "Invertivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Invertivore", "Overall", "Carnivore-Herbivore", "Carnivore-Omnivore")' )
 args = c('r=ComplexDietCentralAnalysisPiscFix', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Invertivore-Vertivore", "Herbivore-Vertivore", "Invertivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Invertivore", "Overall", "Carnivore-Herbivore", "Carnivore-Omnivore")' )
 args = c('r=ComplexDietCentralAnalysisNoFishbat', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Invertivore-Vertivore", "Herbivore-Vertivore", "Invertivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Invertivore", "Overall", "Carnivore-Herbivore", "Carnivore-Omnivore")' )
-
+args = c('r=ComplexDietCentralAnalysisSimplifyEqualDrop', 'm=Data/KeggReactome.gmt', 'p=F') 
 
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}

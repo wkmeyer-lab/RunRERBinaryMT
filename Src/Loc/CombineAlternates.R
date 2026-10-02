@@ -234,7 +234,7 @@ if(useGO){
           }
         }
         #GoCombinedResults = GoCombinedResults[,-1]
-        rm(GOResults) 
+        
        
         
         if(saveCombinedData){
