@@ -101,6 +101,7 @@ if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 # Defaults
 significanceCutoff = 0.05
 pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
+pairwiseSets = c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Invertivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
 geneSet = NULL
 usingGo = F
 saveData = T
@@ -430,7 +431,23 @@ if(usingGo){
       cat("Combining GO Data", i, "\n")
       GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
     }else{
-      stop("Rownames of GO results are not the same, there is an issue with the GO data.")
+      tryCatch({
+        cat("Mismatch in order; reordering current data to first data; Combining GO Data", i, "\n")
+        matchedOrder = match(rownames(GOResults[[i]]),rownames(GOResults[[1]]))
+        matchedOrder = matchedOrder[-which(is.na(matchedOrder))]
+        GOResults[[i]] = GOResults[[i]][matchedOrder,]
+        GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
+      },error = function(e){      
+        stop("Rownames of GO results are not the same and cannot be reordered, there is an issue with the GO data.")
+        }
+
+      )
+
+      
+      
+      
+      
+      
     }
   }
   GoCombinedResults = GoCombinedResults[,-1]

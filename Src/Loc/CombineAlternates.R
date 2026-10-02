@@ -208,7 +208,32 @@ if(useGO){
         }
         rm(currentGoData)
         
-
+        GoCombinedResults = NA
+        for(i in 1:length(GOResults)){
+          if(all(rownames(GOResults[[1]]) == rownames(GOResults[[i]]))){
+            cat("Combining GO Data", i, "\n")
+            GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
+          }else{
+            tryCatch({
+              cat("Mismatch in order; reordering current data to first data; Combining GO Data", i, "\n")
+              matchedOrder = match(rownames(GOResults[[i]]),rownames(GOResults[[1]]))
+              matchedOrder = matchedOrder[-which(is.na(matchedOrder))]
+              GOResults[[i]] = GOResults[[i]][matchedOrder,]
+              GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
+            },error = function(e){      
+              stop("Rownames of GO results are not the same and cannot be reordered, there is an issue with the GO data.")
+            }
+            
+            )
+            
+            
+            
+            
+            
+            
+          }
+        }
+        GoCombinedResults = GoCombinedResults[,-1]
         #rm(GOResults)
         
        
