@@ -426,6 +426,7 @@ if(usingGo){
   rm(currentGoData)
   
   GoCombinedResults = NA
+  longestGOResult = which(sapply(GOResults, nrow) == max(sapply(GOResults, nrow)))[1]
   for(i in 1:length(GOResults)){
     if(all(rownames(GOResults[[1]]) == rownames(GOResults[[i]]))){
       cat("Combining GO Data", i, "\n")
@@ -433,8 +434,11 @@ if(usingGo){
     }else{
       tryCatch({
         cat("Mismatch in order; reordering current data to first data; Combining GO Data", i, "\n")
-        matchedOrder = match(rownames(GOResults[[i]]),rownames(GOResults[[1]]))
-        matchedOrder = matchedOrder[-which(is.na(matchedOrder))]
+        
+        which(!rownames(GOResults[[longestGOResult]]) %in% rownames(GOResults[[i]]))
+        
+        matchedOrder = match(rownames(GOResults[[longestGOResult]]), rownames(GOResults[[i]]))
+        #matchedOrder = matchedOrder[-which(is.na(matchedOrder))]
         GOResults[[i]] = GOResults[[i]][matchedOrder,]
         GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
       },error = function(e){      
