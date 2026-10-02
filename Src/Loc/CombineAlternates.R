@@ -14,6 +14,7 @@ library(data.table)
 
 #----------------
 args = c('r=ComplexDietCentralAnalysis', 's=g', 'g=KeggReactome', 'l=170', 'i=1')
+args = c('r=ComplexDietCentralAnalysisSimplifyEqualDrop', 's=g', 'g=KeggReactome', 'l=170')
 
 
 geneSet = NULL
@@ -223,7 +224,7 @@ if(useGO){
               matchedOrder = match(rownames(GOResults[[longestGOResult]]), rownames(GOResults[[i]]))
               #matchedOrder = matchedOrder[-which(is.na(matchedOrder))]
               GOResults[[i]] = GOResults[[i]][matchedOrder,]
-              GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
+              #GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
             },error = function(e){      
               stop("Rownames of GO results are not the same and cannot be reordered, there is an issue with the GO data.")
             }
@@ -232,13 +233,13 @@ if(useGO){
 
           }
         }
-        GoCombinedResults = GoCombinedResults[,-1]
+        #GoCombinedResults = GoCombinedResults[,-1]
         rm(GOResults) 
        
         
         if(saveCombinedData){
           combinedGODataFilename = paste0(outputFolderName, filePrefix, "combinedGOResults-", geneSet)
-          saveRDS(GoCombinedResults, paste0(combinedGODataFilename, ".rds"))
+          saveRDS(GOResults, paste0(combinedGODataFilename, ".rds"))
         }
     }
   }
