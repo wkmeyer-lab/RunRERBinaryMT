@@ -93,8 +93,6 @@ combinedCorrelations <- lapply(names(correlationRuns[[1]]), function(nm) {
 names(combinedCorrelations) <- names(correlationRuns[[1]])
 
 
-
-
 combinedCorrelations <- lapply(combinedCorrelations, function(df) {
   
   #Number of significant
@@ -160,6 +158,7 @@ combinedCorrelations <- lapply(combinedCorrelations, function(df) {
 
 saveRDS(combinedCorrelations, paste0(primaryOutputFolderName, primaryFilePrefix, "AlternatesCombinedCorrelations.rds"))
 
+message("Completed gene combinations")
 
 #----
 #Combine enrichments
@@ -243,7 +242,7 @@ if(useGO){
         }
     }
   }
-  
+  message("Completed GO combinations for individual alternates")
   
   #---- 
   #combine alternates
