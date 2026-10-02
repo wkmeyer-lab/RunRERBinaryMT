@@ -105,7 +105,7 @@ addPermulations = F
 { # Bracket used for collapsing purposes
   
   #pairwise Sets
-  if(!is.na(cmdArgImport('p'))){
+  if(!is.na(all(cmdArgImport('p')))){
     pairwiseSets = cmdArgImport('p')
   }else{
     folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
