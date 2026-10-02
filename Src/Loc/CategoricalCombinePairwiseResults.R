@@ -428,7 +428,7 @@ if(usingGo){
   GoCombinedResults = NA
   longestGOResult = which(sapply(GOResults, nrow) == max(sapply(GOResults, nrow)))[1]
   for(i in 1:length(GOResults)){
-    if(all(rownames(GOResults[[1]]) == rownames(GOResults[[i]]))){
+    if(all(rownames(GOResults[[longestGOResult]]) == rownames(GOResults[[i]]))){
       cat("Combining GO Data", i, "\n")
       GoCombinedResults = cbind(GoCombinedResults, GOResults[[i]])
     }else{
