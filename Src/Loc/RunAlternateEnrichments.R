@@ -127,7 +127,7 @@ subdirectoryValueList = NULL
   }else{
     message("No subdirectory specified.")
     alternatesFolderName = paste0(outputFolderName,"Alternates")
-    folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
+    folderNames = basename(list.dirs(alternatesFolderName, full.names = TRUE, recursive = FALSE))
     if(length(folderNames) >0 ){
       useSubdirectory = TRUE
       subdirectoryValueList = folderNames
