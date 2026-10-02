@@ -197,7 +197,8 @@ subdirectoryValueList = NULL
     if(length(folderNames) >0 ){
       useSubdirectory = TRUE
       subdirectoryValueList = folderNames
-      message("Folders not specified, using all folders. Note that if driver analysis is active, this may cause issues.")
+      subdirectoryValueList = subdirectoryValueList[!(subdirectoryValueList == "Alternates")]
+      message("Folders not specified, using all folders but Alternates. Note that if driver analysis is active, this may cause issues.")
     }else{
       message("Using main directory")
     }
