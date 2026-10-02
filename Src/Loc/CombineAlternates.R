@@ -185,6 +185,7 @@ if(useGO){
   
   if(CombineGo){
     for(j in 1:length(alternateSets)){
+      message(j)
       currentAlternate = j
       filePrefix = paste0("Alternate", j, primaryFilePrefix)
   
