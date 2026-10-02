@@ -126,6 +126,9 @@ subdirectoryValueList = NULL
     
   }else{
     message("No subdirectory specified.")
+    folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
+    pairwiseSets = folderNames[grep("-", folderNames)]
+    message("Folders not specified, using all folders. Note that if driver analysis is active, this may cause issues.")
   }
 }
 
