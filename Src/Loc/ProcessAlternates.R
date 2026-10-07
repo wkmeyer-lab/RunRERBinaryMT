@@ -23,6 +23,7 @@ library(data.table)
 
 args = c('r=ComplexDietCentralAnalysis', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=1')
 args = c('r=ComplexDietCentralAnalysisSimplify', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=11')
+args = c('r=ComplexDietCentralAnalysisSimplifyStrictPred', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=7')
 
 
 # --- Standard start-up code ---

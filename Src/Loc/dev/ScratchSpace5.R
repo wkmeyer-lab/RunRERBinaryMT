@@ -19,6 +19,115 @@ palette(c("#1B9E77", "#000000", "#7570B3", "#E7298A"))
 packageVersion("RERconverge")
 
 
+#---------------------------------------------------------------------
+# --- debug StrictPred --- 
+# --------------------------------------------------------------------
+
+startingName = "Output/ComplexDietCentralAnalysisSimplifyStrictPred/Alternates/Alternate9ComplexDietCentralAnalysisSimplifyStrictPred"
+
+alternateSets = readRDS("Output/ComplexDietCentralAnalysisSimplifyStrictPred/ComplexDietCentralAnalysisSimplifyStrictPredAlternatePruningSpecies.rds")
+alternate = alternateSets[[9]]
+speciesFilter = readRDS(paste0(startingName, "SpeciesFilter.rds"))
+phenVec = readRDS(paste0(startingName, "CategoricalPhenotypeVector.rds"))
+length(phenVec)
+tree = readRDS(paste0(startingName, "CategoricalTree.rds"))
+length(tree$tip.label)
+
+which(!alternate %in% speciesFilter)
+which(!speciesFilter %in% alternate)
+which(!speciesFilter %in% names(phenVec))
+which(! names(phenVec)%in% speciesFilter)
+table(tree$edge.length)
+
+vecFromCluster = c("vs_HLornAna3", "vs_monDom5", "vs_HLdidVir1", "vs_HLgraAgi1",
+                   "vs_HLantFla1", "vs_HLphaCin1", "vs_HLvomUrs1", "vs_HLgymLea1",
+                   "vs_HLpseCor1", "vs_HLpseCup1", "vs_HLphaGym1", "vs_HLmacGig1",
+                   "vs_oryAfe1", "vs_chrAsi1", "vs_HLmicTal1", "vs_HLloxAfr4", "vs_HLtamTet1",
+                   "vs_HLnycCou1", "vs_otoGar3", "vs_HLdauMad1", "vs_HLindInd1",
+                   "vs_proCoq1", "vs_HLcheMed1", "vs_HLeulMon1", "vs_HLpitPit1",
+                   "vs_HLateGeo1", "vs_HLcebAlb1", "vs_HLsagImp1", "vs_HLcalPym1",
+                   "vs_HLcalJac4", "vs_ponAbe3", "vs_HLpilTep2", "vs_colAng1", "vs_HLsemEnt1",
+                   "vs_HLallNig1", "vs_HLcerNeg1", "vs_HLcerMon1", "vs_HLpapAnu5",
+                   "vs_macNem1", "vs_ochPri3", "vs_HLoryCun3", "vs_HLmusAve1", "vs_HLsciVul1",
+                   "vs_HLxerIna1", "vs_HLspeDau1", "vs_HLmarFla1", "vs_HLcteGun1",
+                   "vs_HLhysCri1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1",
+                   "vs_HLmyoCoy1", "vs_HLcteSoc1", "vs_HLcoePre1", "vs_HLdolPat1",
+                   "vs_HLhydHyd1", "vs_HLpedCap1", "vs_HLperLonPac1", "vs_dipOrd2",
+                   "vs_HLzapHud1", "vs_HLallBul1", "vs_HLcriGam1", "vs_HLsigHis1",
+                   "vs_HLonyTor1", "vs_HLperNas1", "vs_HLperCri1", "vs_HLperEre1",
+                   "vs_HLperCal2", "vs_HLperLeu1", "vs_HLperPol1", "vs_HLondZib1",
+                   "vs_HLmyoGla2", "vs_HLellLut1", "vs_HLmicArv1", "vs_HLpsaObe1",
+                   "vs_HLmerUng1", "vs_HLacoRus1", "vs_HLacoCah1", "vs_HLratRat7",
+                   "vs_HLapoSyl1", "vs_HLmasCou1", "vs_HLmusPah1", "vs_HLmusCar1",
+                   "vs_HLmusSpr1", "vs_HLsolPar1", "vs_eriEur2", "vs_sorAra2", "vs_HLuroGra1",
+                   "vs_HLscaAqu1", "vs_HLtalOcc1", "vs_HLpteGig1", "vs_pteAle1",
+                   "vs_HLcynBra1", "vs_HLeidDup1", "vs_HLeidHel2", "vs_HLeonSpe1",
+                   "vs_HLrouMad1", "vs_HLcraTho1", "vs_HLmegLyr2", "vs_HLhipGal1",
+                   "vs_HLhipArm1", "vs_HLrhiFer5", "vs_HLrhiSin1", "vs_HLnocLep1",
+                   "vs_ptePar1", "vs_HLmorBla1", "vs_HLmacCal1", "vs_HLdesRot2",
+                   "vs_HLtonSau1", "vs_HLphyDis3", "vs_HLanoCau1", "vs_HLlepYer1",
+                   "vs_HLcarPer3", "vs_HLmolMol2", "vs_HLtadBra1", "vs_HLminNat1",
+                   "vs_HLmurAurFea1", "vs_HLnycHum2", "vs_HLlasBor1", "vs_eptFus1",
+                   "vs_HLpipPip1", "vs_myoDav1", "vs_HLmyoSep1", "vs_HLmyoLuc1",
+                   "vs_HLmyoMyo6", "vs_HLmanPen2", "vs_HLparHer1", "vs_HLhyaHya1",
+                   "vs_HLcryFer2", "vs_HLhelPar1", "vs_HLmunMug1", "vs_HLaciJub2",
+                   "vs_HLpumYag1", "vs_HLpriBen1", "vs_HLlycPic2", "vs_HLailMel2",
+                   "vs_HLursThi1", "vs_HLursArc1", "vs_HLarcGaz2", "vs_lepWed1",
+                   "vs_HLmirLeo1", "vs_HLeriBar1", "vs_HLphoVit1", "vs_HLhalGry1",
+                   "vs_HLspiGra1", "vs_HLailFul2", "vs_HLpotFla1", "vs_HLnasNar1",
+                   "vs_HLproLot1", "vs_HLtaxTax1", "vs_HLmelCap1", "vs_HLmarZib1",
+                   "vs_HLmusErm1", "vs_HLmusPut1", "vs_HLpteBra1", "vs_HLlonCan1",
+                   "vs_HLlutLut1", "vs_equCab3", "vs_HLdicSum1", "vs_HLcerSimCot1",
+                   "vs_HLlamGla1", "vs_susScr11", "vs_HLeubGla1", "vs_balAcu1",
+                   "vs_HLbalBon1", "vs_HLbalMus1", "vs_HLbalEde1", "vs_HLescRob1",
+                   "vs_HLkogBre1", "vs_HLplaMin1", "vs_HLzipCav1", "vs_lipVex1",
+                   "vs_HLponBla1", "vs_HLlniGeo1", "vs_orcOrc1", "vs_HLlagObl1",
+                   "vs_HLsouChi1", "vs_HLturAdu1", "vs_HLturTru3", "vs_HLtraKan1",
+                   "vs_HLokaJoh2", "vs_HLgirCam1", "vs_HLhydIne1", "vs_HLcapPyg1",
+                   "vs_HLalcAlc1", "vs_HLmunMun1", "vs_HLmunCri1", "vs_HLelaDav1",
+                   "vs_HLmosBer1", "vs_HLtraScr1", "vs_HLbubBub2", "vs_bisBis1",
+                   "vs_HLaepMel1", "vs_HLoreOre1", "vs_HLnanGra1", "vs_HLlitWal1",
+                   "vs_HLkobLecLec1")
+
+
+
+
+
+all.equal(vecFromCluster, speciesFilter)
+all.equal(alternate, names(phenVec))
+
+tree$tip.label %in% alternate
+
+#---------------------------------------------------------------------
+# --- testing diet overlap and predict  --- 
+# --------------------------------------------------------------------
+
+mergedData = read.csv("Data/mergedData.csv")
+
+mergeDataInPantheria = which(!is.na(mergedData$panTheriaTrophicLevelCharacter))
+mergeDataInWalker = which(!is.na(mergedData$MeyerTrophicLevel))
+mergeDataInWalker = which(!is.na(mergedData$Meyer.Lab.Classification.Compressed))
+mergeDataInElton = which(!is.na(mergedData$SimplifiedDietConvert))
+
+mergeDataInOtherDiet = union(mergeDataInPantheria, mergeDataInWalker)
+mergeDataInBothDiet = intersect(mergeDataInPantheria, mergeDataInWalker)
+
+mergeDataInAllDiet = intersect(mergeDataInBothDiet, mergeDataInElton)
+
+
+table(mergedData$Meyer.Diet.Categorical)
+table(mergedData$Meyer.Lab.Classification.Clean)
+table(mergedData$Meyer.Lab.Classification.Compressed)
+
+
+dietCompares = mergedData[mergeDataInWalker,]
+
+which(dietCompares$SimplifiedDietConvertEqualDrop == "zMixedPredator")
+
+dietCompares[which(dietCompares$SimplifiedDietConvertEqualDrop == "zMixedPredator"),c(1,2,5,16,18,24, 82)]
+
+
+
 
 #---------------------------------------------------------------------
 # --- testing enrichment num genesets  --- 
@@ -496,53 +605,83 @@ convertColnameToIndex = function(name, df){
   output = which(colnames(df)==name)
   output
 }
-makeVenn = function(i, titleName){
+makeVenn = function(i, titleName,  gene = T){
+  if(gene){
   venn_list <- list(
-    Main = which(mainSigData[,i]),
-    Simplified = which(simpSigData[,i])
-    
+    Main = which(mainSigDataGene[,i]),
+    Simplified = which(simpSigDataGene[,i])
   )
+  titleName = paste(titleName, "Gene")
+  }else{
+    venn_list <- list(
+      Main = which(mainSigDataGO[,i]),
+      Simplified = which(simpSigDataGO[,i])
+    )
+    titleName = paste(titleName, "GO")
+  }
   vennout = ggvenn(venn_list) +  labs(title = titleName)
   vennout
 }
-makeComboVenn = function(){
-  venn1 = makeVenn(1, "CH")
-  venn2 = makeVenn(2, "HI")
-  venn3 = makeVenn(3, "HV")
-  venn4 = makeVenn(4, "IV")
+makeComboVenn = function( gene = T){
+  venn1 = makeVenn(1, "CH", gene)
+  venn2 = makeVenn(2, "HI", gene)
+  venn3 = makeVenn(3, "HV", gene)
+  venn4 = makeVenn(4, "IV", gene)
   
   vennSet = grid.arrange(venn1, venn2, venn3, venn4)
   vennSet
 }
 
-mainData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
-simpData = readRDS("Output/ComplexDietCentralAnalysisSimplify/ComplexDietCentralAnalysisSimplifycombinedGeneResults.rds")
-simpData = readRDS("Output/ComplexDietCentralAnalysisSimplifyNoScav/ComplexDietCentralAnalysisSimplifyNoScavcombinedGeneResults.rds")
-simpData = readRDS("Output/ComplexDietCentralAnalysisPiscFix/ComplexDietCentralAnalysisPiscFixcombinedGeneResults.rds")
-simpData = readRDS("Output/ComplexDietCentralAnalysisNoFishbat/ComplexDietCentralAnalysisNoFishbatcombinedGeneResults.rds")
+mainDataGene = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGeneResultsWithAlternates.rds")
+simpDataGene = readRDS("Output/ComplexDietCentralAnalysisSimplify/ComplexDietCentralAnalysisSimplifycombinedGeneResults.rds")
+simpDataGene = readRDS("Output/ComplexDietCentralAnalysisSimplifyNoScav/ComplexDietCentralAnalysisSimplifyNoScavcombinedGeneResults.rds")
+simpDataGene = readRDS("Output/ComplexDietCentralAnalysisPiscFix/ComplexDietCentralAnalysisPiscFixcombinedGeneResults.rds")
+simpDataGene = readRDS("Output/ComplexDietCentralAnalysisNoFishbat/ComplexDietCentralAnalysisNoFishbatcombinedGeneResults.rds")
+simpDataGene = readRDS("Output/ComplexDietCentralAnalysisSimplifyEqualDrop/ComplexDietCentralAnalysisSimplifyEqualDropcombinedGeneResultsWithAlternates.rds")
+simpDataGene = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2combinedGeneResultsWithAlternates.rds")
 
 
 
-mainData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResults-KeggReactomeOld.rds")
-mainData = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternates-KeggReactome.rds")
-simpData = readRDS("Output/ComplexDietCentralAnalysisSimplify/ComplexDietCentralAnalysisSimplifycombinedGOResults-KeggReactome.rds")
-simpData = readRDS("Output/ComplexDietCentralAnalysisSimplifyNoScav/ComplexDietCentralAnalysisSimplifyNoScavcombinedGOResults-KeggReactome.rds")
-simpData = readRDS("Output/ComplexDietCentralAnalysisPiscFix/ComplexDietCentralAnalysisPiscFixcombinedGOResults-KeggReactome.rds")
-simpData = readRDS("Output/ComplexDietCentralAnalysisNoFishbat/ComplexDietCentralAnalysisNoFishbatcombinedGOResults-KeggReactome.rds")
-
-simpData = simpData[,c(1:42)]
-
-mainSigData = mainData[,c(convertColnameToIndex("CH-significant", mainData), convertColnameToIndex("HI-significant", mainData), convertColnameToIndex("HV-significant", mainData), convertColnameToIndex("IV-significant", mainData))]
-mainSigData = mainData[,c(convertColnameToIndex("CH-significantRobust", mainData), convertColnameToIndex("HI-significantRobust", mainData), convertColnameToIndex("HV-significantRobust", mainData), convertColnameToIndex("IV-significantRobust", mainData))]
-
-simpSigData = simpData[,c(convertColnameToIndex("CH-significant", simpData), convertColnameToIndex("HI-significant", simpData), convertColnameToIndex("HV-significant", simpData), convertColnameToIndex("IV-significant", simpData))]
+mainDataGO = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResults-KeggReactomeOld.rds")
+mainDataGO = readRDS("Output/ComplexDietCentralAnalysis/ComplexDietCentralAnalysiscombinedGOResultsWithAlternates-KeggReactome.rds")
+simpDataGO = readRDS("Output/ComplexDietCentralAnalysisSimplify/ComplexDietCentralAnalysisSimplifycombinedGOResults-KeggReactome.rds")
+simpDataGO = readRDS("Output/ComplexDietCentralAnalysisSimplifyNoScav/ComplexDietCentralAnalysisSimplifyNoScavcombinedGOResults-KeggReactome.rds")
+simpDataGO = readRDS("Output/ComplexDietCentralAnalysisPiscFix/ComplexDietCentralAnalysisPiscFixcombinedGOResults-KeggReactome.rds")
+simpDataGO = readRDS("Output/ComplexDietCentralAnalysisNoFishbat/ComplexDietCentralAnalysisNoFishbatcombinedGOResults-KeggReactome.rds")
+simpDataGO = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2combinedGOResultsWithAlternates-KeggReactome.rds")
 
 
-makeComboVenn()
+#simpData = simpData[,c(1:42)]
+
+mainSigDataGene = mainDataGene[,c(convertColnameToIndex("CH-significant", mainDataGene), convertColnameToIndex("HI-significant", mainDataGene), convertColnameToIndex("HV-significant", mainDataGene), convertColnameToIndex("IV-significant", mainDataGene))]
+mainSigDataGene = mainDataGene[,c(convertColnameToIndex("CH-significantRobust", mainDataGene), convertColnameToIndex("HI-significantRobust", mainDataGene), convertColnameToIndex("HV-significantRobust", mainDataGene), convertColnameToIndex("IV-significantRobust", mainDataGene))]
+
+mainSigDataGO = mainDataGO[,c(convertColnameToIndex("CH-significant", mainDataGO), convertColnameToIndex("HI-significant", mainDataGO), convertColnameToIndex("HV-significant", mainDataGO), convertColnameToIndex("IV-significant", mainDataGO))]
+mainSigDataGO = mainDataGO[,c(convertColnameToIndex("CH-significantRobust", mainDataGO), convertColnameToIndex("HI-significantRobust", mainDataGO), convertColnameToIndex("HV-significantRobust", mainDataGO), convertColnameToIndex("IV-significantRobust", mainDataGO))]
+
+
+simpSigDataGene = simpDataGene[,c(convertColnameToIndex("CH-significant", simpDataGene), convertColnameToIndex("HI-significant", simpDataGene), convertColnameToIndex("HV-significant", simpDataGene), convertColnameToIndex("IV-significant", simpDataGene))]
+simpSigDataGene = simpDataGene[,c(convertColnameToIndex("CH-significantRobust", simpDataGene), convertColnameToIndex("HI-significantRobust", simpDataGene), convertColnameToIndex("HV-significantRobust", simpDataGene), convertColnameToIndex("IV-significantRobust", simpDataGene))]
+
+simpSigDataGO = simpDataGO[,c(convertColnameToIndex("CH-significant", simpDataGO), convertColnameToIndex("HI-significant", simpDataGO), convertColnameToIndex("HV-significant", simpDataGO), convertColnameToIndex("IV-significant", simpDataGO))]
+simpSigDataGO = simpDataGO[,c(convertColnameToIndex("CH-significantRobust", simpDataGO), convertColnameToIndex("HI-significantRobust", simpDataGO), convertColnameToIndex("HV-significantRobust", simpDataGO), convertColnameToIndex("IV-significantRobust", simpDataGO))]
 
 
 
+geneVenn = makeComboVenn(T)
+goVenn = makeComboVenn(F)
+megaVenn = grid.arrange(geneVenn, goVenn, ncol =1)
+megaVenn
 
+table(simpDataGO$`IV-PadjNumSignificant`)
+  #there are 13 of them significant in more than 
+
+which(simpDataGO$`IV-PadjNumSignificant` > 51)
+grep("IV", colnames(simpDataGO))
+
+
+IVOUts2 = simpDataGO[which(simpDataGO$`IV-PadjNumSignificant` > 51),grep("IV", colnames(simpDataGO))]
+IVOUts3 = simpDataGO[which(simpDataGO$`IV-significantRobust`),grep("IV", colnames(simpDataGO))]
 
 
 
