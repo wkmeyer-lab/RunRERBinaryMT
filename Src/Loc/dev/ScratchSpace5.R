@@ -1,4 +1,33 @@
-a = b #prevent full runs
+#This is a home for a variety of once-off or manually operated code
+#that interacts with the other scripts in this repo. 
+#Each titled section is written with a different goal, and many 
+#are not actually able to be run on their own, as they interact 
+#or depend on other scripts in the repo, sometimes partially-run scripts 
+#(for example, code used to debug, or tweak a script while it is running).
+
+#Many of these blocks will not function on their own, expecting either 
+#partially run other scripts, other scratch blocks, or even older now-removed 
+#versions of other parts of their own block. As this is a 'scratch space' for
+#one-off code, it is not nearly as polished as anything else. 
+#While some of the blocks can be run as a self-contained mini-script, most are
+#better thought of as effectively a premenant record of lines of code that
+#were manually run through the console. That was the original purpose of these 
+#documents -- instead of running a line of code in the ephemeral console, it was
+#written in one of these docum ents,and then executed. 
+
+#Because many of these scripts are therefore disjointed, unfinished, or 
+#otherwise break good practices because they were meant to be run with 
+#constant manual checking, running them unsupervised could cause Many 
+#problems, notably including OVERWRITTING STANDARD OUTPUT FILES (as this
+#is an anything-goes record of code run during development). While these
+#most dangerous lines are often commented out, they aren't always. 
+
+#As such, there is a line that prevents automatic execution of this file at 
+#start of the code, because this was never meant to be run that way, but it 
+#is easy to hit a "run-all" shortcut. 
+
+
+a = b #prevent full runs, as each of the bracketed sections is mea
 library(RERconverge)
 library(tools)
 library(scales)
