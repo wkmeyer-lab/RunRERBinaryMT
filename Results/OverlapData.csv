@@ -1,0 +1,183 @@
+,Scientific_Binomial,CommonName,panTheriaTrophicLevelCharacter,Meyer.Lab.Classification.Compressed,SimplifiedDietConvertStrictPred,SimplifiedDietConvertEqualDrop,SimplifiedDietConvert,TranslatedDerek,WalkerTC,PantheriaTC,Derek90TC,PiscCarnTC,PiscOmniTC,StrictPredTC,WalkerPantheria,WalkerDerek,PantheriaDerek,WalkerPiscCarn,PantheriaPiscCarn,WalkerPiscOmni,PantheriaPiscOmni,WalkerStrictPred,PantheriaStrictPred
+1,acinonyx_jubatus,Cheetah,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+3,ailuropoda_melanoleuca,Panda,Herbivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,H,H,H,H,H,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+4,ailurus_fulgens,Red Panda ,Herbivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,H,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+6,alouatta_palliata,Howler Monkey,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+7,ammotragus_lervia,Aoudad,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+8,anoura_caudifer,Geoffroy's Long-nosed Bats,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+9,antilocapra_americana,Pronghorn,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+10,aotus_nancymaae,Night Monkey,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+11,aplodontia_rufa,Sewellel ,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+12,artibeus_jamaicensis,Neotropical Fruit Bats,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,O,H,H,H,H,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+13,ateles_geoffroyi,Spider Monkeys,Herbivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,H,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+14,balaenoptera_acutorostrata,Minke Whale,Carnivore,Carnivore,zMixedPredator,Invertivore,Invertivore,Invertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+16,beatragus_hunteri,Sassabie,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+17,bison_bison,American Bison,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+21,bubalus_bubalis,Asian Water Buffalo,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+23,callithrix_jacchus,Marmoset,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+24,camelus_bactrianus,Bactrian Camel,Herbivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,H,H,H,H,H,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+25,camelus_dromedarius,One-hump Camel,Herbivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,H,H,H,H,H,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+27,canis_lupus,Dog,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+30,capra_hircus,Domestic goat,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+31,capromys_pilorides,Desmarest cuban hutia,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+32,carollia_perspicillata,Short-tailed Leaf-nosed Bats,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+33,castor_canadensis,Beaver,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+34,catagonus_wagneri,Chacoan Peccary,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+35,cavia_aperea,Brazilian guinea pig,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+38,cebus_albifrons,White-fronted capuchin,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+39,cebus_capucinus,Colombian white-faced capuchin,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+40,ceratotherium_simum,White rhinoceros,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+43,cercopithecus_neglectus,Guenon,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+44,cheirogaleus_medius,Dwarf Lemur,Omnivore,Herbivore,Omnivore,Omnivore,Omnivore,Omnivore,H,O,O,O,O,O,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+45,chinchilla_lanigera,Chinchilla,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+47,chrysochloris_asiatica,Cape golden mole,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+48,colobus_angolensis,Black-and-white Colobus Monkey,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+49,condylura_cristata,Star-nosed mole,Carnivore,Insectivore,zMixedPredator,Invertivore,Invertivore,Invertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+50,craseonycteris_thonglongyai,Kitti's Hog-nosed Bat,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+54,cryptoprocta_ferox,Fossa,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+57,cuniculus_paca,Pacas,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+58,dasyprocta_punctata,Agouti,Herbivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,H,H,H,H,H,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+59,dasypus_novemcinctus,Armadillo,Omnivore,Carnivore,Invertivore,Invertivore,Invertivore,Invertivore,C,O,C,C,C,C,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+60,daubentonia_madagascariensis,Aye-ayes,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+61,delphinapterus_leucas,Beluga Whale,Carnivore,Piscivore,zMixedPredator,Vertivore,Vertivore,Vertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+63,desmodus_rotundus,Common Vampire Bat,Carnivore,Hematophagy,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+64,dicerorhinus_sumatrensis,Sumatran Rhinoceros,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+65,diceros_bicornis,Black Rhinoceros,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+66,dinomys_branickii,Pacarana,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+67,dipodomys_ordii,Ord Kangaroo Rat,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+68,dipodomys_stephensi,Stephens Kangaroo Rat,Herbivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,H,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+69,dolichotis_patagonum,Patagonian cavy,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+70,echinops_telfairi,Tenrec,Carnivore,Ambiguous,Omnivore,Omnivore,Omnivore,Omnivore,O,C,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+71,eidolon_helvum,Straw-colored Fruit Bats,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+72,elaphurus_davidianus,Pere David's Deer,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+76,enhydra_lutris,Sea Otter,Omnivore,Insectivore,zMixedPredator,zMixedPredator,Vertivore,Omnivore,C,O,O,C,O,O,FALSE,FALSE,TRUE,TRUE,FALSE,FALSE,TRUE,FALSE,TRUE
+77,eptesicus_fuscus,Big brown bat,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+79,equus_caballus,Horse,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+81,erinaceus_europaeus,Hedgehog,Omnivore,Omnivore,zMixedPredator,Invertivore,Invertivore,Invertivore,O,O,C,C,C,O,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+82,erythrocebus_patas,Red Guenon,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+83,eschrichtius_robustus,Gray Whale,Omnivore,Planktivore,Invertivore,Invertivore,Invertivore,Invertivore,C,O,C,C,C,C,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+86,eulemur_fulvus,Common Brown Lemur,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+88,felis_nigripes,Black-footed cat,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+92,gorilla_gorilla,Gorilla,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,O,H,H,H,H,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+93,graphiurus_murinus,African dormouse,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+94,helogale_parvula,Dwarf Mongoose,Carnivore,Omnivore,zMixedPredator,Invertivore,Invertivore,Invertivore,O,C,C,C,C,O,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,TRUE,FALSE
+95,hemitragus_hylocrius,Tahr,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+96,heterocephalus_glaber,Naked mole-rat,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+97,hipposideros_armiger,Great Roundleaf Bat,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+98,hipposideros_galeritus,Cantor's roundleaf bat,Omnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,O,C,C,C,C,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+100,hyaena_hyaena,Striped hyaena,Omnivore,Carnivore,zMixedPredator,Vertivore,Vertivore,Vertivore,C,O,C,C,C,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE
+101,hydrochoerus_hydrochaeris,Capybara,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+102,hystrix_cristata,Porcupine,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+104,indri_indri,Indri,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+105,inia_geoffrensis,Amazon Dolphin,Carnivore,Piscivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+107,kogia_breviceps,Dwarf Sperm Whales,Carnivore,Carnivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+108,lasiurus_borealis,Hairy-taled Bats,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+109,lemur_catta,Ring-tailed Lemur,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+110,leptonychotes_weddellii,Weddell seal,Omnivore,Piscivore,zMixedPredator,Vertivore,Vertivore,Vertivore,C,O,C,C,C,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE
+111,lepus_americanus,Hare,Herbivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,H,H,H,H,H,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+112,lipotes_vexillifer,Chinese River Dolphin,Carnivore,Piscivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+113,loxodonta_africana,Elephant,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+114,lycaon_pictus,African Hunting Dog ,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+115,macaca_fascicularis,Crab-eating macaque,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+116,macaca_mulatta,Rhesus Macaca,Herbivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,H,H,H,H,H,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+117,macaca_nemestrina,Southern Pig-tailed Macaca,Herbivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,H,H,H,H,H,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+118,macroglossus_sobrinus,Long-tongued Fruit Bats,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+120,mandrillus_leucophaeus,Drill,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+121,manis_javanica,Sunda pangolin,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+122,manis_pentadactyla,Chinese pangolin,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+123,marmota_marmota,Marmot,Herbivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,H,H,H,H,H,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+124,megaderma_lyra,Asian False Vampire Bats,Carnivore,Carnivore,zMixedPredator,Vertivore,Vertivore,Omnivore,C,C,O,C,C,O,TRUE,FALSE,FALSE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+126,mellivora_capensis,Honey Badger,Omnivore,Omnivore,zMixedPredator,Vertivore,Vertivore,Omnivore,O,O,O,C,C,O,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+128,mesocricetus_auratus,Golden hamster,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+130,microcebus_murinus,Mouse Lemur,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+131,micronycteris_hirsuta,Little Big-eared Bats,Omnivore,Insectivore,Omnivore,Omnivore,Omnivore,Omnivore,C,O,O,O,O,O,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+132,microtus_ochrogaster,Prairie vole,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,O,H,H,H,H,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+133,miniopterus_natalensis,Natal Long-fingered Bat,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+134,miniopterus_schreibersii,Common Bent-wing Bat,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+135,mirounga_angustirostris,Elephant Seal,Omnivore,Piscivore,zMixedPredator,Invertivore,Invertivore,Omnivore,C,O,O,C,C,O,FALSE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE
+136,mirza_coquereli,Coquerel's Dwarf Lemur,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+137,monodelphis_domestica,Opossum,Carnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,C,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+138,monodon_monoceros,Narwal,Carnivore,Piscivore,zMixedPredator,Vertivore,Vertivore,Vertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+139,mormoops_blainvillei,Leaf-chinned Bats,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+140,moschus_moschiferus,Musk Deer,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+141,mungos_mungo,Banded mongoose,Carnivore,Carnivore,zMixedPredator,Invertivore,Invertivore,Invertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+144,mus_musculus,Common mouse,Carnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,C,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+147,muscardinus_avellanarius,Common dormouse,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+148,mustela_putorius,Ferret,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+149,myocastor_coypus,Nutria,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,O,H,H,H,H,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+152,myotis_lucifugus,Microbat,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+153,myotis_myotis,Greater mouse-eared bat,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+155,nasalis_larvatus,Proboscis Monkey,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+160,nycticebus_coucang,Slow Loris,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+161,ochotona_princeps,Pika,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+162,octodon_degus,Brush-tailed rat,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,O,H,H,H,H,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+163,odobenus_rosmarus,Pacific walrus,Omnivore,Piscivore,zMixedPredator,Invertivore,Invertivore,Invertivore,C,O,C,C,C,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE
+164,odocoileus_virginianus,White-tailed Deer,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+165,okapia_johnstoni,Okapia,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+166,ondatra_zibethicus,Muskrat,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+167,onychomys_torridus,Southern grasshopper mouse,Carnivore,Omnivore,Invertivore,Invertivore,Invertivore,Invertivore,O,C,C,C,C,C,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+168,orcinus_orca,Killer whale,Carnivore,Piscivore,zMixedPredator,Vertivore,Vertivore,Vertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+169,ornithorhynchus_anatinus,Platypus,Carnivore,Insectivore,zMixedPredator,Invertivore,Invertivore,Invertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+170,orycteropus_afer,Aardvark,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+171,oryctolagus_cuniculus,Rabbit,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+172,otolemur_garnettii,Bushbaby,Omnivore,Herbivore,Omnivore,Omnivore,Omnivore,Omnivore,H,O,O,O,O,O,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+173,ovis_aries,Domestic sheep,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+174,ovis_canadensis,Bighorn sheep,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+175,pan_paniscus,Bonobo,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+176,pan_troglodytes,Chimp,Omnivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,O,H,H,H,H,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+177,panthera_onca,Jaguar,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+178,panthera_pardus,Leopard,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+179,panthera_tigris,Tiger,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+182,papio_hamadryas,Hamadryas Baboon,Herbivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,H,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+183,paradoxurus_hermaphroditus,Palm Civet,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+184,perognathus_longimembris,Silky Pocket Mouse,Herbivore,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,O,H,H,H,H,H,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+185,peromyscus_maniculatus,Deer mouse,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+186,petromus_typicus,Dassie rat,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+187,phocoena_phocoena,Common Porpoise,Carnivore,Piscivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+189,pipistrellus_pipistrellus,Pipistrelles,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+190,pithecia_pithecia,Saki,Herbivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,H,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+191,platanista_gangetica,Ganges Dolphin,Carnivore,Piscivore,zMixedPredator,zMixedPredator,Vertivore,Omnivore,C,C,O,C,O,O,TRUE,FALSE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE
+193,procavia_capensis,Hydrax,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+196,pteronotus_parnellii,Mustache Bat,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+197,pteronura_brasiliensis,Giant Otter,Carnivore,Piscivore,zMixedPredator,Vertivore,Vertivore,Vertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+198,pteropus_alecto,Black flying-fox,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+199,pteropus_vampyrus,Megabat,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+200,puma_concolor,Puma,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+201,pygathrix_nemaeus,Douc Langur,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+202,rangifer_tarandus,Reindeer,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+203,rattus_norvegicus,Rat,Herbivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,H,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+205,rhinopithecus_bieti,Black and White Snub-nosed Langur ,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,O,H,H,H,H,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+206,rhinopithecus_roxellana,Golden Snub-nosed Langur ,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+207,rousettus_aegyptiacus,Rousette Fruit Bats,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+208,saguinus_imperator,Long-tusked Tamarins,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+209,saiga_tatarica,Saiga,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+211,sarcophilus_harrisii,Tasmanian devil,Carnivore,Omnivore,Vertivore,Vertivore,Vertivore,Omnivore,O,C,O,C,C,C,FALSE,TRUE,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE
+212,scalopus_aquaticus,Eastern American Mole,Omnivore,Omnivore,Invertivore,Invertivore,Invertivore,Invertivore,O,O,C,C,C,C,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+213,semnopithecus_entellus,Hanuman Langur,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+214,sigmodon_hispidus,Cotton Rat,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+215,solenodon_paradoxus,Solenodons,Carnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,C,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+216,sorex_araneus,Shrew,Omnivore,Omnivore,zMixedPredator,Invertivore,Invertivore,Omnivore,O,O,O,C,C,O,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE,TRUE
+218,spermophilus_tridecemlineatus,Squirrel,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+220,suricata_suricatta,Slender-tailed Meerkat,Carnivore,Omnivore,zMixedPredator,Invertivore,Invertivore,Invertivore,O,C,C,C,C,O,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,TRUE,FALSE
+221,sus_scrofa,Pig,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+222,tadarida_brasiliensis,Free-tailed Bats,Carnivore,Insectivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+223,tapirus_indicus,Malayan Tapir,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+224,tapirus_terrestris,South American Tapir,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,O,H,H,H,H,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+225,thryonomys_swinderianus,Cane rat,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+227,tragulus_javanicus,Asiatic Mouse Deer,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+228,trichechus_manatus,Manatee,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,O,H,H,H,H,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+230,tupaia_tana,Sumatran tree shrew,Omnivore,Ambiguous,Invertivore,Invertivore,Invertivore,Invertivore,O,O,C,C,C,C,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+231,tursiops_truncatus,Bottle-nose Dolphin,Carnivore,Piscivore,zMixedPredator,Vertivore,Vertivore,Vertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+233,ursus_maritimus,Polar Bear,Omnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,O,C,C,C,C,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+235,vulpes_lagopus,Arctic Fox,Carnivore,Carnivore,Vertivore,Vertivore,Vertivore,Vertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+236,xerus_inauris,African Ground Squirrel,Herbivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,H,O,O,O,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+237,zalophus_californianus,California Sea Lion,Omnivore,Piscivore,zMixedPredator,Vertivore,Vertivore,Vertivore,C,O,C,C,C,O,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE
+238,zapus_hudsonius,Jumping Mouse,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,Omnivore,O,O,O,O,O,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+239,ziphius_cavirostris,Goose-beaked Whale,Carnivore,Carnivore,zMixedPredator,Invertivore,Invertivore,Invertivore,C,C,C,C,C,O,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE
+253,balaena_mysticetus,Bowhead whale,Carnivore,Planktivore,Invertivore,Invertivore,Invertivore,Invertivore,C,C,C,C,C,C,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+269,cervus_elaphus,Central European red deer,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+273,choloepus_hoffmanni,Hoffmann's two-toed sloth,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+303,hippopotamus_amphibius,Hippopotamus,Omnivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,O,H,H,H,H,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+388,phascolarctos_cinereus,Koala,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,Herbivore,H,H,H,H,H,H,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+394,physeter_catodon,Sperm whale,Omnivore,Piscivore,Invertivore,Invertivore,Invertivore,Invertivore,C,O,C,C,C,C,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE
+,,,,,,,,,,,,,,,134,148,135,149,134,147,134,136,129

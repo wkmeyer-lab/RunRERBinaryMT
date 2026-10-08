@@ -20,6 +20,50 @@ packageVersion("RERconverge")
 
 
 #---------------------------------------------------------------------
+# --- thresholding testing--- 
+# --------------------------------------------------------------------
+
+mergedData = read.csv("Data/mergedData.csv")
+
+
+
+
+
+
+#---------------------------------------------------------------------
+# --- debug StrictPred 2--- 
+# --------------------------------------------------------------------
+treeNames = phenotypeTree$tip.label
+treeNames = treeNames[order(treeNames)]
+
+setNames = currentSet
+setNames = setNames[order(setNames)]
+
+filterNames = speciesFilter
+filterNames = filterNames[order(filterNames)]
+
+namesFrame = data.frame(treeNames, setNames, filterNames)
+
+which(!namesFrame[[1]] == namesFrame[[2]])
+all.equal(namesFrame[[1]], namesFrame[[2]])
+
+
+phenotypeTree$tip.label %in% currentSet
+currentSet %in% phenotypeTree$tip.label
+
+
+phenotypeTree$edge.length
+currentSet %in% speciesFilter
+
+unique(colnames(RERObject))
+
+
+table(phenotypeTree$edge.length)
+table(pathsObject)
+
+
+
+#---------------------------------------------------------------------
 # --- debug StrictPred --- 
 # --------------------------------------------------------------------
 
@@ -113,6 +157,72 @@ mergeDataInOtherDiet = union(mergeDataInPantheria, mergeDataInWalker)
 mergeDataInBothDiet = intersect(mergeDataInPantheria, mergeDataInWalker)
 
 mergeDataInAllDiet = intersect(mergeDataInBothDiet, mergeDataInElton)
+
+convertToTC = function(vector){
+  vector = gsub("Carnivore", "C", vector)
+  vector = gsub("Piscivore", "C", vector)
+  vector = gsub("Planktivore", "C", vector)
+  vector = gsub("Insectivore", "C", vector)
+  vector = gsub("Hematophagy", "C", vector)
+  vector = gsub("Vertivore", "C", vector)
+  vector = gsub("Invertivore", "C", vector)
+  
+  
+  vector = gsub("Omnivore", "O", vector)
+  vector = gsub("Ambigous", "O", vector)
+  vector = gsub("Ambiguous", "O", vector)
+  vector = gsub("zMixedPredator", "O", vector)
+  
+  vector = gsub("Herbivore", "H", vector)
+  
+  #vector = gsub(NA, "N", vector)
+  
+}
+
+
+
+allDietOverlap = mergedData[mergeDataInAllDiet, c(1, 2, 24, 18, 83, 82, 79, 78)]
+
+
+allDietOverlap[,4] = gsub("_", "", allDietOverlap[,4])
+allDietOverlap$WalkerTC = allDietOverlap[,4]
+allDietOverlap$WalkerTC = convertToTC(allDietOverlap$WalkerTC)
+
+allDietOverlap$PantheriaTC = allDietOverlap[,3]
+allDietOverlap$PantheriaTC = convertToTC(allDietOverlap$PantheriaTC)
+
+
+
+allDietOverlap$Derek90TC = allDietOverlap$TranslatedDerek
+allDietOverlap$Derek90TC = convertToTC(allDietOverlap$Derek90TC)
+
+allDietOverlap$PiscCarnTC = allDietOverlap$SimplifiedDietConvert
+allDietOverlap$PiscCarnTC = convertToTC(allDietOverlap$PiscCarnTC)
+
+allDietOverlap$PiscOmniTC = allDietOverlap$SimplifiedDietConvertEqualDrop
+allDietOverlap$PiscOmniTC = convertToTC(allDietOverlap$PiscOmniTC)
+
+allDietOverlap$StrictPredTC = allDietOverlap$SimplifiedDietConvertStrictPred
+allDietOverlap$StrictPredTC = convertToTC(allDietOverlap$StrictPredTC)
+
+
+allDietOverlap$WalkerPantheria = (allDietOverlap$WalkerTC == allDietOverlap$PantheriaTC)
+allDietOverlap$WalkerDerek = (allDietOverlap$WalkerTC == allDietOverlap$Derek90TC)
+allDietOverlap$PantheriaDerek = (allDietOverlap$PantheriaTC == allDietOverlap$Derek90TC)
+
+allDietOverlap$WalkerPiscCarn = (allDietOverlap$WalkerTC == allDietOverlap$PiscCarnTC)
+allDietOverlap$PantheriaPiscCarn = (allDietOverlap$PantheriaTC == allDietOverlap$PiscCarnTC)
+
+allDietOverlap$WalkerPiscOmni = (allDietOverlap$WalkerTC == allDietOverlap$PiscOmniTC)
+allDietOverlap$PantheriaPiscOmni = (allDietOverlap$PantheriaTC == allDietOverlap$PiscOmniTC)
+
+allDietOverlap$WalkerStrictPred = (allDietOverlap$WalkerTC == allDietOverlap$StrictPredTC)
+allDietOverlap$PantheriaStrictPred = (allDietOverlap$PantheriaTC == allDietOverlap$StrictPredTC)
+
+
+write.csv(allDietOverlap, "Results/OverlapData.csv")
+
+
 
 
 table(mergedData$Meyer.Diet.Categorical)
