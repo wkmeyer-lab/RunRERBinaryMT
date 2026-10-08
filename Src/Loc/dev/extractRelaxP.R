@@ -7,13 +7,13 @@ if (!require("jsonlite", quietly = TRUE)) {
 }
 
 #set target directory
-target_dir <- "/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/Hyphy/"
+target_dir <- "/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/ComplexDietCentralAnalysis/Hyphy/"
 
 #set pattern to match JSON files
 file_pattern <- "-relax-.*\\.json$"
 
 #set output base path
-output_file_base <- "/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/Hyphy/hyphy_relax_p"
+output_file_base <- "/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/ComplexDietCentralAnalysis/Hyphy/hyphy_relax_p"
 
 #get list of files
 all_files <- list.files(path = target_dir, pattern = file_pattern, full.names = TRUE)

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH -p rapids
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH --mem=4G
+#SBATCH -t 4:00:00
+#SBATCH -J clusterHyphy
+#SBATCH -o /share/ceph/wym219group/shared/erroutfiles/seaverErrors/generateMaskedGenes_%j.%N.out
+#SBATCH --open-mode=append
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=aws519@lehigh.edu
+
+#load environment
+source biopython_env/bin/activate
+
+echo "Starting stop codon masking at $(date)"
+
+#run the python script with -u for unbuffered output
+python -u maskStops.py
+
+echo "Job finished at $(date)"

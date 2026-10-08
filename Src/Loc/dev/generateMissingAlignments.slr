@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -p rapids
+#SBATCH -p hawkcpu
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -t 08:00:00
@@ -14,7 +14,7 @@ python -m venv biopython_env
 source biopython_env/bin/activate
 pip install biopython
 
-GENE_FILE="/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/CategoricalInsVertivoreTree/Hyphy/MissingAlignmentList.txt"
+GENE_FILE="/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/ComplexDietCentralAnalysisSimplify2/Hyphy/Rate_2/MISSING_ALIGNMENTS.txt"
 LIST_FILE="/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/Summary_Phase3Alns/ListAllFasWithPath.txt"
 REF_DIR="/share/ceph/wym219group/shared/data/filtered_translated_alignments"
 
@@ -46,7 +46,7 @@ while IFS= read -r line; do
     if [[ -n "$gene_path" ]]; then
         #check if file is empty before running python script
         if [[ -s "$gene_path" ]]; then
-             python filterAlignments.py "$gene_path"
+             python filterAlignments.py "$gene_path" "/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Data/masked_genes"
         else
              echo "   -> Skipping: Input alignment file is empty (0 bytes)."
         fi
