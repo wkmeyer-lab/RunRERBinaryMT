@@ -2260,7 +2260,85 @@ args = c('r=ComplexDietCentralAnalysisNoFamilyPrune', 'm=data/zoonomiaAllMammals
           "vs_HLeonSpe1", "Roussetinae"
          )')
   
+  args = c('r=ComplexDietCentralAnalysisSimplifySubT70AllSpecies', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=SimplifiedDietConvert', 'v=F', 't=ER', 'n=ZoonomiaTip', 'l=T', 'e=T',
+           'c=c(
+              "Vertivore", "Omnivore", "Herbivore", "Invertivore", "zMixedPredator"
+            )')
   
+  args = c('r=ComplexDietCentralAnalysisSimplifySubT70', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=SimplifiedDietConvert', 'v=F', 't=ER', 'n=ZoonomiaTip', 'z=0.01', 'l=T', 'e=T',
+           'c=c(
+              "Vertivore", "Omnivore", "Herbivore", "Invertivore", "zMixedPredator"
+            )', 
+           'y=c(
+          "vs_HLornAna3", "vs_HLtacAcu1",  "PreserveMonotremeBranches",
+          "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1", "MarsupialTransitionPreservation",
+          "vs_HLmyrTri1", "vs_HLchoDid1", "vs_HLchoHof3", "vs_HLproCap3", "AfrotheriaPreserveTransitions",
+          "vs_HLursThi1", "vs_ursMar1", "vs_HLursArc1", "vs_HLailMel2", "UrsaPreserveTransition",
+          "vs_lepWed1", "vs_HLmirAng2", "vs_HLphoVit1", "vs_HLeriBar1", "SealPreserveTransitions",
+          "vs_HLodoRos1", "vs_HLcalUrs1", "vs_HLzalCal1", "SealSeaLionPreserveTransitions",
+          "vs_HLmelCap1", "vs_HLgulGul1", "vs_HLneoVis1", "MustelidPreserveTransitions",
+          "vs_HLlycPic2", "CanidPreserveTransision",
+          "vs_HLgloMel1", "vs_HLpepEle1", "vs_HLturAdu1", "DolphinClade", "vs_orcOrc1", "vs_HLescRob1", "vs_HLlniGeo1", "amazonRiverDolphinFromYeast","vs_HLbalEde1", "vs_HLmegNov1", "vs_HLcynGun1", "CetaceaPreserveTransitions",
+          "vs_HLmerUng1", "BankVoleTransition",
+          "vs_HLeulMon1", "vs_HLeulFul1", "LemurTransition",
+          "vs_panTro6", "vs_HLrhiRox2", "LangurClade", "vs_HLallNig1", "PrimateTransitionsContinued",
+          "vs_HLeryPat1", "vs_chlSab2", "geunonClade", "vs_HLtheGel1", "PrimateTransitionsContinuedAgain",
+          "vs_HLpapAnu5", "vs_HLmanSph1", "DrillMandrillClade", "vs_cerAty1", "Drilltransitions",
+          "vs_HLmarFla1", "marmotClade", "DoormouseTransition",
+          "vs_eulMac1", "vs_ponAbe3", "PrimateTransitions"
+          
+         )',
+         'p=c(
+          "vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1", "voleClade",
+          "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "gundiGuineaPigClade",
+          "vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1", "Bovidae",
+          "vs_HLhydIne1", "vs_HLmunMun1", "Cervidae",
+          "vs_HLmurAurFea1", "outerVespert",
+          "vs_HLmyoLuc1", "Nearctic",
+          "vs_myoDav1", "Myotis",
+          "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "Vespertilioninae",
+          "vs_HLmacSob1", "FoxLongTounge",
+          "vs_HLeidHel2", "outerPeropodidae",
+          "vs_HLeonSpe1", "Roussetinae"
+         )')
+}
+{
+  args = c('r=ComplexDietCentralAnalysisSimplifyStrictPred2', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=SimplifiedDietConvertStrictPred', 'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01', 'l=T', 'e=T',
+           'c=c(
+              "Vertivore", "Omnivore", "Herbivore", "Invertivore", "zMixedPredator"
+            )', 
+           'y=c(
+          "vs_HLornAna3", "vs_HLtacAcu1",  "PreserveMonotremeBranches",
+          "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1", "MarsupialTransitionPreservation",
+          "vs_HLmyrTri1", "vs_HLchoDid1", "vs_HLchoHof3", "vs_HLproCap3", "AfrotheriaPreserveTransitions",
+          "vs_HLursThi1", "vs_ursMar1", "vs_HLursArc1", "vs_HLailMel2", "UrsaPreserveTransition",
+          "vs_lepWed1", "vs_HLmirAng2", "vs_HLphoVit1", "vs_HLeriBar1", "SealPreserveTransitions",
+          "vs_HLodoRos1", "vs_HLcalUrs1", "vs_HLzalCal1", "SealSeaLionPreserveTransitions",
+          "vs_HLmelCap1", "vs_HLgulGul1", "vs_HLneoVis1", "MustelidPreserveTransitions",
+          "vs_HLlycPic2", "CanidPreserveTransision",
+          "vs_HLgloMel1", "vs_HLpepEle1", "vs_HLturAdu1", "DolphinClade", "vs_orcOrc1", "vs_HLescRob1", "vs_HLlniGeo1", "amazonRiverDolphinFromYeast","vs_HLbalEde1", "vs_HLmegNov1", "vs_HLcynGun1", "CetaceaPreserveTransitions",
+          "vs_HLmerUng1", "BankVoleTransition",
+          "vs_HLeulMon1", "vs_HLeulFul1", "LemurTransition",
+          "vs_panTro6", "vs_HLrhiRox2", "LangurClade", "vs_HLallNig1", "PrimateTransitionsContinued",
+          "vs_HLeryPat1", "vs_chlSab2", "geunonClade", "vs_HLtheGel1", "PrimateTransitionsContinuedAgain",
+          "vs_HLpapAnu5", "vs_HLmanSph1", "DrillMandrillClade", "vs_cerAty1", "Drilltransitions",
+          "vs_HLmarFla1", "marmotClade", "DoormouseTransition",
+          "vs_eulMac1", "vs_ponAbe3", "PrimateTransitions"
+          
+         )',
+         'p=c(
+          "vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1", "voleClade",
+          "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "gundiGuineaPigClade",
+          "vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1", "Bovidae",
+          "vs_HLhydIne1", "vs_HLmunMun1", "Cervidae",
+          "vs_HLmurAurFea1", "outerVespert",
+          "vs_HLmyoLuc1", "Nearctic",
+          "vs_myoDav1", "Myotis",
+          "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "Vespertilioninae",
+          "vs_HLmacSob1", "FoxLongTounge",
+          "vs_HLeidHel2", "outerPeropodidae",
+          "vs_HLeonSpe1", "Roussetinae"
+         )')
 }
 
 
@@ -2687,6 +2765,13 @@ if(generateAlternates){
     fullTreePrefix = paste0(filePrefix, "AllSpecies")
     fullTreeOutputFolder = paste0(outputFolderNameNoSlash, "AllSpecies", "/")
     
+    #Used to convert v2 back to v1 to reuse all species
+    #fullTrePrefixStub = substr(filePrefix, 1, (nchar(filePrefix)-1))
+    #fullTreeOutputFolderStub = substr(outputFolderNameNoSlash, 1, (nchar(outputFolderNameNoSlash)-1))
+    #fullTreePrefix = paste0(fullTrePrefixStub, "AllSpecies")
+    #fullTreeOutputFolder = paste0(fullTreeOutputFolderStub, "AllSpecies", "/")
+    
+    
     tryCatch({
       allSpeciesTreeFilename = paste(fullTreeOutputFolder, fullTreePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
       allSpeciesTree = readRDS(allSpeciesTreeFilename)
@@ -2894,7 +2979,7 @@ if(generateAlternates){
         alternateSets = append(alternateSets, alternateTips)
       }
     }
-    
+  
   saveRDS(alternateSets, paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
     
   
@@ -2986,6 +3071,57 @@ if(generateAlternates){
     }
   }
 
+  
+  #Try to test for broken paths 
+  alternateSets = readRDS(paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
+  brokenPaths = integer()
+  if(!dir.exists(paste0(outputFolderName, "/Alternates/Broken"))){                                      #Make output directory if it does not exist
+    dir.create(paste0(outputFolderName, "/Alternates/Broken"))
+  }
+  for(i in 1:length(alternateSets)){
+    message(i)
+    currentSet = alternateSets[[i]]
+    alternateFilePrefix = paste0("/Alternates/Alternate", i)
+    currentCategoricalTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+    currentCommonCategoricalTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
+    currentPhenotypeVectorFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
+    currentSpeciesFilterFilename =  paste(outputFolderName, alternateFilePrefix, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
+    
+    currentPhenotypeTree = readRDS(currentCategoricalTreeFilename)
+    currentSpeciesFilter = readRDS(currentSpeciesFilterFilename)
+    
+    currentPathsObject = tree2Paths(currentPhenotypeTree, mainTrees, useSpecies = currentSpeciesFilter, categorical = TRUE)
+    currentPathsFilename =  paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPathsFile.rds",sep="") #set a filename for the species filter based on the prefix 
+    saveRDS(currentPathsObject, currentPathsFilename)
+    
+    print(table(currentPathsObject))
+    
+    if(length(table(currentPathsObject)) != length(phenotypeSizes)){
+      message("Alternate is broken")
+      file.rename(currentCategoricalTreeFilename, paste(outputFolderName, "Alternates/Broken/Alternate", i, filePrefix, "CategoricalTree.rds", sep=""))
+      file.rename(currentCommonCategoricalTreeFilename, paste(outputFolderName, "Alternates/Broken/Alternate", i, filePrefix, "CategoricalCommonTree.rds", sep=""))
+      file.rename(currentPhenotypeVectorFilename, paste(outputFolderName, "Alternates/Broken/Alternate", i, filePrefix, "CategoricalPhenotypeVector.rds", sep=""))
+      file.rename(currentSpeciesFilterFilename, paste(outputFolderName, "Alternates/Broken/Alternate", i, filePrefix, "SpeciesFilter.rds", sep=""))
+      
+      brokenPaths = append(brokenPaths, i)
+      
+      
+    }else{
+      message("Paths fine, maintaining")
+    }
+  
+  }
+  brokenAlternateSet = alternateSets[brokenPaths]
+  names(brokenAlternateSet) = brokenPaths
+  brokenAlternatesFilename = paste(outputFolderName, "Alternates/Broken/", filePrefix, "BrokenAlternateSets.rds", sep="")
+  saveRDS(brokenAlternateSet, brokenAlternatesFilename)
+  
+  backupAlternatesFilename = paste(outputFolderName, "Alternates/Broken/", filePrefix, "OriginalAlternateSets.rds", sep="")
+  saveRDS(alternateSets, backupAlternatesFilename)
+  
+  
+  #Exit the script if being run automatically before making any changes 
+  stop("SOME OF THE ALTERNATES ARE PRODUCING BROKEN PATHS! Check the Broken folder to investigate further.")
+  alternateSets = alternateSets[-brokenPaths]
 }
-
 
