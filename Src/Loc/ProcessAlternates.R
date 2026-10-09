@@ -128,8 +128,8 @@ if(!alternatesSpecified){
   usedAlternates = 1:length(alternateSets)
 }
 
-#for(i in usedAlternates){
-  i=usedAlternates
+usedAlternates = as.integer(usedAlternates)
+for(i in usedAlternates){
   message(i)
   currentSet = alternateSets[[i]]
   alternateFilePrefix = paste0("/Alternates/Alternate", i)
@@ -432,5 +432,5 @@ if(!alternatesSpecified){
   saveRDS(mainPairwiseCategorical, paste(mainPairwiseCorrelationFileName, ".rds", sep="")) #and as an rds 
   
   
-#}
+}
 
