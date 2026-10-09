@@ -13,7 +13,7 @@
 #better thought of as effectively a premenant record of lines of code that
 #were manually run through the console. That was the original purpose of these 
 #documents -- instead of running a line of code in the ephemeral console, it was
-#written in one of these docum ents,and then executed. 
+#written in one of these documents, and then executed. 
 
 #Because many of these scripts are therefore disjointed, unfinished, or 
 #otherwise break good practices because they were meant to be run with 
@@ -187,7 +187,7 @@ mergeDataInBothDiet = intersect(mergeDataInPantheria, mergeDataInWalker)
 
 mergeDataInAllDiet = intersect(mergeDataInBothDiet, mergeDataInElton)
 
-convertToTC = function(vector){
+convertToTC3 = function(vector){
   vector = gsub("Carnivore", "C", vector)
   vector = gsub("Piscivore", "C", vector)
   vector = gsub("Planktivore", "C", vector)
@@ -208,9 +208,30 @@ convertToTC = function(vector){
   
 }
 
+convertToTC4 = function(vector){
+  vector = gsub("Carnivore", "V", vector)
+  vector = gsub("Piscivore", "V", vector)
+  vector = gsub("Planktivore", "I", vector)
+  vector = gsub("Insectivore", "I", vector)
+  vector = gsub("Hematophagy", "C", vector)
+  vector = gsub("Vertivore", "V", vector)
+  vector = gsub("Invertivore", "I", vector)
+  
+  
+  vector = gsub("Omnivore", "O", vector)
+  vector = gsub("Ambigous", "O", vector)
+  vector = gsub("Ambiguous", "O", vector)
+  vector = gsub("zMixedPredator", NA, vector)
+  
+  vector = gsub("Herbivore", "H", vector)
+  
+  #vector = gsub(NA, "N", vector)
+  
+}
 
 
-allDietOverlap = mergedData[mergeDataInAllDiet, c(1, 2, 24, 18, 83, 82, 79, 78)]
+
+allDietOverlap = mergedData[c(1, 2, 24, 18, 83, 82, 79, 78)]
 
 
 allDietOverlap[,4] = gsub("_", "", allDietOverlap[,4])
@@ -249,7 +270,7 @@ allDietOverlap$WalkerStrictPred = (allDietOverlap$WalkerTC == allDietOverlap$Str
 allDietOverlap$PantheriaStrictPred = (allDietOverlap$PantheriaTC == allDietOverlap$StrictPredTC)
 
 
-write.csv(allDietOverlap, "Results/OverlapData.csv")
+write.csv(allDietOverlap, "Results/OverlapData3.csv")
 
 
 
