@@ -48,15 +48,92 @@ palette(c("#1B9E77", "#000000", "#7570B3", "#E7298A"))
 packageVersion("RERconverge")
 
 
+
+
 #---------------------------------------------------------------------
-# --- thresholding testing--- 
+# --- compare working and broken alternates--- 
+# --------------------------------------------------------------------
+brokenAlternatesFilename = paste(outputFolderName, "Alternates/Broken/", filePrefix, "BrokenAlternateSets.rds", sep="")
+brokenAlternates = readRDS(brokenAlternatesFilename)
+alternateSets = readRDS(paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
+
+workingAlternates = alternateSets
+
+
+brokenVector = unlist(brokenAlternates)
+mainVector = unlist(workingAlternates)
+
+speciesInBroken = unique(brokenVector)
+speciesInMain = unique(mainVector)
+
+which(!speciesInBroken %in% speciesInMain)
+#It's not a particular species that breaks things, then. 
+#Yeah, I have no idea. COmparing the working and the broken ones was my best bet, but other than somehow finding pairs or something, or a better was to visualize the borken paths, 
+
+
+table(brokenVector)
+table(mainVector)
+
+
+pathsList = list()
+j=0
+for(i in names(brokenAlternates)){
+  message(i)
+  j=j+1
+  currentSet = brokenAlternates[which(names(brokenAlternates) ==i)]
+  alternateFilePrefix = paste0("/Alternates/Alternate", i)
+  currentCategoricalTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+  currentCommonCategoricalTreeFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
+  currentPhenotypeVectorFilename = paste(outputFolderName, alternateFilePrefix, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
+  currentSpeciesFilterFilename =  paste(outputFolderName, alternateFilePrefix, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
+  
+  currentPhenotypeTree = readRDS(currentCategoricalTreeFilename)
+  currentSpeciesFilter = readRDS(currentSpeciesFilterFilename)
+  
+  currentPathsObject = tree2Paths(currentPhenotypeTree, mainTrees, useSpecies = currentSpeciesFilter, categorical = TRUE)
+  table(currentPathsObject)
+  pathsList[[j]] = currentPathsObject
+}
+names(pathsList) = names(brokenAlternates)
+  
+
+table(pathsList[[1]])
+
+#And now they don't seem to be broken?
+
+
+#---------------------------------------------------------------------
+# --- Make MergedTree plots--- 
 # --------------------------------------------------------------------
 
-mergedData = read.csv("Data/mergedData.csv")
+mergedTree = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2MergedCategoricalTree.rds")
+mergedAllTree = readRDS("Output/ComplexDietCentralAnalysisSimplifyAllSpecies/ComplexDietCentralAnalysisSimplifyAllSpeciesMergedCategoricalTree.rds")
 
 
 
+palette(c("orange", "darkgreen", "black"))
 
+
+mergedCommonTree = mergedTree
+mergedCommonTree$tip.label = ZonomNameConvertVectorCommon(mergedTree$tip.label, tipCol = "ZoonomiaTip")
+treeImageFilename = "Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2MergedCategoricalTree.pdf"
+pdf(treeImageFilename, height = length(mergedTree$tip.label)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
+
+plotTreeCategorical(mergedCommonTree, c("Carnivore", "Herbivore", "Omnivore"), master = commonMainTrees$masterTree)
+plotTreeCategorical(mergedTree, c("Carnivore", "Herbivore", "Omnivore"), master = mainTrees$masterTree)
+dev.off()
+
+treeImageFilename = "Output/ComplexDietCentralAnalysisSimplifyAllSpecies/ComplexDietCentralAnalysisSimplifyAllSpeciesMergedCategoricalTree.pdf"
+
+mergedAllCommonTree = mergedAllTree
+mergedAllCommonTree$tip.label = ZonomNameConvertVectorCommon(mergedAllTree$tip.label, tipCol = "ZoonomiaTip")
+
+
+pdf(treeImageFilename, height = length(mergedTree$tip.label)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
+
+plotTreeCategorical(mergedAllCommonTree, c("Carnivore", "Herbivore", "Omnivore"), master = commonMainTrees$masterTree)
+plotTreeCategorical(mergedAllTree, c("Carnivore", "Herbivore", "Omnivore"), master = mainTrees$masterTree)
+dev.off()
 
 
 #---------------------------------------------------------------------
@@ -75,11 +152,13 @@ namesFrame = data.frame(treeNames, setNames, filterNames)
 
 which(!namesFrame[[1]] == namesFrame[[2]])
 all.equal(namesFrame[[1]], namesFrame[[2]])
+all.equal(namesFrame[[1]], namesFrame[[3]])
 
 
 phenotypeTree$tip.label %in% currentSet
 currentSet %in% phenotypeTree$tip.label
 
+mainTrees$masterTree$tip.label %in% speciesFilter
 
 phenotypeTree$edge.length
 currentSet %in% speciesFilter
@@ -89,6 +168,14 @@ unique(colnames(RERObject))
 
 table(phenotypeTree$edge.length)
 table(pathsObject)
+
+
+RERObject = getAllResiduals(mainTrees, useSpecies = speciesFilter, plot = F, min.sp=10)  #Calculate the RERs
+
+length(rownames(RERObject))
+
+
+write.csv(CompareDiets, "Results/CompareDiets.csv")
 
 
 

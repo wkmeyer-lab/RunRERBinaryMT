@@ -11,6 +11,12 @@ if(!clusterRun){library(xlsx)}
 # -- Usage:
 # This script is used to generate enrichment values from a correlation file. Can include permulation p values if provided. 
 
+#When running on the command line, note that the arguments should be formatted as:
+#r=Prefix v=forceUpdateValue etc
+#Rather than being in quotes and separated by commas. 
+#Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
+
+
 # -- Command arguments list
 # r = filePrefix                            This is a prefix used to organize and separate files by analysis run. Always required. 
 # v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.

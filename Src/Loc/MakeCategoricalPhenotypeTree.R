@@ -10,6 +10,12 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
 # In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is specified using the n argument, and the column with common names is named "CommonName". 
 
+#When running on the command line, note that the arguments should be formatted as:
+#r=Prefix v=forceUpdateValue etc
+#Rather than being in quotes and separated by commas. 
+#Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
+
+
 # -- Command arguments list
 # r = filePrefix                                         This is a prefix used to organize and separate files by analysis run. Always required. 
 # v = <T or F>                                           This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
@@ -2306,6 +2312,47 @@ args = c('r=ComplexDietCentralAnalysisNoFamilyPrune', 'm=data/zoonomiaAllMammals
   args = c('r=ComplexDietCentralAnalysisSimplifyStrictPred2', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=SimplifiedDietConvertStrictPred', 'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01', 'l=T', 'e=T',
            'c=c(
               "Vertivore", "Omnivore", "Herbivore", "Invertivore", "zMixedPredator"
+            )', 
+           'y=c(
+          "vs_HLornAna3", "vs_HLtacAcu1",  "PreserveMonotremeBranches",
+          "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1", "MarsupialTransitionPreservation",
+          "vs_HLmyrTri1", "vs_HLchoDid1", "vs_HLchoHof3", "vs_HLproCap3", "AfrotheriaPreserveTransitions",
+          "vs_HLursThi1", "vs_ursMar1", "vs_HLursArc1", "vs_HLailMel2", "UrsaPreserveTransition",
+          "vs_lepWed1", "vs_HLmirAng2", "vs_HLphoVit1", "vs_HLeriBar1", "SealPreserveTransitions",
+          "vs_HLodoRos1", "vs_HLcalUrs1", "vs_HLzalCal1", "SealSeaLionPreserveTransitions",
+          "vs_HLmelCap1", "vs_HLgulGul1", "vs_HLneoVis1", "MustelidPreserveTransitions",
+          "vs_HLlycPic2", "CanidPreserveTransision",
+          "vs_HLgloMel1", "vs_HLpepEle1", "vs_HLturAdu1", "DolphinClade", "vs_orcOrc1", "vs_HLescRob1", "vs_HLlniGeo1", "amazonRiverDolphinFromYeast","vs_HLbalEde1", "vs_HLmegNov1", "vs_HLcynGun1", "CetaceaPreserveTransitions",
+          "vs_HLmerUng1", "BankVoleTransition",
+          "vs_HLeulMon1", "vs_HLeulFul1", "LemurTransition",
+          "vs_panTro6", "vs_HLrhiRox2", "LangurClade", "vs_HLallNig1", "PrimateTransitionsContinued",
+          "vs_HLeryPat1", "vs_chlSab2", "geunonClade", "vs_HLtheGel1", "PrimateTransitionsContinuedAgain",
+          "vs_HLpapAnu5", "vs_HLmanSph1", "DrillMandrillClade", "vs_cerAty1", "Drilltransitions",
+          "vs_HLmarFla1", "marmotClade", "DoormouseTransition",
+          "vs_eulMac1", "vs_ponAbe3", "PrimateTransitions"
+          
+         )',
+         'p=c(
+          "vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1", "voleClade",
+          "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "gundiGuineaPigClade",
+          "vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1", "Bovidae",
+          "vs_HLhydIne1", "vs_HLmunMun1", "Cervidae",
+          "vs_HLmurAurFea1", "outerVespert",
+          "vs_HLmyoLuc1", "Nearctic",
+          "vs_myoDav1", "Myotis",
+          "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "Vespertilioninae",
+          "vs_HLmacSob1", "FoxLongTounge",
+          "vs_HLeidHel2", "outerPeropodidae",
+          "vs_HLeonSpe1", "Roussetinae"
+         )')
+  
+  args = c('r=ComplexDietCentralAnalysisSimplifyExclusivePredAllSpecies', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=SimplifiedDietConvertStrictPred', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=T', 'e=T',
+           'c=c(
+              "Vertivore", "Omnivore", "Herbivore", "Invertivore"
+            )')
+  args = c('r=ComplexDietCentralAnalysisSimplifyExclusivePred', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=SimplifiedDietConvertStrictPred', 'v=T', 't=ER', 'n=ZoonomiaTip', 'z=0.01', 'l=T', 'e=T',
+           'c=c(
+              "Vertivore", "Omnivore", "Herbivore", "Invertivore"
             )', 
            'y=c(
           "vs_HLornAna3", "vs_HLtacAcu1",  "PreserveMonotremeBranches",
