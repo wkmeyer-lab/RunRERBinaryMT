@@ -3168,7 +3168,9 @@ if(generateAlternates){
   
   
   #Exit the script if being run automatically before making any changes 
+  if(!length(brokenPaths) ==0){
   stop("SOME OF THE ALTERNATES ARE PRODUCING BROKEN PATHS! Check the Broken folder to investigate further.")
   alternateSets = alternateSets[-brokenPaths]
+  }
 }
 
