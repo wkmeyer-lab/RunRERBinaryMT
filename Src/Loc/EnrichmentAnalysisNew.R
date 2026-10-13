@@ -270,6 +270,9 @@ for(i in 1:length(subdirectoryValueList)){
   
   enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
   
+  #This version run it on all of the genesets, regardless of the numebr f included genes; useful for order consistency. 
+  #enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =0) #run enrichment analysis 
+  
   #save the enrichment output
   if(usePermulations == F){
     enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
