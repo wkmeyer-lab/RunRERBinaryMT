@@ -133,6 +133,7 @@ makeCategorySetForThreshold = function(mainThreshold, secondaryThresholdSet = c(
 thresholdSet = c(90, 80, 70)
 
 thresholdSet = c(90)
+thresholdSet = c(50, 90)
 
 CompareDiets = mergedData
 for(i in thresholdSet){
@@ -140,8 +141,12 @@ for(i in thresholdSet){
   CompareDiets = cbind(CompareDiets, thresholdData)
 }
 
-
-
+CompareDiets = mergedData
+for(i in thresholdSet){
+  thresholdData = makeCategorySetForThreshold(i, i)
+  CompareDiets = cbind(CompareDiets, thresholdData)
+}
+CompareDiets = CompareDiets[,-grep("Strict", names(CompareDiets))]
 
 #---------------------------------------------------------------------
 # --- Check against external Data  --- 
@@ -157,6 +162,7 @@ convertToSymbol3category = function(vector){
   vector = gsub("Piscivore", "C", vector)
   vector = gsub("Hematophagy","C", vector)
   vector = gsub("Vertivore", "C", vector)
+  vector = gsub("CombinedPredator", "C", vector)
   
   vector = gsub("Planktivore", "C", vector)
   vector = gsub("Insectivore", "C", vector)

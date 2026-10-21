@@ -26,6 +26,9 @@ args =c("r=LeahCategoricalRERNew", 'c=c("Herbivore", "Invertivore", "Omnivore", 
 args =c("r=PosterTreeNew", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=SciencificName', "l=Diet", "i=T", "m=Data/LeahFakeMainTrees.rds", "d=Data/LeahPosterData.csv")
 
 
+args =c("r=ComplexDietCentralAnalysisSimplify2", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
+
+
 # -- Standard Startup code -- 
 {  # Bracket used for collapsing purposes
   #File Prefix

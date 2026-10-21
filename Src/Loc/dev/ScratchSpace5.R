@@ -49,6 +49,263 @@ packageVersion("RERconverge")
 
 
 
+#---------------------------------------------------------------------
+# --- Make supplementary Files --- 
+# --------------------------------------------------------------------
+
+#Supplementary Table 1 
+
+mergedData = read.csv("Data/MergedData.csv")
+
+colsToKeep = c("CommonName", "ScientificNameFull", "ZoonomiaTip", "MSWC_Order", "MSWC_Family", "Divider", "SimplifiedDietConvert", "SimplifiedDietConvert", "SimplifiedDietConvertStrictPred", "Divider2", "Diet.Inv", "Diet.Vend", "Diet.Vect", "Diet.Vfish", "Diet.Vunk", "Diet.Scav", "Diet.Fruit", "Diet.Nect", "Diet.Seed", "Diet.PlantO")
+colsToKeepIndex <- match(colsToKeep, names(mergedData))
+
+SupData1 = mergedData[,colsToKeepIndex]
+
+names(SupData1) = c("CommonName", "ScientificNameFull", "TreeTip", "MSWC_Order", "MSWC_Family", "Divider", "ThreeDietAnalysis", "FourDietAnalysis", "StrictFourDietAnalysis", "Divider2", "Diet.Inv", "Diet.Vend", "Diet.Vect", "Diet.Vfish", "Diet.Vunk", "Diet.Scav", "Diet.Fruit", "Diet.Nect", "Diet.Seed", "Diet.PlantO")
+
+SupData1$ThreeDietAnalysis[SupData1$ThreeDietAnalysis %in% c("Vertivore", "Invertivore")] = "Carnivore"
+
+mainAnalysisSpecies = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2SpeciesFilter.rds")
+
+SupData1$InMainAnalysis = (SupData1$TreeTip %in% mainAnalysisSpecies)
+
+
+files <- list.files("Output/ComplexDietCentralAnalysisSimplify2/Alternates", full.names = TRUE)
+
+alternateSpeciesFiles = files[grep("SpeciesFilter.rds", files)]
+
+alternateSpecies = list()
+
+for(i in 1:length(alternateSpeciesFiles)){
+  currentSet = readRDS(alternateSpeciesFiles[i])
+  alternateSpecies[[i]] = currentSet
+}
+
+alternateSpecies = unlist(alternateSpecies)
+
+nameCounts <- as.data.frame(table(alternateSpecies))
+
+names(nameCounts) <- c("Name", "Count")
+
+#Add any missing species to the count of alternates
+speciesInTableButNoAlternates = SupData1$TreeTip[which(!SupData1$TreeTip %in% nameCounts$Name)]
+emptyCOunts = rep(0, length(speciesInTableButNoAlternates))
+addTable = data.frame(toAdd, emptyCOunts)
+names(addTable) <- c("Name", "Count")
+nameCounts = rbind (nameCounts, addTable)
+
+
+nameCounts = nameCounts[order(match(nameCounts$Name, SupData1$TreeTip)),]
+
+SupData1$NumberOfIncludingAlternAlternates = nameCounts$Count
+
+SupData1 = SupData1[,c(1:9, 21,22, 10:20)]
+
+write.csv(SupData1, "Results/SupplementaryTable1 -- SpeciesNamesTipsAndDiet.csv")
+
+
+# Supplementary Table 3
+
+
+# Use DietThresholding.R script
+  #Use the version that creates a compare script with no subcategories, and then trims to the 3 diet
+
+write.csv(CompareDiets, "Results/SupplementaryTable3 -- SpeciesThresholdComparisions2.csv")
+
+
+
+#Getting numbers 
+mainCategoricalTree = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CategoricalTree.rds")
+mainPhenv = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CategoricalPhenotypeVector.rds")
+
+table(mainPhenv)
+
+allPhenv = readRDS("Output/ComplexDietCentralAnalysisSimplifyAllSpecies/ComplexDietCentralAnalysisSimplifyAllSpeciesCategoricalPhenotypeVector.rds")
+table(allPhenv)
+
+#mainGeneOUt 
+mainGeneOut = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CombinedGeneResultsWithAlternates.rds")
+mainGoOut = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CombinedGOResultsWithAlternates-KeggReactome.rds")
+
+length(which(mainGeneOut$`IV-significantRobust`))
+
+length(which(mainGoOut$`IV-significantRobust`))
+
+
+strictGeneOut = readRDS("Output/ComplexDietCentralAnalysisSimplifyExclusivePred/ComplexDietCentralAnalysisSimplifyExclusivePredCombinedGeneResultsWithAlternates.rds")
+strictGoOut = readRDS("Output/ComplexDietCentralAnalysisSimplifyExclusivePred/ComplexDietCentralAnalysisSimplifyExclusivePredCombinedGOResultsWithAlternates-KeggReactome.rds")
+
+mainIVGenes = rownames(mainGeneOut)[which(mainGeneOut$`IV-significantRobust`)]
+mainIVGo = rownames(mainGoOut)[which(mainGoOut$`IV-significantRobust`)]
+
+strictIVGenes = rownames(strictGeneOut)[which(strictGeneOut$`IV-significantRobust`)]
+strictIVGo = rownames(strictGoOut)[which(strictGoOut$`IV-significantRobust`)]
+
+
+overlapIVGenes = mainIVGenes[which(mainIVGenes %in% strictIVGenes)]
+overlapIVGo = mainIVGo[which(mainIVGo %in% strictIVGo)]
+
+
+mainHIGenes = rownames(mainGeneOut)[which(mainGeneOut$`HI-significantRobust`)]
+mainHIGo = rownames(mainGoOut)[which(mainGoOut$`HI-significantRobust`)]
+
+mainHVGenes = rownames(mainGeneOut)[which(mainGeneOut$`HV-significantRobust`)]
+mainHVGo = rownames(mainGoOut)[which(mainGoOut$`HV-significantRobust`)]
+
+mainCHGenes = rownames(mainGeneOut)[which(mainGeneOut$`CH-significantRobust`)]
+mainCHGo = rownames(mainGoOut)[which(mainGoOut$`CH-significantRobust`)]
+
+overlapHivGenes = mainHIGenes[which(mainHIGenes %in% mainHVGenes)]
+length(overlapHivGenes)/length(mainHVGenes)
+length(overlapHivGenes)/length(mainHIGenes)
+
+overlapHivGo = mainHIGo[which(mainHIGo %in% mainHVGo)]
+length(overlapHivGo)/length(mainHVGo)
+length(overlapHivGo)/length(mainHIGo)
+
+
+maiHVSigOnly = mainGoOut[which(mainGoOut$`HV-significantRobust`),]
+
+maiHVSigOnly[,c(2,52,102, 105)]
+
+which(rownames(mainGoOut) == "KEGG_TRYPTOPHAN_METABOLISM")
+test = mainGoOut[1676,]
+#---------------------------------------------------------------------
+# --- Comapre main vs exclusive --- 
+# --------------------------------------------------------------------
+library(tibble)
+library(ggvenn)
+library(gridExtra)
+
+mainGeneData = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2combinedGeneResultsWithAlternates.rds")
+excluGeneData = readRDS("Output/ComplexDietCentralAnalysisSimplifyExclusivePred/ComplexDietCentralAnalysisSimplifyExclusivePredcombinedGeneResultsWithAlternates.rds")
+
+
+all(rownames(mainGeneData) == rownames(excluGeneData))
+all(names(mainGeneData) == names(excluGeneData))
+
+#CH
+currentCol = which(names(mainGeneData) == "CH-P")
+  #Cor = 0.89
+currentCol = which(names(mainGeneData) == "HI-P")
+  #Cor = 0.88
+currentCol = which(names(mainGeneData) == "HV-P")
+  #Cor = 0.72
+currentCol = which(names(mainGeneData) == "IV-P")
+  #Cor = 0.72
+
+
+mainLogBaseP = log10(mainGeneData[currentCol]) * sign(mainGeneData[(currentCol -7)]) *-1
+excluLogBaseP = log10(excluGeneData[currentCol]) * sign(excluGeneData[(currentCol -7)]) *-1
+cor(mainLogBaseP, excluLogBaseP, method = "spearman", use = "complete.obs")
+
+
+
+
+mainGOData = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2combinedGOResultsWithAlternates-KeggReactome.rds")
+excluGOData = readRDS("Output/ComplexDietCentralAnalysisSimplifyExclusivePred/ComplexDietCentralAnalysisSimplifyExclusivePredcombinedGOResultsWithAlternates-KeggReactome.rds")
+
+
+all(rownames(mainGOData) == rownames(excluGOData))
+all(names(mainGOData) == names(excluGOData))
+
+
+#CH
+currentCol = which(names(mainGOData) == "CH-pval")
+#Cor = 0.89
+currentCol = which(names(mainGOData) == "HI-pval")
+#Cor = 0.93
+currentCol = which(names(mainGOData) == "HV-pval")
+#Cor = 0.62
+currentCol = which(names(mainGOData) == "IV-pval")
+#Cor = 0.76
+
+
+mainLogBaseP = log10(mainGOData[currentCol]) * sign(mainGOData[(currentCol -7)]) *-1
+excluLogBaseP = log10(excluGOData[currentCol]) * sign(excluGOData[(currentCol -7)]) *-1
+cor(mainLogBaseP, excluLogBaseP, method = "spearman", use = "complete.obs")
+
+
+
+plot1 = plot(signedLogBaseP, signedLogPermP)
+plot2 = plot(signedLogBaseP, signedLogPermP)
+plot3 = plot(signedLogBaseP, signedLogPermP)
+
+plot1
+
+
+
+
+ChOverlapGO = which(mainGOData$`CH-significantRobust` & excluGOData$`CH-significantRobust` & mainGOData$`CH-stat` <0)
+rownames(mainGOData)[ChOverlapGO]
+
+HiOverlapGO = which(mainGOData$`HI-significantRobust` & excluGOData$`HI-significantRobust` & mainGOData$`HI-stat` >0)
+rownames(mainGOData)[HiOverlapGO]
+
+HvOverlapGO = which(mainGOData$`HV-significantRobust` & excluGOData$`HV-significantRobust` & mainGOData$`HV-stat` >0)
+rownames(mainGOData)[HvOverlapGO]
+
+IvOverlapGO = which(mainGOData$`IV-significantRobust` & excluGOData$`IV-significantRobust`)
+rownames(mainGOData)[IvOverlapGO]
+
+
+#---------------------------------------------------------------------
+# --- DebugGoOrdering --- 
+# --------------------------------------------------------------------
+
+
+
+tempGeneset1 = data.frame(a=c(1,2,3), b=c(1,2,3))
+rownames(tempGeneset1) = c("one", "two", "three")
+tempGeneset2 = data.frame(a=c(1,4), b=c(1,4))
+rownames(tempGeneset2) = c("one", "four")
+rownames(tempGeneset2) = c("one", "three")
+
+GOResults = list(tempGeneset1, tempGeneset2)
+mainRowNames = rownames(EnrichmentRuns[[1]][[1]])
+
+errorSet = NA
+for(i in 1:100){
+  for(j in 1:length(EnrichmentRuns[[i]])){
+    newRowNames = rownames(EnrichmentRuns[[i]][[j]]) 
+    isEqual = all(newRowNames ==mainRowNames)
+    if(!isEqual){
+      errorCode = paste0(i, "-", j)
+      names(errorCode) = i
+      errorSet = append(errorSet, errorCode)
+    }
+  }
+}
+length(unique(names(errorSet)))
+
+#This confirms that at least the row names are always consisent within an alternate
+errorSet = NA
+for(i in 1:100){
+  mainRowNames = rownames(EnrichmentRuns[[i]][[1]])
+  for(j in 2:length(EnrichmentRuns[[i]])){
+    newRowNames = rownames(EnrichmentRuns[[i]][[j]]) 
+    isEqual = all(newRowNames ==mainRowNames)
+    if(!isEqual){
+      errorCode = paste0(i, "-", j)
+      names(errorCode) = i
+      errorSet = append(errorSet, errorCode)
+    }
+  }
+}
+
+
+length(unique(names(errorSet)))
+
+newRowNames
+mainRowNames
+
+which(!newRowNames == mainRowNames)
+
+combinedEnrichment[[1]][[1]][[279]]
+
+testEnrichment = EnrichmentRuns[[i]][[j]]
+testEnrichment$stat[[279]]
 
 #---------------------------------------------------------------------
 # --- compare working and broken alternates--- 
@@ -855,14 +1112,14 @@ convertColnameToIndex = function(name, df){
 makeVenn = function(i, titleName,  gene = T){
   if(gene){
   venn_list <- list(
-    Main = which(mainSigDataGene[,i]),
-    Simplified = which(simpSigDataGene[,i])
+    Main = rownames(mainSigDataGene)[which(mainSigDataGene[,i])],
+    Simplified = rownames(simpSigDataGene)[which(simpSigDataGene[,i])]
   )
   titleName = paste(titleName, "Gene")
   }else{
     venn_list <- list(
-      Main = which(mainSigDataGO[,i]),
-      Simplified = which(simpSigDataGO[,i])
+      Main = rownames(mainSigDataGO)[which(mainSigDataGO[,i])],
+      Simplified = rownames(simpSigDataGO)[which(simpSigDataGO[,i])]
     )
     titleName = paste(titleName, "GO")
   }
@@ -886,6 +1143,9 @@ simpDataGene = readRDS("Output/ComplexDietCentralAnalysisPiscFix/ComplexDietCent
 simpDataGene = readRDS("Output/ComplexDietCentralAnalysisNoFishbat/ComplexDietCentralAnalysisNoFishbatcombinedGeneResults.rds")
 simpDataGene = readRDS("Output/ComplexDietCentralAnalysisSimplifyEqualDrop/ComplexDietCentralAnalysisSimplifyEqualDropcombinedGeneResultsWithAlternates.rds")
 simpDataGene = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2combinedGeneResultsWithAlternates.rds")
+simpDataGene = readRDS("Output/ComplexDietCentralAnalysisSimplifyExclusivePred/ComplexDietCentralAnalysisSimplifyExclusivePredcombinedGeneResultsWithAlternates.rds")
+
+mainDataGene = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2combinedGeneResultsWithAlternates.rds")
 
 
 
@@ -896,6 +1156,12 @@ simpDataGO = readRDS("Output/ComplexDietCentralAnalysisSimplifyNoScav/ComplexDie
 simpDataGO = readRDS("Output/ComplexDietCentralAnalysisPiscFix/ComplexDietCentralAnalysisPiscFixcombinedGOResults-KeggReactome.rds")
 simpDataGO = readRDS("Output/ComplexDietCentralAnalysisNoFishbat/ComplexDietCentralAnalysisNoFishbatcombinedGOResults-KeggReactome.rds")
 simpDataGO = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2combinedGOResultsWithAlternates-KeggReactome.rds")
+simpDataGO = readRDS("Output/ComplexDietCentralAnalysisSimplifyExclusivePred/ComplexDietCentralAnalysisSimplifyExclusivePredcombinedGOResultsWithAlternates-KeggReactome.rds")
+
+simpDataGO = read.csv("Output/ComplexDietCentralAnalysisSimplifyExclusivePred/ComplexDietCentralAnalysisSimplifyExclusivePredcombinedGOResultsWithAlternates-KeggReactomeOLD.csv")
+rownames(simpDataGO) = simpDataGO$X
+mainDataGO = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2combinedGOResultsWithAlternates-KeggReactome.rds")
+
 
 
 #simpData = simpData[,c(1:42)]
@@ -904,6 +1170,8 @@ mainSigDataGene = mainDataGene[,c(convertColnameToIndex("CH-significant", mainDa
 mainSigDataGene = mainDataGene[,c(convertColnameToIndex("CH-significantRobust", mainDataGene), convertColnameToIndex("HI-significantRobust", mainDataGene), convertColnameToIndex("HV-significantRobust", mainDataGene), convertColnameToIndex("IV-significantRobust", mainDataGene))]
 
 mainSigDataGO = mainDataGO[,c(convertColnameToIndex("CH-significant", mainDataGO), convertColnameToIndex("HI-significant", mainDataGO), convertColnameToIndex("HV-significant", mainDataGO), convertColnameToIndex("IV-significant", mainDataGO))]
+mainSigDataGO = mainDataGO[,c(convertColnameToIndex("CH.significantRobust", mainDataGO), convertColnameToIndex("HI.significantRobust", mainDataGO), convertColnameToIndex("HV.significantRobust", mainDataGO), convertColnameToIndex("IV.significantRobust", mainDataGO))]
+
 mainSigDataGO = mainDataGO[,c(convertColnameToIndex("CH-significantRobust", mainDataGO), convertColnameToIndex("HI-significantRobust", mainDataGO), convertColnameToIndex("HV-significantRobust", mainDataGO), convertColnameToIndex("IV-significantRobust", mainDataGO))]
 
 
@@ -911,24 +1179,68 @@ simpSigDataGene = simpDataGene[,c(convertColnameToIndex("CH-significant", simpDa
 simpSigDataGene = simpDataGene[,c(convertColnameToIndex("CH-significantRobust", simpDataGene), convertColnameToIndex("HI-significantRobust", simpDataGene), convertColnameToIndex("HV-significantRobust", simpDataGene), convertColnameToIndex("IV-significantRobust", simpDataGene))]
 
 simpSigDataGO = simpDataGO[,c(convertColnameToIndex("CH-significant", simpDataGO), convertColnameToIndex("HI-significant", simpDataGO), convertColnameToIndex("HV-significant", simpDataGO), convertColnameToIndex("IV-significant", simpDataGO))]
+simpSigDataGO = simpDataGO[,c(convertColnameToIndex("CH.significantRobust", simpDataGO), convertColnameToIndex("HI.significantRobust", simpDataGO), convertColnameToIndex("HV.significantRobust", simpDataGO), convertColnameToIndex("IV.significantRobust", simpDataGO))]
 simpSigDataGO = simpDataGO[,c(convertColnameToIndex("CH-significantRobust", simpDataGO), convertColnameToIndex("HI-significantRobust", simpDataGO), convertColnameToIndex("HV-significantRobust", simpDataGO), convertColnameToIndex("IV-significantRobust", simpDataGO))]
+
+
 
 
 
 geneVenn = makeComboVenn(T)
 goVenn = makeComboVenn(F)
-megaVenn = grid.arrange(geneVenn, goVenn, ncol =1)
+# megaVenn = grid.arrange(geneVenn, goVenn, ncol =1)
 megaVenn
 
+
+
+simpIVSig = rownames(simpDataGO)[which(simpDataGO$`IV-significantRobust`)]
+mainIVSig = rownames(mainDataGO)[which(mainDataGO$`IV-significantRobust`)]
+IvSig = append(simpIVSig, mainIVSig)
+
+IVOUtsMain = mainDataGO[rownames(mainDataGO) %in% IvSig,grep("IV", colnames(mainDataGO))]
+IVOUtsSimp = simpDataGO[rownames(simpDataGO) %in% IvSig,grep("IV", colnames(simpDataGO))]
+
+names(IVOUtsSimp) = paste0("simp-", names(IVOUtsSimp))
+
+IVOutCombined = cbind(IVOUtsMain, IVOUtsSimp)
+
+
+IVsigGO = rownames(simpDataGO)[simpDataGO$`IV-significantRobust`]
+IVMainGO = rownames(mainDataGO)[mainDataGO$`IV-significantRobust`]
+
+IvOverlap = IVsigGO[IVsigGO %in% IVMainGO]
+
+CHsigGO = rownames(simpDataGO)[simpDataGO$`CH-significantRobust`]
+CHMainGO = rownames(mainDataGO)[mainDataGO$`CH-significantRobust`]
+
+CHOverlap = CHsigGO[CHsigGO %in% CHMainGO]
+
+
+HIsigGO = rownames(simpDataGO)[simpDataGO$`HI-significantRobust`]
+HIMainGO = rownames(mainDataGO)[mainDataGO$`HI-significantRobust`]
+
+HIOverlap = HIsigGO[HIsigGO %in% HIMainGO]
+
+
+
+IvOLMain = mainDataGO[IvOverlap,grep("IV", colnames(mainDataGO))]
+IvOLSimp = simpDataGO[IvOverlap,grep("IV", colnames(simpDataGO))]
+
+names(IvOLSimp) = paste0("simp-", names(IvOLSimp))
+
+IvOlCombined = cbind(IvOLMain, IvOLSimp)
+
+
+
+
+
+
+
 table(simpDataGO$`IV-PadjNumSignificant`)
-  #there are 13 of them significant in more than 
+#there are 13 of them significant in more than 
 
 which(simpDataGO$`IV-PadjNumSignificant` > 51)
 grep("IV", colnames(simpDataGO))
-
-
-IVOUts2 = simpDataGO[which(simpDataGO$`IV-PadjNumSignificant` > 51),grep("IV", colnames(simpDataGO))]
-IVOUts3 = simpDataGO[which(simpDataGO$`IV-significantRobust`),grep("IV", colnames(simpDataGO))]
 
 
 
