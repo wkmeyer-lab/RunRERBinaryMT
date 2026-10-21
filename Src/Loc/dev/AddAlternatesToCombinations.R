@@ -8,6 +8,10 @@ source("Src/Reu/cmdArgImport.R")
 args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=gene", "s=T", "l=F")
 args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=KeggReactome", "s=T", "l=F")
 
+args = c("r=ComplexDietCentralAnalysisSimplifyExclusivePred", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+args = c("r=ComplexDietCentralAnalysisSimplify2", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+
+
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
@@ -130,6 +134,35 @@ alternatesSingleDF <- imap(alternateSummaryColumns, function(df, nm) {
   bind_cols()
 
 
+if(!usingGene){
+  rownames(alternatesSingleDF) = names(alternatesData[[1]][[1]])
+  
+  #ensure that the GO are in the same order
+  #Ensure that the GO categories are in the same order 
+  longestGOLength = max(length(rownames(combinedData)), length(rownames(alternatesSingleDF)))
+  if(length(rownames(combinedData)) == longestGOLength){
+    newGoOrder = rownames(combinedData)
+  }else{
+    newGoOrder = rownames(alternatesSingleDF)
+  }
+  
+  
+  if(!all(rownames(combinedData) == newGoOrder)){
+    message("Main data order not match longest GO order, reordering main data")
+    matchedOrder = match(newGoOrder, rownames(combinedData))
+    combinedData = combinedData[matchedOrder, ]
+    rownames(combinedData) = newGoOrder
+  }
+  
+  if(!all(rownames(alternatesSingleDF) == newGoOrder)){
+    message("Alternate data order not match longest GO order, reordering Alternate data")
+    matchedOrder = match(newGoOrder, rownames(alternatesSingleDF))
+    alternatesSingleDF = alternatesSingleDF[matchedOrder, ]
+    rownames(alternatesSingleDF) = newGoOrder
+  }
+  
+}
+
 #Add the alternate data to the main dataframe 
 combinedData = cbind(combinedData, alternatesSingleDF)
 
@@ -187,7 +220,7 @@ combinedData = cbind(combinedData, alternatesSingleDF)
         paste0(p, "-statCI95"),
         paste0(p, "-statIQR"),
         paste0(p, "-statMaxDiff"),
-        paste0(p, "-P"),
+        paste0(p, "-pval"),
         paste0(p, "-PNumSignificant"),
         paste0(p, "-PMedian"),
         paste0(p, "-PMean"),

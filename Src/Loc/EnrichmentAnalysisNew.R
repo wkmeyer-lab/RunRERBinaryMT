@@ -103,6 +103,9 @@ args = c('r=ComplexDietCentralAnalysisPiscFix', 'm=c("Data/KeggReactome.gmt")', 
 args = c('r=ComplexDietCentralAnalysisNoFishbat', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Invertivore-Vertivore", "Herbivore-Vertivore", "Invertivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Invertivore", "Overall", "Carnivore-Herbivore", "Carnivore-Omnivore")' )
 args = c('r=ComplexDietCentralAnalysisSimplifyEqualDrop', 'm=Data/KeggReactome.gmt', 'p=F') 
 
+args = c('r=ComplexDietCentralAnalysisSimplify2', 'm=c("Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt", "Data/DisGeNET.gmt", "Data/tissue_specific.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")', 'p=F', 's=c("Invertivore-Vertivore", "Herbivore-Vertivore", "Invertivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Invertivore", "Carnivore-Herbivore", "Overall")' )
+
+
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
 {  # Bracket used for collapsing purposes

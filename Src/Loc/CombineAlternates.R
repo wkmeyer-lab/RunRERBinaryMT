@@ -300,9 +300,9 @@ if(useGO){
   for(i in 1:length(EnrichmentRuns)){
     currentRownames = rownameSets[[i]]
     if(all(currentRownames == longestAlternateGoSet)){
-      message(paste("Alternate ", i, "In correct order, continuing."))
+      message(paste("Alternate ", i, " In correct order, continuing."))
     }else{
-      message("Reordering Alternate set ", i, "to match longest GO set, confirmed to contain all processed GOs.")
+      message("Reordering Alternate set ", i, " to match longest GO set, confirmed to contain all processed GOs.")
       matchedOrder = match(longestAlternateGoSet, currentRownames)
       
       for(j in 1:length(EnrichmentRuns[[i]])){
@@ -396,6 +396,12 @@ if(useGO){
     
     df
   })
+  
+  for(i in 1:length(combinedEnrichment)){
+    for(j in 1:length(combinedEnrichment[[i]])){
+      names(combinedEnrichment[[i]][[j]]) = longestAlternateGoSet
+    }
+  }
   
   saveRDS(combinedEnrichment, paste0(primaryOutputFolderName, primaryFilePrefix, "AlternatesCombinedEnrichments-" , geneSet, ".rds"))
   
