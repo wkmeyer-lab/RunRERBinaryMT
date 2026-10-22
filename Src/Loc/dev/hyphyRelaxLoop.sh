@@ -1,5 +1,10 @@
 #!/bin/bash
 
+####################################################################################################################
+####    Initial script written by Alexander Seaver                                                              ####
+####    Select sections have been revised utilizing Google Gemini 3.6, manually reviewed by Alexander Seaver    ####
+####################################################################################################################
+
 # --- COMMAND LINE ARGUMENTS ---
 FILE_PREFIX=""
 FOREGROUNDVALUE=""
@@ -32,9 +37,11 @@ PARTITION="hawkcpu"
 
 # Updated OUTPUT_DIR to nest by Rate
 OUTPUT_DIR="/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/${FILE_PREFIX}/Hyphy/Rate_${RATES}"
+chmod -R 777 "/share/ceph/wym219group/shared/projects/seaverProjects/RunRERBinaryMT/Output/${FILE_PREFIX}"
 
 # Updated LOG_DIR to nest by Rate
 LOG_DIR="/share/ceph/wym219group/shared/erroutfiles/seaverErrors/${FILE_PREFIX}/Foreground_${FOREGROUNDVALUE}/Rate_${RATES}"
+chmod -R 777 "/share/ceph/wym219group/shared/erroutfiles/seaverErrors/${FILE_PREFIX}"
 mkdir -p "$LOG_DIR"
 chmod -R 777 "$LOG_DIR"
 mkdir -p "$OUTPUT_DIR"

@@ -1,5 +1,10 @@
 #!/usr/bin/env Rscript
 
+####################################################################################################################
+####    Initial script written by Alexander Seaver                                                              ####
+####    Select sections have been revised utilizing Google Gemini 3.6, manually reviewed by Alexander Seaver    ####
+####################################################################################################################
+
 # Usage: 
 # Rscript violinPlotMake.R <rer_matrix.rds> <trees_object.rds> <phenotype_tree.rds_or_txt> <genes_list.txt>
 
