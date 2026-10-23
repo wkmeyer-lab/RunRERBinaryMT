@@ -2386,6 +2386,43 @@ args = c('r=ComplexDietCentralAnalysisNoFamilyPrune', 'm=data/zoonomiaAllMammals
           "vs_HLeidHel2", "outerPeropodidae",
           "vs_HLeonSpe1", "Roussetinae"
          )')
+  
+  args = c('r=ComplexDietCentralAnalysisSimplifyAltReconstruction', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=SimplifiedDietConvert', 'v=F', 't=ER', 'n=ZoonomiaTip', 'z=0.01', 'l=F', 'e=T',
+           'c=c(
+              "Vertivore", "Omnivore", "Herbivore", "Invertivore"
+            )', 
+           'y=c(
+          "vs_HLornAna3", "vs_HLtacAcu1",  "PreserveMonotremeBranches",
+          "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1", "MarsupialTransitionPreservation",
+          "vs_HLmyrTri1", "vs_HLchoDid1", "vs_HLchoHof3", "vs_HLproCap3", "AfrotheriaPreserveTransitions",
+          "vs_HLursThi1", "vs_ursMar1", "vs_HLursArc1", "vs_HLailMel2", "UrsaPreserveTransition",
+          "vs_lepWed1", "vs_HLmirAng2", "vs_HLphoVit1", "vs_HLeriBar1", "SealPreserveTransitions",
+          "vs_HLodoRos1", "vs_HLcalUrs1", "vs_HLzalCal1", "SealSeaLionPreserveTransitions",
+          "vs_HLmelCap1", "vs_HLgulGul1", "vs_HLneoVis1", "MustelidPreserveTransitions",
+          "vs_HLlycPic2", "CanidPreserveTransision",
+          "vs_HLgloMel1", "vs_HLpepEle1", "vs_HLturAdu1", "DolphinClade", "vs_orcOrc1", "vs_HLescRob1", "vs_HLlniGeo1", "amazonRiverDolphinFromYeast","vs_HLbalEde1", "vs_HLmegNov1", "vs_HLcynGun1", "CetaceaPreserveTransitions",
+          "vs_HLmerUng1", "BankVoleTransition",
+          "vs_HLeulMon1", "vs_HLeulFul1", "LemurTransition",
+          "vs_panTro6", "vs_HLrhiRox2", "LangurClade", "vs_HLallNig1", "PrimateTransitionsContinued",
+          "vs_HLeryPat1", "vs_chlSab2", "geunonClade", "vs_HLtheGel1", "PrimateTransitionsContinuedAgain",
+          "vs_HLpapAnu5", "vs_HLmanSph1", "DrillMandrillClade", "vs_cerAty1", "Drilltransitions",
+          "vs_HLmarFla1", "marmotClade", "DoormouseTransition",
+          "vs_eulMac1", "vs_ponAbe3", "PrimateTransitions"
+          
+         )',
+         'p=c(
+          "vs_HLellTal1", "vs_HLellLut1", "vs_HLarvAmp1", "voleClade",
+          "vs_HLhysCri1", "vs_HLthrSwi1", "vs_HLpetTyp1", "vs_hetGla2", "vs_chiLan1", "vs_HLdinBra1", "vs_HLcteSoc1", "vs_octDeg1", "vs_HLcoePre1", "vs_HLdasPun1", "vs_HLdolPat1", "gundiGuineaPigClade",
+          "vs_HLoryGaz1", "vs_HLbeaHun1", "vs_HLkobLecLec1", "vs_HLkobLecLec1", "vs_HLmadKir1", "vs_HLneoPyg1", "vs_HLphiMax1", "vs_HLoreOre1", "vs_HLneoMos1", "vs_HLaepMel1", "vs_HLtraImb1", "Bovidae",
+          "vs_HLhydIne1", "vs_HLmunMun1", "Cervidae",
+          "vs_HLmurAurFea1", "outerVespert",
+          "vs_HLmyoLuc1", "Nearctic",
+          "vs_myoDav1", "Myotis",
+          "vs_HLpipPip1", "vs_HLlasBor1", "vs_HLnycHum2", "Vespertilioninae",
+          "vs_HLmacSob1", "FoxLongTounge",
+          "vs_HLeidHel2", "outerPeropodidae",
+          "vs_HLeonSpe1", "Roussetinae"
+         )')
 }
 
 

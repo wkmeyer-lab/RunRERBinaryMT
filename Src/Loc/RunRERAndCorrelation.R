@@ -84,6 +84,14 @@ args = c("r=PredatorFullTree", 'm=', "s=g", "v=F", "l=170")
 
 args = c("r=ComplexDietCentralAnalysisEqualLengthInference", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 
+args = c("r=ComplexDietBinaryInvertivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+args = c("r=ComplexDietBinaryVertivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+args = c("r=ComplexDietBinaryHerbivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+args = c("r=ComplexDietBinaryOmnivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+args = c("r=ComplexDietBinaryCarnivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+
+args = c("r=ComplexDietCentralAnalysisSimplifyAltReconstruction", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
+
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
