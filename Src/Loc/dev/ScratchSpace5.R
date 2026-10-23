@@ -48,10 +48,157 @@ palette(c("#1B9E77", "#000000", "#7570B3", "#E7298A"))
 packageVersion("RERconverge")
 
 
+#---------------------------------------------------------------------
+# --- Make new alt reconstrcution --- 
+# --------------------------------------------------------------------
+
+mainTreesBackup = mainTrees
+commonMainTreesBackup = commonMainTrees
+
+mainTrees$masterTree$edge.length = rep(1, length(mainTrees$masterTree$edge.length))
+commonMainTrees$masterTree$edge.length = rep(1, length(commonMainTrees$masterTree$edge.length))
+
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMainTreesBackup$masterTree)
+plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = mainTreesBackup$masterTree)
+
+
+equalCategoricalTree = readRDS("output/ComplexDietCentralAnalysisSimplifyAltReconstruction/ComplexDietCentralAnalysisSimplifyAltReconstructionCategoricalTree.rds")
+mainCategoricalTree = readRDS("output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CategoricalTree.rds")
+
+equalCategoricalTree$edge.length == mainCategoricalTree$edge.length
+
+mismatchBranches = which(!equalCategoricalTree$edge.length == mainCategoricalTree$edge.length)
+length(mismatchBranches)
+
+edgelabels(edge = mismatchBranches, cex=0.4, col= "purple", frame="none")
+
+#---------------------------------------------------------------------
+# --- New PhenotypeBInary Analyses --- 
+# --------------------------------------------------------------------
+
+#Load central files 
+centralRER = readRDS("Output/ComplexDietBinaryCentral/ComplexDietBinaryCentralRERFile.rds")
+centralSpeciesFilter = readRDS("Output/ComplexDietBinaryCentral/ComplexDietBinaryCentralSpeciesFilter.rds")
+centralCategoricalTree = readRDS("Output/ComplexDietBinaryCentral/ComplexDietBinaryCentralCategoricalTree.rds")
+centralPhenotypeVector = readRDS("Output/ComplexDietBinaryCentral/ComplexDietBinaryCentralCategoricalPhenotypeVector.rds")
+
+mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
+
+
+#Make binary specific outputs
+
+infileprefix = "ComplexDietBinaryCarnivore"
+phenName = "Invertivore"
+newPhen = NULL
+plot = T
+
+phenName = c("Invertivore", "Vertivore")
+newPhen = "Carnivore"
+
+makeBinaryPhen = function(infileprefix, phenName, newPhen = NULL, plot = T){
+
+  filePrefix = infileprefix
+  if(is.null(newPhen)){newPhen = phenName}
+  
+  #Make output directory
+  #  Output Directory 
+  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
+    dir.create("Output")
+  }
+  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
+  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
+    dir.create(outputFolderNameNoSlash)
+  }
+  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+  
+  newPhenotypeVector = centralPhenotypeVector
+  newPhenotypeVector[which(!newPhenotypeVector %in% phenName)] = "Background"
+  newPhenotypeVector[which(newPhenotypeVector %in% phenName)] = newPhen
+  
+  
+  #get the selected phen index
+  phenlist = names(table((centralPhenotypeVector)))
+  
+  phenIndex = which(phenlist %in% phenName)
+  
+  newCategoricalTree = centralCategoricalTree
+  
+  #temporarily store the background 
+  newCategoricalTree$edge.length[which(!newCategoricalTree$edge.length %in% phenIndex)] = 1000
+  
+  #temporarily store the foreground
+  newCategoricalTree$edge.length[which(newCategoricalTree$edge.length %in% phenIndex)] = 2000
+  
+  newCategoricalTree$edge.length[which(newCategoricalTree$edge.length == 1000)] = 1
+  newCategoricalTree$edge.length[which(newCategoricalTree$edge.length == 2000)] = 2
+
+  
+  if(plot){
+    plotTreeCategorical(newCategoricalTree, c("Background", newPhen), master = mainTrees$masterTree)
+    
+    treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="")
+    pdf(treeImageFilename, height = length(newPhenotypeVector)/18, width = 10)  
+    plotTreeCategorical(newCategoricalTree, c("Background", newPhen), master = mainTrees$masterTree)
+    dev.off()
+    
+  }
+  
+  #Save the files
+  speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="")
+  saveRDS(centralSpeciesFilter, speciesFilterFilename)
+  
+  RERFileName = paste(outputFolderName, filePrefix, "RERFile.rds", sep= "") 
+  saveRDS(centralRER, RERFileName)
+  
+  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #make a filename based on the prefix
+  saveRDS(newPhenotypeVector, file = phenotypeVectorFilename)  
+  
+  categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+  saveRDS(newCategoricalTree, categoricalTreeFilename) 
+}
+
+  
+makeBinaryPhen("ComplexDietBinaryInvertivore", "Invertivore")
+makeBinaryPhen("ComplexDietBinaryVertivore", "Vertivore")
+makeBinaryPhen("ComplexDietBinaryHerbivore", "Herbivore")  
+makeBinaryPhen("ComplexDietBinaryOmnivore", "Omnivore")
+makeBinaryPhen("ComplexDietBinaryCarnivore", c("Invertivore", "Vertivore"), "Carnivore")
+
+# ------ 
+
+testCarVec = readRDS(phenotypeVectorFilename)
+
+filenamescafold = function(prefix){
+  name = paste0("Output/ComplexDietBinary", prefix, "/Background-", prefix,"/ComplexDietBinary", prefix, "Background-", prefix, "CorrelationFile.rds")
+  name
+}
+
+carnCor = readRDS(filenamescafold("Carnivore"))
+invCor = readRDS(filenamescafold("Invertivore"))
+vertCor = readRDS(filenamescafold("Vertivore"))
+herbCor = readRDS(filenamescafold("Herbivore"))
+omniCor = readRDS(filenamescafold("Omnivore"))
+
+names(carnCor) = paste0("C-", names(carnCor))
+names(invCor) = paste0("I-", names(invCor))
+names(vertCor) = paste0("V-", names(vertCor))
+names(herbCor) = paste0("H-", names(herbCor))
+names(omniCor) = paste0("O-", names(omniCor))
+
+binaryCors = cbind(carnCor, invCor, vertCor, herbCor, omniCor)
+
+combinedBinaryCorsFilename = "Output/ComplexDietBinaryCentral/ComplexBinaryCentralCombinedGeneCorrelations"
+saveRDS(binaryCors, paste0(combinedBinaryCorsFilename, ".rds"))
+write.csv(binaryCors, paste0(combinedBinaryCorsFilename, ".csv"))
 
 #---------------------------------------------------------------------
 # --- Make supplementary Files --- 
 # --------------------------------------------------------------------
+
+convertColnameToIndex = function(name, df){
+  output = which(colnames(df)==name)
+  output
+}
 
 #Supplementary Table 1 
 
@@ -115,6 +262,187 @@ write.csv(CompareDiets, "Results/SupplementaryTable3 -- SpeciesThresholdComparis
 
 
 
+#Supplementary Data 5
+
+outputFile = "Output/ComplexDietCentralAnalysisSimplify2/SupplementaryData5--Trees.txt" 
+
+mainTrees = readRDS("data/zoonomiaAllMammalsTrees.rds")
+masterTree = mainTrees$masterTree
+
+fourCatTree = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CategoricalTree.rds")
+threeCatTree = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2MergedCategoricalTree.rds")
+equalTree = readRDS("Output/ComplexDietCentralAnalysisSimplifyAltReconstruction/ComplexDietCentralAnalysisSimplifyAltReconstructionCategoricalTree.rds")
+fourDietStrictTree = readRDS("Output/ComplexDietCentralAnalysisSimplifyExclusivePred/ComplexDietCentralAnalysisSimplifyExclusivePredCategoricalTree.rds")
+
+BovTree = readRDS("Output/CladeBinaryBovidae/CladeBinaryBovidaeCategoricalTree.rds")
+CerTree = readRDS("Output/CladeBinaryCervidae/CladeBinaryCervidaeCategoricalTree.rds")
+CriTree = readRDS("Output/CladeBinaryCricetidae/CladeBinaryCricetidaeCategoricalTree.rds")
+HysTree = readRDS("Output/CladeBinaryHystricognathi/CladeBinaryHystricognathiCategoricalTree.rds")
+PerTree = readRDS("Output/CladeBinaryPeropdidae/CladeBinaryPeropdidaeCategoricalTree.rds")
+VesTree = readRDS("Output/CladeBinaryVespertilionidae/CladeBinaryVespertilionidaeCategoricalTree.rds")
+
+writeLines("----Master Tree----", outputFile)
+write.tree(masterTree, file = outputFile, append = T)
+cat("\n----Four Category Tree----\n", file = outputFile, append = T)
+write.tree(fourCatTree, file = outputFile, append = T)
+cat("\n----Three Category Tree----\n",  file =outputFile, append = T)
+write.tree(threeCatTree, file = outputFile, append = T)
+
+
+cat("\n----Alternate Reconstruction Tree----\n",  file =outputFile, append = T)
+write.tree(equalTree, file = outputFile, append = T)
+cat("\n----Strict Vertivore Invertivore Tree----\n",  file =outputFile, append = T)
+write.tree(fourDietStrictTree, file = outputFile, append = T)
+
+cat("\n\n----Clade Binary Trees----\n",  file =outputFile, append = T)
+cat("\n----Bovidae Tree----\n",  file =outputFile, append = T)
+write.tree(BovTree, file = outputFile, append = T)
+cat("\n----Cervidae Tree----\n",  file =outputFile, append = T)
+write.tree(CerTree, file = outputFile, append = T)
+cat("\n----Cricetidae Tree----\n",  file =outputFile, append = T)
+write.tree(CriTree, file = outputFile, append = T)
+cat("\n----Hystricognathi Tree----\n",  file =outputFile, append = T)
+write.tree(HysTree, file = outputFile, append = T)
+cat("\n----Peropdidae Tree----\n",  file =outputFile, append = T)
+write.tree(PerTree, file = outputFile, append = T)
+cat("\n----Vespertilionidae Tree----\n",  file =outputFile, append = T)
+write.tree(VesTree, file = outputFile, append = T)
+
+
+
+cat("\n\n----Alternate Trees----\n",  file =outputFile, append = T)
+
+for(i in 1:100){
+  alternateTree = readRDS(paste0("Output/ComplexDietCentralAnalysisSimplify2/Alternates/Alternate", i, "ComplexDietCentralAnalysisSimplify2CategoricalTree.rds"))
+  
+  cat(paste("\n----Alternate", i, "Trees----\n"),  file =outputFile, append = T)
+  write.tree(alternateTree, file = outputFile, append = T)
+  
+  
+}
+
+
+#Supplementary data 7 
+paperAnalysis = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2PairwiseCorrelationFile.rds")
+ELAnalysis = readRDS("Output/ComplexDietCentralAnalysisSimplifyAltReconstruction/ComplexDietCentralAnalysisSimplifyAltReconstructionPairwiseCorrelationFile.rds")
+
+paperAnalysis = paperAnalysis[-c(2,3,6,8)]
+ELAnalysis = ELAnalysis[-c(2,3,6,8)]
+
+
+#this function doesn't work 
+compareAnalyses = function(ogAnalysis, newAnalysis, prefix = NULL, pCuttof = 0.05){
+  
+  if(!is.null(prefix)){
+    outputOGAnalysis = list()
+    outputNewAnalysis = list()
+    for(i in 1:length(prefix)){
+      currentCols = grep(prefix[i], names(ogAnalysis))
+      currentCols = currentCols[1:3]
+      
+      tempOGAnalysis = ogAnalysis[,currentCols]
+      tempNewAnalysis = newAnalysis[,currentCols]
+      
+      tempOGAnalysis = list(tempOGAnalysis)
+      names(tempOGAnalysis) = prefix[i]
+      
+      tempNewAnalysis = list(tempNewAnalysis)
+      names(tempNewAnalysis) = prefix[i]
+      
+      
+      outputOGAnalysis = append(outputOGAnalysis, tempOGAnalysis)
+      outputNewAnalysis = append(outputNewAnalysis, tempNewAnalysis)
+    }
+    
+    newAnalysis = outputNewAnalysis
+    ogAnalysis = outputOGAnalysis
+  }
+  
+  
+  
+  results <- tibble(
+    index = integer(),
+    correlation = numeric(),
+    rhoRankcorrelation = numeric(),
+    numMismatchedNAs = integer(),
+    pCorrelation = numeric(),
+    numMismatchedPs = integer(),
+    padjCorrelation = numeric(),
+    numMismatchedPadjs = integer(),
+    totalOgSigPadjs = integer(), 
+    totalNewSigPadjs = integer(),
+    missingFraction = integer(),
+    mismatchedNAs = I(list()),
+    mismatchedPs = I(list()),
+    mismatchedPadjs = I(list())
+  )
+  
+  for (i in seq_along(ogAnalysis)) {
+    
+    correlation <- cor(ogAnalysis[[i]][[1]], newAnalysis[[i]][[1]], use = "complete.obs")
+    
+    mismiatchedNAs <- which(!is.na(ogAnalysis[[i]][[1]]) %in% is.na(newAnalysis[[i]][[1]]))
+    
+    ogAnalysis[[i]] = ogAnalysis[[i]] %>% mutate(rhoRank = rank(ogAnalysis[[i]][[1]])) 
+    newAnalysis[[i]] = newAnalysis[[i]] %>% mutate(rhoRank = rank(newAnalysis[[i]][[1]]))
+    
+    rhoRankcorrelation <- cor(ogAnalysis[[i]][[4]], newAnalysis[[i]][[4]], use = "complete.obs")
+    
+    pCorrelation <- cor(ogAnalysis[[i]][[2]], newAnalysis[[i]][[2]], use = "complete.obs")
+    
+    mismiatchedPs <- which(ogAnalysis[[i]][[2]] < pCuttof)[which(!which(ogAnalysis[[i]][[2]] < pCuttof) %in% 
+                                                                   which(newAnalysis[[i]][[2]] < pCuttof))]
+    
+    padjCorrelation <- cor(ogAnalysis[[i]][[3]], newAnalysis[[i]][[3]], use = "complete.obs")
+    
+    mismiatchedPadjs <- which(ogAnalysis[[i]][[3]] < pCuttof)[which(!which(ogAnalysis[[i]][[3]] < pCuttof) %in% 
+                                                                      which(newAnalysis[[i]][[3]] < pCuttof))]
+    
+    totalOgSigPadjs = length(which(ogAnalysis[[i]][[3]] < pCuttof))
+    totalNewSigPadjs = length(which(newAnalysis[[i]][[3]] < pCuttof))
+    
+    missingFraction = length(mismiatchedPadjs) / length(which(ogAnalysis[[i]][[3]] < pCuttof))
+    
+    results <- rbind(results, tibble(
+      index = i,
+      correlation = correlation,
+      rhoRankcorrelation = rhoRankcorrelation,
+      numMismatchedNAs = length(mismiatchedNAs),
+      pCorrelation = pCorrelation,
+      numMissingPs = length(mismiatchedPs),
+      padjCorrelation = padjCorrelation,
+      numMissingPadjs = length(mismiatchedPadjs),
+      totalOgSigPadjs = totalOgSigPadjs,
+      totalNewSigPadjs = totalNewSigPadjs,
+      missingFraction = missingFraction,
+      mismatchedNAs = list(mismiatchedNAs),
+      missingPs = list(mismiatchedPs),
+      missingPadjs = list(mismiatchedPadjs),
+    ))
+  }
+  row.names(results) = names(ogAnalysis)
+  return(results)
+}
+
+
+geneMissingInNewAnalysis = compareAnalyses(paperAnalysis, newAnalysis, c("HI", "HV", "IV"))
+
+i=1
+
+cor(paperAnalysis[[i]][[1]], ELAnalysis[[i]][[1]], use = "complete.obs") *  cor(paperAnalysis[[i]][[1]], ELAnalysis[[i]][[1]], use = "complete.obs")
+
+i=4
+correlation = cor(paperAnalysis[[i]][[3]], ELAnalysis[[i]][[3]], use = "complete.obs") *  cor(paperAnalysis[[i]][[3]], ELAnalysis[[i]][[3]], use = "complete.obs")
+correlation
+
+
+
+#---------------------------------------------------------------------
+# --- Update numbers in text --- 
+# --------------------------------------------------------------------
+
+
+
 #Getting numbers 
 mainCategoricalTree = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CategoricalTree.rds")
 mainPhenv = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CategoricalPhenotypeVector.rds")
@@ -128,9 +456,287 @@ table(allPhenv)
 mainGeneOut = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CombinedGeneResultsWithAlternates.rds")
 mainGoOut = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CombinedGOResultsWithAlternates-KeggReactome.rds")
 
+library(stringr)
+library(dplyr)
+library(tidyr)
+library(ggrepel)
+makeBarPlot = function(inDf, colNameSuffix = "-significantRobust") {
+  
+  prefixes <- str_remove(
+    names(inDf)[str_ends(names(inDf), "-significantRobust")],
+    "-significantRobust$"
+  )
+  
+  plotData <- purrr::map_dfr(prefixes, function(prefix) {
+    significantCol <- paste0(prefix, "-significant")
+    robustCol <- paste0(prefix, "-significantRobust")
+    
+    tibble(
+      Prefix = prefix,
+      Significant = inDf[[significantCol]],
+      Robust = inDf[[robustCol]]
+    ) %>%
+      pivot_longer(
+        cols = c(Significant, Robust),
+        names_to = "Type",
+        values_to = "Value"
+      ) %>%
+      filter(!is.na(Value)) %>%
+      mutate(
+        Type = recode(
+          Type,
+          Significant = "Significant",
+          Robust = "Robust significant"
+        )
+      )
+  })
+  
+  # Count TRUE and FALSE results for each prefix and type
+  countData <- plotData %>%
+    group_by(Prefix, Type) %>%
+    summarise(
+      TrueCount = sum(Value == TRUE),
+      FalseCount = sum(Value == FALSE),
+      Total = n(),
+      TruePercent = mean(Value) * 100,
+      .groups = "drop"
+    )
+  
+  # Labels showing the actual TRUE counts
+  labelData <- countData %>%
+    mutate(
+      Label = paste0(
+        "TRUE=", TrueCount,
+        "\nFALSE=", FalseCount
+      )
+    )
+  
+  ggplot(plotData, aes(x = Prefix, fill = Type)) +
+    geom_bar(
+      aes(y = as.numeric(Value)),
+      stat = "summary",
+      fun = sum,
+      position = position_dodge(width = 0.9)
+    ) +
+    geom_text(
+      data = labelData,
+      aes(
+        x = Prefix,
+        y = TrueCount,
+        group = Type,
+        label = paste0(TrueCount, " (", sprintf("%.1f", TruePercent), "%)")
+      ),
+      inherit.aes = FALSE,
+      position = position_dodge(width = 0.9),
+      vjust = -0.5
+    ) +
+    labs(
+      x = "Prefix",
+      y = "Number of TRUE results",
+      fill = "Column",
+      title = colNameSuffix
+    ) +
+    scale_fill_manual(
+      values = c(
+        "Significant" = "steelblue",
+        "Robust significant" = "tomato"
+      )
+    ) +
+    scale_y_continuous(
+      expand = expansion(mult = c(0, 0.15))
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+}
+
+
+makeBarPlot(mainGoOut)
+
+CompareDiets = mainGoOut
+makeBarPlot()
+
+
+makeBarPlot = function(inDf, prefixesToUse = NULL, labelOffset = 0.12, labelThreshold = 0.15, colNameSuffix = "-significantRobust") {
+  
+  # Identify available prefixes
+  availablePrefixes <- sub(
+    "-significantRobust$",
+    "",
+    names(inDf)[endsWith(names(inDf), "-significantRobust")]
+  )
+  
+  # Use selected prefixes, or all available prefixes
+  if (is.null(prefixesToUse)) {
+    prefixes <- availablePrefixes
+  } else {
+    prefixes <- prefixesToUse
+    
+    missingPrefixes <- setdiff(prefixes, availablePrefixes)
+    
+    if (length(missingPrefixes) > 0) {
+      stop(
+        "Missing -significantRobust columns for prefixes: ",
+        paste(missingPrefixes, collapse = ", ")
+      )
+    }
+  }
+  
+  # Prepare data
+  plotData <- purrr::map_dfr(prefixes, function(prefix) {
+    
+    significantCol <- paste0(prefix, "-significant")
+    robustCol <- paste0(prefix, "-significantRobust")
+    
+    if (!significantCol %in% names(inDf)) {
+      stop("Missing column: ", significantCol)
+    }
+    
+    significantTotal <- sum(inDf[[significantCol]] == TRUE, na.rm = TRUE)
+    robustTotal <- sum(inDf[[robustCol]] == TRUE, na.rm = TRUE)
+    
+    tibble::tibble(
+      Prefix = prefix,
+      `Robust significant` = robustTotal,
+      `Non-robust significant` = significantTotal - robustTotal
+    ) %>%
+      tidyr::pivot_longer(
+        cols = c(`Robust significant`, `Non-robust significant`),
+        names_to = "Type",
+        values_to = "TrueCount"
+      )
+  })
+  
+  countData <- plotData %>%
+    dplyr::group_by(Prefix) %>%
+    dplyr::mutate(
+      PrefixTotal = sum(TrueCount),
+      Percent = dplyr::if_else(
+        PrefixTotal > 0,
+        100 * TrueCount / PrefixTotal,
+        0
+      ),
+      Label = paste0(
+        TrueCount, "\n(",
+        sprintf("%.1f", Percent), "%)"
+      )
+    ) %>%
+    dplyr::ungroup()
+  
+  # Threshold based on the tallest total bar
+  largestColumn <- max(
+    countData %>%
+      dplyr::group_by(Prefix) %>%
+      dplyr::summarise(Total = sum(TrueCount), .groups = "drop") %>%
+      dplyr::pull(Total),
+    na.rm = TRUE
+  )
+  
+  labelCutoff <- largestColumn * labelThreshold
+  
+  # Plot stacked bars
+  ggplot2::ggplot(
+    countData,
+    ggplot2::aes(x = Prefix, y = TrueCount, fill = Type)
+  ) +
+    ggplot2::geom_col() +
+    # Labels inside sufficiently large segments
+    ggplot2::geom_text(
+      data = dplyr::filter(
+        countData,
+        TrueCount > 0,
+        TrueCount >= labelCutoff
+      ),
+      ggplot2::aes(label = Label),
+      position = ggplot2::position_stack(vjust = 0.5),
+      color = "white",
+      fontface = "bold",
+      size = 3.5
+    ) +
+    
+    # Labels for small segments, positioned above the stacked bar
+    ggrepel::geom_text_repel(
+      data = dplyr::filter(
+        countData,
+        TrueCount > 0,
+        TrueCount < labelCutoff
+      ) %>%
+        dplyr::group_by(Prefix) %>%
+        dplyr::mutate(
+          BarTotal = sum(TrueCount),
+          LabelY = BarTotal + largestColumn * labelOffset
+        ) %>%
+        dplyr::ungroup(),
+      ggplot2::aes(
+        x = Prefix,
+        y = LabelY,
+        label = Label
+      ),
+      inherit.aes = FALSE,
+      direction = "y",
+      box.padding = 0.5,
+      point.padding = 0.2,
+      force = 2,
+      max.overlaps = Inf,
+      color = "black",
+      fontface = "bold",
+      size = 3.5,
+      segment.color = "grey50"
+    ) +
+    ggplot2::labs(
+      x = "Prefix",
+      y = "Number of TRUE results",
+      fill = "Column",
+      title = colNameSuffix
+    ) +
+    ggplot2::scale_fill_manual(
+      values = c(
+        "Non-robust significant" = "steelblue",
+        "Robust significant" = "tomato"
+      )
+    ) +
+    ggplot2::scale_y_continuous(
+      expand = ggplot2::expansion(mult = c(0, 0.08))
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(
+        angle = 45,
+        hjust = 1
+      )
+    )
+}
+
+
+
+chosenPrefixes = c("CH", "HI", "HV", "IV")
+
+
+geneRobustPlot = makeBarPlot(mainGeneOut, chosenPrefixes, 0.15, 0.1, "Genes")
+goRobustPlot = makeBarPlot(mainGoOut, chosenPrefixes, 0.20, 0.15, "K-R Categories")
+
+mean(mainGeneOut$`CH-PadjNumSignificant`[which(mainGeneOut$`CH-significant`)])
+mean(mainGeneOut$`HI-PadjNumSignificant`[which(mainGeneOut$`HI-significant`)])
+mean(mainGeneOut$`HV-PadjNumSignificant`[which(mainGeneOut$`HV-significant`)])
+mean(mainGeneOut$`IV-PadjNumSignificant`[which(mainGeneOut$`IV-significant`)])
+
+mean(mainGoOut$`CH-PadjNumSignificant`[which(mainGoOut$`CH-significant`)])
+mean(mainGoOut$`HI-PadjNumSignificant`[which(mainGoOut$`HI-significant`)])
+mean(mainGoOut$`HV-PadjNumSignificant`[which(mainGoOut$`HV-significant`)])
+mean(mainGoOut$`IV-PadjNumSignificant`[which(mainGoOut$`IV-significant`)])
+
+barplotFilename = ("Output/ComplexDietCentralAnalysisSimplify2/Figure S3 -- Robustness to Alternates.png")
+
+png(barplotFilename, height = 6, width = 12, units = "in", res = 216)
+grid.arrange(geneRobustPlot, goRobustPlot, ncol = 2)
+grid.text("A", x = unit(0.02, "npc"), y = unit(0.99, "npc"), just = c("left", "top"), gp = gpar(fontsize = 24, fontface = "bold"))
+grid.text("B", x = unit(0.5, "npc"), y = unit(0.99, "npc"), just = c("left", "top"), gp = gpar(fontsize = 24, fontface = "bold"))
+dev.off()
+
 length(which(mainGeneOut$`IV-significantRobust`))
 
-length(which(mainGoOut$`IV-significantRobust`))
+length(which(mainGoOut$`CH-significant`))
 
 
 strictGeneOut = readRDS("Output/ComplexDietCentralAnalysisSimplifyExclusivePred/ComplexDietCentralAnalysisSimplifyExclusivePredCombinedGeneResultsWithAlternates.rds")
@@ -171,6 +777,149 @@ maiHVSigOnly[,c(2,52,102, 105)]
 
 which(rownames(mainGoOut) == "KEGG_TRYPTOPHAN_METABOLISM")
 test = mainGoOut[1676,]
+
+#Compare GO patterns 
+
+aminoAcid = c("REACTOME_METABOLISM_OF_AMINO_ACIDS_AND_DERIVATIVES",
+"KEGG_GLYCINE_SERINE_AND_THREONINE_METABOLISM",
+"KEGG_VALINE_LEUCINE_AND_ISOLEUCINE_DEGRADATION",
+"KEGG_TYROSINE_METABOLISM",
+"KEGG_TRYPTOPHAN_METABOLISM",
+"REACTOME_BRANCHED_CHAIN_AMINO_ACID_CATABOLISM",
+"REACTOME_GLYOXYLATE_METABOLISM_AND_GLYCINE_DEGRADATION")
+
+lipid = c("REACTOME_METABOLISM_OF_LIPIDS",
+"REACTOME_FATTY_ACID_METABOLISM",
+"KEGG_FATTY_ACID_METABOLISM",
+"KEGG_STEROID_HORMONE_BIOSYNTHESIS",
+"REACTOME_METABOLISM_OF_STEROIDS",
+"REACTOME_MITOCHONDRIAL_FATTY_ACID_BETA_OXIDATION")
+
+bile = c("REACTOME_BILE_ACID_AND_BILE_SALT_METABOLISM",
+"REACTOME_RECYCLING_OF_BILE_ACIDS_AND_SALTS",
+"REACTOME_SYNTHESIS_OF_BILE_ACIDS_AND_BILE_SALTS_VIA_7ALPHA_HYDROXYCHOLESTEROL")
+
+peroxisome = c("KEGG_PEROXISOME",
+"REACTOME_PEROXISOMAL_LIPID_METABOLISM",
+"REACTOME_PEROXISOMAL_PROTEIN_IMPORT")
+
+vitamin = c("REACTOME_METABOLISM_OF_WATER_SOLUBLE_VITAMINS_AND_COFACTORS",
+"REACTOME_DEFECTS_IN_VITAMIN_AND_COFACTOR_METABOLISM",
+"REACTOME_COBALAMIN_CBL_VITAMIN_B12_TRANSPORT_AND_METABOLISM",
+"REACTOME_UPTAKE_OF_DIETARY_COBALAMINS_INTO_ENTEROCYTES",
+"REACTOME_CHOLINE_CATABOLISM",
+"REACTOME_METABOLISM_OF_VITAMINS_AND_COFACTORS")
+
+etc = c("REACTOME_RESPIRATORY_ELECTRON_TRANSPORT",
+"REACTOME_COMPLEX_I_BIOGENESIS")
+oxidation = c("REACTOME_BIOLOGICAL_OXIDATIONS",
+"REACTOME_METABOLIC_DISORDERS_OF_BIOLOGICAL_OXIDATION_ENZYMES")
+
+drug = c("KEGG_DRUG_METABOLISM_CYTOCHROME_P450",
+"REACTOME_CYTOCHROME_P450_ARRANGED_BY_SUBSTRATE_TYPE",
+"REACTOME_PHASE_I_FUNCTIONALIZATION_OF_COMPOUNDS",
+"REACTOME_PHASE_II_CONJUGATION_OF_COMPOUNDS")
+
+sulfur = c("KEGG_SULFUR_METABOLISM",
+"REACTOME_CYTOSOLIC_SULFONATION_OF_SMALL_MOLECULES")
+
+transport = c("REACTOME_AMINO_ACID_TRANSPORT_ACROSS_THE_PLASMA_MEMBRANE",
+"REACTOME_SLC_MEDIATED_TRANSMEMBRANE_TRANSPORT",
+"REACTOME_TRANSPORT_OF_INORGANIC_CATIONS_ANIONS_AND_AMINO_ACIDS_OLIGOPEPTIDES")
+
+allCategories <- c(
+  setNames(aminoAcid, rep("aminoAcid", length(aminoAcid))),
+  setNames(lipid, rep("lipid", length(lipid))),
+  setNames(bile, rep("bile", length(bile))),
+  setNames(peroxisome, rep("peroxisome", length(peroxisome))),
+  setNames(vitamin, rep("vitamin", length(vitamin))),
+  setNames(etc, rep("etc", length(etc))),
+  setNames(oxidation, rep("oxidation", length(oxidation))),
+  setNames(drug, rep("drug", length(drug))),
+  setNames(sulfur, rep("sulfur", length(sulfur))),
+  setNames(transport, rep("transport", length(transport)))
+)
+
+
+categoryResults = mainGoOut[which(rownames(mainGoOut) %in% allCategories), c(convertColnameToIndex("CH-stat", mainGoOut), convertColnameToIndex("HI-stat", mainGoOut), convertColnameToIndex("HV-stat", mainGoOut)) ]
+categoryResults$cluster = names(allCategories)[match(rownames(categoryResults), allCategories)]
+
+categoryResults$ratio = categoryResults$`HV-stat` /categoryResults$`HI-stat`
+categoryResults$VCratio = -1*categoryResults$`HV-stat` /categoryResults$`CH-stat`
+
+hist(categoryResults$ratio)
+hist(
+  categoryResults$ratio,
+  breaks = c(seq(0, 1, by = 0.1),2),
+  right = FALSE,
+  xlab = "Ratio",
+  main = "Distribution of Ratios"
+)
+
+# categoryResults = categoryResults[order(categoryResults$cluster),]
+
+cluster_colors <- c(
+  aminoAcid = "#E41A1C",
+  lipid      = "#984EA3",
+  bile       = "#4DAF4A",
+  vitamin    = "blue",
+  drug       = "#F781BF",
+  
+  oxidation  = "#FF7F00",
+  peroxisome = "#A65628",
+  sulfur     = "yellow", 
+  transport  = "#00A6D6",
+  
+  etc        = "#555555"
+)
+
+ggplot(categoryResults, aes(x = `HI-stat`, y = `HV-stat`, color = cluster)) +
+  geom_point(size = 3, alpha = 0.8) +
+  scale_color_manual(values = cluster_colors) +
+  labs(
+    x = "HI Statistic",
+    y = "HV Statistic",
+    color = "Cluster"
+  ) +
+  theme_classic() +
+  theme(
+    legend.position = "right"
+  )+
+  coord_equal() +
+  geom_smooth(
+    aes(group = 1),
+    method = "lm",
+    se = FALSE,
+    color = "black",
+    linetype = "solid"
+  ) 
+
+
+clusterCorrelations <- categoryResults %>%
+  group_by(cluster) %>%
+  summarise(
+    n = sum(complete.cases(`HI-stat`, `HV-stat`)),
+    correlation = if (n >= 2 &&
+                      sd(`HI-stat`, na.rm = TRUE) > 0 &&
+                      sd(`HV-stat`, na.rm = TRUE) > 0) {
+      cor(`HI-stat`, `HV-stat`, use = "complete.obs")
+    } else {
+      NA_real_
+    },
+    pValue = if (n >= 3 &&
+                 sd(`HI-stat`, na.rm = TRUE) > 0 &&
+                 sd(`HV-stat`, na.rm = TRUE) > 0) {
+      cor.test(`HI-stat`, `HV-stat`)$p.value
+    } else {
+      NA_real_
+    },
+    .groups = "drop"
+  )
+
+cor(animoAcidResults$`HI-stat`, animoAcidResults$`HV-stat`)
+plot(animoAcidResults$`HI-stat`, animoAcidResults$`HV-stat`)
+dev.off()
+
 #---------------------------------------------------------------------
 # --- Comapre main vs exclusive --- 
 # --------------------------------------------------------------------

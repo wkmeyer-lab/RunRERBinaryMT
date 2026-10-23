@@ -551,7 +551,13 @@ if(makeDirectional){
   }
   
   if(usingGo){
+    largerOfDirections = max(positiveResultsNumber, negativeResultsNumber)
+    totalResultsNumber = sum(apply(vennGeneSignificanceResults, 1, function(x) any(x == TRUE, na.rm = TRUE)))
+    totalRatio = totalResultsNumber/largerOfDirections
     allVenn = grid.arrange(geneVenn,goVenn, combinedDirectionVenn, nrow = 1, padding = unit(1, "line"))
+    grid.text("A", x = unit(0.02, "npc"), y = unit(0.98, "npc"), just = c("left", "top"), gp = gpar(fontsize = 16, fontface = "bold"))
+    grid.text("B", x = unit(totalRatio/ (totalRatio +1), "npc"), y = unit(0.98, "npc"), just = c("left", "top"), gp = gpar(fontsize = 16, fontface = "bold"))
+    grid.text("C", x = unit(totalRatio/ (totalRatio +1), "npc"), y = unit(1-(ratio/(ratio+1)), "npc"), just = c("left", "top"), gp = gpar(fontsize = 16, fontface = "bold"))
     
     vennDiagramFilename = paste0(outputFolderName, filePrefix, "VennDiagram", geneSet, ".pdf")
     pdf(vennDiagramFilename, height = 12, width = 16)
@@ -589,6 +595,9 @@ if(makeDirectional){
     vennCombinedDiagramFilename = paste0(outputFolderName, filePrefix, "GOVennCombinedDiagram", geneSet, ".png")
     png(vennCombinedDiagramFilename, height = 12, width = 19.2, units = "in", res = 216)
     plot(allVenn)
+    grid.text("A", x = unit(0.02, "npc"), y = unit(0.99, "npc"), just = c("left", "top"), gp = gpar(fontsize = 24, fontface = "bold"))
+    grid.text("B", x = unit(totalRatio/ (totalRatio +1), "npc"), y = unit(0.99, "npc"), just = c("left", "top"), gp = gpar(fontsize = 24, fontface = "bold"))
+    grid.text("C", x = unit(totalRatio/ (totalRatio +1), "npc"), y = unit(1-(ratio/(ratio+1)), "npc"), just = c("left", "top"), gp = gpar(fontsize = 24, fontface = "bold"))
     dev.off()
     
   }else{
