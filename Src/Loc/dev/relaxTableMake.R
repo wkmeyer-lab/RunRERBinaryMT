@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ####################################################################################################################
 ####    Initial script written by Alexander Seaver                                                              ####
 ####    Select sections have been revised utilizing Google Gemini 3.6, manually reviewed by Alexander Seaver    ####
