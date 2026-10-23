@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ####################################################################################################################
 ####    Initial script written by Alexander Seaver                                                              ####
 ####    Select sections have been revised utilizing Google Gemini 3.6, manually reviewed by Alexander Seaver    ####
@@ -240,7 +241,7 @@ all_results <- all_results %>%
 all_results <- all_results %>%
   group_by(Analysis_Directory, Gene, Foreground) %>%
   mutate(
-    Is_Lowest_AICc_Alt = !is.na(AICC_RELAX_Alternative) &
+    Is_Lowest_AICc_Alt = !is.na(AICC_RELAX_Alternative) & 
                           AICC_RELAX_Alternative == min(AICC_RELAX_Alternative, na.rm = TRUE)
   ) %>%
   ungroup()
