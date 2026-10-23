@@ -3,7 +3,6 @@
 ####    Select sections have been revised utilizing Google Gemini 3.6, manually reviewed by Alexander Seaver    ####
 ####################################################################################################################
 
-
 # Load necessary libraries
 library(jsonlite)
 library(dplyr)
@@ -57,13 +56,13 @@ extract_rate_distribution <- function(json_data, branch_set) {
   # Case 1: Data frame (standard jsonlite default)
   if (is.data.frame(branch_dist)) {
     cols <- tolower(colnames(branch_dist))
-    
+
     if ("omega" %in% cols) {
       omegas <- branch_dist[[which(cols == "omega")[1]]]
     } else if (ncol(branch_dist) >= 1) {
       omegas <- branch_dist[[1]]
     }
-    
+
     if ("proportion" %in% cols) {
       props <- branch_dist[[which(cols == "proportion")[1]]]
     } else if ("p" %in% cols) {
@@ -87,6 +86,8 @@ extract_rate_distribution <- function(json_data, branch_set) {
       props <- branch_dist[, which(cols == "proportion")[1]]
     } else if (!is.null(cols) && "p" %in% cols) {
       props <- branch_dist[, which(cols == "p")[1]]
+    } else if (!is.null(cols) && "weight" %in% cols) {
+      props <- branch_dist[, which(cols == "weight")[1]]
     } else if (ncol(branch_dist) >= 2) {
       props <- branch_dist[, 2]
     }
@@ -193,34 +194,34 @@ for (dir_name in analysis_dirs) {
       # Build individual row dataframe
       row_data <- data.frame(
         Analysis_Directory       = dir_name,
-        Gene                     = gene_name,
-        Rate_Folder              = folder,
-        Foreground               = foreground_id,
-        K_Parameter              = as.numeric(k_param),
-        P_Value                  = as.numeric(p_val),
-        Likelihood_Ratio         = as.numeric(lrt),
-        
+        Gene                      = gene_name,
+        Rate_Folder               = folder,
+        Foreground                = foreground_id,
+        K_Parameter               = as.numeric(k_param),
+        P_Value                   = as.numeric(p_val),
+        Likelihood_Ratio          = as.numeric(lrt),
+
         # Omegas
-        Omega_Ref_0              = dist_ref$omega_0,
-        Omega_Ref_1              = dist_ref$omega_1,
-        Omega_Ref_2              = dist_ref$omega_2,
-        Omega_Ref_3              = dist_ref$omega_3,
-        Omega_Test_0             = dist_test$omega_0,
-        Omega_Test_1             = dist_test$omega_1,
-        Omega_Test_2             = dist_test$omega_2,
-        Omega_Test_3             = dist_test$omega_3,
-        
+        Omega_Ref_0               = dist_ref$omega_0,
+        Omega_Ref_1               = dist_ref$omega_1,
+        Omega_Ref_2               = dist_ref$omega_2,
+        Omega_Ref_3               = dist_ref$omega_3,
+        Omega_Test_0              = dist_test$omega_0,
+        Omega_Test_1              = dist_test$omega_1,
+        Omega_Test_2              = dist_test$omega_2,
+        Omega_Test_3              = dist_test$omega_3,
+
         # Global Rate Class Site Proportions
-        Prop_0                   = dist_ref$prop_0,
-        Prop_1                   = dist_ref$prop_1,
-        Prop_2                   = dist_ref$prop_2,
-        Prop_3                   = dist_ref$prop_3,
-        
+        Prop_0                    = dist_ref$prop_0,
+        Prop_1                    = dist_ref$prop_1,
+        Prop_2                    = dist_ref$prop_2,
+        Prop_3                    = dist_ref$prop_3,
+
         AICC_General_Descriptive = as.numeric(aicc_gen),
         AICC_RELAX_Alternative   = as.numeric(aicc_alt),
         AICC_RELAX_Null          = as.numeric(aicc_nul),
         AICC_RELAX_Partitioned   = as.numeric(aicc_par),
-        stringsAsFactors         = FALSE
+        stringsAsFactors          = FALSE
       )
 
       all_rows[[length(all_rows) + 1]] <- row_data
@@ -231,21 +232,25 @@ for (dir_name in analysis_dirs) {
 # Combine all rows into a single dataframe
 all_results <- bind_rows(all_rows)
 
-# Replace raw p-values equal to 0 with 1e-16 prior to Benjamini-Hochberg FDR correction
+# Replace raw p-values equal to 0 with 1e-16 prior to correction
 all_results <- all_results %>%
-  mutate(
-    P_Value = if_else(P_Value == 0, 1e-16, P_Value),
-    P_Value_Adj_BH = p.adjust(P_Value, method = "BH")
-  )
+  mutate(P_Value = if_else(P_Value == 0, 1e-16, P_Value))
 
 # Flag the row with the lowest AICc for RELAX Alternative per Analysis, Gene, and Foreground group
 all_results <- all_results %>%
   group_by(Analysis_Directory, Gene, Foreground) %>%
   mutate(
-    Is_Lowest_AICc_Alt = !is.na(AICC_RELAX_Alternative) & 
-                         AICC_RELAX_Alternative == min(AICC_RELAX_Alternative, na.rm = TRUE)
+    Is_Lowest_AICc_Alt = !is.na(AICC_RELAX_Alternative) &
+                          AICC_RELAX_Alternative == min(AICC_RELAX_Alternative, na.rm = TRUE)
   ) %>%
   ungroup()
+
+# Initialize P_Value_Adj_BH as NA for all rows
+all_results$P_Value_Adj_BH <- NA_real_
+
+# Calculate Benjamini-Hochberg FDR correction strictly on the lowest AICc subset
+lowest_idx <- which(all_results$Is_Lowest_AICc_Alt)
+all_results$P_Value_Adj_BH[lowest_idx] <- p.adjust(all_results$P_Value[lowest_idx], method = "BH")
 
 # Reorder columns logically
 all_results <- all_results %>%
@@ -267,13 +272,13 @@ all_results <- all_results %>%
 lowest_aicc_results <- all_results %>%
   filter(Is_Lowest_AICc_Alt)
 
-# Save combined results to CSV
+# Save combined results to CSV (na = "" ensures non-lowest AICc rows are written as blank cells)
 output_csv_combined <- file.path(base_dir, "RELAX_Extracted_Results_Combined.csv")
-write.csv(all_results, file = output_csv_combined, row.names = FALSE)
+write.csv(all_results, file = output_csv_combined, row.names = FALSE, na = "")
 
 # Save filtered best-fitting rate class results to separate CSV
 output_csv_best <- file.path(base_dir, "RELAX_Extracted_Results_Lowest_AICc.csv")
-write.csv(lowest_aicc_results, file = output_csv_best, row.names = FALSE)
+write.csv(lowest_aicc_results, file = output_csv_best, row.names = FALSE, na = "")
 
 message("Extraction complete!")
 message("  - Combined results saved (", nrow(all_results), " rows) to: ", output_csv_combined)
