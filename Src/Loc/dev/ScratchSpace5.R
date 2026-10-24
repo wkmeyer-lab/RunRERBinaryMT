@@ -558,7 +558,7 @@ CompareDiets = mainGoOut
 makeBarPlot()
 
 
-makeBarPlot = function(inDf, prefixesToUse = NULL, labelOffset = 0.12, labelThreshold = 0.15, colNameSuffix = "-significantRobust") {
+makeBarPlot = function(inDf, prefixesToUse = NULL, labelOffset = 0.12, labelThreshold = 0.15, colNameSuffix = "-significantRobust", xAxisValues = NULL) {
   
   # Identify available prefixes
   availablePrefixes <- sub(
@@ -582,6 +582,18 @@ makeBarPlot = function(inDf, prefixesToUse = NULL, labelOffset = 0.12, labelThre
       )
     }
   }
+  
+  # Manually set x-axis order and displayed values
+  if (is.null(xAxisValues)) {
+    xAxisValues <- prefixes
+  } else {
+    if (length(xAxisValues) != length(prefixes)) {
+      stop("xAxisValues must have the same length as prefixes.")
+    }
+    
+    names(xAxisValues) <- prefixes
+  }
+  
   
   # Prepare data
   plotData <- purrr::map_dfr(prefixes, function(prefix) {
@@ -685,10 +697,14 @@ makeBarPlot = function(inDf, prefixesToUse = NULL, labelOffset = 0.12, labelThre
       segment.color = "grey50"
     ) +
     ggplot2::labs(
-      x = "Prefix",
-      y = "Number of TRUE results",
-      fill = "Column",
+      x = "Comparision",
+      y = "Number of significant results",
+      fill = "Robustness",
       title = colNameSuffix
+    ) +
+    ggplot2::scale_x_discrete(
+      limits = prefixes,
+      labels = xAxisValues
     ) +
     ggplot2::scale_fill_manual(
       values = c(
@@ -711,10 +727,10 @@ makeBarPlot = function(inDf, prefixesToUse = NULL, labelOffset = 0.12, labelThre
 
 
 chosenPrefixes = c("CH", "HI", "HV", "IV")
+xAxisLabs = c("CombinedCarnivore-Herbivore", "Invertivore-Herbivore", "Vertivore-Herbivore", "Invertivore-Vertivore")
 
-
-geneRobustPlot = makeBarPlot(mainGeneOut, chosenPrefixes, 0.15, 0.1, "Genes")
-goRobustPlot = makeBarPlot(mainGoOut, chosenPrefixes, 0.20, 0.15, "K-R Categories")
+geneRobustPlot = makeBarPlot(mainGeneOut, chosenPrefixes, 0.15, 0.1, "Genes", xAxisValues =xAxisLabs)
+goRobustPlot = makeBarPlot(mainGoOut, chosenPrefixes, 0.20, 0.15, "K-R Categories", xAxisValues= xAxisLabs)
 
 mean(mainGeneOut$`CH-PadjNumSignificant`[which(mainGeneOut$`CH-significant`)])
 mean(mainGeneOut$`HI-PadjNumSignificant`[which(mainGeneOut$`HI-significant`)])
@@ -748,7 +764,6 @@ mainIVGo = rownames(mainGoOut)[which(mainGoOut$`IV-significantRobust`)]
 strictIVGenes = rownames(strictGeneOut)[which(strictGeneOut$`IV-significantRobust`)]
 strictIVGo = rownames(strictGoOut)[which(strictGoOut$`IV-significantRobust`)]
 
-
 overlapIVGenes = mainIVGenes[which(mainIVGenes %in% strictIVGenes)]
 overlapIVGo = mainIVGo[which(mainIVGo %in% strictIVGo)]
 
@@ -756,11 +771,132 @@ overlapIVGo = mainIVGo[which(mainIVGo %in% strictIVGo)]
 mainHIGenes = rownames(mainGeneOut)[which(mainGeneOut$`HI-significantRobust`)]
 mainHIGo = rownames(mainGoOut)[which(mainGoOut$`HI-significantRobust`)]
 
+strictHIGenes = rownames(strictGeneOut)[which(strictGeneOut$`HI-significantRobust`)]
+strictHIGo = rownames(strictGoOut)[which(strictGoOut$`HI-significantRobust`)]
+
+overlapHIGenes = mainHIGenes[which(mainHIGenes %in% strictHIGenes)]
+overlapHIGo = mainHIGo[which(mainHIGo %in% strictHIGo)]
+
+
 mainHVGenes = rownames(mainGeneOut)[which(mainGeneOut$`HV-significantRobust`)]
 mainHVGo = rownames(mainGoOut)[which(mainGoOut$`HV-significantRobust`)]
 
+strictHVGenes = rownames(strictGeneOut)[which(strictGeneOut$`HV-significantRobust`)]
+strictHVGo = rownames(strictGoOut)[which(strictGoOut$`HV-significantRobust`)]
+
+overlapHVGenes = mainHIGenes[which(mainHVGenes %in% strictHVGenes)]
+overlapHVGo = mainHIGo[which(mainHVGo %in% strictHVGo)]
+
 mainCHGenes = rownames(mainGeneOut)[which(mainGeneOut$`CH-significantRobust`)]
 mainCHGo = rownames(mainGoOut)[which(mainGoOut$`CH-significantRobust`)]
+
+strictCHGenes = rownames(strictGeneOut)[which(strictGeneOut$`CH-significantRobust`)]
+strictCHGo = rownames(strictGoOut)[which(strictGoOut$`CH-significantRobust`)]
+
+overlapCHGenes = mainCHGenes[which(mainCHGenes %in% strictCHGenes)]
+overlapCHGo = mainCHGo[which(mainCHGo %in% strictCHGo)]
+
+
+geneCompare = list(mainIVGenes, strictIVGenes, overlapIVGenes, mainIVGo, strictIVGo, overlapIVGo, mainHIGenes, strictHIGenes, overlapHIGenes, mainHIGo, strictHIGo, overlapHIGo, mainHVGenes, strictHVGenes, overlapHVGenes, mainHVGo, strictHVGo, overlapHVGo, mainCHGenes, strictCHGenes, overlapCHGenes, mainCHGo, strictCHGo, overlapCHGo)
+names(geneCompare) = c("mainIVGenes", "strictIVGenes", "overlapIVGenes", "mainIVCategories", "strictIVCategories", "overlapIVCategories", "mainHIGenes", "strictHIGenes", "overlapHIGenes", "mainHICategories", "strictHICategories", "overlapHICategories", "mainHVGenes", "strictHVGenes", "overlapHVGenes", "mainHVCategories", "strictHVCategories", "overlapHVCategories", "mainCHGenes", "strictCHGenes", "overlapCHGenes", "mainCHCategories", "strictCHCategories", "overlapCHCategories")
+
+makeMainStrictVenn = function(analysisName, compareList = geneCompare){
+  relevantResults = grep(analysisName, names(compareList))
+  names(relevantResults) = names(compareList)[grep(analysisName, names(compareList))]
+  
+  mainAnalysisIndex = relevantResults[grep("main", names(relevantResults))]
+  strictAnalysisIndex = relevantResults[grep("strict", names(relevantResults))]
+  
+  venn_list <- list(
+    Main = compareList[[mainAnalysisIndex]],
+    Strict = compareList[[strictAnalysisIndex]]
+  )
+  titleName = paste(analysisName)
+  vennout = ggvenn(venn_list, set_name_size = 4, text_size = 4) +  labs(title = titleName)+
+    coord_cartesian(clip = "off") +
+    theme(
+      plot.title = element_text(size = 12, hjust = 0.5),
+      plot.margin = margin(t = 40, r = 10, b = 10, l = 10)
+    )
+  vennout
+}
+
+CHGeneVenn = makeMainStrictVenn("CHGenes")
+HVGeneVenn = makeMainStrictVenn("HIGenes")
+HIGeneVenn = makeMainStrictVenn("HVGenes")
+IVGeneVenn = makeMainStrictVenn("IVGenes")
+
+GeneVenn = grid.arrange(CHGeneVenn, HVGeneVenn, HIGeneVenn, IVGeneVenn)
+
+CHCategoriesVenn = makeMainStrictVenn("CHCategories")
+HVCategoriesVenn = makeMainStrictVenn("HICategories")
+HICategoriesVenn = makeMainStrictVenn("HVCategories")
+IVCategoriesVenn = makeMainStrictVenn("IVCategories")
+
+CategoriesVenn = grid.arrange(CHCategoriesVenn, HVCategoriesVenn, HICategoriesVenn, IVCategoriesVenn)
+
+mainStictVennFilename = "Output/ComplexDietCentralAnalysisSimplify2/Supplmentary Figure 4 -- Overlap with Strict Analysis.png"
+png(mainStictVennFilename, height = 6, width = 12, units = "in", res = 216)
+grid.arrange(GeneVenn, CategoriesVenn, ncol = 2)
+dev.off()
+
+colnames(strictGeneOut) = paste0(colnames(strictGeneOut), "-S")
+combinedGeneOut = cbind (mainGeneOut, strictGeneOut)
+colnames(strictGoOut) = paste0(colnames(strictGoOut), "-S")
+combinedGoOut = cbind (mainGoOut, strictGoOut)
+colnames(combinedGeneOut)
+plot(combinedGeneOut$`CH-Rho`, combinedGeneOut$`CH-Rho-S`)
+plot(combinedGeneOut$`HI-Rho`, combinedGeneOut$`HI-Rho-S`)
+plot(combinedGeneOut$`HV-Rho`, combinedGeneOut$`HV-Rho-S`)
+plot(combinedGeneOut$`IV-Rho`, combinedGeneOut$`IV-Rho-S`)
+
+
+makeCorPlot = function(x, y, prefix, titleVal){
+
+plot(x, y,
+     xlab = paste0(prefix," Stat Main"),
+     ylab = paste0(prefix," Stat Strict"),
+     main = titleVal
+     )
+
+# Calculate R-squared
+model <- lm(y ~ x)
+rSquared <- summary(model)$r.squared
+
+# Add R-squared label
+legend("topleft",
+       legend = bquote(R^2 == .(round(rSquared, 3))),
+       bty = "n")
+}
+par(mfrow = c(1,1))
+makeCorPlot(combinedGeneOut$`CH-Rho`, combinedGeneOut$`CH-Rho-S`, "C-H", "Combined Carnivore-Herbivore Genes")
+makeCorPlot(combinedGeneOut$`HI-Rho`, combinedGeneOut$`HI-Rho-S`, "H-I", "Invertivore-Herbivore Genes")
+makeCorPlot(combinedGeneOut$`HV-Rho`, combinedGeneOut$`HV-Rho-S`, "H-V", "Vertivore-Herbivore Genes")
+makeCorPlot(combinedGeneOut$`IV-Rho`, combinedGeneOut$`IV-Rho-S`, "I-V", "Invertivore-Vertivore Genes")
+
+makeCorPlot(combinedGoOut$`CH-stat`, combinedGoOut$`CH-stat-S`, "C-H", "Combined Carnivore-Herbivore Categories")
+makeCorPlot(combinedGoOut$`HI-stat`, combinedGoOut$`HI-stat-S`, "H-I", "Invertivore-Herbivore Categories")
+makeCorPlot(combinedGoOut$`HV-stat`, combinedGoOut$`HV-stat-S`, "H-V", "Vertivore-Herbivore Categories")
+makeCorPlot(combinedGoOut$`IV-stat`, combinedGoOut$`IV-stat-S`, "I-V", "Invertivore-Vertivore Categories")
+
+mainStictCorFilename = "Output/ComplexDietCentralAnalysisSimplify2/Supplmentary Figure 4 -- Correlation with Strict Analysis.png"
+png(mainStictCorFilename, height = 6, width = 12, units = "in", res = 216)
+par(mfrow = c(2,4))
+makeCorPlot(combinedGeneOut$`CH-Rho`, combinedGeneOut$`CH-Rho-S`, "C-H", "Combined Carnivore-Herbivore Genes")
+makeCorPlot(combinedGeneOut$`HI-Rho`, combinedGeneOut$`HI-Rho-S`, "H-I", "Invertivore-Herbivore Genes")
+
+makeCorPlot(combinedGoOut$`CH-stat`, combinedGoOut$`CH-stat-S`, "C-H", "Combined Carnivore-Herbivore Categories")
+makeCorPlot(combinedGoOut$`HI-stat`, combinedGoOut$`HI-stat-S`, "H-I", "Invertivore-Herbivore Categories")
+
+makeCorPlot(combinedGeneOut$`HV-Rho`, combinedGeneOut$`HV-Rho-S`, "H-V", "Vertivore-Herbivore Genes")
+makeCorPlot(combinedGeneOut$`IV-Rho`, combinedGeneOut$`IV-Rho-S`, "I-V", "Invertivore-Vertivore Genes")
+
+makeCorPlot(combinedGoOut$`HV-stat`, combinedGoOut$`HV-stat-S`, "H-V", "Vertivore-Herbivore Categories")
+makeCorPlot(combinedGoOut$`IV-stat`, combinedGoOut$`IV-stat-S`, "I-V", "Invertivore-Vertivore Categories")
+
+dev.off()
+
+
 
 overlapHivGenes = mainHIGenes[which(mainHIGenes %in% mainHVGenes)]
 length(overlapHivGenes)/length(mainHVGenes)
@@ -769,6 +905,9 @@ length(overlapHivGenes)/length(mainHIGenes)
 overlapHivGo = mainHIGo[which(mainHIGo %in% mainHVGo)]
 length(overlapHivGo)/length(mainHVGo)
 length(overlapHivGo)/length(mainHIGo)
+
+
+
 
 
 maiHVSigOnly = mainGoOut[which(mainGoOut$`HV-significantRobust`),]

@@ -427,7 +427,7 @@ if(!imageAllTips){
 
 #output the tree
 treeOutputLocation = paste0(outputFolderName, filePrefix, "RadialDisplayTree.pdf")
-pdf(treeOutputLocation, width = 18, height = 20)
+pdf(treeOutputLocation, width = 9, height = 10)
 #ggTreeClades + rphylopic::geom_phylopic(data = ggTreeClades$data, aes(uuid = phylopic, x = x_new, y= y_new),size = 0.02)
 ggTreeClades + ggimage:: geom_phylopic(data = ggTreeClades$data, aes(image = phylopic, x = x_new, y= y_new),size = 0.02)
 ggTreeClades + geom_tiplab()+ theme(legend.position = "none")
@@ -437,7 +437,7 @@ treeOutputLocation = paste0(outputFolderName, filePrefix, "RadialDisplayTree.png
 png(treeOutputLocation, 1400, 1400)
 #ggTreeClades + rphylopic::geom_phylopic(data = ggTreeClades$data, aes(uuid = phylopic, x = x_new, y= y_new),size = 0.02)
 ggTreeClades + ggimage:: geom_phylopic(data = ggTreeClades$data, aes(image = phylopic, x = x_new, y= y_new),size = 0.02)
-ggTreeClades + geom_tiplab()
+#ggTreeClades + geom_tiplab() + theme(legend.position = "none")
 dev.off()
 
 

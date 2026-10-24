@@ -63,6 +63,13 @@ args = c("r=ComplexDietCentralAnalysisSimplifyEqualDrop", "g=gene", "s=T", "l=F"
 args = c("r=ComplexDietCentralAnalysisSimplifyEqualDrop", "g=KeggReactome", "s=T", "l=F")
 
 
+args = c("r=ComplexDietCentralAnalysisSimplify2", "g=MGI_Mammalian_Phenotype_Level_4", "c=0.05", "s=T", 'p=c("Invertivore-Vertivore","Herbivore-Vertivore","Invertivore-Omnivore","Herbivore-Omnivore","Herbivore-Invertivore", "Carnivore-Herbivore")')
+args = c("r=ComplexDietCentralAnalysisSimplify2", "g=GO_Biological_Process_2023", "c=0.05", "s=T", 'p=c("Invertivore-Vertivore","Herbivore-Vertivore","Invertivore-Omnivore","Herbivore-Omnivore","Herbivore-Invertivore", "Carnivore-Herbivore")')
+args = c("r=ComplexDietCentralAnalysisSimplify2", "g=DisGeNET", "c=0.05", "s=T", 'p=c("Invertivore-Vertivore","Herbivore-Vertivore","Invertivore-Omnivore","Herbivore-Omnivore","Herbivore-Invertivore", "Carnivore-Herbivore")')
+args = c("r=ComplexDietCentralAnalysisSimplify2", "g=EnrichmentHsSymbolsFile2", "c=0.05", "s=T", 'p=c("Invertivore-Vertivore","Herbivore-Vertivore","Invertivore-Omnivore","Herbivore-Omnivore","Herbivore-Invertivore", "Carnivore-Herbivore")')
+
+args = c("r=ComplexDietCentralAnalysisSimplify2", "g=tissue_specific", "c=0.05", "s=T", 'p=c("Invertivore-Vertivore","Herbivore-Vertivore","Invertivore-Omnivore","Herbivore-Omnivore","Herbivore-Invertivore", "Carnivore-Herbivore")')
+
 
 
 # -- Standard Startup code -- 
