@@ -48,6 +48,14 @@ palette(c("#1B9E77", "#000000", "#7570B3", "#E7298A"))
 packageVersion("RERconverge")
 
 
+
+#---------------------------------------------------------------------
+# --- Misc paper checks--- 
+# --------------------------------------------------------------------
+
+mergedData = read.csv("Data/mergedData.csv")
+
+mergedData$CommonName[which(mergedData$SimplifiedDietConvertEqualDrop =="zMixedPredator")]
 #---------------------------------------------------------------------
 # --- Make new alt reconstrcution --- 
 # --------------------------------------------------------------------
@@ -71,6 +79,14 @@ mismatchBranches = which(!equalCategoricalTree$edge.length == mainCategoricalTre
 length(mismatchBranches)
 
 edgelabels(edge = mismatchBranches, cex=0.4, col= "purple", frame="none")
+
+clades$phylopic
+
+
+mainResults = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2combinedGeneResultsWithAlternates.rds")
+
+length(which(mainResults$`IV-Rho`[which(mainResults$`IV-significantRobust`)] <0 ))
+
 
 #---------------------------------------------------------------------
 # --- New PhenotypeBInary Analyses --- 

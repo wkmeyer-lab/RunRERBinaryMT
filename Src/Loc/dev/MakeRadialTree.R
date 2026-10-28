@@ -325,6 +325,7 @@ if(imageAllTips){
     collapsedClades$Noctilio = MRCA(commonCategoricalTree, c(151))
     collapsedClades$`Vampire Bat` = MRCA(commonCategoricalTree, c(147))
     collapsedClades$Phyllostomidae = MRCA(commonCategoricalTree, c(141,142,143,144))
+    #collapsedClades$Noctilionoidea = MRCA(commonCategoricalTree, c(141,142,143,144))
     collapsedClades$Horse = MRCA(commonCategoricalTree, c(102,100,101))
     collapsedClades$Pig = MRCA(commonCategoricalTree, c(97,98))
     collapsedClades$`bos bison` = MRCA(commonCategoricalTree, c(89,90,91))
@@ -344,12 +345,15 @@ if(imageAllTips){
   
   
   cladeUuids = NA
+  cladeByUuids = NA
   for(i in 1:length(names(collapsedClades))){
     message(i)
     autoName = autocomplete_name(names(collapsedClades)[i])[1,2]
     message(autoName)
     cladeUuids[i] = get_uuid(autoName)
+    cladeByUuids[i] = get_uuid(autoName, filter = "by")
   }
+  cladeUuids[which(!is.na(cladeByUuids))] = cladeByUuids
   
   
   clades = data.frame(
@@ -359,6 +363,8 @@ if(imageAllTips){
     phylopic = cladeUuids
     
   )
+  clades$cladelabel[which(!cladeUuids == cladeByUuids)]
+  clades$cladelabel[which(is.na(cladeByUuids))]
   
   clades$x_new = NA
   clades$y_new = NA
