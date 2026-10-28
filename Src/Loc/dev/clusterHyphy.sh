@@ -111,7 +111,7 @@ OUTPUTFILENAME="${FILEPREFIX}-Hyphy-${TOOLNAME}-${GENENAME}-Foreground_${FOREGRO
 
 if [[ "$TOOLNAME" == "relax" ]] ; then
   BINARIZEVALUE=$(echo "$BINARIZEVALUE" | tr '[:upper:]' '[:lower:]')
-  
+
   # Injecting the $RATES parameter into the hyphy call
   if [[ "$BINARIZEVALUE" == "t" || "$BINARIZEVALUE" == "true" ]] ; then
     hyphy $TOOLNAME --alignment "$HYPHYINPUTFILENAME" --test $FOREGROUNDPATHVALUE --reference Background --output $OUTPUTFILENAME --starting-points 10 --grid-size 250 --rates $RATES
