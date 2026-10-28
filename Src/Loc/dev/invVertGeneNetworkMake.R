@@ -4,14 +4,13 @@
 ####################################################################################################################
 
 
-
 # -------------------------------------------------------------------------
 # 1. LOAD REQUIRED PACKAGES
 # -------------------------------------------------------------------------
 library(tidyverse)
 library(igraph)
 library(ggraph)
-library(msigdbr)
+library(ggforce)
 
 # -------------------------------------------------------------------------
 # 2. CONFIGURATION & LOADING
@@ -52,21 +51,63 @@ node_data <- raw_data %>%
   select(pathway, diet_direction, category, everything())
 
 # -------------------------------------------------------------------------
-# 4. FETCH CANONICAL GENES FROM MSigDB
+# 4. GMT FILE & REFERENCE GENE IMPORT
 # -------------------------------------------------------------------------
-human_msigdb <- msigdbr(species = "Homo sapiens")
+gmt_file <- "KeggReactome.gmt"
 
-filtered_ref <- human_msigdb %>%
-  filter(gs_name %in% node_data$pathway) %>%
-  select(pathway = gs_name, gene = gene_symbol)
+# Helper function to read GMT files into a tidy dataframe
+read_gmt_tidy <- function(file_path) {
+  lines <- readLines(file_path)
+  map_dfr(lines, function(line) {
+    tokens <- unlist(strsplit(line, "\t"))
+    pathway_name <- tokens[1]
+    genes <- tokens[3:length(tokens)]
+    genes <- genes[genes != "" & !is.na(genes)]
+    tibble(pathway = pathway_name, gene = genes)
+  })
+}
 
+# 1. Parse GMT file
+ref_gmt <- read_gmt_tidy(gmt_file)
+
+filtered_ref <- ref_gmt %>%
+  filter(pathway %in% node_data$pathway) %>%
+  select(pathway, gene)
+
+# 2. Calculate gene set sizes
 node_sizes <- filtered_ref %>%
   group_by(pathway) %>%
   summarise(total_reference_genes = n(), .groups = "drop")
 
+# 3. Store target pathways before merging
+expected_pathways <- node_data$pathway
+
 node_data <- node_data %>%
-  left_join(node_sizes, by = "pathway") %>%
-  drop_na(total_reference_genes)
+  left_join(node_sizes, by = "pathway")
+
+# 4. TryCatch validation block: Exit immediately if any target pathways are missing
+tryCatch({
+  missing_pathways <- setdiff(expected_pathways, node_data$pathway[!is.na(node_data$total_reference_genes)])
+  
+  if (length(missing_pathways) > 0) {
+    stop(
+      paste0(
+        "Mismatch detected! The following ", length(missing_pathways),
+        " pathway(s) marked for ", target_column, " were not found in the .gmt file or yielded 0 genes:\n",
+        paste(" -", missing_pathways, collapse = "\n")
+      )
+    )
+  }
+}, error = function(e) {
+  cat("\n=========================================================\n")
+  cat("ERROR IN SECTION 4: PATHWAY VALIDATION FAILED\n")
+  cat("=========================================================\n")
+  cat(e$message, "\n\n")
+  stop("Execution halted due to missing pathways in the GMT file.", call. = FALSE)
+})
+
+# Proceed with removing NAs after successful validation
+node_data <- node_data %>% drop_na(total_reference_genes)
 
 # -------------------------------------------------------------------------
 # 5. CALCULATE OVERLAP (EDGES) BETWEEN PATHWAYS
@@ -94,7 +135,7 @@ edge_data_filtered <- edge_data %>%
   filter(similarity > 0.15)
 
 # -------------------------------------------------------------------------
-# 6. BUILD AND PLOT THE NETWORK GRAPH
+# 6. BUILD GRAPH & LAYOUT
 # -------------------------------------------------------------------------
 # 1. Build the initial network object
 initial_net <- graph_from_data_frame(d = edge_data_filtered, 
@@ -136,22 +177,102 @@ net <- graph_from_data_frame(d = filtered_edges,
                              vertices = filtered_nodes,
                              directed = FALSE)
 
-# >>> CRITICAL FIX: PRE-CALCULATE THE LAYOUT <<<
-# Set a seed so you get the exact same shape if you run the script again tomorrow
-set.seed(42) 
-
 # Calculate the 'fr' layout once and save the coordinates
+set.seed(42) 
 fixed_layout <- create_layout(net, layout = "fr")
 
+# -------------------------------------------------------------------------
+# 7. SIZING & OVERLAP RESOLVER
+# -------------------------------------------------------------------------
+min_point_size <- 20
+max_point_size <- 40
+
+x_span <- max(fixed_layout$x) - min(fixed_layout$x)
+y_span <- max(fixed_layout$y) - min(fixed_layout$y)
+coord_span <- max(x_span, y_span)
+
+min_gene <- min(fixed_layout$total_reference_genes, na.rm = TRUE)
+max_gene <- max(fixed_layout$total_reference_genes, na.rm = TRUE)
+
+fixed_layout <- fixed_layout %>%
+  mutate(
+    gene_norm = if (max_gene == min_gene) 1 else (sqrt(total_reference_genes) - sqrt(min_gene)) / (sqrt(max_gene) - sqrt(min_gene)),
+    size_mm = min_point_size + gene_norm * (max_point_size - min_point_size),
+    radius = (size_mm / 2) * (coord_span / 600)
+  )
+
+# Nudge overlapping nodes apart while keeping layout topology intact
+min_gap <- coord_span * 0.01  # Spacing buffer between node borders
+
+for (iter in 1:100) {
+  moved <- FALSE
+  n_nodes <- nrow(fixed_layout)
+  for (i in 1:(n_nodes - 1)) {
+    for (j in (i + 1):n_nodes) {
+      dx <- fixed_layout$x[j] - fixed_layout$x[i]
+      dy <- fixed_layout$y[j] - fixed_layout$y[i]
+      dist <- sqrt(dx^2 + dy^2)
+      min_dist <- fixed_layout$radius[i] + fixed_layout$radius[j] + min_gap
+      
+      if (dist < min_dist) {
+        if (dist == 0) {
+          dx <- runif(1, -0.01, 0.01)
+          dy <- runif(1, -0.01, 0.01)
+          dist <- sqrt(dx^2 + dy^2)
+        }
+        overlap <- min_dist - dist
+        shift_x <- (dx / dist) * (overlap / 2)
+        shift_y <- (dy / dist) * (overlap / 2)
+        
+        fixed_layout$x[i] <- fixed_layout$x[i] - shift_x
+        fixed_layout$y[i] <- fixed_layout$y[i] - shift_y
+        fixed_layout$x[j] <- fixed_layout$x[j] + shift_x
+        fixed_layout$y[j] <- fixed_layout$y[j] + shift_y
+        moved <- TRUE
+      }
+    }
+  }
+  if (!moved) break
+}
+
+# Define palette & shared theme settings
+diet_colors <- c(
+  "Invertivore" = "#7570B3", 
+  "Vertivore"   = "#E72A8B",
+  "Neutral"     = "#E6AB02",
+  "Unknown"     = "#999999"
+)
+
+base_theme <- theme_void() + 
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 16),
+    legend.title = element_text(face = "bold", size = 10)
+  )
+
+# -------------------------------------------------------------------------
+# 8. PLOTS
+# -------------------------------------------------------------------------
+
 # --- FIRST PLOT (With labels) ---
-# Notice we pass `fixed_layout` instead of `net`
 p <- ggraph(fixed_layout) + 
-  geom_edge_link(aes(alpha = 1, width = similarity), 
-                 color = "grey40", show.legend = TRUE) + 
-  scale_edge_width(range = c(0.5, 2.5)) +
+  coord_fixed() + 
   
-  geom_node_point(aes(size = total_reference_genes, 
-                      color = diet_direction)) + 
+  geom_edge_link(aes(width = similarity), color = "grey20", show.legend = TRUE) + 
+  scale_edge_width(range = c(2.0, 4.0)) +
+  
+  # Invisible points layer to maintain size legend scale
+  geom_node_point(aes(size = total_reference_genes), alpha = 0) +
+  
+  # 1. Single-segment solid circle filled by diet direction
+  geom_circle(data = fixed_layout, 
+              aes(x0 = x, y0 = y, r = radius, fill = diet_direction), 
+              color = NA) +
+  
+  # 2. Outer single black stroke overlay (no fill)
+  geom_circle(data = fixed_layout,
+              aes(x0 = x, y0 = y, r = radius),
+              color = "black", fill = NA, linewidth = 0.8) +
   
   geom_node_text(aes(label = clean_name), 
                  repel = TRUE, 
@@ -159,81 +280,61 @@ p <- ggraph(fixed_layout) +
                  fontface = "bold",
                  max.overlaps = 100) +
   
-  scale_color_manual(
-    values = c(
-      "Invertivore" = "#7570B3", 
-      "Vertivore"   = "#E72A8B",
-      "Neutral"     = "#E6AB02",
-      "Unknown"     = "#999999" 
-    ),
-    name = "Diet"
-  ) +
+  scale_fill_manual(values = diet_colors, name = "Diet") +
+  scale_size_continuous(range = c(5, 16), name = "Total Genes in Reference") +
   
-  scale_size_continuous(range = c(5, 16)) + 
-  guides(edge_alpha = "none") +
-  theme_void() +
+  base_theme +
   labs(
+    fill = "Diet",
     size = "Total Genes in Reference",
     edge_width = "Gene Overlap"
   ) +
-  theme(
-    legend.position = "right",
-    plot.title = element_text(face = "bold", size = 16),
-    legend.title = element_text(face = "bold", size = 10)
-  ) +
   guides(
-    edge_alpha = "none",                  
-    color = guide_legend(order = 1),      
+    fill = guide_legend(order = 1),      
     size = guide_legend(order = 2),       
     edge_width = guide_legend(order = 3)  
   )
 
-ggsave("Figure2AllLegends.jpg", plot = p, width = 20, height = 20, dpi = 600)
+ggsave("Figure2AllLegends.jpg", plot = p, width = 20, height = 20, dpi = 300)
 
 # --- SECOND PLOT (No labels) ---
-# Pass the exact same `fixed_layout` here
 p2 <- ggraph(fixed_layout) + 
-  geom_edge_link(aes(alpha = 1, width = similarity), 
-                 color = "grey40", show.legend = TRUE) + 
-  scale_edge_width(range = c(0.5, 2.5)) +
+  coord_fixed() + 
   
-  geom_node_point(aes(size = total_reference_genes, 
-                      color = diet_direction)) + 
+  geom_edge_link(aes(width = similarity), color = "grey20", show.legend = TRUE) + 
+  scale_edge_width(range = c(2.0, 4.0)) +
   
-  # label="" keeps the text layer empty but preserves any spatial mapping if needed
+  geom_node_point(aes(size = total_reference_genes), alpha = 0) +
+  
+  # 1. Single-segment solid circle filled by diet direction
+  geom_circle(data = fixed_layout, 
+              aes(x0 = x, y0 = y, r = radius, fill = diet_direction), 
+              color = NA) +
+  
+  # 2. Outer single black stroke overlay (no fill)
+  geom_circle(data = fixed_layout,
+              aes(x0 = x, y0 = y, r = radius),
+              color = "black", fill = NA, linewidth = 0.8) +
+  
   geom_node_text(aes(label = ""), 
                  repel = TRUE, 
                  size = 2.5, 
                  fontface = "bold",
                  max.overlaps = 100) +
   
-  scale_color_manual(
-    values = c(
-      "Invertivore" = "#7570B3", 
-      "Vertivore"   = "#E72A8B",
-      "Neutral"     = "#E6AB02",
-      "Unknown"     = "#999999"
-    ),
-    name = "Diet"
-  ) +
+  scale_fill_manual(values = diet_colors, name = "Diet") +
+  scale_size_continuous(range = c(5, 16), name = "Total Genes in Reference") +
   
-  scale_size_continuous(range = c(5, 16)) + 
-  guides(edge_alpha = "none") +
-  theme_void() +
+  base_theme +
   labs(
+    fill = "Diet",
     size = "Total Genes in Reference",
     edge_width = "Gene Overlap"
   ) +
-  theme(
-    legend.position = "right",
-    plot.title = element_text(face = "bold", size = 16),
-    legend.title = element_text(face = "bold", size = 10)
-  ) +
   guides(
-    edge_alpha = "none",                  
-    color = guide_legend(order = 1),      
+    fill = guide_legend(order = 1),      
     size = guide_legend(order = 2),       
     edge_width = guide_legend(order = 3)  
   )
 
-ggsave("Figure2NoLabs.jpg", plot = p2, width = 20, height = 20, dpi = 600)
+ggsave("Figure2NoLabs.jpg", plot = p2, width = 20, height = 20, dpi = 300)

@@ -3,23 +3,23 @@
 ####    Select sections have been revised utilizing Google Gemini 3.6, manually reviewed by Alexander Seaver    ####
 ####################################################################################################################
 
-
 # =========================================================================
 # 1. LOAD REQUIRED PACKAGES
 # =========================================================================
 library(tidyverse)
 library(igraph)
 library(ggraph)
-library(msigdbr)
 library(stringr)
-library(ggforce)  # For pie chart geometry on coordinates
-library(scales)   # For color_ramp gradient generation
+library(ggforce)  # For pie chart geometry and coordinate circles
 
 # =========================================================================
 # 2. CONFIGURATION & LOADING
 # =========================================================================
-raw_data <- read_csv("Simplify2GeneSets.csv", 
-                     col_types = cols(.default = "c"))
+raw_data <- read_csv("Simplify2GeneSets.csv")
+target_column <- "Supp_Fig_2"
+
+p_thresh <- 0.05         # Adjusted p-value threshold
+num_sig_thresh <- 50     # Minimum number of significant alternates
 
 # =========================================================================
 # 3. FILTER AND PROCESS DATA DYNAMICALLY
@@ -27,78 +27,138 @@ raw_data <- read_csv("Simplify2GeneSets.csv",
 node_data <- raw_data %>%
   rename(pathway = 1) %>% 
   
-  # Safely forces text stats to numeric, retaining all tiny decimals, then replaces NA with 0
+  # Filter for pathways included in Supp_Fig_2 (binary tracker == 1)
+  filter(.data[[target_column]] == 1) %>%
+  
+  # Ensure label column is character format and handle missing values
+  mutate(Supp_Fig_2_Label = replace_na(as.character(Supp_Fig_2_Label), "")) %>%
+  
+  # Ensure numerical statistical columns and counts are parsed correctly
+  mutate(across(
+    any_of(c("CH_stat", "HI_stat", "HV_stat",
+             "CH_padj", "HI_padj", "HV_padj",
+             "CH_PadjNumSignificant", "HI_PadjNumSignificant", "HV_PadjNumSignificant")),
+    as.numeric
+  )) %>%
+  
+  # CATEGORY ASSIGNMENT (HERB DIRECTION: CH >= 0, HI <= 0, HV <= 0)
   mutate(
-    across(c(CH_stat, HI_stat, HV_stat, 
-             CH_PadjNumSignificant, HI_PadjNumSignificant, HV_PadjNumSignificant), 
-           ~ suppressWarnings(as.numeric(.))),
-    across(c(CH_stat, HI_stat, HV_stat, 
-             CH_PadjNumSignificant, HI_PadjNumSignificant, HV_PadjNumSignificant), 
-           ~ replace_na(., 0))
-  ) %>%
-  
-  # CONDITIONAL DIRECTION CHECK
-  filter(
-    if_else(CH_PadjNumSignificant > 50, CH_stat >= 0, TRUE),
-    if_else(HI_PadjNumSignificant > 50, HI_stat <= 0, TRUE),
-    if_else(HV_PadjNumSignificant > 50, HV_stat <= 0, TRUE)
-  ) %>%
-  
-  # OVERALL SIGNIFICANCE FILTER
-  filter(
-    CH_PadjNumSignificant > 50 | HI_PadjNumSignificant > 50 | HV_PadjNumSignificant > 50
-  ) %>%
-  
-  # EXPLICIT COLOR ASSIGNMENT FOR EVERY INTERSECTION
-  rowwise() %>%
-  mutate(
-    is_CH = CH_PadjNumSignificant > 50,
-    is_HI = HI_PadjNumSignificant > 50,
-    is_HV = HV_PadjNumSignificant > 50,
+    is_sig_CH = (!"CH_padj" %in% names(raw_data) | is.na(CH_padj) | CH_padj <= p_thresh) &
+      (!is.na(CH_PadjNumSignificant) & CH_PadjNumSignificant >= num_sig_thresh) &
+      (is.na(CH_stat) | CH_stat >= 0),
     
-    master_hex_color = case_when(
-      is_CH & is_HI & is_HV ~ "#E7298A", # All Three: Magenta
-      is_CH & is_HI         ~ "#984EA3", # CH & HI overlap: Purple
-      is_CH & is_HV         ~ "#E6AB02", # CH & HV overlap: Gold
-      is_HI & is_HV         ~ "#00CED1", # HI & HV overlap: Teal
-      is_CH                 ~ "#EE7733", # CH only: Orange
-      is_HI                 ~ "#377EB8", # HI only: Blue
-      is_HV                 ~ "#4DAF4A", # HV only: Green
-      TRUE                  ~ "#808080"
+    is_sig_HI = (!"HI_padj" %in% names(raw_data) | is.na(HI_padj) | HI_padj <= p_thresh) &
+      (!is.na(HI_PadjNumSignificant) & HI_PadjNumSignificant >= num_sig_thresh) &
+      (is.na(HI_stat) | HI_stat <= 0),
+    
+    is_sig_HV = (!"HV_padj" %in% names(raw_data) | is.na(HV_padj) | HV_padj <= p_thresh) &
+      (!is.na(HV_PadjNumSignificant) & HV_PadjNumSignificant >= num_sig_thresh) &
+      (is.na(HV_stat) | HV_stat <= 0),
+    
+    # Combined overlap category for single nodes & legend mapping
+    overlap_category = case_when(
+      is_sig_HI & is_sig_HV & is_sig_CH ~ "HI + HV + CH",
+      is_sig_HI & is_sig_HV             ~ "HI + HV",
+      is_sig_HI & is_sig_CH             ~ "HI + CH",
+      is_sig_HV & is_sig_CH             ~ "HV + CH",
+      is_sig_HI                         ~ "HI",
+      is_sig_HV                         ~ "HV",
+      is_sig_CH                         ~ "CH",
+      TRUE                              ~ "None"
     ),
     
-    # ABSOLUTE SHADING (Gradient logic based on the highest significance value)
-    max_sig = pmax(CH_PadjNumSignificant, HI_PadjNumSignificant, HV_PadjNumSignificant),
-    master_alpha = 0.35 + 0.65 * (pmin(max_sig, 100) / 100)
-  ) %>%
-  ungroup()
+    # Outer stroke comparison assignment (Dominant comparison ring)
+    dominant_comparison = case_when(
+      !is_sig_HI & !is_sig_HV & !is_sig_CH ~ "None",
+      
+      # If padj values are available, pick lowest padj among active significant comparisons
+      "CH_padj" %in% names(raw_data) & (is_sig_CH | is_sig_HI | is_sig_HV) ~ case_when(
+        is_sig_CH & CH_padj == pmin(if_else(is_sig_CH, CH_padj, Inf),
+                                    if_else(is_sig_HI, HI_padj, Inf),
+                                    if_else(is_sig_HV, HV_padj, Inf), na.rm = TRUE) ~ "CH",
+        is_sig_HI & HI_padj == pmin(if_else(is_sig_CH, CH_padj, Inf),
+                                    if_else(is_sig_HI, HI_padj, Inf),
+                                    if_else(is_sig_HV, HV_padj, Inf), na.rm = TRUE) ~ "HI",
+        is_sig_HV & HV_padj == pmin(if_else(is_sig_CH, CH_padj, Inf),
+                                    if_else(is_sig_HI, HI_padj, Inf),
+                                    if_else(is_sig_HV, HV_padj, Inf), na.rm = TRUE) ~ "HV",
+        TRUE ~ case_when(is_sig_CH ~ "CH", is_sig_HI ~ "HI", is_sig_HV ~ "HV", TRUE ~ "None")
+      ),
+      
+      # Fallback: Pick highest PadjNumSignificant among active significant comparisons
+      TRUE ~ case_when(
+        is_sig_CH & CH_PadjNumSignificant == pmax(if_else(is_sig_CH, CH_PadjNumSignificant, -Inf),
+                                                  if_else(is_sig_HI, HI_PadjNumSignificant, -Inf),
+                                                  if_else(is_sig_HV, HV_PadjNumSignificant, -Inf), na.rm = TRUE) ~ "CH",
+        is_sig_HI & HI_PadjNumSignificant == pmax(if_else(is_sig_CH, CH_PadjNumSignificant, -Inf),
+                                                  if_else(is_sig_HI, HI_PadjNumSignificant, -Inf),
+                                                  if_else(is_sig_HV, HV_PadjNumSignificant, -Inf), na.rm = TRUE) ~ "HI",
+        is_sig_HV & HV_PadjNumSignificant == pmax(if_else(is_sig_CH, CH_PadjNumSignificant, -Inf),
+                                                  if_else(is_sig_HI, HI_PadjNumSignificant, -Inf),
+                                                  if_else(is_sig_HV, HV_PadjNumSignificant, -Inf), na.rm = TRUE) ~ "HV",
+        TRUE ~ "None"
+      )
+    )
+  )
 
 # =========================================================================
-# 4. FETCH CANONICAL GENES FROM MSigDB
+# 4. GMT FILE & OVERLAP (EDGES)
 # =========================================================================
-human_msigdb <- msigdbr(species = "Homo sapiens")
+gmt_file <- "KeggReactome.gmt"
 
-filtered_ref <- human_msigdb %>%
-  filter(gs_name %in% node_data$pathway) %>%
-  select(pathway = gs_name, gene = gene_symbol)
+read_gmt_tidy <- function(file_path) {
+  lines <- readLines(file_path)
+  map_dfr(lines, function(line) {
+    tokens <- unlist(strsplit(line, "\t"))
+    pathway_name <- tokens[1]
+    genes <- tokens[3:length(tokens)]
+    genes <- genes[genes != "" & !is.na(genes)]
+    tibble(pathway = pathway_name, gene = genes)
+  })
+}
+
+ref_gmt <- read_gmt_tidy(gmt_file)
+
+filtered_ref <- ref_gmt %>%
+  filter(pathway %in% node_data$pathway) %>%
+  select(pathway, gene)
 
 node_sizes <- filtered_ref %>%
   group_by(pathway) %>%
   summarise(total_reference_genes = n(), .groups = "drop")
 
-node_data <- node_data %>%
-  left_join(node_sizes, by = "pathway") %>%
-  drop_na(total_reference_genes)
+expected_pathways <- node_data$pathway
 
-# =========================================================================
-# 5. CALCULATE OVERLAP (EDGES) BETWEEN PATHWAYS
-# =========================================================================
+node_data <- node_data %>%
+  left_join(node_sizes, by = "pathway")
+
+tryCatch({
+  missing_pathways <- setdiff(expected_pathways, node_data$pathway[!is.na(node_data$total_reference_genes)])
+  
+  if (length(missing_pathways) > 0) {
+    stop(
+      paste0(
+        "Mismatch detected! The following ", length(missing_pathways),
+        " pathway(s) marked in Supp_Fig_2 were not found in the .gmt file or yielded 0 genes:\n",
+        paste(" -", missing_pathways, collapse = "\n")
+      )
+    )
+  }
+}, error = function(e) {
+  cat("\n=========================================================\n")
+  cat("ERROR IN SECTION 4: PATHWAY VALIDATION FAILED\n")
+  cat("=========================================================\n")
+  cat(e$message, "\n\n")
+  stop("Execution halted due to missing pathways in the GMT file.", call. = FALSE)
+})
+
+node_data <- node_data %>% drop_na(total_reference_genes)
+
 pathway_gene_lists <- filtered_ref %>%
   group_by(pathway) %>%
   summarise(genes = list(gene), .groups = "drop")
 
 pairs <- combn(nrow(pathway_gene_lists), 2)
-# Jaccard index: Identifies overlaps > 15% to build network springs
 jaccard <- function(a, b) { length(intersect(a, b)) / length(union(a, b)) }
 
 edge_data <- tibble(
@@ -109,239 +169,173 @@ edge_data <- tibble(
 ) %>% 
   filter(similarity > 0.15)
 
-# -------------------------------------------------------------------------
-# 6. BUILD GRAPH, FILTER SIZE, AND FREEZE THE LAYOUT
-# -------------------------------------------------------------------------
+# =========================================================================
+# 5. BUILD GRAPH, LAYOUT & RESOLVE NODE OVERLAPS
+# =========================================================================
 initial_net <- graph_from_data_frame(d = edge_data, vertices = node_data, directed = FALSE)
 cluster_assignments <- components(initial_net)$membership
-
-min_cluster_size <- 1 
 
 filtered_nodes <- node_data %>%
   mutate(cluster_id = cluster_assignments[pathway]) %>%
   group_by(cluster_id) %>%
   mutate(cluster_size = n()) %>%
-  filter(cluster_size >= min_cluster_size, any(total_reference_genes > 0)) %>% 
-  
-  mutate(
-    clean_name = str_remove(pathway, "^[^_]+_"),
-    cluster_label = clean_name  # <-- UPDATED: Every node gets its own label now
-  ) %>% 
+  filter(cluster_size >= 1, any(total_reference_genes > 0)) %>% 
+  mutate(clean_name = str_remove(pathway, "^[^_]+_")) %>%
   ungroup()
 
 filtered_edges <- edge_data %>%
   filter(from %in% filtered_nodes$pathway & to %in% filtered_nodes$pathway)
 
-# Rebuild final network
 net <- graph_from_data_frame(d = filtered_edges, vertices = filtered_nodes, directed = FALSE)
-
-# Compute and save coordinates so every plot has the exact same architecture
 fixed_layout <- create_layout(net, layout = "fr")
 
-# =========================================================================
-# 7. PLOTTING BLOCKS 
-# =========================================================================
+x_pad <- (max(fixed_layout$x) - min(fixed_layout$x)) * 0.20
+y_pad <- (max(fixed_layout$y) - min(fixed_layout$y)) * 0.20
 
-base_theme <- theme_void() + 
-  theme(legend.position = "right",
-        plot.title = element_text(face = "bold", size = 16),
-        plot.subtitle = element_text(color = "grey30", size = 12),
-        legend.title = element_text(face = "bold", size = 10),
-        legend.text = element_text(size = 9))
+fixed_xlim <- c(min(fixed_layout$x) - x_pad, max(fixed_layout$x) + x_pad)
+fixed_ylim <- c(min(fixed_layout$y) - y_pad, max(fixed_layout$y) + y_pad)
 
-# Create dummy data for the Master Plot's color key legend, detailing all 7 categories
-dummy_legend_data <- data.frame(
-  group = c("CH Only", 
-            "HI Only", 
-            "HV Only", 
-            "CH & HI", 
-            "CH & HV", 
-            "HI & HV", 
-            "CH & HI & HV"),
-  x = 0, y = 0
-)
+min_point_size <- 20
+max_point_size <- 40
 
-# -------------------------------------------------------------------------
-# PLOT 1: MASTER NETWORK
-# -------------------------------------------------------------------------
-plot_master <- ggraph(fixed_layout) + 
-  geom_edge_link(aes(alpha = similarity, width = similarity), color = "grey40") + 
-  scale_edge_width(range = c(1.2, 3.0)) +
-  
-  # Layer 1: Filled node with mapped alpha shading (gradient)
-  geom_node_point(aes(size = total_reference_genes, color = master_hex_color, alpha = master_alpha)) + 
-  
-  # Layer 2: Opaque stroke inheriting the EXACT color of the blended node
-  geom_node_point(aes(size = total_reference_genes, color = master_hex_color), shape = 1, stroke = 1.2) +
-  
-  # Layer 3: Invisible points to force a base-color legend
-  geom_point(data = dummy_legend_data, aes(x = x, y = y, fill = group), alpha = 0, stroke = 0) +
-  
-  geom_node_text(aes(label = cluster_label), repel = TRUE, size = 3, fontface = "bold") +
-  
-  # Scales
-  scale_color_identity() + 
-  scale_alpha_identity() +
-  scale_size_continuous(range = c(5, 16)) +
-  scale_fill_manual(
-    name = "Base Color Key",
-    values = c("CH Only" = "#EE7733", 
-               "HI Only"   = "#377EB8", 
-               "HV Only"  = "#4DAF4A", 
-               "CH & HI" = "#984EA3",
-               "CH & HV"   = "#E6AB02",
-               "HI & HV"   = "#00CED1",
-               "CH & HI & HV" = "#E7298A"),
-    # Keep the legend items ordered as defined in the dummy data factor
-    breaks = c("CH Only", "HI Only", "HV Only", 
-               "CH & HI", "CH & HV", "HI & HV", "CH & HI & HV"),
-    guide = guide_legend(override.aes = list(alpha = 1, size = 6, shape = 21, color = "black"))
-  ) +
-  guides(edge_alpha = "none") +
-  base_theme + 
-  labs(size = "Category Size", edge_width = "Category Overlap")
+x_span <- max(fixed_layout$x) - min(fixed_layout$x)
+y_span <- max(fixed_layout$y) - min(fixed_layout$y)
+coord_span <- max(x_span, y_span)
 
-# Save output
-ggsave("Fig4C.jpg", plot_master, height = 20, width = 20, dpi = 300)
+min_gene <- min(fixed_layout$total_reference_genes, na.rm = TRUE)
+max_gene <- max(fixed_layout$total_reference_genes, na.rm = TRUE)
 
-# -------------------------------------------------------------------------
-# PLOT 2: CH COMPARISON 
-# -------------------------------------------------------------------------
-plot_CH <- ggraph(fixed_layout) + 
-  geom_edge_link(aes(alpha = similarity, width = similarity), color = "grey40") + 
-  scale_edge_width(range = c(1.2, 3.0)) +
-  
-  geom_node_point(aes(size = total_reference_genes, color = CH_PadjNumSignificant)) + 
-  
-  geom_node_text(aes(label = cluster_label, alpha = if_else(CH_PadjNumSignificant > 0, 1, 0)), repel = TRUE, size = 3, fontface = "bold") +
-  
-  scale_color_gradient(low = "grey85", high = "#EE7733", name = "CH Alternates", limits = c(0, 100), na.value = "#EE7733", guide = "colorbar") +
-  scale_alpha_identity() + scale_size_continuous(range = c(5, 16)) + guides(edge_alpha = "none") + base_theme + 
-  labs(title = "CH Network by Significance Frequency")
-
-# Save output
-ggsave("Fig4CCH.jpg", plot_CH, height = 20, width = 20, dpi = 300)
-
-# -------------------------------------------------------------------------
-# PLOT 3: HI COMPARISON
-# -------------------------------------------------------------------------
-plot_HI <- ggraph(fixed_layout) + 
-  geom_edge_link(aes(alpha = similarity, width = similarity), color = "grey40") + 
-  scale_edge_width(range = c(1.2, 3.0)) +
-  
-  geom_node_point(aes(size = total_reference_genes, color = HI_PadjNumSignificant)) + 
-  
-  geom_node_text(aes(label = cluster_label, alpha = if_else(HI_PadjNumSignificant > 0, 1, 0)), repel = TRUE, size = 3, fontface = "bold") +
-  scale_color_gradient(low = "grey85", high = "#377EB8", name = "HI Alternates", limits = c(0, 100), na.value = "#377EB8", guide = "colorbar") +
-  scale_alpha_identity() + scale_size_continuous(range = c(5, 16)) + guides(edge_alpha = "none") + base_theme + 
-  labs(title = "HI Network by Significance Frequency")
-
-# Save output
-ggsave("Fig4CHI.jpg", plot_HI, height = 20, width = 20, dpi = 300)
-
-# -------------------------------------------------------------------------
-# PLOT 4: HV COMPARISON
-# -------------------------------------------------------------------------
-plot_HV <- ggraph(fixed_layout) + 
-  geom_edge_link(aes(alpha = similarity, width = similarity), color = "grey40") + 
-  scale_edge_width(range = c(1.2, 3.0)) +
-  
-  geom_node_point(aes(size = total_reference_genes, color = HV_PadjNumSignificant)) + 
-  
-  geom_node_text(aes(label = cluster_label, alpha = if_else(HV_PadjNumSignificant > 0, 1, 0)), repel = TRUE, size = 3, fontface = "bold") +
-  scale_color_gradient(low = "grey85", high = "#4DAF4A", name = "HV Alternates", limits = c(0, 100), na.value = "#4DAF4A", guide = "colorbar") +
-  scale_alpha_identity() + scale_size_continuous(range = c(5, 16)) + guides(edge_alpha = "none") + base_theme + 
-  labs(title = "HV Network by Significance Frequency")
-
-# Save output
-ggsave("Fig4CHV.jpg", plot_HV, height = 20, width = 20, dpi = 300)
-
-# =========================================================================
-# 7. ALTERNATIVE PLOT: PIE CHART NODES WITH INDEPENDENT GRADIENTS
-# =========================================================================
-
-# Step 1: Extract coordinates from fixed_layout and scale a radius for the pies
-layout_df <- as_tibble(fixed_layout)
-x_range <- diff(range(layout_df$x, na.rm = TRUE))
-
-# Radius scaling for nodes
-layout_df <- layout_df %>%
+fixed_layout <- fixed_layout %>%
   mutate(
-    pie_radius = scales::rescale(sqrt(total_reference_genes), 
-                                 to = c(x_range * 0.005, x_range * 0.016))
+    gene_norm = if (max_gene == min_gene) 1 else (sqrt(total_reference_genes) - sqrt(min_gene)) / (sqrt(max_gene) - sqrt(min_gene)),
+    size_mm = min_point_size + gene_norm * (max_point_size - min_point_size),
+    radius = (size_mm / 2) * (coord_span / 600)
   )
 
-# Step 2: Wrangle data into long format to calculate pie slices and colors
-pie_data <- layout_df %>%
-  select(name, x, y, pie_radius, 
-         CH_PadjNumSignificant, HI_PadjNumSignificant, HV_PadjNumSignificant) %>%
+min_gap <- coord_span * 0.01
+
+for (iter in 1:100) {
+  moved <- FALSE
+  n_nodes <- nrow(fixed_layout)
+  for (i in 1:(n_nodes - 1)) {
+    for (j in (i + 1):n_nodes) {
+      dx <- fixed_layout$x[j] - fixed_layout$x[i]
+      dy <- fixed_layout$y[j] - fixed_layout$y[i]
+      dist <- sqrt(dx^2 + dy^2)
+      min_dist <- fixed_layout$radius[i] + fixed_layout$radius[j] + min_gap
+      
+      if (dist < min_dist) {
+        if (dist == 0) {
+          dx <- runif(1, -0.01, 0.01)
+          dy <- runif(1, -0.01, 0.01)
+          dist <- sqrt(dx^2 + dy^2)
+        }
+        overlap <- min_dist - dist
+        shift_x <- (dx / dist) * (overlap / 2)
+        shift_y <- (dy / dist) * (overlap / 2)
+        
+        fixed_layout$x[i] <- fixed_layout$x[i] - shift_x
+        fixed_layout$y[i] <- fixed_layout$y[i] - shift_y
+        fixed_layout$x[j] <- fixed_layout$x[j] + shift_x
+        fixed_layout$y[j] <- fixed_layout$y[j] + shift_y
+        moved <- TRUE
+      }
+    }
+  }
+  if (!moved) break
+}
+
+# =========================================================================
+# 6. PIE CHART & SINGLE NODE DATA PREPARATION
+# =========================================================================
+node_categories <- fixed_layout %>%
+  select(name, x, y, radius, total_reference_genes, clean_name, Supp_Fig_2_Label, overlap_category, dominant_comparison,
+         is_sig_CH, is_sig_HI, is_sig_HV) %>%
   pivot_longer(
-    cols = ends_with("Significant"),
-    names_to = "comparison", 
-    values_to = "sig_val"
+    cols = c(is_sig_CH, is_sig_HI, is_sig_HV),
+    names_to = "comparison",
+    values_to = "is_active"
   ) %>%
-  filter(sig_val > 50) %>% 
-  group_by(name) %>%
   mutate(
-    # Slice math
-    n_slices = n(),
-    slice_angle = 2 * pi / n_slices,
-    end_angle = cumsum(slice_angle),
-    start_angle = end_angle - slice_angle,
-    
-    # Gradient math for the inside fill
-    norm_val = pmin(sig_val / 50, 1),
-    slice_color = case_when(
-      str_detect(comparison, "CH") ~ scales::colour_ramp(c("grey85", "#EE7733"))(norm_val),
-      str_detect(comparison, "HI") ~ scales::colour_ramp(c("grey85", "#377EB8"))(norm_val),
-      str_detect(comparison, "HV") ~ scales::colour_ramp(c("grey85", "#4DAF4A"))(norm_val)
-    ),
-    
-    # NEW: Full opacity base color for the split outer stroke
-    stroke_color = case_when(
-      str_detect(comparison, "CH") ~ "#EE7733",
-      str_detect(comparison, "HI") ~ "#377EB8",
-      str_detect(comparison, "HV") ~ "#4DAF4A"
-    ),
-    
-    # Internal slice dividers (white if sliced, clear if single)
-    border_color = if_else(n_slices > 1, "white", NA_character_)
+    group = case_when(
+      comparison == "is_sig_CH" ~ "CH",
+      comparison == "is_sig_HI" ~ "HI",
+      comparison == "is_sig_HV" ~ "HV"
+    )
+  ) %>%
+  filter(is_active == TRUE)
+
+split_pie_data <- node_categories %>%
+  group_by(name) %>%
+  mutate(num_slices = n()) %>%
+  filter(num_slices >= 2) %>%
+  mutate(
+    slice_idx = row_number(),
+    start_angle = (slice_idx - 1) * (2 * pi / num_slices),
+    end_angle = slice_idx * (2 * pi / num_slices)
   ) %>%
   ungroup()
 
-# Step 3: Draw the plot
+multi_node_names <- unique(split_pie_data$name)
+
+single_nodes <- fixed_layout %>%
+  filter(!name %in% multi_node_names)
+
+# =========================================================================
+# 7. COLOR PALETTE & PLOTTING
+# =========================================================================
+category_colors <- c(
+  "HI"           = "#4cc988",
+  "HV"           = "#3a8667",
+  "CH"           = "#1B7837",
+  "None"         = "grey80"
+)
+
+base_theme <- theme_void() + 
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 16),
+    legend.title = element_text(face = "bold", size = 10)
+  )
+
+# MASTER PIE NETWORK PLOT
 plot_pie_network <- ggraph(fixed_layout) + 
-  geom_edge_link(aes(alpha = similarity, width = similarity), color = "grey40") + 
-  scale_edge_width(range = c(1.2, 3.0)) +
+  coord_fixed() + 
+  geom_edge_link(aes(width = similarity), color = "grey20") + 
+  scale_edge_width(range = c(2.0, 4.0)) +
   
-  # Invisible point layer solely to generate the ggplot size legend
-  geom_node_point(aes(size = total_reference_genes), color = "transparent") +
+  # 1. Single-category solid nodes
+  geom_circle(data = single_nodes, 
+              aes(x0 = x, y0 = y, r = radius, fill = overlap_category), 
+              color = NA) +
   
-  # 1. Draw the pie slices (fills and internal white dividers)
-  geom_arc_bar(
-    data = pie_data,
-    aes(x0 = x, y0 = y, r0 = 0, r = pie_radius, 
-        start = start_angle, end = end_angle, fill = slice_color, color = border_color),
-    linewidth = 0.4, inherit.aes = FALSE
-  ) +
+  # 2. Multi-category pie slices
+  geom_arc_bar(data = split_pie_data,
+               aes(x0 = x, y0 = y, r0 = 0, r = radius, 
+                   start = start_angle, end = end_angle, 
+                   fill = group, alpha = 1),
+               color = "white", linewidth = 0.4) +
   
-  # 2. NEW: Draw the split outer stroke matching each slice's base category color
-  geom_arc(
-    data = pie_data,
-    aes(x0 = x, y0 = y, r = pie_radius, 
-        start = start_angle, end = end_angle, color = stroke_color),
-    linewidth = 1.2, inherit.aes = FALSE
-  ) +
+  # 3. Outer dark halo underlay (ALL nodes)
+  geom_circle(data = fixed_layout,
+              aes(x0 = x, y0 = y, r = radius * 1.03),
+              color = "black", fill = NA, linewidth = 4.5) +
   
-  geom_node_text(aes(label = cluster_label), repel = TRUE, size = 3, fontface = "bold") +
+  # 4. Outer dominant comparison stroke (ALL nodes)
+  geom_circle(data = fixed_layout,
+              aes(x0 = x, y0 = y, r = radius * 1.03, color = dominant_comparison),
+              fill = NA, linewidth = 2.5) +
   
-  # Tells ggplot to use our hex codes directly for fill/color without altering them
-  scale_fill_identity() + 
-  scale_color_identity() + 
+  # 5. Node labels: Supp_Fig_2_Label in 150 pt Arial font
+  geom_node_text(aes(label = Supp_Fig_2_Label), 
+                 family = "Arial", 
+                 size = 25 / .pt, 
+                 na.rm = TRUE) +
   
-  # Formats the size legend explicitly to match your other plots
-  scale_size_continuous(range = c(5, 16), name = "Category Size") + 
-  guides(edge_alpha = "none", edge_width = "none") +
+  scale_color_manual(values = category_colors, guide = "none") +
+  scale_fill_manual(values = category_colors, name = "Comparison") +
+  scale_alpha_continuous(range = 1) +
+  scale_size_continuous(range = c(20, 40), name = "Category Size") +
   base_theme
 
 # Save output
