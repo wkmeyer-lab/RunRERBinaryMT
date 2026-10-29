@@ -2423,6 +2423,17 @@ args = c('r=ComplexDietCentralAnalysisNoFamilyPrune', 'm=data/zoonomiaAllMammals
           "vs_HLeidHel2", "outerPeropodidae",
           "vs_HLeonSpe1", "Roussetinae"
          )')
+  
+  args = c('r=ComplexDietViewHerbAllSpecies', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=ComplexHerbDiet', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=T', 'e=T',
+           'c=c(
+              "Vertivore", "Omnivore", "Invertivore", "Frugivore", "Generalist Herbivore", "Granivore", "Mixed Herbivore", "Nectivore", "Strict Frugivore", "Strict Nectivore"
+            )',
+           'u=list(
+            c("Mixed Herbivore", "Generalist Herbivore"),
+            c("Strict Frugivore", "Frugivore"),
+            c("Strict Nectivore", "Nectivore")
+           )'
+           )
 }
 
 

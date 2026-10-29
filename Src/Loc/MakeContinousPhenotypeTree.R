@@ -49,6 +49,8 @@ args = c('r=ContinousCdcaCf', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=cf','v=F'
 args = c('r=ContinousCdcaAsh', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=ash','v=F', 'n=ZoonomiaTip')
 args = c('r=ContinousCdcaNfe', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=nfe','v=F', 'n=ZoonomiaTip')
 
+args = c('r=ContinousMaxAge', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=MaximumAge','v=F', 'n=ZoonomiaTip')
+
 args = c('r=HarshalContinousRER', 'm=Data/HarshalFakeMainTrees.rds', 
          'd=Data/VGP_ALDH1A1_Accession.csv', 
          'n=Accession',

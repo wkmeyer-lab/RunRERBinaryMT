@@ -49,6 +49,183 @@ packageVersion("RERconverge")
 
 
 
+
+#---------------------------------------------------------------------
+# --- Longevity results  --- 
+# --------------------------------------------------------------------
+
+source("Src/Reu/CategoricalDroptip.R")
+source("Src/Reu/ZoonomTreeNameToCommon.R")
+source("Src/Reu/convertColNameToIndex.R")
+source('Src/Reu/RERCOnvergefunctions.R')
+palette(c( "darkgreen", "darkblue","black", "red", "yellow"))
+nameColumn = "ZoonomiaTip"
+
+mergedData = read.csv("data/mergedData.csv")
+mainAnalysisSpecies = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2SpeciesFilter.rds")
+mainAllSpecies = readRDS("Output/ComplexDietCentralAnalysisSimplifyAllSpecies/ComplexDietCentralAnalysisSimplifyAllSpeciesSpeciesFilter.rds")
+ageDataSheet = read.csv("Data/MaturityLifespanData.csv")
+mainTrees = readRDS("Data/zoonomiaAllMammalsTrees.rds")
+
+mainCategoricalTree = readRDS("Output/ComplexDietCentralAnalysisSimplify2/ComplexDietCentralAnalysisSimplify2CategoricalTree.rds")
+plotTreeCategorical(mainCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = masterTree)
+
+TEDatasheet = read.csv("Data/TEContentOsmanski2023TS8.csv")
+TEDatasheet$Zoonomia = mergedData$ZoonomiaTip[match(tolower(TEDatasheet$Species), mergedData$Scientific_Binomial)]
+
+cancerDatasheet = read.csv("Data/species-cancer-prevalence-data.csv")
+cancerDatasheet$Zoonomia = mergedData$ZoonomiaTip[match(gsub(" ", "_", tolower(cancerDatasheet$Species)), mergedData$Scientific_Binomial)]
+
+
+
+
+masterTree = mainTrees$masterTree
+categoricalTree = mainCategoricalTree
+TreeTipCol = "Zoonomia"
+DataColumn = "MaximumAge"
+DataColumn = "combinedBodysize"
+
+
+
+
+makeSubsetCategoricalTreeToContiousData = function(DataColumn = get("DataColumn", envir = .GlobalEnv), metric = "diff",
+                                                   categoricalTree = get("categoricalTree", envir = .GlobalEnv), masterTree = get("masterTree", envir = .GlobalEnv), 
+                                                   TreeTipCol = get("TreeTipCol", envir = .GlobalEnv), continousDataSheet = get("continousDataSheet", envir = .GlobalEnv)  
+                                                   ){
+  categoricalSpecies = categoricalTree$tip.label
+  continousSpecies = continousDataSheet[which(!is.na(continousDataSheet[,convertColnameToIndex(DataColumn, continousDataSheet)])), convertColnameToIndex(TreeTipCol, continousDataSheet)]
+  continousSpecies = continousSpecies[-which(is.na(continousSpecies))]
+  overlapSpecies = continousSpecies[which(continousSpecies %in% categoricalSpecies)]
+
+  message(paste("Overlap size:", length(overlapSpecies)))
+  
+  tipsToRemove = categoricalTree$tip.label[!categoricalTree$tip.label %in% overlapSpecies]
+  overlapTree = categoricalDropTip(categoricalTree, tipsToRemove)
+  
+  masterTreeTipsRemove = masterTree$tip.label[!masterTree$tip.label %in% overlapSpecies]
+  overlapMasterTree = drop.tip(masterTree, masterTreeTipsRemove)
+  
+  
+  
+  
+  #re-order the overlap (phenotype) tree to the same edge order as the master tree 
+  overlapTipToMasterTip = match(overlapTree$tip.label, overlapMasterTree$tip.label)
+  names(overlapTipToMasterTip) = seq_along(overlapTipToMasterTip)
+  overlapTipToMasterTip = overlapTipToMasterTip[order(overlapTipToMasterTip)]
+  
+  reconstructedOverlapTree = overlapTree
+  reconstructedOverlapTree$tip.label = reconstructedOverlapTree$tip.label[as.integer(names(overlapTipToMasterTip))]
+  
+  
+  nodeMatch = matchAllNodes(overlapTree, overlapMasterTree)
+  
+  #We don't need to rearrange the edge length values, because we already changed the tip label positions. 
+  edgeReconstruction = data.frame(seq_along(overlapTree$edge.length))
+  names(edgeReconstruction) = "EdgeIndex"
+  edgeReconstruction$originalStart = overlapTree$edge[,1]
+  edgeReconstruction$originalEnd = overlapTree$edge[,2]
+  edgeReconstruction$newStart = nodeMatch[match(overlapTree$edge[,1], nodeMatch[, 1]), 2]
+  edgeReconstruction$newEnd = nodeMatch[match(overlapTree$edge[,2], nodeMatch[, 1]), 2]
+  
+  
+  
+  reconstructedOverlapTree$edge[,1] = edgeReconstruction$newStart
+  reconstructedOverlapTree$edge[,2] = edgeReconstruction$newEnd
+
+  commonOverlapTree = ZoonomTreeNameToCommon(overlapTree, tipCol = nameColumn, plot = T)
+  commonOverlapMasterTree = ZoonomTreeNameToCommon(overlapMasterTree, tipCol = nameColumn, plot = T)
+  commonReconstructedTree =  ZoonomTreeNameToCommon(reconstructedOverlapTree, tipCol = nameColumn, plot = T)
+  
+
+  # Plot the trees to confirm the conversion was successful
+  par(mfrow = c(1, 2))
+  
+  tryCatch({
+    plotTreeCategorical(commonOverlapTree,c("Herbivore", "Insectivore", "Omnivore", "Vertivore"),master = commonOverlapMasterTree)
+    plotTreeCategorical(commonReconstructedTree,c("Herbivore", "Insectivore", "Omnivore", "Vertivore"),master = commonOverlapMasterTree)
+  }, error = function(e) {
+    message("Non-Critical Error plotting trees: ", conditionMessage(e))
+  }, finally = {
+    par(mfrow = c(1, 1))
+  })
+  
+  
+  
+  #Make the tree with continuous information
+  overlapData = continousDataSheet[continousDataSheet[,convertColnameToIndex(TreeTipCol, continousDataSheet)] %in% overlapSpecies, c(convertColnameToIndex(TreeTipCol, continousDataSheet), convertColnameToIndex(DataColumn, continousDataSheet))]
+  overlapData = overlapData[order(match(overlapData[,1], overlapMasterTree$tip.label)),]
+  overlapDataVec = overlapData[,2]
+  names(overlapDataVec) = overlapData[,1]
+  
+  continousTree = edgeVars(overlapMasterTree, overlapDataVec, metric = metric)
+  
+  
+  
+  if(!all.equal(overlapMasterTree$tip.label, reconstructedOverlapTree$tip.label)&
+  all.equal(overlapMasterTree$edge, continousTree$edge)&
+  all.equal(overlapMasterTree$edge, continousTree$edge)&
+  all.equal(overlapMasterTree$edge, reconstructedOverlapTree$edge)){
+    stop("Error, trees do not match")
+  }
+  
+  
+  edgeTable = data.frame(overlapMasterTree$edge.length, reconstructedOverlapTree$edge.length, continousTree$edge.length)
+  names(edgeTable) = c("Master Tree length", "Phenotype", "Continuous Value")
+  
+  TreeOutputs = list(edgeTable, overlapMasterTree, reconstructedOverlapTree, continousTree)
+  names(TreeOutputs) = c("edgeTable", "overlapMasterTree", "phenotypeTree", "continousTree")
+  TreeOutputs
+}
+
+
+
+AgeDiffTrees = makeSubsetCategoricalTreeToContiousData("MaximumAge", "diff", continousDataSheet = ageDataSheet)
+AgeMeanTrees = makeSubsetCategoricalTreeToContiousData("MaximumAge", "mean", continousDataSheet = ageDataSheet)
+
+TeDiffTrees = makeSubsetCategoricalTreeToContiousData("Young_DNA_proportion", "diff", continousDataSheet = TEDatasheet)
+TeMeanTrees = makeSubsetCategoricalTreeToContiousData("Young_DNA_proportion", "mean", continousDataSheet = TEDatasheet)
+
+CancerDiffTrees = makeSubsetCategoricalTreeToContiousData("NeoplasiaPrevalence", "diff", continousDataSheet = cancerDatasheet)
+CancerMeanTrees = makeSubsetCategoricalTreeToContiousData("NeoplasiaPrevalence", "mean", continousDataSheet = cancerDatasheet)
+
+
+
+comboOutput = list(AgeDiffTrees, AgeMeanTrees, TeDiffTrees, TeMeanTrees, CancerDiffTrees, CancerMeanTrees)
+names(comboOutput) = c("AgeDiffTrees", "AgeMeanTrees", "TeDiffTrees", "TeMeanTrees", "CancerDiffTrees", "CancerMeanTrees")
+
+saveRDS(comboOutput, "Results/DnaRepairResultsForWynn.rds")
+
+
+diffBodysizeTrees = makeSubsetCategoricalTreeToContiousData("combinedBodysize", "diff")
+meanBodysizeTrees = makeSubsetCategoricalTreeToContiousData("combinedBodysize", "mean")
+
+
+
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #---------------------------------------------------------------------
 # --- Misc paper checks--- 
 # --------------------------------------------------------------------
@@ -56,6 +233,97 @@ packageVersion("RERconverge")
 mergedData = read.csv("Data/mergedData.csv")
 
 mergedData$CommonName[which(mergedData$SimplifiedDietConvertEqualDrop =="zMixedPredator")]
+
+supData1 = read.csv("Results/SupplementaryTable1 -- SpeciesNamesTipsAndDiet.csv")
+
+
+
+supData1$HerbivoreType = rep("TBD")
+
+supData1$HerbivoreType[!supData1$ThreeDietAnalysis %in% "Herbivore"] = NA
+
+
+
+#supData1$HerbivoreType[which( (supData1$Diet.Fruit + supData1$Diet.Nect + supData1$Diet.Seed) >= 90)] = "Potential Specialist Herbivore"
+
+supData1$HerbivoreType[which(supData1$Diet.Seed > 50)] = "Granivore"
+supData1$HerbivoreType[which(supData1$Diet.Nect > 50)] = "Nectivore"
+supData1$HerbivoreType[which(supData1$Diet.Fruit > 50)] = "Frugivore"
+supData1$HerbivoreType[which(supData1$Diet.PlantO > 50)] = "Loose Generalist Herbivore"
+
+supData1$HerbivoreType[which(supData1$Diet.PlantO >= 90)] = "Generalist Herbivore"
+supData1$HerbivoreType[which(supData1$Diet.Seed >= 90)] = "Strict Granivore"
+supData1$HerbivoreType[which(supData1$Diet.Nect >= 90)] = "Strict Nectivore"
+supData1$HerbivoreType[which(supData1$Diet.Fruit >= 90)] = "Strict Frugivore"
+
+supData1$HerbivoreType[!supData1$ThreeDietAnalysis %in% "Herbivore"] = NA
+
+
+supData1$HerbivoreType[supData1$TreeTip == "vs_NA"]
+
+
+supData1$HerbivoreType[which(supData1$HerbivoreType == "TBD")] = "Mixed Herbivore"
+
+table(supData1$HerbivoreType)
+
+
+supData1$HerbivoreTypeInMain = supData1$HerbivoreType
+
+supData1$HerbivoreTypeInMain[!supData1$InMainAnalysis] = NA
+
+table(supData1$HerbivoreTypeInMain)
+
+
+
+
+
+supData1 = supData1[,c(2:11, 24, 12:23)]
+
+#write.csv(supData1, "Results/SupplementaryTable1 -- SpeciesNamesTipsAndDiet.csv")
+
+
+supData1 = mergedData
+
+supData1$HerbivoreType = rep("TBD")
+
+supData1$HerbivoreType[!supData1$SimplifiedDietConvert %in% "Herbivore"] = NA
+
+supData1$HerbivoreType[which(supData1$Diet.PlantO >= 90)] = "Generalist Herbivore"
+
+#supData1$HerbivoreType[which( (supData1$Diet.Fruit + supData1$Diet.Nect + supData1$Diet.Seed) >= 90)] = "Potential Specialist Herbivore"
+
+supData1$HerbivoreType[which(supData1$Diet.Seed > 50)] = "Granivore"
+supData1$HerbivoreType[which(supData1$Diet.Nect > 50)] = "Nectivore"
+supData1$HerbivoreType[which(supData1$Diet.Fruit > 50)] = "Frugivore"
+
+supData1$HerbivoreType[which(supData1$Diet.Seed >= 90)] = "Strict Granivore"
+supData1$HerbivoreType[which(supData1$Diet.Nect >= 90)] = "Strict Nectivore"
+supData1$HerbivoreType[which(supData1$Diet.Fruit >= 90)] = "Strict Frugivore"
+
+supData1$HerbivoreType[!supData1$SimplifiedDietConvert %in% "Herbivore"] = NA
+
+
+
+
+supData1$HerbivoreType[which(supData1$HerbivoreType == "TBD")] = "Mixed Herbivore"
+
+mergedData = supData1
+
+mergedData$ComplexHerbDiet = mergedData$SimplifiedDietConvert
+
+mergedData$ComplexHerbDiet[which(mergedData$ComplexHerbDiet == "Herbivore")] = mergedData$HerbivoreType[which(mergedData$ComplexHerbDiet == "Herbivore")]
+
+table(mergedData$ComplexHerbDiet)
+
+write.csv(mergedData, "Data/mergedData.csv")
+
+
+palette(c("hotpink", "darkgreen", "orange", "blue", "yellow", "black", "red"))
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = commonMainTrees$masterTree)
+plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = mainTrees$masterTree)
+
+
+
 #---------------------------------------------------------------------
 # --- Make new alt reconstrcution --- 
 # --------------------------------------------------------------------
