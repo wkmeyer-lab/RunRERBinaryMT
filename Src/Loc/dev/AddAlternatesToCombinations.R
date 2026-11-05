@@ -5,11 +5,9 @@ library(RERconverge)
 library(purrr)
 source("Src/Reu/cmdArgImport.R")
 
-args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=gene", "s=T", "l=F")
-args = c("r=ComplexDietCentralAnalysis", "p=NULL", "g=KeggReactome", "s=T", "l=F")
-
 args = c("r=ComplexDietCentralAnalysisSimplifyExclusivePred", "p=NULL", "g=KeggReactome", "s=T", "l=F")
 args = c("r=ComplexDietCentralAnalysisSimplify2", "p=NULL", "g=KeggReactome", "s=T", "l=F")
+args = c("r=ComplexDietCentralAnalysisSimplify2", "p=NULL", "g=gene", "s=T", "l=F")
 
 
 # -- Standard Startup code -- 

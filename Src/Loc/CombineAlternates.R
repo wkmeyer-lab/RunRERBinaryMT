@@ -13,9 +13,8 @@ library(data.table)
 # g = geneSet                                                                  This is the gmtset(as shown in the filename) of enrichment runs to be combined. 
 
 #----------------
-args = c('r=ComplexDietCentralAnalysis', 's=g', 'g=KeggReactome', 'l=170', 'i=1')
-args = c('r=ComplexDietCentralAnalysisSimplifyEqualDrop', 's=g', 'g=KeggReactome', 'l=170')
-args = c('r=ComplexDietCentralAnalysisSimplifyExclusivePred', 's=g', 'g=KeggReactome', 'l=170')
+
+args = c('r=ComplexDietCentralAnalysisSimplify2', 's=g', 'g=gene', 'l=170')
 args = c('r=ComplexDietCentralAnalysisSimplify2', 's=g', 'g=KeggReactome', 'l=170')
 
 geneSet = NULL
@@ -66,12 +65,31 @@ primaryFilePrefix = filePrefix
 
 #---
 #load correlations
-CorrelationsFilenames = list.files(paste0(outputFolderName, "Alternates/"), pattern = "PairwiseCorrelationFile.rds")
-CorrelationsFilenames = CorrelationsFilenames[-grep("Merged", CorrelationsFilenames)]
+PairwiseCorrelationsFilenames = list.files(paste0(outputFolderName, "Alternates/"), pattern = "PairwiseCorrelationFile.rds")
+PairwiseCorrelationsFilenames = PairwiseCorrelationsFilenames[-grep("Merged", PairwiseCorrelationsFilenames)]
+PairwiseCorrelationsFilenames = paste0(outputFolderName, "Alternates/", PairwiseCorrelationsFilenames)
 
-CorrelationsFilenames = paste0(outputFolderName, "Alternates/", CorrelationsFilenames)
+pairwiseCorrelationRuns = lapply(PairwiseCorrelationsFilenames, readRDS)
 
-correlationRuns = lapply(CorrelationsFilenames, readRDS)
+
+
+overallCorrelationsFilenames = list.files(paste0(outputFolderName, "Alternates/Overall"), pattern = "CorrelationFile.rds")
+overallCorrelationsFilenames = overallCorrelationsFilenames[-grep("Merged", overallCorrelationsFilenames)]
+overallCorrelationsFilenames = paste0("Overall/", overallCorrelationsFilenames)
+overallCorrelationsFilenames = paste0(outputFolderName, "Alternates/", overallCorrelationsFilenames)
+
+overallCorrelationRuns = lapply(overallCorrelationsFilenames, readRDS)
+overallCorrelationRuns = lapply(overallCorrelationRuns, function(df) df[, -2, drop = FALSE])
+names(overallCorrelationRuns) = rep("Overall-Overall", length(overallCorrelationRuns))
+
+
+numberOfPairwiseComparisions = length(pairwiseCorrelationRuns[[1]])
+correlationRuns = pairwiseCorrelationRuns
+
+for (i in seq_along(correlationRuns)) {
+  correlationRuns[[i]][(numberOfPairwiseComparisions+1)] = overallCorrelationRuns[1]
+  names(correlationRuns[[i]])[(numberOfPairwiseComparisions+1)] = "Overall"
+}
 
 
 #----
