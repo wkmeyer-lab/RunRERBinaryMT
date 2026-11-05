@@ -22,75 +22,15 @@ library(data.table)
 # r = filePrefix                                                               REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
 # m = mainTreeFilename.txt or .rds                                             REQUIRED: This sets the location of the maintrees file
 # v = <T or F>                                                                 This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# s = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the type of phenotype being supplied; it will detect automatically if not specified.
-# c = < "diff" or "mean" or "last" >                                           This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# a = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the Analysis Style type of phenotype being supplied; it will detect automatically if not specified.
+# n = < "diff" or "mean" or "last" >                                           This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
 # l = <min.sp value>                                                           This sets the min.sp value to be used in the correlation. 
 # f = speciesFilterText                                                        OPTIONAL OVERRIDE: This can be used to manually specify a species filer; leave blank for automatic
-# p = phenotypeTreeFilename.txt or .rds                                        OPTIONAL OVERRIDE: This can be used to manually override the phenotype tree being used. For continuous analyses, this is the location of the trait vector.
+# u = phenotypeTreeFilename.txt or .rds                                        OPTIONAL OVERRIDE: This can be used to manually override the phenotype tree being used. For continuous analyses, this is the location of the trait vector.
 
 
 #----------------
-args = c('r=CVO', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 's=b') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
-args = c("r=EcholocationUpdate2", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "s=b")
-args = c("m=Data/NoSignExpressionTreesRound3.rds", "r=LiverExpression2", "v=F", "s=b")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CategoricalDiet4Phen", "v=T", "s=c")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHRemake", "s=b")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=BinaryCVHApplesToApples", "s=b")
-args = c('r=RubyRegenARD',   'm=data/mam120aa_trees.rds', 'v=F', 't=ARD')
-args = c('r=RubyRegenER',   'm=data/mam120aa_trees.rds', 'v=F', 't=ER')
-args = c('r=ThreePhenLikeihoodTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
-args = c('r=HMGRelaxTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
-args = c('r=IPCRelaxTest', 'm=data/mam120aa_trees.rds', 'v=F', 's=g')
 
-args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'v=F', 's=g')
-args = c('r=NewHiller2Phen', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
-args = c('r=NewHillerTestSupraPrimates', 'm=data/newHillerMainTrees.rds', 'v=T', 's=g')
-
-args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 's=c','v=F')
-args = c('r=MaturityLogRaw', 'm=data/newHillerMainTrees.rds', 's=c','v=F')
-args = c('r=PankajBodysize', 'm=data/newHillerMainTrees.rds', 's=c','v=F')
-args = c('r=CVHNew', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies.rds')
-args = c('r=CIvAllZoonomia', 's=b', 'v=T', 'm=data/RemadeTreesAllZoonomiaSpecies.rds')
-
-args = c("r=CVHNew", 'm=data/RemadeTreesAllZoonomiaSpecies.rds', "s=b")
-args = c("r=CategoricalMobivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
-args = c("r=RyanPermualtionsDemo", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
-
-args = c("r=CategoricalCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
-args = c("r=CategoricalInsVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F")
-args = c("r=CategoricalInsVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=CategoricalPrunedCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=CategoricalBinaryInsectivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=50")
-args = c("r=CategoricalBinaryVertivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=CategoricalBinaryHerbivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=50")
-args = c("r=CategoricalBinaryOmnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=CategoricalBinaryCarnivoreTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-
-
-args = c("r=CategoricalNoMegabranchInsvertTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=CategoricalDownsampledInsvertTree", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-
-args = c('r=meanTemp', 'm=data/zoonomiaAllMammalsTrees.rds', 's=c','v=T', 'n=ZoonomiaTip')
-
-args = c("r=CategoricalSlimMainInsVertivoreTree", 'm=data/CategoricalInsVertivoreMaintrees.rds', "s=g", "v=F", "l=170")
-args = c("r=CategoricalInsVertivoreTreeLiamInference", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=CategoricalInsVertivoreTreeCarnivoreLiamInference", 'm=', "s=g", "v=F", "l=170")
-
-args = c('r=Demo', 'v=F', 'm=demoTreeFile', 's=g')
-
-args = c('r=Demo', 'v=T', 'm=demoTreeFile', 's=g')
-
-args = c("r=PredatorFullTree", 'm=', "s=g", "v=F", "l=170")
-
-args = c("r=ComplexDietCentralAnalysisEqualLengthInference", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-
-args = c("r=ComplexDietBinaryInvertivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=ComplexDietBinaryVertivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=ComplexDietBinaryHerbivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=ComplexDietBinaryOmnivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-args = c("r=ComplexDietBinaryCarnivore", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
-
-args = c("r=ComplexDietCentralAnalysisSimplifyAltReconstruction", 'm=data/zoonomiaAllMammalsTrees.rds', "s=g", "v=F", "l=170")
 
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -142,8 +82,8 @@ minSpValue = 10
   }
   
   #Phenotype Style
-  if(!is.na(cmdArgImport('s'))){
-    phenotypeStyle = cmdArgImport('s')
+  if(!is.na(cmdArgImport('a'))){
+    phenotypeStyle = cmdArgImport('a')
     #Convert the various input options; so that the style can be specified with several names 
     if(phenotypeStyle == "b" | phenotypeStyle == "B" | phenotypeStyle == "binary"){phenotypeStyle = "Binary"}
     if(phenotypeStyle == "c" | phenotypeStyle == "C" | phenotypeStyle == "continuous"){phenotypeStyle = "Continuous"}
@@ -182,8 +122,8 @@ minSpValue = 10
   }
   
   #phenotype tree location
-  if(!is.na(cmdArgImport('p'))){
-    phenotypeTreeLocation = cmdArgImport('p')
+  if(!is.na(cmdArgImport('u'))){
+    phenotypeTreeLocation = cmdArgImport('u')
   }else{                                                                        #See if a pre-made tree for this prefix and style exists 
     if(phenotypeStyle == "Continuous"){
       phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "PhenotypeVector.rds", sep="")
@@ -214,10 +154,12 @@ minSpValue = 10
   }
   
   #Continuous Metric 
-  if(!is.na(cmdArgImport('c'))){
-    continousMetric = cmdArgImport('c')
-    if(!any(continousMetric == validMetrics)){
-      stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
+  if(!is.na(cmdArgImport('n'))){
+    continousMetric = cmdArgImport('n')
+    if(phenotypeStyle == "Continuous"){ 
+      if(!any(continousMetric == validMetrics)){
+        stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
+      }
     }
   }else{                                                                        #If a continuous phenotype, report using Diff
     if(phenotypeStyle == "Continuous"){
