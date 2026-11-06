@@ -35,6 +35,7 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 # p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
 # l = <T or F>                                           DO NOT USE UNLESS SPECIFIED -- This determines if the liam infrence nodes should be added 
 # e = <T or F>                                           This sets if alternate species sets should be created. 
+# b = c( "colors", "in ","the", "alette", "yellow")      This sets the color palette used in the tree graphs. 
 #----------------
 
 {
@@ -166,24 +167,26 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 }
 {
   
-  args = c('r=ComplexDietHighSugarAllSpecies', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=ComplexHerbDiet', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=T', 'e=T',
+  args = c('r=ComplexDietHighSugarAllSpecies', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=ComplexHerbDiet', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=T', 'e=F',
            'c=c(
               "Vertivore", "Omnivore", "Invertivore", "Frugivore", "Generalist Herbivore", "Granivore", "Mixed Herbivore", "Nectivore", "Strict Frugivore", "Strict Nectivore"
             )',
            'u=list(
-            c("Mixed Herbivore", "HerbivoreGeneralist"),
+            c("Mixed Herbivore", "HerbivoreGeneralist"), c("Generalist Herbivore", "HerbivoreGeneralist"), c("Granivore", "HerbivoreGeneralist"), 
             c("Strict Frugivore", "SugarHerbviore"), c("Strict Nectivore", "SugarHerbviore"),c("Frugivore", "SugarHerbviore"), c("Nectivore", "SugarHerbviore")
-           )'
+           )',
+           'b=c("darkgreen", "darkblue","black", "yellow", "red")'
   )
   
-  args = c('r=ComplexDietHighSugar', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=ComplexHerbDiet', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=T', 'e=T',
+  args = c('r=ComplexDietHighSugar', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/mergedData.csv', 'a=ComplexHerbDiet', 'v=T', 't=ER', 'n=ZoonomiaTip', 'l=T', 'e=T','z=0.01',
            'c=c(
               "Vertivore", "Omnivore", "Invertivore", "Frugivore", "Generalist Herbivore", "Granivore", "Mixed Herbivore", "Nectivore", "Strict Frugivore", "Strict Nectivore"
             )',
            'u=list(
-            c("Mixed Herbivore", "HerbivoreGeneralist"),
+            c("Mixed Herbivore", "HerbivoreGeneralist"), c("Generalist Herbivore", "HerbivoreGeneralist"), c("Granivore", "HerbivoreGeneralist"), 
             c("Strict Frugivore", "SugarHerbviore"), c("Strict Nectivore", "SugarHerbviore"),c("Frugivore", "SugarHerbviore"), c("Nectivore", "SugarHerbviore")
-           )', 
+           )',
+          'b=c("darkgreen", "darkblue","black", "yellow", "red")',
           'y=c(
           "vs_HLornAna3", "vs_HLtacAcu1",  "PreserveMonotremeBranches",
           "vs_HLdidVir1", "vs_HLgymLea1", "vs_HLpseCup1", "MarsupialTransitionPreservation",
@@ -277,6 +280,7 @@ pruningProtection = F
 manualPruningSpecies = NULL
 useLiam = F
 generateAlternates = F
+colorSet = c( "darkgreen", "darkblue","black", "red", "yellow")
 
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -401,10 +405,18 @@ generateAlternates = F
     message("Not Generating Alternates.")
   }
 
+  #Color pallete
+  if(!all(is.na(cmdArgImport('b')))){
+    colorSet = cmdArgImport('b')
+    message("using specified colorset")
+  }else{
+    message("Using Default palette Generating Alternates.")
+  }
+
 
 }
 
-
+palette(colorSet)
 #                   ------- Code Body --------  
 
 manualAnnots = read.csv(spreadSheetLocation)                      #load the manual annotations file holding the phenotype data
@@ -584,8 +596,7 @@ if(!useLiam){
   
   # - Categorical Tree - 
   treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
-  palette(c( "darkgreen", "darkblue","black", "red", "yellow"))
-  
+
   pdf(treeImageFilename, height = length(phenotypeVector)/18, width = 10)                     #make a pdf to store the plot, sized based on tree size
   commonCategoricalTree = char2TreeCategorical(commonPhenotypeVector, commonMainTrees, commonSpeciesFilter, model = modelType, anctrait = ancestralTrait, plot = F)
   categoricalTree = char2TreeCategorical(phenotypeVector, mainTrees, speciesFilter, model = modelType, anctrait = ancestralTrait, plot = F) #use the phenotype vector to make a tree
@@ -605,11 +616,13 @@ if(!useLiam){
   #plotTreeCategorical(commonCategoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = commonMasterAdded)
   #plotTreeCategorical(categoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore"), master = masterTreeAdded)
   
-  plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = commonMainTrees$masterTree)
-  plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = mainTrees$masterTree)
+  categoryLegend = names(table(phenotypeVector))
   
-  plotTreeCategorical(commonCategoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = commonMasterAdded)
-  plotTreeCategorical(categoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = masterTreeAdded)
+  plotTreeCategorical(commonCategoricalTree, categoryLegend, master = commonMainTrees$masterTree)
+  plotTreeCategorical(categoricalTree, categoryLegend, master = mainTrees$masterTree)
+  
+  plotTreeCategorical(commonCategoricalTreeExtraTip, categoryLegend, master = commonMasterAdded)
+  plotTreeCategorical(categoricalTreeExtraTip, categoryLegend, master = masterTreeAdded)
   dev.off()  
   
 }
@@ -953,9 +966,6 @@ if(generateAlternates){
   #Try to test for broken paths 
   alternateSets = readRDS(paste0(outputFolderName, filePrefix, "AlternatePruningSpecies.rds"))
   brokenPaths = integer()
-  if(!dir.exists(paste0(outputFolderName, "/Alternates/Broken"))){                                      #Make output directory if it does not exist
-    dir.create(paste0(outputFolderName, "/Alternates/Broken"))
-  }
   for(i in 1:length(alternateSets)){
     message(i)
     currentSet = alternateSets[[i]]
@@ -989,13 +999,20 @@ if(generateAlternates){
     }
   
   }
-  brokenAlternateSet = alternateSets[brokenPaths]
-  names(brokenAlternateSet) = brokenPaths
-  brokenAlternatesFilename = paste(outputFolderName, "Alternates/Broken/", filePrefix, "BrokenAlternateSets.rds", sep="")
-  saveRDS(brokenAlternateSet, brokenAlternatesFilename)
-  
-  backupAlternatesFilename = paste(outputFolderName, "Alternates/Broken/", filePrefix, "OriginalAlternateSets.rds", sep="")
-  saveRDS(alternateSets, backupAlternatesFilename)
+  if(length(brokenPaths) > 0){
+    if(!dir.exists(paste0(outputFolderName, "/Alternates/Broken"))){                                      #Make output directory if it does not exist
+      dir.create(paste0(outputFolderName, "/Alternates/Broken"))
+    }
+    
+    brokenAlternateSet = alternateSets[brokenPaths]
+    names(brokenAlternateSet) = brokenPaths
+    brokenAlternatesFilename = paste(outputFolderName, "Alternates/Broken/", filePrefix, "BrokenAlternateSets.rds", sep="")
+    saveRDS(brokenAlternateSet, brokenAlternatesFilename)
+    
+    backupAlternatesFilename = paste(outputFolderName, "Alternates/Broken/", filePrefix, "OriginalAlternateSets.rds", sep="")
+    saveRDS(alternateSets, backupAlternatesFilename)
+  }
+
   
   
   #Exit the script if being run automatically before making any changes 

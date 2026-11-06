@@ -133,7 +133,7 @@ runMerge= F
   }
   
   #toMerge
-  if(!is.na(cmdArgImport('e'))){
+  if(!all(is.na(cmdArgImport('e')))){
     toMerge = cmdArgImport('e')
     runMerge = T
   }else{

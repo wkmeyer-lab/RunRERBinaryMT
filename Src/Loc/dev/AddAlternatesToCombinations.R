@@ -57,7 +57,7 @@ alternateCutoff = 50
 { # Bracket used for collapsing purposes
   
   #genesets
-  if(!is.na(cmdArgImport('g'))){
+  if(!all(is.na(cmdArgImport('g')))){
     geneSets = cmdArgImport('g')
     if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
       usingGene = T

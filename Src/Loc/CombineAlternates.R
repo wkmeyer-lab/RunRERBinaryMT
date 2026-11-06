@@ -65,7 +65,7 @@ validGeneArguments = c("NULL", "gene", "Gene")
 
 
 #genesets
-if(!is.na(cmdArgImport('g'))){
+if(!all(is.na(cmdArgImport('g')))){
   geneSets = cmdArgImport('g')
   if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
     usingGene = T

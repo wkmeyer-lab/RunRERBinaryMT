@@ -48,6 +48,18 @@ palette(c("#1B9E77", "#000000", "#7570B3", "#E7298A"))
 packageVersion("RERconverge")
 
 
+#---------------------------------------------------------------------
+# --- Test HighSugar  --- 
+# --------------------------------------------------------------------
+
+
+plotTreeCategorical(commonCategoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = commonMainTrees$masterTree)
+plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = mainTrees$masterTree)
+
+plotTreeCategorical(commonCategoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = commonMasterAdded)
+plotTreeCategorical(categoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = masterTreeAdded)
+
+
 
 #---------------------------------------------------------------------
 # --- Process Wynn DNA dna, make new figures --- 

@@ -19,6 +19,8 @@ source("Src/Reu/trimGmtFilenameToSetname.R")
 # p = usePermulations                       This sets if permulation data should be used. If set to "A", it will add permulations data, but use the unpermulationed data for significance. 
 
 
+args = c('r=ComplexDietCentralAnalysisSimplify', 'g=c("gene", "KeggReactome")')
+
 {
   # -- Standard Startup code -- 
   if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -84,7 +86,7 @@ addPermulations = F
   }
 
   #geneset
-  if(!is.na(cmdArgImport('g'))){
+  if(!all(is.na(cmdArgImport('g')))){
     geneSet = cmdArgImport('g')
     if(is.null(geneSet) | any(geneSet %in% validGeneArguments)){
       usingGene = T
