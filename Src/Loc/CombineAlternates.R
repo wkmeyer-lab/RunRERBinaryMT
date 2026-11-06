@@ -74,7 +74,7 @@ if(!all(is.na(cmdArgImport('g')))){
     usingGene = F
   }
   
-  if(!any(geneSets %in% validGeneArguments)){
+  if(any(!geneSets %in% validGeneArguments)){
     usingGo = T
     geneSets = trimGmtFilenameToSetname(geneSets)
   }else{
