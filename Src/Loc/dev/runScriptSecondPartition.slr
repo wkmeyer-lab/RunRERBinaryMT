@@ -5,7 +5,7 @@
 #SBATCH -N 1
 #SBATCH -t 10
 #SBATCH -J genericrscript
-#SBATCH -o /share/ceph/wym219group/shared/erroutfiles/michaelTene.%j.%N.out
+#SBATCH -o /share/ceph/wym219group/shared/erroutfiles/michaelTene/%j.%N.out
 #SBATCH --open-mode=append
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mit221@lehigh.edu
@@ -25,14 +25,14 @@ PROJECTNAME=$1 #This is the first input after the submission script name
 SCRIPTNAME=$2 #This is the second input after the submission script name
 
 #set wd to where the submission was created
-cd /share/ceph/hawk/wym219_123121/mit221/projects/$PROJECTNAME
+cd /share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME
 
 SCRIPTDIR=""
 
 #Print the script name to the output file
 echo Project: $PROJECTNAME
 echo Script: $SCRIPTNAME
-echo Path: </share/ceph/wym219group/shared/MichaelTene/Projects/$PROJECTNAME/Src/Loc/$SCRIPTNAME
+echo Path: </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Loc/$SCRIPTNAME
 
 #Collect additional Arguments
 ARG1=$3
@@ -42,8 +42,9 @@ ARG4=$6
 ARG5=$7
 ARG6=$8
 ARG7=$9
-
+ARG8=${10}
+ARG9=${11}
 
 
 #Run the R script, printing out any errors or warnings
-R --verbose --no-save --args $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 $ARG6 $ARG7 </share/ceph/hawk/wym219_123121/mit221/projects/$PROJECTNAME/Src/Loc/$SCRIPTNAME
+R --no-save --args $ARG1 $ARG2 $ARG3 $ARG4 $ARG5 $ARG6 $ARG7 $ARG8 $ARG9  </share/ceph/hawk/wym219_123121/shared/mit221/projects/$PROJECTNAME/Src/Loc/$SCRIPTNAME
