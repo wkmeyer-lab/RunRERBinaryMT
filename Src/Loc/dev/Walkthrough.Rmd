@@ -206,7 +206,7 @@ To an updated set of ARGs is:
 
 
 `
-args = c('r=walkthroughExample', 'v=F', 'm=Data/toyTrees.rds', 'd=Data/examplePhenotypeData.csv', 'a=myPhenotype', 'n=toyTips', 'c=c("Land", "Aquatic", "Flying", "SemiAquatic")', u = list(c("SemiAquatic", "Aquatic")))
+args = c('r=walkthroughExample', 'v=F', 'm=Data/toyTrees.rds', 'd=Data/examplePhenotypeData.csv', 'a=myPhenotype', 'n=toyTips', 'c=c("Land", "Aquatic", "Flying", "SemiAquatic")', 'u=list(c("SemiAquatic", "Aquatic"))')
 `
 
 

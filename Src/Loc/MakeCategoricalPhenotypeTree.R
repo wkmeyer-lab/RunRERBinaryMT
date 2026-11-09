@@ -45,8 +45,7 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 
 
 
-
-
+args = c('r=walkthroughExample', 'v=F', 'm=Data/toyTrees.rds', 'd=Data/examplePhenotypeData.csv', 'a=myPhenotype', 'n=toyTips', 'c=c("Land", "Aquatic", "Flying", "SemiAquatic")', 'u=list(c("SemiAquatic", "Aquatic"))')
 #args = c('r=Demo', 'v=T', 'm=C:/Users/mit221/AppData/Local/R/win-library/4.2/RERconverge/extdata/SubsetMammalGeneTrees.txt', 'd=Results/DemoMergedData.csv', 'a=DemoDietPhenotype', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'n=demoTreeTipName')
 
 
@@ -369,7 +368,7 @@ saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        
 if(!useLiam){
   # - Make common name versions of objects (used in visualization) - 
   commonMainTrees = mainTrees
-  commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+  commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(commonMainTrees$masterTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
   commonPhenotypeVector = phenotypeVector
   names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
   commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
