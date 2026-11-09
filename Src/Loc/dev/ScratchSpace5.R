@@ -59,8 +59,28 @@ plotTreeCategorical(categoricalTree, c("Herbivore", "Insectivore", "Omnivore", "
 plotTreeCategorical(commonCategoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = commonMasterAdded)
 plotTreeCategorical(categoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = masterTreeAdded)
 
+saveRDS(toyTrees, "Results/toyTrees.rds")
 
 
+
+
+
+
+
+mergedData = read.csv("Data/mergedData.csv")
+
+which(toyTips %in% mergedData$CommonName)
+
+toyTrees$masterTree$tip.label
+toyTips = toyTrees$masterTree$tip.label
+
+scientificTips = ZonomNameConvertVectorCommon(toyTips, tipColumn = "CommonName", toScientific = T)
+
+
+demoPhen = data.frame(toyTips, scientificTips)
+demoPhen$myPhen = rep(NA)
+
+write.csv(demoPhen, "Data/examplePhenotypeData.csv")
 #---------------------------------------------------------------------
 # --- Process Wynn DNA dna, make new figures --- 
 # --------------------------------------------------------------------
