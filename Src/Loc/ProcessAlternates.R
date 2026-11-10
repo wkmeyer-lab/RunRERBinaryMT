@@ -1,12 +1,14 @@
 # -- Libraries 
+runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
 clusterRun = F
-clusterRun = T
+if(!runningLocally){clusterRun = T}
 if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
 
 library(RERconverge)
 library(tools)
-source("Src/Reu/cmdArgImport.R")
 library(data.table)
+source("Src/Reu/cmdArgImport.R")
+
 
 # -- Usage:
 # This script can be used to run RER calculations and phenotype correlations with Binary, continuous, or categorical phenotypes.

@@ -10,7 +10,7 @@ It is recommended that you read the Walk through from the main RERConverge repo,
 The driving principle of this package is that no new code should need to be written to run an RERConverge analysis. 
 As such, this package is controlled using ARGS, or specific inputs provided to pre-written scripts, that allow you to modify settings and reuse them in new analyses. 
 Additionally, this package is designed so that it can run any number of RERConverge analyses, without them interfering with each other. As such, each analysis has its own *analysis prefix*, which is connected to all files from that analysis. Each analysis has its own folder in the Output directory, and all files have the analysis prefix attached to them. As such, the analysis prefix is also called a *file prefix*. 
-All of the scripts in this package are made to be run as-is both locally, and on a cluster. If running the script locally, **ensure that you do not run the "clusterRun = T" line of code.**
+All of the scripts in this package are made to be run as-is both locally, and on a cluster. If running the script locally, but are **not** using RStudio, **ensure that you do not run the "clusterRun = T" line of code.** This package uses detection of an RStudio environment as a proxy for the script being run interactively on a local machine, rather than through a terminal.
 
 The scripts in this package are stored in the *Src* folder. Scripts which are meant to be run directly can be found in the *Loc* folder. The *Reu* folder contains functions which are used within other scripts. **All scripts mentioned in this walkthrough can be found in the Src/Loc folder**. 
 
@@ -220,7 +220,7 @@ args = c('r=walkthroughExample', 'v=F', 'm=Data/toyTrees.rds', 'd=Data/examplePh
 
 
 Open **MakeCategoricalPhenotypeTree.R**, and run the script using that arg set. You can either copy the args in at the top of the script, run the code in this window (saving it in the environment), or run it in the console. 
-  When running the code locally **make sure to NOT run the `clusterRun = T` line**! This sets if the script should look for ARGs inside the args variable we just made, or as inputs from a command line launch. This line is enabled by default, so that it *is* run when the code is executed on a cluster. 
+  When running the code locally, **if you are not using RStudio** make sure to **NOT run the `clusterRun = T` line**! This sets if the script should look for ARGs inside the args variable we just made, or as inputs from a command line launch. It uses detection of an Rstudio environment as a proxy from being run locally, so if you are not using RStudio, it will run that line by default, so it is run when the code is executed on a cluster. This means you will either need to comment out that line before executing the full script, or run the script line-by-line (by holding shift+enter) on every line following the `clusterRun = T` line. 
   Also, make sure to not overwrite your `args` with a line of `args` inside the script! 
   
   
@@ -246,8 +246,6 @@ RunAlternateEnrichments.R
 CombineAlternates.R
 AddAlternatesToCombinations.R
 ```
-
-Each of these scripts can be run sequentially, using the same ARG set. Note that, when running locally **make sure to NOT run the `clusterRun = T` line!**. This means you will either need to comment out that line before executing the full script, or run the script line-by-line (by holding shift+enter) on every line following the `clusterRun = T` line. 
 
 The Alternate scripts are used to run analyses on alternative species sets. If you try to run them locally (or without an 'i' argument), they will attempt to complete on each alternate in sequence. While this works, it is **strongly not advised**, because run times can exceed days in length. Instead, run these scripts multiple times, each with a distinct 'i' ARG. An example of how to do this on a cluster can be found in *Src/Loc/Dev/FullRunMk3.sh*. Using a cluster is strongly advised if using alternate species sets. 
 
@@ -348,6 +346,6 @@ A full ARGs set, formatted to be run locally, is as follows:
 args = c('r=walkthroughExample', 'v=F', 'm=Data/toyTrees.rds', 'p=F', 'a=g', 'g=c("gene", "Data/exampleGeneSet1.gmt", "Data/exampleGeneSet2.gmt")')
 `
 
-Open **RunRERAndCorrelation.R**, and run that script using the above ARGs. When running locally **make sure to NOT run the `clusterRun = T` line!**.
+Open **RunRERAndCorrelation.R**, and run that script using the above ARGs. 
 Once that is complete, you will have RER results in the analysis' output folder. Because we are not running a merged analysis, that script can be skipped. Open **EnrichmentAnalysisNew.R**, and run it using the same args. It should run three times in total, once for each specific gene set (including "gene"). Finally, open and run **CategoricalCombinePairwiseResults.R**. When that script completes, you can find the combined outputs in the top folder of the analysis' output. Go ahead and look through both the gene and gene set results!
 

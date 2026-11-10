@@ -1,61 +1,43 @@
 # -- Libraries 
+runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
 clusterRun = F
-clusterRun = T
+if(!runningLocally){clusterRun = T}
 if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
-source("Src/Reu/ZoonomTreeNameToCommon.R")
+source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # -- Usage:
 # This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
 # In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is named "FaName", and the column with common names is named "Common.Name.Or.Group". 
 
-# -- Command arguments list
-# r = filePrefix                                         This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                                           This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# m = mainTreeFilename.txt or .rds                       This sets the location of the maintrees file
-# d = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
-# a = "annotCollumn"                                     This is the column in the manual annotations spreadsheet to use
-# s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
-# c = < "Diff" or "mean" or "last" >                     This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
-# n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# m = mainTreeFilename.txt or .rds          This sets the location of the maintrees file
+# d = spreadSheetFilename.csv               This sets the spreadsheet to read the data from 
+# a = "annotCollumn"                        This is the column in the manual annotations spreadsheet to use
+# t = "tipColumn"                           This sets the column with the tip names as they appear in the maintrees file.
+# n = "nameColumn"                          This sets the column with common names of the species. 
+# - Required, Defaults likely acceptable -
+# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# k = < "Diff" or "mean" or "last" >        This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# - Optional - 
+# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
+# s = "screenCollumn"                       This is a collumn which must have a value of 1 for the species to be included. 
+# - Pruning - 
 # z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
 # x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
 # y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
 # p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
+# - Overrides - 
+# --- End arguments list ---
+#-------------------------------
 
 
-#----------------
-args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=MaturityPercentage','v=T')
-args = c('r=MaturityLogRaw', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=logCombinedMaturity','v=T', 'n=FaName')
-args = c('r=PankajBodysize', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=combinedBodysize','v=T', 'n=FaName')
 
-args = c('r=meanTemp', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=panTheriaTemperature','v=T', 'n=ZoonomiaTip')
-
-args = c('r=ContinousCdcaInv', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Inv','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaVend', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vend','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaVect', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vect','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaVfish', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vfish','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaVunk', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vunk','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaScav', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Scav','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaFruit', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Fruit','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaNect', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Nect','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaSeed', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Seed','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaPlantO', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.PlantO','v=F', 'n=ZoonomiaTip')
-
-args = c('r=ContinousCdcaCp', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=cp','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaEe', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=ee','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaCf', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=cf','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaAsh', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=ash','v=F', 'n=ZoonomiaTip')
-args = c('r=ContinousCdcaNfe', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=nfe','v=F', 'n=ZoonomiaTip')
-
-args = c('r=ContinousMaxAge', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=MaximumAge','v=F', 'n=ZoonomiaTip')
-
-args = c('r=HarshalContinousRER', 'm=Data/HarshalFakeMainTrees.rds', 
-         'd=Data/VGP_ALDH1A1_Accession.csv', 
-         'n=Accession',
-         'a=ALDH1A1',
-         'v=T', 't=ER', 'l=T')
 
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
@@ -103,7 +85,8 @@ annotColumn = NULL
 categoryList = NULL
 useScreen = F
 screenColumn = NULL
-nameColumn = "FaName"
+nameColumn = NULL
+tipCol = NULL
 continousMetric = "diff"
 validMetrics= c("diff", "mean", "last")
 usingPruning = F
@@ -149,21 +132,26 @@ manualPrunedSpecies = NULL
   }
 
   #Continuous Metric 
-  if(!is.na(cmdArgImport('c'))){
-    continousMetric = cmdArgImport('c')
+  if(!is.na(cmdArgImport('k'))){
+    continousMetric = cmdArgImport('k')
     if(!any(continousMetric == validMetrics)){
       stop("Contious metric is not a valid option. Use 'Diff', 'mean', or 'last'")
     }
   }else{                                                                        #If a continuous phenotype, report using Diff
       message("No continuous metric specified, using Diff")
   }
+  #Tip Column
+  if(!is.na(cmdArgImport('t'))){
+    tipCol = cmdArgImport('t')
+  }else{
+    message("Tip Column not specified, using 'tipName'.")
+  }
   #Name Column
   if(!is.na(cmdArgImport('n'))){
     nameColumn = cmdArgImport('n')
   }else{
-    message("Name Column not specified, using 'tipName'.")
+    message("Name Column not specified, using default list.")
   }
-
   #Pruning cutoff
   if(!is.na(cmdArgImport('z'))){
     usingPruning = T
@@ -211,8 +199,8 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   if(useScreen){                                                                #if using a screening collumn 
     relevantSpecies = relevantSpecies[ relevantSpecies[[screenColumn]] %in% 1, ]  #remove all species not positive for that collumn 
   }
-  relevantSpecies = relevantSpecies[!relevantSpecies[[nameColumn]] %in% "", ]          #remove any species without an FA name (not on the master tree)
-  speciesFilter = relevantSpecies[[nameColumn]]                                       #make a list of the master tree tip labels of the included species
+  relevantSpecies = relevantSpecies[!relevantSpecies[[tipCol]] %in% "", ]          #remove any species without an FA name (not on the master tree)
+  speciesFilter = relevantSpecies[[tipCol]]                                       #make a list of the master tree tip labels of the included species
   if(usingPruning){
     if(usingAutoPruning){
       source("Src/Reu/autoPruner.R")
@@ -225,23 +213,23 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
         }
         
         pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
-        pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
+        pruningProtectionSpecies = pruningProtectionRows[[tipCol]]
       }
       allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
       
       workingTree = mainTrees$masterTree
       workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
       
-      fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
+      fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = tipCol, nameConversionData = spreadSheetLocation)
       fewGeneSpecies = fewGeneSpecies[- which(fewGeneSpecies %in% allProtectedSpecies)]
       workingTree = drop.tip(workingTree, fewGeneSpecies)
       names(fewGeneSpecies)[1:length(fewGeneSpecies)] = "fewGenes"
       
       pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
       pdf(pruningFilename, width = 16, height = length(workingTree$tip.label)/8)
-      prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = allProtectedSpecies, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
+      prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = allProtectedSpecies, nameConversionColumn = tipCol, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
       if(!pruningProtection){
-        prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+        prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = tipCol, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
       }
       dev.off()
     }
@@ -266,18 +254,18 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   
   saveRDS(speciesFilter, file = speciesFilterFilename)                          #save that as the species filter
   
-  irrelevantSpecies = manualAnnots[! manualAnnots[[nameColumn]] %in% speciesFilter,]
+  irrelevantSpecies = manualAnnots[! manualAnnots[[tipCol]] %in% speciesFilter,]
 }else{ #if not, use the existing one 
   relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
   speciesFilter = relevantSpecieslist                                           #make the speciesFilter object for later 
-  relevantSpecies = manualAnnots[ manualAnnots[[nameColumn]] %in% relevantSpecieslist,] #and select the manual annotations entries in that list (useful if the list is more restrictive than it would be by default) 
-  irrelevantSpecies = manualAnnots[! manualAnnots[[nameColumn]] %in% relevantSpecieslist,]
+  relevantSpecies = manualAnnots[ manualAnnots[[tipCol]] %in% relevantSpecieslist,] #and select the manual annotations entries in that list (useful if the list is more restrictive than it would be by default) 
+  irrelevantSpecies = manualAnnots[! manualAnnots[[tipCol]] %in% relevantSpecieslist,]
 }
 
 # - Phenotype Vector - 
-relevantSpecies = relevantSpecies[relevantSpecies[[nameColumn]] %in% speciesFilter, ] 
+relevantSpecies = relevantSpecies[relevantSpecies[[tipCol]] %in% speciesFilter, ] 
 speciesValues = relevantSpecies[[annotColumn]]                                  #extract the category of each species (in same order)
-speciesNames = relevantSpecies[[nameColumn]]                                         #Exract the tip name of each species
+speciesNames = relevantSpecies[[tipCol]]                                         #Exract the tip name of each species
 
 phenotypeVector = speciesValues                                                 #combine those into⌄
 phenotypeVector = as.numeric(phenotypeVector)
@@ -295,22 +283,20 @@ saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        
 
 # - Make common name versions of objects (used in visualization) - 
 commonMainTrees = mainTrees
-commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(commonMainTrees$masterTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
 commonPhenotypeVector = phenotypeVector
-names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipCol= nameColumn)
-commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipCol= nameColumn)
+names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn= tipCol, commonColumn = nameColumn)
+commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn= tipCol, commonColumn = nameColumn)
 
 commonPhenotypeVectorFilename = paste(outputFolderName, filePrefix, "ContinuousCommonPhenotypeVector.rds",sep="") #make a filename based on the prefix
 saveRDS(commonPhenotypeVector, commonPhenotypeVectorFilename)
-
-# - Visualized Tree - 
-
-#No visualized tree is created for continuous traits due to the negative branches lengths involved in continuous edge values. If desired to be made, this code could be referenced from MakeCategoricalPhenotypeTree.R
-
-
 
 # - Paths - 
 pathsFilename = paste(outputFolderName, filePrefix, "ContinuousPathsFile.rds", sep= "") #make a filename based on the prefix
 paths = char2Paths(phenotypeVector, mainTrees, metric = continousMetric) #make a path based on the phenotype vector
 saveRDS(paths, file = pathsFilename)                                            #save the path 
 
+# - Visualized Tree - 
+
+#No visualized tree is created for continuous traits due to the negative branches lengths involved in continuous edge values. If desired to be made, this code could be referenced from MakeCategoricalPhenotypeTree.R
+  #This could be done by plotting the master tree, wit the continuous values as edge labels, but that requires having the phenotype values on each branch. This ould be extracted from the paths object, but I don't know how. 

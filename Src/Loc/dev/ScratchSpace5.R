@@ -3,14 +3,14 @@
 #Each titled section is written with a different goal, and many 
 #are not actually able to be run on their own, as they interact 
 #or depend on other scripts in the repo, sometimes partially-run scripts 
-#(for example, code used to debug, or tweak a script while it is running).
+#(for example, code used to debug or tweak a script while it is running).
 
 #Many of these blocks will not function on their own, expecting either 
 #partially run other scripts, other scratch blocks, or even older now-removed 
 #versions of other parts of their own block. As this is a 'scratch space' for
 #one-off code, it is not nearly as polished as anything else. 
 #While some of the blocks can be run as a self-contained mini-script, most are
-#better thought of as effectively a premenant record of lines of code that
+#better thought of as effectively a permanent record of lines of code that
 #were manually run through the console. That was the original purpose of these 
 #documents -- instead of running a line of code in the ephemeral console, it was
 #written in one of these documents, and then executed. 
@@ -27,6 +27,10 @@
 #is easy to hit a "run-all" shortcut. 
 
 
+
+
+
+
 a = b #prevent full runs, as each of the bracketed sections is mea
 library(RERconverge)
 library(tools)
@@ -36,6 +40,8 @@ library(geiger)
 
 source("Src/Reu/ZoonomTreeNameToCommon.R")
 source("Src/Reu/RERCOnvergeFunctions.R")
+
+
 
 par(mfrow=c(1,1))
 palette(c("#1B9E77","#7570B3", "#000000", "#E7298A"))
@@ -48,17 +54,7 @@ palette(c("#1B9E77", "#000000", "#7570B3", "#E7298A"))
 packageVersion("RERconverge")
 
 
-#---------------------------------------------------------------------
-# --- Arg box skeleton  --- 
-# --------------------------------------------------------------------
-
-fileLines <- readLines("your_script.R")
-
-startLine <- grep("# --- Command arguments list ---", fileLines, fixed = TRUE)
-endLine <- grep("#-------------------------------", fileLines, fixed = TRUE)
-
-cat(fileLines[startLine:endLine], sep = "\n")
-
+#Args box skeleton, to be copied to other scripts 
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
@@ -69,8 +65,67 @@ cat(fileLines[startLine:endLine], sep = "\n")
 # - Optional - 
 # h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
 # - Overrides - 
+# --- End arguments list ---
 #-------------------------------
 
+
+#---------------------------------------------------------------------
+# --- Updating scripts for walkthrough use  --- 
+# --------------------------------------------------------------------
+
+
+#Dependency list
+runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
+clusterRun = F
+if(!runningLocally){clusterRun = T}
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+
+#main Code libraries
+library(RERconverge)
+library(tools)
+library(data.table)
+library(purrr)
+library(dplyr)
+if(!clusterRun){library(xlsx)}
+
+#visualization code libraries 
+library(ggtree)
+library(ggimage)
+library(rphylopic)
+library(utils)
+library(tidytree)
+library(ape)
+
+source("Src/Reu/cmdArgImport.R")
+source("Src/Reu/ZonomNameConvertVectorCommon.R")
+source("Src/Reu/trimGmtFilenameToSetname.R")
+source("Src/Reu/autoPruner.R")
+source("Src/Reu/CategoricalDropTip.R")
+source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
+source("Src/Reu/RelaxedRejectionPermFuncs2.R")
+
+
+
+
+
+
+
+
+#Arg help 
+if(isTRUE(as.logical(cmdArgImport('h')))){
+  message("Not Running Script, instead returning ARGs for script.")
+  printArgDocumentation()
+  stop()
+}
+
+
+
+ZonomNameConvertVectorCommon = function(namesVector, 
+                                        toScientific = F, 
+                                        annotationLocation = "Data/mergedData.csv", 
+                                        scientificColumn = NULL, 
+                                        commonColumn = NULL, 
+                                        tipColumn = NULL)
 
 
 #---------------------------------------------------------------------

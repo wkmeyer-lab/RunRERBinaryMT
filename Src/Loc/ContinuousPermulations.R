@@ -1,28 +1,50 @@
 # -- Libraries 
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
+clusterRun = F
+if(!runningLocally){clusterRun = T}
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
 
 
 # -- Usage:
-# This text describes the purpose of the script 
+# This script runs permulations for a continuous phenotype. 
 
-# -- Command arguments list
-# r = filePrefix                      This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                        This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
 # m = mainTreeFilename.txt or .rds    This sets the location of the maintrees file
 # n = numberOfPermulations            This is the number of permulations to run in the script 
-# i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
 # o = outgroupSpecies                 This is the outgroup species with the tip name as it appears on mainTrees$masterTree
+
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
+# - Optional - 
+# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
 # p = <T or F>                        This sets if the script should calculate permulation p vals. ONLY USE THIS IF NOT PARRALLELIZING, as it only considers permulations from this script.
-#----------------
+# - Overrides - 
+# --- End arguments list ---
+#-------------------------------
+
+
 args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'v=F', 'n=20', 'i=Dev', 'o=ornAna2', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 
 # --- Standard start-up code ---
-args = commandArgs(trailingOnly = TRUE)
+if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
 {  # Bracket used for collapsing purposes
+  #Arg help 
+  if(isTRUE(as.logical(cmdArgImport('h')))){
+    message("Not Running Script, instead returning ARGs for script.")
+    printArgDocumentation()
+    stop()
+  }
+  
   #File Prefix
   if(!is.na(cmdArgImport('r'))){                                                #This cmdArgImport script is a way to import arguments from the command line. 
     filePrefix = cmdArgImport('r')

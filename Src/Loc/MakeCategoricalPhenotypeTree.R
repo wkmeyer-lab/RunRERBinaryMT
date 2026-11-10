@@ -1,7 +1,9 @@
 # -- Libraries 
+runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
 clusterRun = F
-clusterRun = T
+if(!runningLocally){clusterRun = T}
 if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
@@ -24,10 +26,10 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # m = mainTreeFilename.txt or .rds                       This sets the location of the maintrees file
 # d = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
 # a = "annotCollumn"                                     This is the column with the phenotype information
+# t = "tipColumn"                                        This sets the column with the tip names as they appear in the maintrees file.
 
 # - Required, Defaults likely acceptable -
 # v = <T or F>                                           This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# t = "tipColumn"                                        This sets the column with the tip names as they appear in the maintrees file.
 # n = "nameColumn"                                       This sets the column with common names of the species. 
 # c = <c("nameOfCategory1","nameOfCategory2")>           This sets a list of category names to be used in the analysis. Species with values not in this list will not be included in the analysis. Include ALL categories to be included (even those merged later).  
 # - Optional - 
@@ -57,8 +59,6 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
-
-
 {  # Bracket used for collapsing purposes
   #Arg help 
   if(isTRUE(as.logical(cmdArgImport('h')))){

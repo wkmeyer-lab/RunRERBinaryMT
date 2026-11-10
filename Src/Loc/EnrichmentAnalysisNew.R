@@ -1,9 +1,11 @@
 # -- Libraries 
+runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
 clusterRun = F
-clusterRun = T
+if(!runningLocally){clusterRun = T}
 if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+
 library(RERconverge)
-library("tools")
+library(tools)
 source("Src/Reu/cmdArgImport.R")
 if(!clusterRun){library(xlsx)}
 

@@ -1,21 +1,41 @@
 # -- Libraries 
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
+runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
+clusterRun = F
+if(!runningLocally){clusterRun = T}
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+
 library(RERconverge)
+library(data.table)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
-library(data.table)
+
 # -- Usage:
-# This text describes the purpose of the script 
+# This script converts permulated trees into per-gene per-permulation results, called "Intermediates". 
 
 # -- Command arguments list
-# r = filePrefix                      This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                        This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# m = mainTreeFilename.txt or .rds    This sets the location of the maintrees file
-# c = <T or F>                        This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. 
-# i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization.
-# t = targetFileInstance              This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
 #----------------
+
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# m = mainTreeFilename.txt or .rds          This sets the location of the maintrees file
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# i = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization.
+# - Optional - 
+# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
+# c = <T or F>                              This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. 
+# - Overrides - 
+# t = targetFileInstance              This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
+
+# --- End arguments list ---
+#-------------------------------
+
+
+
 args = c('r=CategoricalDiet4Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', "i=2") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
 # --- Standard start-up code ---

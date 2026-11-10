@@ -12,66 +12,46 @@ source("Src/Reu/cmdArgImport.R")
 # Species.Name: The scientific name of the species
 # [phenotypeCollumn]: A column (name set by argument) which contains the pehnotype data 
 # (optional)[ScreenColumn]: A column which can be used to select a subset of the data. If a screen column is specified by argument, only species with a "1" in that column will be used to make the tree. 
-# If this file is not named "manualAnnotationsSheet.csv", some functions may break. 
-
-# -- Command arguments list
-# r = filePrefix                           This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                             This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# m = mainTreeFilename.txt or rds          This is the location of the main trees file 
-# a = annotationFileLocation.csv           This is the location of the annotation csv. If not the default "manualAnnotationsSheet.csv", some functions in other scripts may break. 
-# p = phenotypeColumn                      This is the name of the column contianing the phenotype data 
-# t = <"uni" OR "bi">                      This set unidirectional or bidirectional transition 
-# c = <"ancestral" OR "all" OR "terminal"> This sets the clade type to be used in tree creation
-# w = <T or F>                             This sets if the tree should be weighted 
-# s = "screenColumn"                       This sets the column with the screening data
-# n = "nameColumn"                         This sets the column with the tip names as they appear in the maintrees file. 
-# z = <minimum branch length>              This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
-# x = "pruningPrefrenceColumn"             This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
-# y = "c('unprunedtip1', 'unprunedtip2')"  This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
 
 
-#----------------
-args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', "r=EcholocationUpdate2", "t=bi", "p=Echolocation", "c=all", "v=T", "s=Laurasiatheria")
-args = c("m=data/FirstExpressionTrees.rds", "r=LiverExpression", "p=Carnivory", "t=bi", "c=all", "w=F", "v=T", "a=Data/ExpressionAnnots.csv")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHApplesToApples", "p=Carnivory", "t=bi", "c=all", "w=F", "v=T", "a=Data/ExpressionAnnots.csv")
-
-args = c("m=Data/UNICORNsDemo.txt", "r=ActueLoafs", "a=Results/ToothData.csv", "p=FCT_AL")
-
-
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia")
-
-args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "a=Data/MergedData.csv", "n=HillerName")
-args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=HillerName")
-
-args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "a=Data/MergedData.csv", "n=HillerName")
-args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=HillerName")
-
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvAllZoonomia", "p=CarnBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=HvAllZoonomia", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CIvAllZoonomia", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
-
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
-
-args = c("r=CVHDemo", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "a=Data/MergedData.csv", "p=CarnFish_Herbs", "t=bi", "n=Zoonomia")
-
-args = c("r=harshalBats", "m=Data/batDemoMaintrees.rds", "a=Data/harshalpheno.csv", "p=Phenotype", "t=bi", "n=Species", "v=T")
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# m = mainTreeFilename.txt or rds           This is the location of the main trees file 
+# d = spreadSheetFilename.csv               This is the location of the annotation csv. If not the default "manualAnnotationsSheet.csv", some functions in other scripts may break. 
+# a = annotCollumn                          This is the name of the column contianing the phenotype data 
+# t = tipColumn                             This sets the column with the tip names as they appear in the maintrees file.
 
 
-#pruned reruns
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHZoonomia", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CIvAllZoonomia", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvAllZoonomia", "p=CarnBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
-args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=HvAllZoonomia", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
-
-args = c("m=data/newHillerMainTrees.rds", "r=CvHHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
-args = c("m=data/newHillerMainTrees.rds", "r=CIvAllHiller", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
-args = c("m=data/newHillerMainTrees.rds", "r=CvAllHiller", "p=CarnBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
-args = c("m=data/newHillerMainTrees.rds", "r=HvAllHiller", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
+# - Required, Defaults likely acceptable -
+# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# n = "nameColumn"                          This sets the column with common names of the species. 
+# - Optional - 
+# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
+# s = "screenColumn"                        This sets the column with the screening data
+# n = <"uni" OR "bi">                       This set unidirectional or bidirectional transition 
+# c = <"ancestral" OR "all" OR "terminal">  This sets the clade type to be used in tree creation
+# w = <T or F>                              This sets if the tree should be weighted 
+# - Pruning -
+# z = <minimum branch length>               This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
+# x = "pruningPrefrenceColumn"              This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
+# y = "c('unprunedtip1', 'unprunedtip2')"   This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
+# - Overrides - 
+# --- End arguments list ---
+#-------------------------------
 
 
 # --- Standard start-up code ---
-args = commandArgs(trailingOnly = TRUE)
+if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
 {  # Bracket used for collapsing purposes
+  #Arg help 
+  if(isTRUE(as.logical(cmdArgImport('h')))){
+    message("Not Running Script, instead returning ARGs for script.")
+    printArgDocumentation()
+    stop()
+  }
+  
   #File Prefix
   if(!is.na(cmdArgImport('r'))){                                                #This cmdArgImport script is a way to import arguments from the command line. 
     filePrefix = cmdArgImport('r')
@@ -110,7 +90,8 @@ args = commandArgs(trailingOnly = TRUE)
   weightValue = FALSE
   useScreen = F
   screenCollumn = NA
-  nameCollumn = "tipName"
+  nameCollumn = NULL
+  tipCol = NULL
   usingPruning = F
   pruningCutoff = NA
   pruningPrefrenceColumn = NA
@@ -123,22 +104,22 @@ args = commandArgs(trailingOnly = TRUE)
   }
   
   #Annotations Location
-  if(!is.na(cmdArgImport('a'))){
-    annotationsLocation = cmdArgImport('a')
+  if(!is.na(cmdArgImport('d'))){
+    annotationsLocation = cmdArgImport('d')
   }else{
     message("No maintrees arg, using default 'manualAnnotationsSheet.csv' ")
   }
   
   #Phenotype Column
-  if(!is.na(cmdArgImport('p'))){
-    phenotypeColumn = cmdArgImport('p')
+  if(!is.na(cmdArgImport('a'))){
+    phenotypeColumn = cmdArgImport('a')
   }else{
     stop("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE COLLUMN")
   }
   
   #Transition value
-  if(!is.na(cmdArgImport('t'))){
-    transitionValue = cmdArgImport('t')
+  if(!is.na(cmdArgImport('n'))){
+    transitionValue = cmdArgImport('n')
   }else{
     message("Using default bidirectional transistion")
   }
@@ -165,11 +146,17 @@ args = commandArgs(trailingOnly = TRUE)
     message("Screen Column not specified, not using screen column.")
   }
 
-  #Name column 
-  if(!is.na(cmdArgImport('n'))){
-    nameCollumn = cmdArgImport('n')
+  #Tip Column
+  if(!is.na(cmdArgImport('t'))){
+    tipCol = cmdArgImport('t')
   }else{
-    message("Name Column not specified, using 'tipName'.")
+    message("Tip Column not specified, using 'tipName'.")
+  }
+  #Name Column
+  if(!is.na(cmdArgImport('n'))){
+    nameColumn = cmdArgImport('n')
+  }else{
+    message("Name Column not specified, using default list.")
   }
   
   #Pruning cutoff
@@ -213,7 +200,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   if(useScreen){                                                                #if using a screening column, 
     relevantSpecies = relevantSpecies[relevantSpecies[screenCollumn] == 1,]     #only include species with a 1 in the screen column
   }                                                                             
-  relevantSpeciesNames = relevantSpecies[[nameCollumn]]                                 #use the species names 
+  relevantSpeciesNames = relevantSpecies[[tipCol]]                                 #use the species names 
   relevantNamesNA = which(is.na(relevantSpeciesNames))
   if(length(relevantNamesNA) > 0){  relevantSpeciesNames = relevantSpeciesNames[-relevantNamesNA]}
 
@@ -223,7 +210,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     pruningProtectionSpecies = NA
     if(!is.na(pruningPrefrenceColumn)){
       pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
-      pruningProtectionSpecies = pruningProtectionRows[[nameCollumn]]
+      pruningProtectionSpecies = pruningProtectionRows[[tipCol]]
       if(all(is.logical(manualAnnots[[pruningPrefrenceColumn]]))){
         pruningProtection = T
       }else{ 
@@ -236,14 +223,14 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
     workingTree = mainTrees$masterTree
     workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% relevantSpeciesNames))
     
-    fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation)
+    fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = tipCol, nameConversionData = annotationsLocation)
     workingTree = drop.tip(workingTree, fewGeneSpecies)
     
     pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
     pdf(pruningFilename, width=16, height = 14)
-    prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation, preDroppedTips = fewGeneSpecies)
+    prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = pruningProtectionSpecies, nameConversionColumn = tipCol, nameConversionData = annotationsLocation, preDroppedTips = fewGeneSpecies)
     if(!pruningProtection){
-      prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameCollumn, nameConversionData = annotationsLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+      prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = tipCol, nameConversionData = annotationsLocation, preDroppedTips = droppedTips, originalTree = workingTree)
     }
     dev.off()
     
@@ -256,14 +243,14 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
 }else{
   relevantSpecieslist = readRDS(speciesFilterFilename)
   relevantSpeciesNames = relevantSpecieslist
-  relevantSpecies = manualAnnots[ manualAnnots[[nameCollumn]] %in% relevantSpecieslist,]
+  relevantSpecies = manualAnnots[ manualAnnots[[tipCol]] %in% relevantSpecieslist,]
 }
 
 # - Setup foreground Species --
 
 foregroundSpeciesAnnot = relevantSpecies[ relevantSpecies[[phenotypeColumn]] %in% 1,] #set the foreground species to spcies with a 1 in the annotation column
 
-foregroundNames = foregroundSpeciesAnnot[[nameCollumn]]
+foregroundNames = foregroundSpeciesAnnot[[tipCol]]
 foregroundNamesNA = which(is.na(foregroundNames))
 if(length(foregroundNamesNA) > 0){  foregroundNames = foregroundNames[-foregroundNamesNA]}
 
@@ -323,13 +310,13 @@ testTreeDisplayable = readTest
 testTreeDisplayable$edge.length = replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==0, 0.5)
 testTreeDisplayable$edge.length = replace(testTreeDisplayable$edge.length, testTreeDisplayable$edge.length==1, 4)
 
-source("Src/Reu/plotBinaryTree.R")
+#source("Src/Reu/plotBinaryTree.R")
 
 binaryTreePdfname = paste(outputFolderName, filePrefix, "BinaryForegroundTree.pdf", sep="")
-pdf(binaryTreePdfname, width=8, height = 14)
-plotBinaryTree(mainTrees, readTest, foregroundNames, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameCollumn)
-plotBinaryTree(mainTrees, readTest, foregroundNames, convertNames = F, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = nameCollumn)
+#pdf(binaryTreePdfname, width=8, height = 14)
+#plotBinaryTree(mainTrees, readTest, foregroundNames, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = tipCol)
+#plotBinaryTree(mainTrees, readTest, foregroundNames, convertNames = F, mainTitle = paste(filePrefix, "Binary", "Foreground", "Tree"), tipColumn = tipCol)
 plotTree(testTreeDisplayable)
-dev.off()
+#dev.off()
 
 

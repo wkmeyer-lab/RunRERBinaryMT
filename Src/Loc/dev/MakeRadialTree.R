@@ -5,7 +5,7 @@ library(RERconverge)
 library(utils)
 library(tidytree)
 library(ape)
-source("Src/Reu/ZoonomTreeNameToCommon.R")
+source("Src/Reu/ZonomNameConvertVectorCommon.R")
 source("Src/Reu/cmdArgImport.R")
 nodeid.tbl_tree <- utils::getFromNamespace("nodeid.tbl_tree", "tidytree")
 rootnode.tbl_tree <- utils::getFromNamespace("rootnode.tbl_tree", "tidytree")
@@ -14,19 +14,27 @@ offspring.tbl_tree_item <- utils::getFromNamespace(".offspring.tbl_tree_item", "
 child.tbl_tree <- utils::getFromNamespace("child.tbl_tree", "tidytree")
 parent.tbl_tree <- utils::getFromNamespace("parent.tbl_tree", "tidytree")
 
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                                         REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# m = mainTreeFilename.txt or .rds                       This sets the location of the maintrees file
+# d = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
+# c = c("Category", "names", "of", "branch", "lengths")  This argument is technically NOT required, but is highly advised. Without it, the categories will displayed a 1,2,etc.
+# t = "tipColumn"                                        This sets the column with the tip names as they appear in the maintrees file.
 
-args =c("r=CategoricalInsVertivoreTree", 'p=c("darkgreen", "darkblue", "black", "red")', 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
-args =c("r=makeLalithaTree", 'p=c("darkgreen", "darkblue", "black")', 'c=c("1", "2", "3")', 'n=ZoonomiaTip', "l=Phen", "i= T")
+# - Required, Defaults likely acceptable -
+# v = <T or F>                                           This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# n = "nameColumn"                                       This sets the column with common names of the species. 
+# - Optional - 
+# h = <T>                                                This ARG causes the script to return its ARG list, instead of running the script. 
+# b = c( "colors", "in ","the", "palette")               This sets the color palette used in the tree graphs. 
+# l = "legendLabel                                       This sets the legend label text.
+# - Overrides - 
+# i = imageAllTips <T or F>                              This sets if all tips should have a phylopic, or if it should use clade-level phylopics. Not that clade-level phylopics requires manual editing of the script to function. 
+# --- End arguments list ---
+#-------------------------------
 
-args =c("r=CategoricalInsVertivoreTreeLiamInference", 'p=c("darkgreen", "darkblue", "black", "red")', 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
-args =c("r=ComplexDietCentralAnalysis", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
-
-args =c("r=ComplexDietCentralAnalysis", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
-args =c("r=LeahCategoricalRERNew", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=Species', "l=Diet", "i=T", "d=Data/LeahFakeMainTrees.rds")
-args =c("r=PosterTreeNew", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=SciencificName', "l=Diet", "i=T", "m=Data/LeahFakeMainTrees.rds", "d=Data/LeahPosterData.csv")
-
-
-args =c("r=ComplexDietCentralAnalysisSimplify2", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
 
 
 # -- Standard Startup code -- 
@@ -70,7 +78,8 @@ args =c("r=ComplexDietCentralAnalysisSimplify2", 'c=c("Herbivore", "Invertivore"
   mainTreesLocation = "Data/zoonomiaAllMammalsTrees.rds"
   palette(c( "#1b9e77", "#7570b3", "#000000", "#e7298a"))
   spreadSheetLocation = "Data/mergedData.csv"
-  nameColumn = "tipName"
+  nameColumn = NULL
+  tipCol  = NULL
   CategoryReplacements = NULL
   legendText = NA
   imageAllTips = T
@@ -83,8 +92,8 @@ args =c("r=ComplexDietCentralAnalysisSimplify2", 'c=c("Herbivore", "Invertivore"
   }
   
   #Pallette
-  if(!all(is.na(cmdArgImport('p')))){
-    paletteValues = cmdArgImport('p')
+  if(!all(is.na(cmdArgImport('b')))){
+    paletteValues = cmdArgImport('b')
     palette(paletteValues)
   }else{
     message("No Palette Provided, using: sharpgreen, baleblue, black, pink")
@@ -97,11 +106,17 @@ args =c("r=ComplexDietCentralAnalysisSimplify2", 'c=c("Herbivore", "Invertivore"
     message("Using Data/mergedData.csv spreadsheet")
   }
   
+  #Tip Column
+  if(!is.na(cmdArgImport('t'))){
+    tipCol = cmdArgImport('t')
+  }else{
+    message("Tip Column not specified, using 'tipName'.")
+  }
   #Name Column
   if(!is.na(cmdArgImport('n'))){
     nameColumn = cmdArgImport('n')
   }else{
-    message("Name Column not specified, using 'tipName'.")
+    message("Name Column not specified, using default list.")
   }
   
   #Category replacements 
@@ -131,20 +146,20 @@ args =c("r=ComplexDietCentralAnalysisSimplify2", 'c=c("Herbivore", "Invertivore"
 
 
 if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
-#commonMainTrees = mainTrees
-#commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn, plot = F)
-#commonMasterTree = commonMainTrees$masterTree
-commonMasterTree = ZoonomTreeNameToCommon(mainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn, plot = F)
+commonMainTrees = mainTrees
+commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(commonMainTrees$masterTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
+commonMasterTree = commonMainTrees$masterTree
 
 categoricalCommonTreeFilename = paste(outputFolderName, filePrefix, "CategoricalCommonTree.rds", sep="") #make a filename based on the prefix
 commonCategoricalTree = readRDS(categoricalCommonTreeFilename)
-#scientificCategoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalScientificTree.rds", sep="") #make a filename based on the prefix
-#scientificCategoricalTree = readRDS(scientificCategoricalTreeFilename)
-scientificCategoricalTree = ZoonomTreeNameToCommon(commonCategoricalTree, manualAnnotLocation = spreadSheetLocation, tipCol = "CommonName", scientific = T, scientificCol = "Scientific_Binomial", plot = F)
+categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
+categoricalTree = readRDS(categoricalTreeFilename)
+scientificCategoricalTree = categoricalTree
+scientificCategoricalTree = ZonomNameConvertVectorCommon(scientificCategoricalTree$tip.label, annotationLocation = spreadSheetLocation, toScientific = T)
 
 commonMasterTrimmed = drop.tip(commonMasterTree, commonMasterTree$tip.label[!commonMasterTree$tip.label %in% commonCategoricalTree$tip.label])
 if(!is.rooted(commonCategoricalTree)){commonMasterTrimmed = unroot(commonMasterTrimmed)}
-scientificMasterTrimmed = ZoonomTreeNameToCommon(commonMasterTrimmed, manualAnnotLocation = spreadSheetLocation, tipCol = "CommonName", scientific = T, scientificCol = "Scientific_Binomial", plot = F)
+scientificMasterTrimmed = ZoonomTreeNameToCommon(commonMasterTrimmed, annotationLocation = spreadSheetLocation, tipColumn = "CommonName", toScientific = T)
 if(!is.rooted(scientificCategoricalTree)){scientificMasterTrimmed = unroot(scientificMasterTrimmed)}
 
 commonCategoricalTreeEdgeLengths = commonCategoricalTree$edge.length

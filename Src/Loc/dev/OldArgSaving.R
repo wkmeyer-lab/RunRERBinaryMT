@@ -109,7 +109,104 @@ MakeCategoricalPhenotype.R
 # e = <T or F>                                           This sets if alternate species sets should be created. 
 
 
+#---------------------------------------------------------------------
+# --- MakeRadialTree.R --- 
+# --------------------------------------------------------------------
 
+
+args =c("r=CategoricalInsVertivoreTree", 'p=c("darkgreen", "darkblue", "black", "red")', 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
+args =c("r=makeLalithaTree", 'p=c("darkgreen", "darkblue", "black")', 'c=c("1", "2", "3")', 'n=ZoonomiaTip', "l=Phen", "i= T")
+
+args =c("r=CategoricalInsVertivoreTreeLiamInference", 'p=c("darkgreen", "darkblue", "black", "red")', 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
+args =c("r=ComplexDietCentralAnalysis", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
+
+args =c("r=ComplexDietCentralAnalysis", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
+args =c("r=LeahCategoricalRERNew", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=Species', "l=Diet", "i=T", "d=Data/LeahFakeMainTrees.rds")
+args =c("r=PosterTreeNew", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=SciencificName', "l=Diet", "i=T", "m=Data/LeahFakeMainTrees.rds", "d=Data/LeahPosterData.csv")
+
+
+args =c("r=ComplexDietCentralAnalysisSimplify2", 'c=c("Herbivore", "Invertivore", "Omnivore", "Vertivore")', 'n=ZoonomiaTip', "l=Diet", "i=F" )
+
+
+#---------------------------------------------------------------------
+# --- MakeBinaryPhenotypeTree.R --- 
+# --------------------------------------------------------------------
+#----------------
+args = c('m=data/RemadeTreesAllZoonomiaSpecies.rds', "r=EcholocationUpdate2", "t=bi", "p=Echolocation", "c=all", "v=T", "s=Laurasiatheria")
+args = c("m=data/FirstExpressionTrees.rds", "r=LiverExpression", "p=Carnivory", "t=bi", "c=all", "w=F", "v=T", "a=Data/ExpressionAnnots.csv")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CVHApplesToApples", "p=Carnivory", "t=bi", "c=all", "w=F", "v=T", "a=Data/ExpressionAnnots.csv")
+
+args = c("m=Data/UNICORNsDemo.txt", "r=ActueLoafs", "a=Results/ToothData.csv", "p=FCT_AL")
+
+
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia")
+
+args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "a=Data/MergedData.csv", "n=HillerName")
+args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=HillerName")
+
+args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "a=Data/MergedData.csv", "n=HillerName")
+args = c("m=data/newHillerMainTrees.rds", "r=CvHNewHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=HillerName")
+
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvAllZoonomia", "p=CarnBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=HvAllZoonomia", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CIvAllZoonomia", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia")
+
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHNew", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
+
+args = c("r=CVHDemo", "m=data/RemadeTreesAllZoonomiaSpecies.rds", "a=Data/MergedData.csv", "p=CarnFish_Herbs", "t=bi", "n=Zoonomia")
+
+args = c("r=harshalBats", "m=Data/batDemoMaintrees.rds", "a=Data/harshalpheno.csv", "p=Phenotype", "t=bi", "n=Species", "v=T")
+
+
+#pruned reruns
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvHZoonomia", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CIvAllZoonomia", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=CvAllZoonomia", "p=CarnBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/RemadeTreesAllZoonomiaSpecies.rds", "r=HvAllZoonomia", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=Zoonomia", "z=0.01", "x=HillerZoonomiaOverlap")
+
+args = c("m=data/newHillerMainTrees.rds", "r=CvHHiller", "p=CarnFish_Herbs", "t=bi", "c=all", "w=F", "v=T", "s=Laurasiatheria", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/newHillerMainTrees.rds", "r=CIvAllHiller", "p=CarnInsectBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/newHillerMainTrees.rds", "r=CvAllHiller", "p=CarnBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
+args = c("m=data/newHillerMainTrees.rds", "r=HvAllHiller", "p=HerbBinary", "t=bi", "c=all", "w=F", "v=T", "s=LaurasiatheriaFilter", "a=Data/MergedData.csv", "n=HillerName", "z=0.01", "x=HillerZoonomiaOverlap")
+
+
+
+#---------------------------------------------------------------------
+# --- MakeContinousPhenotypeTree.R --- 
+# --------------------------------------------------------------------
+
+
+args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=MaturityPercentage','v=T')
+args = c('r=MaturityLogRaw', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=logCombinedMaturity','v=T', 'n=FaName')
+args = c('r=PankajBodysize', 'm=data/newHillerMainTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=combinedBodysize','v=T', 'n=FaName')
+
+args = c('r=meanTemp', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=panTheriaTemperature','v=T', 'n=ZoonomiaTip')
+
+args = c('r=ContinousCdcaInv', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Inv','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaVend', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vend','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaVect', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vect','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaVfish', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vfish','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaVunk', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Vunk','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaScav', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Scav','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaFruit', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Fruit','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaNect', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Nect','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaSeed', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.Seed','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaPlantO', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=Diet.PlantO','v=F', 'n=ZoonomiaTip')
+
+args = c('r=ContinousCdcaCp', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=cp','v=F', 't=ZoonomiaTip')
+args = c('r=ContinousCdcaCp', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=cp','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaEe', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=ee','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaCf', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=cf','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaAsh', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=ash','v=F', 'n=ZoonomiaTip')
+args = c('r=ContinousCdcaNfe', 'm=data/zoonomiaAllMammalsTrees.rds', 'a=nfe','v=F', 'n=ZoonomiaTip')
+
+args = c('r=ContinousMaxAge', 'm=data/zoonomiaAllMammalsTrees.rds', 'd=Data/MaturityLifespanData.csv', 'a=MaximumAge','v=F', 'n=ZoonomiaTip')
+
+args = c('r=HarshalContinousRER', 'm=Data/HarshalFakeMainTrees.rds', 
+         'd=Data/VGP_ALDH1A1_Accession.csv', 
+         'n=Accession',
+         'a=ALDH1A1',
+         'v=T', 't=ER', 'l=T')
 
 
 #---------------------------------------------------------------------

@@ -1,25 +1,44 @@
 # -- Libraries 
+runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
 clusterRun = F
-clusterRun = T
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4") }#add path to custom libraries to searched locations
+if(!runningLocally){clusterRun = T}
+if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+
 library(RERconverge)
+library(data.table)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
-library(data.table)
+
 
 # -- Usage:
 # Script is used to combine permulations into a single file. 
 
 # -- Command arguments list
-# r = filePrefix                      This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                        This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+
+
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
 # i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # n = <number Of Permulations>        This is the number of permulation files the script will try to combine
 # s = <Start number>                  This is the permulation number to start at. Used for parrallelization. 
-# t = <PermulationPrefix>             This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
+# - Optional - 
+# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
 # c = <T or F>                        This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # p = <T or F>                        This value determines whether or not to calculate the pValues.
 # o = <T or F>                        This value is used to run only the p value calculation, and not the combination. 
+# - Overrides - 
+# t = <PermulationPrefix>             This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
+
+# --- End arguments list ---
+#-------------------------------
+
+
+
 
 #----------------
 args = (c('r=CategoricalDiet3Phen', "n=2", "t=Dev"))
