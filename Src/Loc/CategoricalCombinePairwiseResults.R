@@ -9,14 +9,27 @@ library(RERconverge)
 source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/trimGmtFilenameToSetname.R")
 
-# -- Command arguments list
-# r = filePrefix                            This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# s = pairwise Sets                         This sets the subdirectories that the code should be run using. 
-# g = gene set                              This sets the gene set (set name or file name) that the script should be run on, or "gene" for use on genes. 
-# c = significance cutoff                   This sets the cutoff for inclusion in the significant columns
-# w = writeData                             This sets if the data should be saved, potentially overwriting old combinations
-# p = usePermulations                       This sets if permulation data should be used. If set to "A", it will add permulations data, but use the unpermulationed data for significance. 
+
+
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                              REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# g = c("gene", "sets")                       This sets the gene set (set name or file name) that the script should be run on, or "gene" for use on genes. 
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                                This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# s = pairwise Sets                           This sets the subdirectories that the code should be run using. 
+# w = writeData  <T or F>                     This sets if the data should be saved, potentially overwriting old combinations
+# - Optional - 
+# h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
+# p = usePermulations                         This sets if permulation data should be used. If set to "A", it will add permulations data, but use the unpermulationed data for significance. 
+# c = significance cutoff                     This sets the cutoff for inclusion in the significant columns
+# - Overrides - 
+# --- End arguments list ---
+#-------------------------------
+
+
 
 
 args = c('r=ComplexDietCentralAnalysisSimplify', 'g=c("gene", "KeggReactome")')
@@ -25,6 +38,13 @@ args = c('r=ComplexDietCentralAnalysisSimplify', 'g=c("gene", "KeggReactome")')
   # -- Standard Startup code -- 
   if(clusterRun)args = commandArgs(trailingOnly = TRUE)
   {  # Bracket used for collapsing purposes
+    #Arg help 
+    if(isTRUE(as.logical(cmdArgImport('h')))){
+      message("Not Running Script, instead returning ARGs for script.")
+      printArgDocumentation()
+      stop()
+    }
+    
     #File Prefix
     if(!is.na(cmdArgImport('r'))){
       filePrefix = cmdArgImport('r')

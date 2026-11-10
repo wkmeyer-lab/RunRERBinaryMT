@@ -90,6 +90,13 @@ args = c("r=ComplexDietCentralAnalysisSimplify2",
 # -- Standard Startup code -- 
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
+  #Arg help 
+  if(isTRUE(as.logical(cmdArgImport('h')))){
+    message("Not Running Script, instead returning ARGs for script.")
+    printArgDocumentation()
+    stop()
+  }
+  
   #File Prefix
   if(!is.na(cmdArgImport('r'))){
     filePrefix = cmdArgImport('r')

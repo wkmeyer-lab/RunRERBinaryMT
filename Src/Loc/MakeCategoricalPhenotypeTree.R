@@ -5,7 +5,9 @@ if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add pa
 library(RERconverge)
 library(tools)
 source("Src/Reu/cmdArgImport.R")
-source("Src/Reu/ZoonomTreeNameToCommon.R")
+source("Src/Reu/ZonomNameConvertVectorCommon.R")
+
+
 # -- Usage:
 # This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
 # In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is specified using the n argument, and the column with common names is named "CommonName". 
@@ -15,43 +17,56 @@ source("Src/Reu/ZoonomTreeNameToCommon.R")
 #Rather than being in quotes and separated by commas. 
 #Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
 
-
-# -- Command arguments list
-# - required -
+#-------------------------------
+# --- Command arguments list ---
+# - Required -
 # r = filePrefix                                         This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                                           This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # m = mainTreeFilename.txt or .rds                       This sets the location of the maintrees file
 # d = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
 # a = "annotCollumn"                                     This is the column with the phenotype information
-# n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
-# c = <c("nameOfCategory1,"nameOfCategory2")>            This is the list of category names, include ALL categories to be included (even those merged later)
-# - optional - 
-# u = list(c("replace1", "with1"),c("replace2, with2"))
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                                           This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# t = "tipColumn"                                        This sets the column with the tip names as they appear in the maintrees file.
+# n = "nameColumn"                                       This sets the column with common names of the species. 
+# c = <c("nameOfCategory1","nameOfCategory2")>           This sets a list of category names to be used in the analysis. Species with values not in this list will not be included in the analysis. Include ALL categories to be included (even those merged later).  
+# - Optional - 
+# h = <T>                                                This ARG causes the script to return its ARG list, instead of running the script. 
+# u = list(c("replace1", "with1"),c("replace2, with2"))  This combined multiple entries to a new value. The new value can be an existing category, or a new label. 
 # o = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
 # s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
-# t = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
+# k = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
 # g = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 # b = c( "colors", "in ","the", "palette")               This sets the color palette used in the tree graphs. 
-# - pruning - 
+# - Pruning - 
 # z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
 # x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
 # y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
 # p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
-# l = <T or F>                                           DO NOT USE UNLESS SPECIFIED -- This determines if the liam infrence nodes should be added 
 # e = <T or F>                                           This sets if alternate species sets should be created. 
+# l = <T or F>                                           DO NOT USE UNLESS SPECIFIED -- This determines if the liam infrence nodes should be added 
+# --- End arguments list ---
+#-------------------------------
 
-#----------------
 
 
 
 
-args = c('r=walkthroughExample', 'v=F', 'm=Data/toyTrees.rds', 'd=Data/examplePhenotypeData.csv', 'a=myPhenotype', 'n=toyTips', 'c=c("Land", "Aquatic", "Flying", "SemiAquatic")', 'u=list(c("SemiAquatic", "Aquatic"))')
 #args = c('r=Demo', 'v=T', 'm=C:/Users/mit221/AppData/Local/R/win-library/4.2/RERconverge/extdata/SubsetMammalGeneTrees.txt', 'd=Results/DemoMergedData.csv', 'a=DemoDietPhenotype', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'n=demoTreeTipName')
 
 
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
+
+
 {  # Bracket used for collapsing purposes
+  #Arg help 
+  if(isTRUE(as.logical(cmdArgImport('h')))){
+    message("Not Running Script, instead returning ARGs for script.")
+    printArgDocumentation()
+    stop()
+  }
+  
   #File Prefix
   if(!is.na(cmdArgImport('r'))){
     filePrefix = cmdArgImport('r')
@@ -91,7 +106,8 @@ screenColumn = NULL
 modelType = "ER"
 ancestralTrait = NULL
 substitutions = NULL
-nameColumn = "tipName"
+tipCol = "tipName"
+nameColumn = NULL
 usingPruning = F
 usingAutoPruning = F
 manualPruningProtections = NULL
@@ -130,10 +146,11 @@ colorSet = c( "darkgreen", "darkblue","black", "red", "yellow")
   }
   
   #Category list 
-  if(!is.null(cmdArgImport('c'))){
+  if(!is.na(cmdArgImport('c'))){
     categoryList = cmdArgImport('c')
   }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY CATEGORIES")
+    message("Using all available categories in phenotype column.")
+    categoryList = NULL
   }
   
   #Screen Column
@@ -145,8 +162,8 @@ colorSet = c( "darkgreen", "darkblue","black", "red", "yellow")
   }
   
   #Model Type
-  if(!is.na(cmdArgImport('t'))){
-    modelType = cmdArgImport('t')
+  if(!is.na(cmdArgImport('k'))){
+    modelType = cmdArgImport('k')
   }else{
     message("No model specified, using ER.")
   }
@@ -170,11 +187,17 @@ colorSet = c( "darkgreen", "darkblue","black", "red", "yellow")
   }else{
     message("No merges provided")
   }
+  #Tip Column
+  if(!is.na(cmdArgImport('t'))){
+    tipCol = cmdArgImport('t')
+  }else{
+    message("Tip Column not specified, using 'tipName'.")
+  }
   #Name Column
   if(!is.na(cmdArgImport('n'))){
     nameColumn = cmdArgImport('n')
   }else{
-    message("Name Column not specified, using 'tipName'.")
+    message("Name Column not specified, using default list.")
   }
 
   #Pruning cutoff
@@ -242,6 +265,14 @@ palette(colorSet)
 manualAnnots = read.csv(spreadSheetLocation)                      #load the manual annotations file holding the phenotype data
 manualAnnots[[annotColumn]] = trimws(manualAnnots[[annotColumn]])               #trim away whitespace to allow for better matching 
 
+#Use all categories, if no categories specified. 
+if(is.null(categoryList)){
+  categoryList = unique(manualAnnots[[annotColumn]])
+  message("Using all categories in phenotype column.")
+  print(categoryList)
+}
+
+
 # - Merge hyrbid of either substituted phenotypes or merge-only phenotypes - 
 if(!is.null(substitutions) & !all(is.na(substitutions))){                                                    #Consider species with multiple combined categories as the merged category
   for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
@@ -277,8 +308,8 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   if(useScreen){                                                                #if using a screening collumn 
     relevantSpecies = relevantSpecies[ relevantSpecies[[screenColumn]] %in% 1, ]  #remove all species not positive for that collumn 
   }
-  relevantSpecies = relevantSpecies[!relevantSpecies[[nameColumn]] %in% "", ]          #remove any species without an FA name (not on the master tree)
-  speciesFilter = relevantSpecies[[nameColumn]]                                       #make a list of the master tree tip labels of the included species
+  relevantSpecies = relevantSpecies[!relevantSpecies[[tipCol]] %in% "", ]          #remove any species without an FA name (not on the master tree)
+  speciesFilter = relevantSpecies[[tipCol]]                                       #make a list of the master tree tip labels of the included species
   if(usingPruning){
     if(usingAutoPruning){
       source("Src/Reu/autoPruner.R")
@@ -291,7 +322,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
         }
         
         pruningProtectionRows = manualAnnots[which(as.logical(manualAnnots[[pruningPrefrenceColumn]])),]
-        pruningProtectionSpecies = pruningProtectionRows[[nameColumn]]
+        pruningProtectionSpecies = pruningProtectionRows[[tipCol]]
       }
       allProtectedSpecies = append(pruningProtectionSpecies, manualPruningProtections)
       if(all(is.null(allProtectedSpecies))){allProtectedSpecies = ""}
@@ -299,7 +330,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
       workingTree = mainTrees$masterTree
       workingTree = drop.tip(workingTree, which(!workingTree$tip.label %in% speciesFilter))
       
-      fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation)
+      fewGeneSpecies = dropFewGeneSpecies(mainTrees, workingTree, nameConversionColumn = tipCol, nameConversionData = spreadSheetLocation)
       if(length(which(fewGeneSpecies %in% allProtectedSpecies)) > 0){
         fewGeneSpecies = fewGeneSpecies[-which(fewGeneSpecies %in% allProtectedSpecies)]
       }
@@ -308,9 +339,9 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
       
       pruningFilename = paste(outputFolderName, filePrefix, "PruningTree.pdf", sep="")
       pdf(pruningFilename, width = 16, height = length(workingTree$tip.label)/8)
-      prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = allProtectedSpecies, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
+      prunedTree = autopruner(workingTree, dropValue = pruningCutoff, tipsToKeep = allProtectedSpecies, nameConversionColumn = tipCol, nameConversionData = spreadSheetLocation, preDroppedTips = fewGeneSpecies)
       if(!pruningProtection){
-        prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = nameColumn, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
+        prunedTree = autopruner(prunedTree, dropValue = pruningCutoff, tipsToKeep = manualPruningProtections, nameConversionColumn = tipCol, nameConversionData = spreadSheetLocation, preDroppedTips = droppedTips, originalTree = workingTree)
       }
       dev.off()
     }
@@ -335,7 +366,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   
   saveRDS(speciesFilter, file = speciesFilterFilename)                          #save that as the species filter
   
-  irrelevantSpecies = manualAnnots[! manualAnnots[[nameColumn]] %in% speciesFilter,]
+  irrelevantSpecies = manualAnnots[! manualAnnots[[tipCol]] %in% speciesFilter,]
 }else{ #if not, use the existing one 
   relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
   speciesFilter = relevantSpecieslist                                           #make the speciesFilter object for later 
@@ -343,12 +374,12 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
   if(useScreen){                                                                #if using a screening collumn 
     relevantSpecies = relevantSpecies[ relevantSpecies[[screenColumn]] %in% 1, ]  #remove all species not positive for that collumn 
   }
-  relevantSpecies = relevantSpecies[!relevantSpecies[[nameColumn]] %in% "", ]   
+  relevantSpecies = relevantSpecies[!relevantSpecies[[tipCol]] %in% "", ]   
 }
 
 # - Phenotype Vector - 
-filteredSpecies = relevantSpecies[relevantSpecies[[nameColumn]] %in% speciesFilter, ] 
-speciesNames = filteredSpecies[[nameColumn]]                                         #Exract the tip name of each species
+filteredSpecies = relevantSpecies[relevantSpecies[[tipCol]] %in% speciesFilter, ] 
+speciesNames = filteredSpecies[[tipCol]]                                         #Exract the tip name of each species
 speciesCategories = filteredSpecies[[annotColumn]]                              #extract the category of each species (in same order)
 
 phenotypeVector = speciesCategories                                             #combine those into⌄
@@ -368,10 +399,10 @@ saveRDS(phenotypeVector, file = phenotypeVectorFilename)                        
 if(!useLiam){
   # - Make common name versions of objects (used in visualization) - 
   commonMainTrees = mainTrees
-  commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(commonMainTrees$masterTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+  commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(commonMainTrees$masterTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
   commonPhenotypeVector = phenotypeVector
-  names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
-  commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+  names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
+  commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
   
   # - Categorical Tree - 
   treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
@@ -409,10 +440,10 @@ if(!useLiam){
   
   # - Make common name versions of objects (used in visualization) - 
   commonMainTrees = mainTrees
-  commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+  commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(commonMainTrees$masterTree$tip.label, manualAnnotLocation = spreadSheetLocation, tipCol = tipCol, commonColumn = nameColumn)
   commonPhenotypeVector = phenotypeVector
-  names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
-  commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+  names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
+  commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
   
   # - Categorical Tree - 
   treeImageFilename = paste(outputFolderName, filePrefix, "CategoricalTree.pdf", sep="") #make a filename based on the prefix
@@ -448,8 +479,8 @@ if(!useLiam){
 }
 
 
- 
-scientificCategoricalTree = ZoonomTreeNameToCommon(commonCategoricalTree, manualAnnotLocation = spreadSheetLocation, tipCol = "CommonName", scientific = T, scientificCol = "Scientific_Binomial", plot = F)
+scientificCategoricalTree = categoricalTree
+scientificCategoricalTree$tip.label = ZonomNameConvertVectorCommon(commonCategoricalTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = tipCol, toScientific = T)
 
 categoricalTreeFilename = paste(outputFolderName, filePrefix, "CategoricalTree.rds", sep="") #make a filename based on the prefix
 saveRDS(categoricalTree, categoricalTreeFilename)                               #save the tree
@@ -513,7 +544,7 @@ if(generateAlternates){
     
     phenotypeSizes = table(phenotypeVector)
     
-    fullSpeciesNames = relevantSpecies[[nameColumn]]                                         #Exract the tip name of each species
+    fullSpeciesNames = relevantSpecies[[tipCol]]                                         #Exract the tip name of each species
     fullSpeciesCategories = relevantSpecies[[annotColumn]]                              #extract the category of each species (in same order)
     fullDataPhenotype = fullSpeciesCategories
     names(fullDataPhenotype) = fullSpeciesNames 
@@ -564,14 +595,14 @@ if(generateAlternates){
           # add preselected
           numPerClade = 3
           
-          Bovidae = manualAnnots[manualAnnots$MSWC_Family %in% "Bovidae",][[nameColumn]]
-          Pteropodidae = manualAnnots[manualAnnots$MSWC_Family %in% "Pteropodidae",][[nameColumn]]
-          Cervidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cervidae",][[nameColumn]]
-          Cricetidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cricetidae",][[nameColumn]]
+          Bovidae = manualAnnots[manualAnnots$MSWC_Family %in% "Bovidae",][[tipCol]]
+          Pteropodidae = manualAnnots[manualAnnots$MSWC_Family %in% "Pteropodidae",][[tipCol]]
+          Cervidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cervidae",][[tipCol]]
+          Cricetidae = manualAnnots[manualAnnots$MSWC_Family %in% "Cricetidae",][[tipCol]]
           HystricognathiFamilies =  c("Caviidae", "Chinchillidae", "Ctenomyidae", "Dasyproctidae", "Dinomyidae", "Caviidae", "Bathyergidae", "Caviidae", "Hystricidae", "Myocastoridae", "Octodontidae", "Petromuridae", "Thryonomyidae", "Erethizontidae")
-          Hystricognathi = manualAnnots[manualAnnots$MSWC_Family %in% HystricognathiFamilies,][[nameColumn]]
+          Hystricognathi = manualAnnots[manualAnnots$MSWC_Family %in% HystricognathiFamilies,][[tipCol]]
           
-          Vespertilionidae = manualAnnots[manualAnnots$MSWC_Family %in% "Vespertilionidae",][[nameColumn]]
+          Vespertilionidae = manualAnnots[manualAnnots$MSWC_Family %in% "Vespertilionidae",][[tipCol]]
           speciesInLargeFamilies = c(Bovidae, Pteropodidae, Cervidae, Cricetidae, Hystricognathi, Vespertilionidae)
 
         selectedBovids = sample(Bovidae, numPerClade)
@@ -707,7 +738,7 @@ if(generateAlternates){
     
     currentPhenotypeVector = fullDataPhenotype[which(names(fullDataPhenotype) %in% currentSet)]
     currentCommonPhenotypeVector = currentPhenotypeVector
-    names(currentCommonPhenotypeVector) = ZonomNameConvertVectorCommon(names(currentCommonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+    names(currentCommonPhenotypeVector) = ZonomNameConvertVectorCommon(names(currentCommonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
     
     
     currentPhenotypeVectorSaving = data.frame(names(currentPhenotypeVector), names(currentCommonPhenotypeVector), currentPhenotypeVector)
@@ -727,7 +758,8 @@ if(generateAlternates){
     
     
     commonMainTrees = mainTrees
-    commonMainTrees$masterTree = ZoonomTreeNameToCommon(commonMainTrees$masterTree, manualAnnotLocation = spreadSheetLocation, tipCol = nameColumn)
+    commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(commonMainTrees$masterTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
+    
     
     for(i in 1:length(alternateSets)){
       message(i)
@@ -737,7 +769,7 @@ if(generateAlternates){
       
       currentPhenotypeVector = fullDataPhenotype[which(names(fullDataPhenotype) %in% currentSet)]
       currentCommonPhenotypeVector = currentPhenotypeVector
-      names(currentCommonPhenotypeVector) = ZonomNameConvertVectorCommon(names(currentCommonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+      names(currentCommonPhenotypeVector) = ZonomNameConvertVectorCommon(names(currentCommonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
       
       
       currentPhenotypeVectorSaving = data.frame(names(currentPhenotypeVector), names(currentCommonPhenotypeVector), currentPhenotypeVector)
@@ -754,12 +786,12 @@ if(generateAlternates){
       
       tipsToRemove = allSpeciesTree$tip.label[!allSpeciesTree$tip.label %in% currentSet]
       currentTree = categoricalDropTip(allSpeciesTree, tipsToRemove)
-      currentCommonSpeciesFilter = ZonomNameConvertVectorCommon(currentSet, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+      currentCommonSpeciesFilter = ZonomNameConvertVectorCommon(currentSet, annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
       
       # - Categorical Tree - 
       currentCategoricalTree = currentTree
       currentCommonCategoricalTree = currentTree
-      currentCommonCategoricalTree$tip.label = ZonomNameConvertVectorCommon(currentCommonCategoricalTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = nameColumn)
+      currentCommonCategoricalTree$tip.label = ZonomNameConvertVectorCommon(currentCommonCategoricalTree$tip.label, annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
       
       if(useCladeLimit){
       

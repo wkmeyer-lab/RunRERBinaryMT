@@ -12,6 +12,8 @@ As such, this package is controlled using ARGS, or specific inputs provided to p
 Additionally, this package is designed so that it can run any number of RERConverge analyses, without them interfering with each other. As such, each analysis has its own *analysis prefix*, which is connected to all files from that analysis. Each analysis has its own folder in the Output directory, and all files have the analysis prefix attached to them. As such, the analysis prefix is also called a *file prefix*. 
 All of the scripts in this package are made to be run as-is both locally, and on a cluster. If running the script locally, **ensure that you do not run the "clusterRun = T" line of code.**
 
+The scripts in this package are stored in the *Src* folder. Scripts which are meant to be run directly can be found in the *Loc* folder. The *Reu* folder contains functions which are used within other scripts. **All scripts mentioned in this walkthrough can be found in the Src/Loc folder**. 
+
 
 ### **ARGs --   WHAT THEY ARE, AND HOW TO USE THEM.**
 
@@ -20,13 +22,13 @@ These ARGS are designed in such a way that the code can be easily run either loc
 ARGS are formatted as follows: 
 1) 'Index'      -- this is a single letter which indicates which ARG is being supplied
 2)  =           -- this is an equal sign, which separates the index and content. 
-2) 'Content'    -- this is a string of characters (which can be interpreted as R code), that are the substance of an argument. 
+3) 'Content'    -- this is a string of characters (which can be interpreted as R code), that are the substance of an argument. 
 
 Here is an example that shows how the 'interpreted as code' functions. Lets say that I want to provide a vector of multiple strings in a single argument -- in this example, which genesets I would like to run. 
-First, I find the index of the ARG which controls genesets (see below). In this case, it is 'g'. Note that arg indexes are *case sensitive*. 
+First, I find the index of the ARG which controls genesets (see below). In this case, it is `g`. Note that arg indexes are *case sensitive*. 
 
 Second I have the content I want to deliver. In this example, we want to run on the "gene" geneset, "exampleGeneSet1", and "exampleGeneSet2". 
-Therefore, the content I want to deliver is **c("gene", "exampleGeneSet1", "exampleGeneSet2")**. This is R code for a vector, and can be used as the content of an ARG directly. 
+Therefore, the content I want to deliver is **c("gene", "exampleGeneSet1", "exampleGeneSet2")**. This is R code for a vector, and can be used as the content of an ARG directly. This ability to parse vectors, or lists of vectors, is the example of interpreting the arguments as code. 
 
 ARGS are formatted slightly differently if you are running scripts locally, or on a cluster. This is due the the difference in how shell and R split entries in a vector. 
   In shell, the arguments are separated by spaces, and any command characters (like quotes, or parentheses) need to be escaped (have a \\ in front of them), so that they are not interpreted by shell. In R, the arguments are included as separate strings in a vector. Below is an example of that argument, in both formats. 
@@ -48,7 +50,7 @@ ARGS are formatted slightly differently if you are running scripts locally, or o
   NOTE how the cluster ARG does not contain any spaces within an ARG.
 
 For each script, you will have multiple things that change between analyses, so you will need to submit multiple ARGs. As before, how you submit multiple ARGs varies slightly when running locally or on a cluster. Locally, the multiple ARGs are included as a vector of strings. On a cluster, each ARG is separated by a space. 
-For this example, we will use an analysis prefix ('r') of **"ArgumentExample"** as our second argument. Examples for both local and cluster use have been included below. 
+For this example, we will use a file prefix (governed by the index `r`) of **"ArgumentExample"** as our second argument. Examples for both local and cluster use have been included below. 
 
   LOCAL:
   
@@ -56,7 +58,7 @@ For this example, we will use an analysis prefix ('r') of **"ArgumentExample"** 
   args = c('r=ArgumentExample', 'g=c("gene", "exampleGeneSet1", "exampleGeneSet2")')
   `
   
-    NOTE how if the ARG is only a single string, it only needs one set of quotes. It is proccessed into a string automatically. 
+    NOTE how an ARG contains only one string (such as 'r'), it only needs one set of quotes. It is proccessed into a string automatically. 
   
   SHELL / CLUSTER:
   
@@ -93,13 +95,20 @@ Data preparation for this pipeline is simple. You only need the file locations, 
 
   **TREES FILE**
   
-The Trees file is an RERConverge mainTrees object, which contains gene trees, as well as a master tree. This can be stored either as a .txt file, or a .rds file. The scripts can process both, but a .rds file is recommended, as it loads far faster. 
+The Trees file is an RERConverge mainTrees object, which contains gene trees, as well as a master tree. This can be stored either as the input trees in a .txt file, or as a pre-processed .rds file. The scripts can process both, but a .rds file is recommended, as it loads far faster. 
 In this walkthrough, we will use the *toytrees* installed with RERConverge as our Gene Tree data. I have included a .rds version of this file, for fast load times. It can be found at:
 
 `
 Data/toyTrees.rds
 `
 
+To view the contents of this file, use the readRDS function. 
+
+`
+toyTrees = readRDS("Data/toyTrees.rds)
+`
+
+To find the names as they appear on the trees, that is stored in the object's maintrees' tipvalues. If you used the above code, this can be printed with `toyTrees$mainTrees$tip.values`. 
 
 
   **PHENOTYPE DATA**
@@ -117,7 +126,7 @@ This data file intentionally includes reasonable (but somewhat odd) column names
 
 ### RUNNING THE PIPELINE -- STEP 1: MAKE A PHENOTYPE TREE
 
-In this tutorial, we will be creating a categorical phenotype tree. For a binary or continuous phenotype, use MakeContinousPheontypeTree.R or MakeBinaryPhenotypeTree.R, and their respective arguments, instead. 
+In this tutorial, we will be creating a categorical phenotype tree. For a binary or continuous phenotype, use MakeContinousPhenotypeTree.R or MakeBinaryPhenotypeTree.R, and their respective arguments, instead. 
 
 The first step is to open up the relevant script. In this case, **MakeCategoricalPhenotypeTree.R**. Near the top of the script, you will find a list of ARGs for that script, and descriptions for them. In this case, that is as follows: 
 
@@ -130,7 +139,7 @@ The first step is to open up the relevant script. In this case, **MakeCategorica
 # d = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
 # a = "annotCollumn"                                     This is the column with the phenotype information
 # n = "nameColumn"                                       This sets the column with the tip names as they appear in the maintrees file. 
-# c = <c("nameOfCategory1,"nameOfCategory2")>            This is the list of category names, include ALL categories to be included (even those merged later)
+# c = <c("nameOfCategory1","nameOfCategory2")>            This is the list of category names, include ALL categories to be included (even those merged later)
 # - optional - 
 # u = list(c("replace1", "with1"),c("replace2, with2"))
 # o = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
@@ -199,14 +208,14 @@ If we wanted, we could use that set of ARGs to run a generate a phenotype tree. 
 
 The ARG to do that is as follows: 
 ```
-mergedCategories: u=list(c("SemiAquatic", "Aquatic"))
+mergedCategories: u=list(c("SemiAquatic", "AnyAquatic"), c("Aquatic", "AnyAquatic"))
 ```
 
 To an updated set of ARGs is: 
 
 
 `
-args = c('r=walkthroughExample', 'v=F', 'm=Data/toyTrees.rds', 'd=Data/examplePhenotypeData.csv', 'a=myPhenotype', 'n=toyTips', 'c=c("Land", "Aquatic", "Flying", "SemiAquatic")', 'u=list(c("SemiAquatic", "Aquatic"))')
+args = c('r=walkthroughExample', 'v=F', 'm=Data/toyTrees.rds', 'd=Data/examplePhenotypeData.csv', 'a=myPhenotype', 'n=toyTips', 'c=c("Land", "Aquatic", "Flying", "SemiAquatic")', 'u=list(c("SemiAquatic", "AnyAquatic"), c("Aquatic", "AnyAquatic"))')
 `
 
 

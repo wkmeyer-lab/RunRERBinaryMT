@@ -49,6 +49,31 @@ packageVersion("RERconverge")
 
 
 #---------------------------------------------------------------------
+# --- Arg box skeleton  --- 
+# --------------------------------------------------------------------
+
+fileLines <- readLines("your_script.R")
+
+startLine <- grep("# --- Command arguments list ---", fileLines, fixed = TRUE)
+endLine <- grep("#-------------------------------", fileLines, fixed = TRUE)
+
+cat(fileLines[startLine:endLine], sep = "\n")
+
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# - Optional - 
+# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
+# - Overrides - 
+#-------------------------------
+
+
+
+#---------------------------------------------------------------------
 # --- Test HighSugar  --- 
 # --------------------------------------------------------------------
 
@@ -60,6 +85,14 @@ plotTreeCategorical(commonCategoricalTreeExtraTip, c("Herbivore", "Insectivore",
 plotTreeCategorical(categoricalTreeExtraTip, c("Herbivore", "Insectivore", "Omnivore", "Vertivore", "zMixedPredator"), master = masterTreeAdded)
 
 saveRDS(toyTrees, "Results/toyTrees.rds")
+
+
+
+
+commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(
+  namesVector = commonMainTrees$masterTree$tip.label, 
+  annotationLocation = spreadSheetLocation, 
+  tipColumn = nameColumn)
 
 
 

@@ -17,24 +17,37 @@ library(data.table)
 #Rather than being in quotes and separated by commas. 
 #Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
 
-
-# -- Command arguments list
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
 # r = filePrefix                                                               REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
 # m = mainTreeFilename.txt or .rds                                             REQUIRED: This sets the location of the maintrees file
-# v = <T or F>                                                                 This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # a = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the Analysis Style type of phenotype being supplied; it will detect automatically if not specified.
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                                                                 This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # n = < "diff" or "mean" or "last" >                                           This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# - Optional -
+# h = <T>                                                                      This ARG causes the script to return its ARG list, instead of running the script. 
 # l = <min.sp value>                                                           This sets the min.sp value to be used in the correlation. 
+# - Overrides - 
 # f = speciesFilterText                                                        OPTIONAL OVERRIDE: This can be used to manually specify a species filer; leave blank for automatic
 # u = phenotypeTreeFilename.txt or .rds                                        OPTIONAL OVERRIDE: This can be used to manually override the phenotype tree being used. For continuous analyses, this is the location of the trait vector.
+# --- End arguments list ---
+#-------------------------------
 
-
-#----------------
 
 
 # --- Standard start-up code ---
 if(clusterRun)args = commandArgs(trailingOnly = TRUE)
 {  # Bracket used for collapsing purposes
+  #Arg help 
+  if(isTRUE(as.logical(cmdArgImport('h')))){
+    message("Not Running Script, instead returning ARGs for script.")
+    printArgDocumentation()
+    stop()
+  }
+  
   #File Prefix
   if(!is.na(cmdArgImport('r'))){
     filePrefix = cmdArgImport('r')

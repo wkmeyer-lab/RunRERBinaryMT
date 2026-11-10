@@ -33,4 +33,24 @@ cmdArgImport = function(marker, message = ""){
   }
 }
 
-#testOut = cmdArgImport('n')
+
+printArgDocumentation = function(){
+  arugments <- commandArgs(trailingOnly = FALSE)
+  scriptPath <- sub(
+    "--file=", "",
+    arugments[grep("--file=", arugments)]
+  )
+  
+  if (length(scriptPath) == 0 || scriptPath == "") {
+    scriptPath <- rstudioapi::getActiveDocumentContext()$path
+  }
+  
+  
+  fileLines <- readLines(scriptPath)
+  
+  startLine <- grep("# --- Command arguments list ---", fileLines, fixed = TRUE)
+  endLine <- grep("# --- End arguments list ---", fileLines, fixed = TRUE)
+  argText = cat(fileLines[startLine:endLine], sep = "\n")
+}
+
+

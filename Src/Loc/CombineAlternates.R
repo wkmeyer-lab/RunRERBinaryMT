@@ -11,7 +11,23 @@ source("Src/Reu/trimGmtFilenameToSetname.R")
 # -- Command arguments list
 # r = filePrefix                                                               This is a prefix used to organize and separate files by analysis run. Always required. 
 # v = <T or F>                                                                 This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# g = geneSet                                                                  This is the gmtset(as shown in the filename) of enrichment runs to be combined. 
+
+
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# g = c("gene", "Sets")                     This is the gmtset(as shown in the filename), or the gmt file path of enrichment runs to be combined. 
+
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# - Optional - 
+# h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
+# - Overrides - 
+# --- End arguments list ---
+#-------------------------------
+
 
 #----------------
 
@@ -26,6 +42,13 @@ args = c('r=ComplexDietCentralAnalysisSimplify2', 's=g', 'g=KeggReactome', 'l=17
   # --- Standard start-up code ---
   if(clusterRun)args = commandArgs(trailingOnly = TRUE)
   {  # Bracket used for collapsing purposes
+    #Arg help 
+    if(isTRUE(as.logical(cmdArgImport('h')))){
+      message("Not Running Script, instead returning ARGs for script.")
+      printArgDocumentation()
+      stop()
+    }
+    
     #File Prefix
     if(!is.na(cmdArgImport('r'))){
       filePrefix = cmdArgImport('r')

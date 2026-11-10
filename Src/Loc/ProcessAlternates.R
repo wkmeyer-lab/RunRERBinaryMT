@@ -17,16 +17,25 @@ library(data.table)
 #Rather than being in quotes and separated by commas. 
 #Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
 
-
-# -- Command arguments list
-# r = filePrefix                                                                This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                                                                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                                                                REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
 # m = mainTreeFilename.txt or .rds                                              This sets the location of the maintrees file
-# s = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>   This prefix is used to set the type of phenotype being supplied
+# a = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>   This prefix is used to set the type of phenotype being supplied
+
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# - Optional - 
+# h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
 # l = <min.sp value>                                                            This sets the min.sp value to be used in the correlation. 
 # i = run instance                                                              This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. 
 # e = c("phenotypes", "to", "merge)                                             This sets which phenotype should be combined into a single phenotype in a merged analysis. 
 # t = c("nameOfMergedPhenotype")                                                This sets the name of the now merged phenotype
+# - Overrides - 
+# --- End arguments list ---
+#-------------------------------
 
 
 #----------------
@@ -39,6 +48,13 @@ args = c('r=ComplexDietCentralAnalysisSimplifyStrictPred', 's=g', 'm=Data/zoonom
   # --- Standard start-up code ---
   if(clusterRun)args = commandArgs(trailingOnly = TRUE)
   {  # Bracket used for collapsing purposes
+    #Arg help 
+    if(isTRUE(as.logical(cmdArgImport('h')))){
+      message("Not Running Script, instead returning ARGs for script.")
+      printArgDocumentation()
+      stop()
+    }
+    
     #File Prefix
     if(!is.na(cmdArgImport('r'))){
       filePrefix = cmdArgImport('r')

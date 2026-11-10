@@ -16,16 +16,26 @@ if(!clusterRun){library(xlsx)}
 #Rather than being in quotes and separated by commas. 
 #Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
 
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# g = gmtFileLocation.gmt                   This is the location of the main gmt file
 
-# -- Command arguments list
-# r = filePrefix                                                                This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                                                                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# m = gmtFileLocation.gmt                                                       This is the location of the main gmt file
-# p = <T or F or C or A>                                                        This sets if the code should use permulated or unpermulated values. If set to "C", will use permulations for categorical values, which are stored in the main file.
-# s = "subdirectoryName"                                                        This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
-# y = "correlationFileOverride.rds"                                             This can be used to manually set the correlation file. Used primarily to target pairwise comparisons of categorical phenotypes.
-# z = "permulationPvalueFileLocation.rds"                                       This is a manual override to specify the script use a specific Permulation p-value file.
+
+# - Required, Defaults likely acceptable -
+# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# p = <T or F or C or A>                    This sets if the code should use permulated or unpermulated values. If set to "C", will use permulations for categorical values, which are stored in the main file.
+# s = "subdirectoryName"                    This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
+# - Optional - 
+# h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
+# - Overrides - 
+# y = "correlationFileOverride.rds"         This can be used to manually set the correlation file. Used primarily to target pairwise comparisons of categorical phenotypes.
+# z = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file.
   #If using permulations in a binary analysis, and using any file other than "CombinedBinaryPermulationsPValue" with no run instance number, it must be specified manually.
+
+# --- End arguments list ---
+#-------------------------------
 
 
 #----------------
@@ -39,6 +49,13 @@ args = c('r=CategoricalInsVertivoreTreeDuplicateLiamInference', 'm=c("Data/KeggR
 # --- Standard start-up code ---
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
 {  # Bracket used for collapsing purposes
+  #Arg help 
+  if(isTRUE(as.logical(cmdArgImport('h')))){
+    message("Not Running Script, instead returning ARGs for script.")
+    printArgDocumentation()
+    stop()
+  }
+  
   #File Prefix
   if(!is.na(cmdArgImport('r'))){
     filePrefix = cmdArgImport('r')

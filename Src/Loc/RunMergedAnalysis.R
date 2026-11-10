@@ -7,15 +7,21 @@ library(tools)
 source("Src/Reu/cmdArgImport.R")
 library(data.table)
 
-# -- Command arguments list
-# r = filePrefix                                                                This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                                                                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# m = mainTreeFilename.txt or .rds                                              This sets the location of the maintrees file
-# l = <min.sp value>                                                            This sets the min.sp value to be used in the correlation. 
-# e = c("phenotypes", "to", "merge)                                             This sets which phenotype should be combined into a single phenotype in a merged analysis. 
-# t = c("nameOfMergedPhenotype")                                                This sets the name of the now merged phenotype
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                              REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# m = mainTreeFilename.txt or .rds            REQUIRED: This sets the location of the maintrees file
+# e = c("phenotypes", "to", "merge)           This sets which phenotype should be combined into a single phenotype in a merged analysis. 
+# t = c("nameOfMergedPhenotype")              This sets the name of the now merged phenotype
 
-
+# - Required, Defaults likely acceptable -
+# v = <T or F>                                This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# - Optional - 
+# h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
+# l = <min.sp value>                          This sets the min.sp value to be used in the correlation. 
+# --- End arguments list ---
+#-------------------------------
 
 
 
@@ -23,7 +29,14 @@ library(data.table)
   # --- Standard start-up code ---
   if(clusterRun)args = commandArgs(trailingOnly = TRUE)
   {  # Bracket used for collapsing purposes
-    #File Prefix
+    #Arg help 
+    if(isTRUE(as.logical(cmdArgImport('h')))){
+      message("Not Running Script, instead returning ARGs for script.")
+      printArgDocumentation()
+      stop()
+    }
+    
+      #File Prefix
     if(!is.na(cmdArgImport('r'))){
       filePrefix = cmdArgImport('r')
     }else{
