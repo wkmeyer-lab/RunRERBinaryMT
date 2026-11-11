@@ -20,12 +20,12 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 # - Required, Defaults likely acceptable -
 # f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # n = <number Of Permulations>                This is the number of permulation files the script will try to combine
-# s = <Start number>                          This is the permulation number to start at. Used for parrallelization. 
+# st = <Start number>                          This is the permulation number to start at. Used for parrallelization. 
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
 # b = <T or F>                                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
-# p = <T or F>                                This value determines whether or not to calculate the pValues.
-# o = <T or F>                                This value is used to run only the p value calculation, and not the combination. 
+# d = <T or F>                                This value determines whether or not to calculate the pValues.
+# v = <T or F>                                This value is used to run only the p value calculation, and not the combination. 
 # - Overrides - 
 # y = <PermulationPrefix>                     This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
 
@@ -73,8 +73,8 @@ onlyCalulateValue = FALSE
   }
   
   #Start Number
-  if(!is.na(cmdArgImport('s'))){
-    startValue = cmdArgImport('s')
+  if(!is.na(cmdArgImport('st'))){
+    startValue = cmdArgImport('st')
     startValue = as.numeric(startValue)
   }else{
     message("Start value not specified, using 1")
@@ -100,8 +100,8 @@ onlyCalulateValue = FALSE
   }
   
   #Calculate P Value
-  if(!is.na(cmdArgImport('p'))){
-    calulateValue = cmdArgImport('p')
+  if(!is.na(cmdArgImport('d'))){
+    calulateValue = cmdArgImport('d')
     calulateValue = as.logical(calulateValue)
     if(is.na(calulateValue)){
       calulateValue = FALSE
@@ -112,8 +112,8 @@ onlyCalulateValue = FALSE
   }
   
   #Only Calculate P Value
-  if(!is.na(cmdArgImport('o'))){
-    onlyCalulateValue = cmdArgImport('o')
+  if(!is.na(cmdArgImport('v'))){
+    onlyCalulateValue = cmdArgImport('v')
     onlyCalulateValue = as.logical(calulateValue)
     if(is.na(calulateValue)){
       onlyCalulateValue = FALSE

@@ -163,7 +163,7 @@ if(!is.na(cmdArgImport('i'))){
       #EnrichmentAnalysisNew.R; CategoricalCombinePairwiseResults.R; RunAlternateEnrichments.R; CombineAlternates.R; AddAlternatesToCombination.R
 
 # - Required, Defaults likely acceptable -
-# v = forceUpdate <T or F>                                                      This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# f = forceUpdate <T or F>                                                      This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # k = < "diff" or "mean" or "last" >                                            This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
       #RunRERAndCorrelation.R; ProcessAlternates.R
 # p = <T or F or C or A>                                                        This sets if the code should use permulated or unpermulated values. If set to "C" or "A", will use permulations for categorical values, which are stored in the main file. 
@@ -176,6 +176,7 @@ if(!is.na(cmdArgImport('i'))){
       #ProcessAlternates.R; RunAlternateEnrichments.R 
 # o = alternateRatio <decimal>                                                  This sets the percentage of alternates which must be significant for a result to be considered robust to alternate species selection. 
       #AddAlternatesToCombination.R
+#   Permulations:
 # n = numberOfPermulations                                                      This is the number of permulations to run in the script
       #CategoricalPermulationsGeneration.R
 # q = <ER or SYM or ARD>                                                        This sets the model type used to estimate ancestral branches; MUST BE THE SAME AS ONE USED IN MakeCategoricalPhenotypeTree.R
@@ -184,7 +185,8 @@ if(!is.na(cmdArgImport('i'))){
       #CategoricalPermulationsGeneration.R
 # u = <auto or stationary or flat>                                              This sets the probability of each state at the root of the tree.   
       #CategoricalPermulationsGeneration.R
-
+# st = <Start number>                                                           This is the permulation number to start at. Used for parrallelization. 
+      #CategoricalPermualtionsCombineAndCalculatePValue.R
 
 # - Optional -
 # h = <T>                                                                       This ARG causes the script to return its ARG list, instead of running the script. 
@@ -196,11 +198,15 @@ if(!is.na(cmdArgImport('i'))){
       #RunMergedAnalysis.R; ProcessAlternates.R
 # c = significance cutoff                                                       This sets the cutoff for inclusion in the significant columns
       #CategoricalCombinePairwiseResults.R; AddAlternatesToCombination.R
+#   Permulations:
 # x = relaxationValue <int, 0-1>                                                This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. Recommend 0.1 if more than 3 categories
       #CategoricalPermulationsGeneration.R
 # b = <T or F>                                                                  This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. 
       #CategoricalPermulationsIntermediateCorrelation.R; CategoricalPermualtionsCombineAndCalculatePValue.R
-
+# d = <T or F>                                                                  This value determines whether or not to calculate the pValues.
+      #CategoricalPermualtionsCombineAndCalculatePValue.R
+# v = <T or F>                                                                  This value is used to run only the p value calculation, and not the combination. 
+      #CategoricalPermualtionsCombineAndCalculatePValue.R
 
 # - Overrides - 
 # y = speciesFilterText                                                         OPTIONAL OVERRIDE: This can be used to manually specify a species filer; leave blank for automatic

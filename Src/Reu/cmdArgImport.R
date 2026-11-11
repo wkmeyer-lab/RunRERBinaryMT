@@ -15,7 +15,7 @@ cmdArgImport = function(marker, message = ""){
   markerWhole = paste("^", marker, "=", sep='')                    #convert marker to grep format
   commandLineValue = grep(markerWhole, args, value = TRUE)         #get a string based on the identifier   
   if(length(commandLineValue != 0)){                               #If the string is not empty:
-    commandLineString = substring(commandLineValue, 3)             #make a string without the identifier
+    commandLineString = substring(commandLineValue, (nchar(marker)+2))             #make a string without the identifier
     if(grepl('(', commandLineValue, fixed = TRUE)){                # if the input is code -- has a '(' in it
       commandLineOutput = eval(str2lang(commandLineString))        #convert that string to code, then evaluate that code
     }else{                                                         #else
