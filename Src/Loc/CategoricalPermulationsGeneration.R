@@ -15,7 +15,7 @@ loadLibraries() # Note that this library load includes cluster run detection.
 # n = numberOfPermulations                  This is the number of permulations to run in the script 
 
 # - Required, Defaults likely acceptable -
-# v = forceUpdate <T or F>                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# f = forceUpdate <T or F>                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # q = <ER or SYM or ARD>                    This sets the model type used to estimate ancestral branches; MUST BE THE SAME AS ONE USED IN MakeCategoricalPhenotypeTree.R
 # j = runInstanceValuePerms                 This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
 # u = <auto or stationary or flat>          This sets the probability of each state at the root of the tree.   

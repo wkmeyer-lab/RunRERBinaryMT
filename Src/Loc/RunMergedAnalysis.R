@@ -16,7 +16,7 @@ loadLibraries() # Note that this library load includes cluster run detection.
 # t = c("nameOfMergedPhenotype")              This sets the name of the now merged phenotype
 
 # - Required, Defaults likely acceptable -
-# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
 # l = <min.sp value>                          This sets the min.sp value to be used in the correlation. 

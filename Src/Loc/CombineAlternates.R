@@ -16,7 +16,7 @@ source("Src/Reu/trimGmtFilenameToSetname.R")
 # g = c("gene", "Sets")                       This is the gmtset(as shown in the filename), or the gmt file path of enrichment runs to be combined. 
 
 # - Required, Defaults likely acceptable -
-# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
 # - Overrides - 

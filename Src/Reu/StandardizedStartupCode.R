@@ -27,8 +27,8 @@ if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
   
   #  Force update argument
   forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
+  if(!is.na(cmdArgImport('f'))){                                 #Import if update being forced with argument 
+    forceUpdate = cmdArgImport('f')
     forceUpdate = as.logical(forceUpdate)
   }else{
     message("Force update not specified, not forcing update")

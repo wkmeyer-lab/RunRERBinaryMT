@@ -14,7 +14,7 @@ source("Src/Reu/trimGmtFilenameToSetname.R")
 # g = c("gene", "sets")                       This sets the gene set (set name or file name) that the script should be run on, or "gene" for use on genes. 
 
 # - Required, Defaults likely acceptable -
-# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # s = pairwise Sets                           This sets the subdirectories that the code should be run using. 
 # p = permulations use <T or F or C or A>     This sets if the code should use permulated or unpermulated values. If set to "A", it will add permulations data, but use the unpermulationed data for significance. It also accepts "C" as "T" for compatibility with upstream functions which use "C" to denote the categorical permulations used by this script.
 # w = writeData  <T or F>                     This sets if the data should be saved, potentially overwriting old combinations. 

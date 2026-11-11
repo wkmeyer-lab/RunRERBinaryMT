@@ -18,7 +18,7 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 # j = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
 
 # - Required, Defaults likely acceptable -
-# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # n = <number Of Permulations>                This is the number of permulation files the script will try to combine
 # s = <Start number>                          This is the permulation number to start at. Used for parrallelization. 
 # - Optional - 

@@ -16,7 +16,7 @@ source("Src/Reu/trimGmtFilenameToSetname.R")
 
 
 # - Required, Defaults likely acceptable -
-# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # w = writeData  <T or F>                     This sets if the data should be saved, potentially overwriting old combinations
 # o = alternateRatio <decimal>                This sets the percentage of alternates which must be significant for a result to be considered robust to alternate species selection. 
 

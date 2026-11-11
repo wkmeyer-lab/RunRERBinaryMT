@@ -19,7 +19,7 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # t = "tipColumn"                           This sets the column with the tip names as they appear in the maintrees file.
 # n = "nameColumn"                          This sets the column with common names of the species. 
 # - Required, Defaults likely acceptable -
-# v = forceUpdate <T or F>                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# f = forceUpdate <T or F>                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # k = < "Diff" or "mean" or "last" >        This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
 # - Optional - 
 # h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
