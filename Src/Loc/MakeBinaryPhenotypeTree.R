@@ -1,9 +1,6 @@
 # -- Libraries 
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #DO NOT RUN LOCALLY. add Cluster path to custom libraries to searched locations
-
-library(RERconverge)
-library(tools)
-source("Src/Reu/cmdArgImport.R")
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
 
 # -- Usage:
 # This Script creates a binary tree from a csv file containing (at least) the following columns: 

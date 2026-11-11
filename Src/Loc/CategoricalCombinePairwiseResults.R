@@ -1,16 +1,12 @@
+# -- Usage:
 #This script combines all of the pairwise comparisons, and the overall comparison, of a categorical RERConverge analysis into a single file. 
-#For the older version of the script which included overlap, detla, and driver analyses, see CategoricalCombinePairwiseResults-OLD.R
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+#An older version of the script added additional information (comparisons between the pairwise analyses), but these additions were removed due to making the output file absurdly log.
+#For the older version of the script which included overlap, delta, and driver analyses, see CategoricalCombinePairwiseResults-OLD.R
 
-library(RERconverge)
-source("Src/Reu/cmdArgImport.R")
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
 source("Src/Reu/trimGmtFilenameToSetname.R")
-
-
-
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
@@ -18,78 +14,45 @@ source("Src/Reu/trimGmtFilenameToSetname.R")
 # g = c("gene", "sets")                       This sets the gene set (set name or file name) that the script should be run on, or "gene" for use on genes. 
 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                                This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # s = pairwise Sets                           This sets the subdirectories that the code should be run using. 
-# w = writeData  <T or F>                     This sets if the data should be saved, potentially overwriting old combinations
+# p = permulations use <T or F or C or A>     This sets if the code should use permulated or unpermulated values. If set to "A", it will add permulations data, but use the unpermulationed data for significance. It also accepts "C" as "T" for compatibility with upstream functions which use "C" to denote the categorical permulations used by this script.
+# w = writeData  <T or F>                     This sets if the data should be saved, potentially overwriting old combinations. 
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
-# p = usePermulations                         This sets if permulation data should be used. If set to "A", it will add permulations data, but use the unpermulationed data for significance. 
 # c = significance cutoff                     This sets the cutoff for inclusion in the significant columns
 # - Overrides - 
 # --- End arguments list ---
 #-------------------------------
-
-
-
-
-args = c('r=ComplexDietCentralAnalysisSimplify', 'g=c("gene", "KeggReactome")')
-
-{
-  # -- Standard Startup code -- 
-  if(clusterRun)args = commandArgs(trailingOnly = TRUE)
-  {  # Bracket used for collapsing purposes
-    #Arg help 
-    if(isTRUE(as.logical(cmdArgImport('h')))){
-      message("Not Running Script, instead returning ARGs for script.")
-      printArgDocumentation()
-      stop()
-    }
-    
-    #File Prefix
-    if(!is.na(cmdArgImport('r'))){
-      filePrefix = cmdArgImport('r')
-    }else{
-      stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-    }
-    
-    #  Output Directory 
-    if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-      dir.create("Output")
-    }
-    outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-    if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-      dir.create(outputFolderNameNoSlash)
-    }
-    outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-    
-    #  Force update argument
-    forceUpdate = FALSE
-    if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-      forceUpdate = cmdArgImport('v')
-      forceUpdate = as.logical(forceUpdate)
-    }else{
-      message("Force update not specified, not forcing update")
-    }
-  }
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
+  args = c('r=ComplexDietCentralAnalysisSimplify', 'g=c("gene", "KeggReactome")')
 }
+#-------------------------------
+
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
 
 
 # --- Argument Imports ---
-# Defaults
-significanceCutoff = 0.05
-pairwiseSets = c("Herbivore-Insectivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Insectivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
-pairwiseSets = c("Herbivore-Invertivore", "Herbivore-Vertivore", "Carnivore-Herbivore", "Herbivore-Omnivore", "Invertivore-Vertivore", "Omnivore-Vertivore", "Invertivore-Omnivore")
-geneSet = NULL
-usingGo = F
-usingGene = T
-validGeneArguments = c("NULL", "gene", "Gene")
-
-writeData = T
-
-usePermulations = F
-addPermulations = F
-
-{ # Bracket used for collapsing purposes
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  
+  # Defaults
+  significanceCutoff = 0.05
+  pairwiseSets = NULL
+  geneSet = NULL
+  usingGo = F
+  usingGene = T
+  validGeneArguments = c("NULL", "gene", "Gene")
+  
+  writeData = T
+  
+  usePermulations = F
+  addPermulations = F
   
   #pairwise Sets
   if(!all(is.na(cmdArgImport('s')))){
@@ -128,7 +91,7 @@ addPermulations = F
   
   #cutoff 
   if(!is.na(cmdArgImport('c'))){
-    significanceCutoff = cmdArgImport('c')
+    significanceCutoff = as.numeric(cmdArgImport('c'))
   }else{
     message("pvalue cuttoff not specified, using 0.05")
   }  

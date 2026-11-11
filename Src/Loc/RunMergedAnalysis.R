@@ -1,14 +1,12 @@
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+# -- Usage:
+# This script allows for adding a new-category in a categorical analysis which is made up of the combination of several of the main analysis' categories. 
+# For example, combining "Vertivore" and "Invertivore" into "Predator", and then producing "Vertivore-Herbivore", "Invertivore-Herbivore", and "Predator-Herbivore" comparisons.
+# This is done by directly combining any branches within the merged categories to the new category, and then running a second RERConverge analysis on the new merged-phenotype tree. 
+# This script then adds the new pairwise comparisons produced by the merged phenotype as additional pairwise comparisons in the main analysis' output folder. 
 
-library(RERconverge)
-library(data.table)
-library(tools)
-source("Src/Reu/cmdArgImport.R")
-
-
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
@@ -18,102 +16,79 @@ source("Src/Reu/cmdArgImport.R")
 # t = c("nameOfMergedPhenotype")              This sets the name of the now merged phenotype
 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                                This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
 # l = <min.sp value>                          This sets the min.sp value to be used in the correlation. 
 # --- End arguments list ---
 #-------------------------------
-
-
-
-{
-  # --- Standard start-up code ---
-  if(clusterRun)args = commandArgs(trailingOnly = TRUE)
-  {  # Bracket used for collapsing purposes
-    #Arg help 
-    if(isTRUE(as.logical(cmdArgImport('h')))){
-      message("Not Running Script, instead returning ARGs for script.")
-      printArgDocumentation()
-      stop()
-    }
-    
-      #File Prefix
-    if(!is.na(cmdArgImport('r'))){
-      filePrefix = cmdArgImport('r')
-    }else{
-      stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-    }
-    
-    #  Output Directory 
-    if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-      dir.create("Output")
-    }
-    outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-    if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-      dir.create(outputFolderNameNoSlash)
-    }
-    outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-    
-    #  Force update argument
-    forceUpdate = FALSE
-    if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-      forceUpdate = cmdArgImport('v')
-      forceUpdate = as.logical(forceUpdate)
-    }else{
-      message("Force update not specified, not forcing update")
-    }
-  }
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
+  
 }
+#-------------------------------
+
+
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
+# ---------------------------
+# ----- SCRIPT MAIN CODE ----
+# ---------------------------
 
 # --- Argument Imports ---
-# Defaults
-mainTreesLocation = "data/zoonomiaAllMammalsTrees.rds"  #this is the standard location on Sol 
-minSpValue = 10
-toMerge = NULL
-mergeValue = NULL
-runMerge= F
-
-#MainTrees Location
-if(!is.na(cmdArgImport('m'))){
-  mainTreesLocation = cmdArgImport('m')
-}else{
-  message("No maintrees arg, using default")
-}
-#min.sp Value
-if(!is.na(cmdArgImport('l'))){
-  minSpValue = cmdArgImport('l')
-}else{
-  message("min.sp not specified, using 10")
-}
-
-#toMerge
-if(!all(is.na(cmdArgImport('e')))){
-  toMerge = cmdArgImport('e')
-  runMerge = T
-}else{
-  message("No phenotypes set to merge. Script will effectively do nothing; if you are not running a merged phenotype, this is fine.")
-  runMerge = F
-}
-
-#mergeValue
-if(!is.na(cmdArgImport('t'))){
-  mergeValue = cmdArgImport('t')
-}else{
-  if(!runMerge){
-    message("No phenotypes set to merge. Script will effectively do nothing; if you are not running a merged phenotype, this is fine.")  
+{   # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  # Defaults
+  mainTreesLocation = "data/zoonomiaAllMammalsTrees.rds"  #this is the standard location on Sol 
+  minSpValue = 10
+  toMerge = NULL
+  mergeValue = NULL
+  runMerge= F
+  
+  #MainTrees Location
+  if(!is.na(cmdArgImport('m'))){
+    mainTreesLocation = cmdArgImport('m')
   }else{
-    stop("ERROR: Attempting to run merge, but the merged phenotype is unnamed. Exiting.")
+    message("No maintrees arg, using default")
+  }
+  #min.sp Value
+  if(!is.na(cmdArgImport('l'))){
+    minSpValue = cmdArgImport('l')
+  }else{
+    message("min.sp not specified, using 10")
   }
   
+  #toMerge
+  if(!all(is.na(cmdArgImport('e')))){
+    toMerge = cmdArgImport('e')
+    runMerge = T
+  }else{
+    message("No phenotypes set to merge. Script will effectively do nothing; if you are not running a merged phenotype, this is fine.")
+    runMerge = F
+  }
+  
+  #mergeValue
+  if(!is.na(cmdArgImport('t'))){
+    mergeValue = cmdArgImport('t')
+  }else{
+    if(!runMerge){
+      message("No phenotypes set to merge. Script will effectively do nothing; if you are not running a merged phenotype, this is fine.")  
+    }else{
+      stop("ERROR: Attempting to run merge, but the merged phenotype is unnamed. Exiting.")
+    }
+  }
 }
 
 
 #-------
 # Make the merged phenotype
 #-------
-if(runMerge){
-
+if(runMerge){ # This is a check that allows the script to reportwhen it is doing nothing because no merge was supplied.
+              # This is done so that it can be safely included in all categorical phenotypes, even when no merge is used. 
   
   
   #Handle the phenotyeVector

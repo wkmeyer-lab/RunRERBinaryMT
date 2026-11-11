@@ -1,12 +1,8 @@
-library(ggtree)
-library(ggimage)
-library(rphylopic)
-library(RERconverge)
-library(utils)
-library(tidytree)
-library(ape)
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries(useVisualizePackages = T) # Note that this library load includes cluster run detection. 
 source("Src/Reu/ZonomNameConvertVectorCommon.R")
-source("Src/Reu/cmdArgImport.R")
+
 nodeid.tbl_tree <- utils::getFromNamespace("nodeid.tbl_tree", "tidytree")
 rootnode.tbl_tree <- utils::getFromNamespace("rootnode.tbl_tree", "tidytree")
 offspring.tbl_tree <- utils::getFromNamespace("offspring.tbl_tree", "tidytree")
@@ -37,41 +33,11 @@ parent.tbl_tree <- utils::getFromNamespace("parent.tbl_tree", "tidytree")
 
 
 
-# -- Standard Startup code -- 
-{  # Bracket used for collapsing purposes
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
-  
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
-}
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
 
 # -- Argument imports --- 
 {

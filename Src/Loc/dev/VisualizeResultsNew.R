@@ -1,16 +1,13 @@
 # Fixes before publication: Automatic number of geneset detection 
 
 # -- Libraries 
-clusterRun = F
-clusterRun = T
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-library(RERconverge)
-library(ggplot2)
-library(ggpmisc)
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries(useVisualizePackages = T) # Note that this library load includes cluster run detection. 
+
 library(cowplot)
 library(qvalue)
 library(insight)
-source("Src/Reu/cmdArgImport.R")
 
 
 # -- Usage:

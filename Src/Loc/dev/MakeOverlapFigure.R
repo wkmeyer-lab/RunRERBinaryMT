@@ -87,42 +87,11 @@ args = c("r=ComplexDietCentralAnalysisSimplify2",
 
 
 {
-# -- Standard Startup code -- 
-if(clusterRun)args = commandArgs(trailingOnly = TRUE)
-{  # Bracket used for collapsing purposes
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
+  # --- Standard start-up code; identical in all scripts---
+  source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+  #This code reads the "report args" help ARG, and reutrns the args if it is active. 
+  #It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
   
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
-}
 
 
 

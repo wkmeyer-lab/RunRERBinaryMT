@@ -1,12 +1,6 @@
 # -- Libraries 
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-
-library(RERconverge)
-library(tools)
-source("Src/Reu/cmdArgImport.R")
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
 
 
 # -- Usage:
@@ -22,55 +16,28 @@ source("Src/Reu/cmdArgImport.R")
 
 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
+# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# j = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
 # - Optional - 
 # h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
 # p = <T or F>                        This sets if the script should calculate permulation p vals. ONLY USE THIS IF NOT PARRALLELIZING, as it only considers permulations from this script.
 # - Overrides - 
 # --- End arguments list ---
 #-------------------------------
-
-
-args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'v=F', 'n=20', 'i=Dev', 'o=ornAna2', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
-
-
-# --- Standard start-up code ---
-if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
-{  # Bracket used for collapsing purposes
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
+#-------------------------------
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
   
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){                                                #This cmdArgImport script is a way to import arguments from the command line. 
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
 }
+#-------------------------------
+
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
 
 # --- Argument Imports ---
 # Defaults
@@ -96,8 +63,8 @@ calculatePVal = F
     paste("Number of permulations not specified, using 100")
   }
   #Run instance value
-  if(!is.na(cmdArgImport('i'))){
-    runInstanceValue = cmdArgImport('i')
+  if(!is.na(cmdArgImport('j'))){
+    runInstanceValue = cmdArgImport('j')
   }else{
     paste("This script does not have a run instance value")
   }

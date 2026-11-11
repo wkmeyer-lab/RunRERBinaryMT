@@ -1,83 +1,55 @@
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+# -- Usage:
+# This script is used to Add alternate information to the combined results from the main analysis. 
+# It uses a ratio (perentage of total altenrates) in which a gene or category must be singificant to be considered robust to alternate species set selection. 
 
-library(RERconverge)
-library(purrr)
-source("Src/Reu/cmdArgImport.R")
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
+
 source("Src/Reu/trimGmtFilenameToSetname.R")
 
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
-# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
-# g = c("gene", "Sets")                     This is the gmtset(as shown in the filename), or the gmt file path of enrichment runs to be combined. 
+# r = filePrefix                              REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# g = c("gene", "Sets")                       This is the gmtset(as shown in the filename), or the gmt file path of enrichment runs to be combined. 
 
 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # w = writeData  <T or F>                     This sets if the data should be saved, potentially overwriting old combinations
+# o = alternateRatio <decimal>                This sets the percentage of alternates which must be significant for a result to be considered robust to alternate species selection. 
+
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
 # c = significance cutoff                     This sets the cutoff for inclusion in the significant columns
 # - Overrides - 
 # --- End arguments list ---
 #-------------------------------
-
-
-{
-  # -- Standard Startup code -- 
-  if(clusterRun)args = commandArgs(trailingOnly = TRUE)
-  {  # Bracket used for collapsing purposes
-    #Arg help 
-    if(isTRUE(as.logical(cmdArgImport('h')))){
-      message("Not Running Script, instead returning ARGs for script.")
-      printArgDocumentation()
-      stop()
-    }
-    
-    #File Prefix
-    if(!is.na(cmdArgImport('r'))){
-      filePrefix = cmdArgImport('r')
-    }else{
-      stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-    }
-    
-    #  Output Directory 
-    if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-      dir.create("Output")
-    }
-    outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-    if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-      dir.create(outputFolderNameNoSlash)
-    }
-    outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-    
-    #  Force update argument
-    forceUpdate = FALSE
-    if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-      forceUpdate = cmdArgImport('v')
-      forceUpdate = as.logical(forceUpdate)
-    }else{
-      message("Force update not specified, not forcing update")
-    }
-  }
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
+  
 }
+#-------------------------------
+
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
 
 
 # --- Argument Imports ---
-# Defaults
-significanceCutoff = 0.05
-
-geneSet = NULL
-usingGene = T
-validGeneArguments = c("NULL", "gene", "Gene")
-
-writeData = T
-alternateCutoff = 50 
-
-{ # Bracket used for collapsing purposes
+{  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  # Defaults
+  significanceCutoff = 0.05
+  geneSet = NULL
+  usingGene = T
+  validGeneArguments = c("NULL", "gene", "Gene")
+  writeData = T
+  alternateCutoffRatio = 0.5 
   
   #genesets
   if(!all(is.na(cmdArgImport('g')))){
@@ -102,10 +74,17 @@ alternateCutoff = 50
   
   #cutoff
   if(!is.na(cmdArgImport('c'))){
-    significanceCutoff = cmdArgImport('c')
+    significanceCutoff = as.numeric(cmdArgImport('c'))
   }else{
     message("pvalue cuttoff not specified, using 0.05")
   }  
+  
+  #alternate cutoff ratio
+  if(!is.na(cmdArgImport('o'))){
+    alternateCutoffRatio = as.numeric(cmdArgImport('o'))
+  }else{
+    message("Alternate ratio not specified, using 50% (0.5)")
+  } 
   
   
   #writeData 
@@ -122,6 +101,15 @@ alternateCutoff = 50
 
 #----- 
 #Main code
+
+#Determine the number of alternates required to exceed the required ratio 
+PairwiseCorrelationsFilenames = list.files(paste0(outputFolderName, "Alternates/"), pattern = "PairwiseCorrelationFile.rds")
+PairwiseCorrelationsFilenames = PairwiseCorrelationsFilenames[-grep("Merged", PairwiseCorrelationsFilenames)]
+totalAlternates = length(PairwiseCorrelationsFilenames)
+alternateCutoff = totalAlternates * alternateCutoffRatio
+
+
+
 
 for(j in 1:length(geneSets)){
   geneSet = geneSets[j]
@@ -146,6 +134,7 @@ for(j in 1:length(geneSets)){
     
     alternatesFilename = paste0(outputFolderName, filePrefix, "AlternatesCombinedEnrichments-" , geneSet, ".rds")
     alternatesData = readRDS(alternatesFilename)
+    
     
   }
   

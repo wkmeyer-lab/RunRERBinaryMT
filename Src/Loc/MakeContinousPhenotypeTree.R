@@ -1,17 +1,14 @@
-# -- Libraries 
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-
-library(RERconverge)
-library(tools)
-source("Src/Reu/cmdArgImport.R")
-source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # -- Usage:
-# This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
-# In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is named "FaName", and the column with common names is named "Common.Name.Or.Group". 
+# This script creates a phenotype tree of a phenotype with a continuous value. 
+# If you wish to only include select species in the analysis, add a new column to your data as a "screen column". Set species to include to have a 1 in that column, and other species to 0. Use the 's' arg to specify the screen column's name.
+# In practice, this function actually creates a PATHs file for a continuous phenotype (the next step of processing). 
+# This is because in practice continuous values can be negative if using the 'diff' setting, which produces weird results on a tree, and all functions actually use the PATHs, not the tree. 
+# The script is named this way to retain pairity with the other Make-X-Tree functions; this is the continuous equivalent of such. 
 
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
+source("Src/Reu/ZonomNameConvertVectorCommon.R")
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
@@ -22,7 +19,7 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # t = "tipColumn"                           This sets the column with the tip names as they appear in the maintrees file.
 # n = "nameColumn"                          This sets the column with common names of the species. 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# v = forceUpdate <T or F>                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # k = < "Diff" or "mean" or "last" >        This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
 # - Optional - 
 # h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
@@ -35,49 +32,27 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # - Overrides - 
 # --- End arguments list ---
 #-------------------------------
-
-
-
-
-# --- Standard start-up code ---
-if(clusterRun)args = commandArgs(trailingOnly = TRUE)
-{  # Bracket used for collapsing purposes
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
   
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
 }
+#-------------------------------
+
+
+
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
+# ---------------------------
+# ----- SCRIPT MAIN CODE ----
+# ---------------------------
 
 # --- Argument Imports ---
-{ # Bracket used for collapsing purposes
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
 # Defaults
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
 spreadSheetLocation = "Data/mergedData.csv"

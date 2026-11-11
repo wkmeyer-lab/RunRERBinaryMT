@@ -1,24 +1,11 @@
-# -- Libraries 
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-
-
-library(RERconverge)
-library(tools)
-source("Src/Reu/cmdArgImport.R")
-library(data.table)
-
 # -- Usage:
 # This script can be used to run RER calculations and phenotype correlations with Binary, continuous, or categorical phenotypes.
 # It inputs a phenotype tree made by the appropriate script for the style, and outputs an RER file, a Paths file, and a Correlation file. 
+# For continuous phenotypes, running both "diff" and "mean" using different file prefixes is recommended. 
 
-#When running on the command line, note that the arguments should be formatted as:
-#r=Prefix v=forceUpdateValue etc
-#Rather than being in quotes and separated by commas. 
-#Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
-
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
@@ -27,68 +14,47 @@ library(data.table)
 # a = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the Analysis Style type of phenotype being supplied; it will detect automatically if not specified.
 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                                                                 This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# v = forceUpdate <T or F>                                                     This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # k = < "diff" or "mean" or "last" >                                           This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
 # - Optional -
 # h = <T>                                                                      This ARG causes the script to return its ARG list, instead of running the script. 
 # l = <min.sp value>                                                           This sets the min.sp value to be used in the correlation. 
 # - Overrides - 
-# f = speciesFilterText                                                        OPTIONAL OVERRIDE: This can be used to manually specify a species filer; leave blank for automatic
-# u = phenotypeTreeFilename.txt or .rds                                        OPTIONAL OVERRIDE: This can be used to manually override the phenotype tree being used. For continuous analyses, this is the location of the trait vector.
+# y = speciesFilterText                                                        OPTIONAL OVERRIDE: This can be used to manually specify a species filer; leave blank for automatic
+# z = phenotypeTreeFilename.txt or .rds                                        OPTIONAL OVERRIDE: This can be used to manually override the phenotype tree being used. For continuous analyses, this is the location of the trait vector.
 # --- End arguments list ---
+#-------------------------------
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
+  
+}
 #-------------------------------
 
 
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
 
-# --- Standard start-up code ---
-if(clusterRun)args = commandArgs(trailingOnly = TRUE)
-{  # Bracket used for collapsing purposes
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
-  
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
-}
+# ---------------------------
+# ----- SCRIPT MAIN CODE ----
+# ---------------------------
 
 # --- Argument Imports ---
-# Defaults
-mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
-binaryPhenotypeTreeLocation = NULL
-speciesFilter = NULL
-phenotypeStyle = "continuous"
-continousMetric = "diff"
-validMetrics = c("diff", "mean", "last")
-minSpValue = 10
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
 
-{ # Bracket used for collapsing purposes
-
+  # Defaults
+  mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
+  binaryPhenotypeTreeLocation = NULL
+  speciesFilter = NULL
+  phenotypeStyle = "continuous"
+  continousMetric = "diff"
+  validMetrics = c("diff", "mean", "last")
+  minSpValue = 10
+  
+  
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
     mainTreesLocation = cmdArgImport('m')
@@ -137,8 +103,8 @@ minSpValue = 10
   }
   
   #phenotype tree location
-  if(!is.na(cmdArgImport('u'))){
-    phenotypeTreeLocation = cmdArgImport('u')
+  if(!is.na(cmdArgImport('y'))){
+    phenotypeTreeLocation = cmdArgImport('y')
   }else{                                                                        #See if a pre-made tree for this prefix and style exists 
     if(phenotypeStyle == "Continuous"){
       phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "PhenotypeVector.rds", sep="")
@@ -156,8 +122,8 @@ minSpValue = 10
   }
   
   #Species Filter   
-  if(!is.na(cmdArgImport('f'))){
-    speciesFilter = cmdArgImport('f')
+  if(!is.na(cmdArgImport('z'))){
+    speciesFilter = cmdArgImport('z')
   }else{ #See if a pre-made filter for this prefix exists 
     speciesFilterFileName = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
     if (file.exists(paste(speciesFilterFileName))){                  

@@ -1,20 +1,11 @@
 # -- Libraries 
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
 
-library(RERconverge)
-library(data.table)
-library(tools)
-source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 
 # -- Usage:
 # This script converts permulated trees into per-gene per-permulation results, called "Intermediates". 
-
-# -- Command arguments list
-#----------------
 
 #-------------------------------
 # --- Command arguments list ---
@@ -23,57 +14,31 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 # m = mainTreeFilename.txt or .rds          This sets the location of the maintrees file
 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# i = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization.
+# v = forceUpdate <T or F>                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# j = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
 # - Optional - 
 # h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
-# c = <T or F>                              This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. 
+# b = <T or F>                              This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. 
 # - Overrides - 
-# t = targetFileInstance              This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
+# y = targetFileInstance              This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
 
 # --- End arguments list ---
+#-------------------------------
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
+  
+}
 #-------------------------------
 
 
 
-args = c('r=CategoricalDiet4Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', "i=2") #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
 
-# --- Standard start-up code ---
-args = commandArgs(trailingOnly = TRUE)
-{  # Bracket used for collapsing purposes
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
-  
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){                                                #This cmdArgImport script is a way to import arguments from the command line. 
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
-}
 
 # --- Argument Imports ---
 # Defaults
@@ -90,8 +55,8 @@ targetFileInstance = NULL
     message("No maintrees arg, using default")
   }
   #Metacombination 
-  if(!is.na(cmdArgImport('c'))){
-    metacombineValue = cmdArgImport('c')
+  if(!is.na(cmdArgImport('b'))){
+    metacombineValue = cmdArgImport('b')
     metacombineValue = as.logical(metacombineValue)
     if(is.na(metacombineValue)){
       metacombineValue = FALSE
@@ -101,14 +66,14 @@ targetFileInstance = NULL
     message("Metacombination value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
   }
   #Run instance value
-  if(!is.na(cmdArgImport('i'))){
-    runInstanceValue = cmdArgImport('i')
+  if(!is.na(cmdArgImport('j'))){
+    runInstanceValue = cmdArgImport('j')
   }else{
     message("This script does not have a run instance value")
   }
   #target File Instance
-  if(!is.na(cmdArgImport('t'))){
-    targetFileInstance = cmdArgImport('t')
+  if(!is.na(cmdArgImport('y'))){
+    targetFileInstance = cmdArgImport('y')
   }else{
     targetFileInstance = runInstanceValue
     message("No target file Instance specified, defaulting to this scripts run instance.")

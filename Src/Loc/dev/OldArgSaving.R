@@ -110,6 +110,50 @@ MakeCategoricalPhenotype.R
 
 
 #---------------------------------------------------------------------
+# --- CombineAlternates.R --- 
+# --------------------------------------------------------------------
+
+args = c('r=ComplexDietCentralAnalysisSimplify2', 'g=gene')
+args = c('r=ComplexDietCentralAnalysisSimplify2', 'g=KeggReactome')
+
+#---------------------------------------------------------------------
+# --- RunAlternateEnrichments.R --- 
+# --------------------------------------------------------------------
+
+#'m=c("Data/tissue_specific.gmt", "Data/GSEA-c5-HsSymbols.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")'
+#'m=c("Data/DisGeNET.gmt", "Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt")'
+
+args = c('r=CategoricalInsVertivoreTreeDuplicateLiamInference', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
+
+
+#---------------------------------------------------------------------
+# --- ContinousPermulations.R --- 
+# --------------------------------------------------------------------
+args = c('r=MaturityLifespanPercent', 'm=data/newHillerMainTrees.rds', 'v=F', 'n=20', 'i=Dev', 'o=ornAna2', 'p=T') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+
+
+#---------------------------------------------------------------------
+# --- CategoricalPermulationsCombineAndCalculatePValue.R --- 
+# --------------------------------------------------------------------
+
+#----------------
+args = (c('r=CategoricalDiet3Phen', "n=2", "t=Dev"))
+args = (c('r=CategoricalInsVertivoreTreeLiamInference', "n=2", "s=7"))
+args = (c('r=ComplexDietCentralAnalysis', 'c=T'))
+
+#---------------------------------------------------------------------
+# --- CategoricalPermulationsGeneration.R --- 
+# --------------------------------------------------------------------
+
+args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 't=ER', 'n=20', 'i=Dev', 'l=0.1') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+
+args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'v=F', 't=ER', 'n=4', 'i=Dev', 'l=0.1') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'v=F', 't=ER', 'n=4', 'i=Dev', 'l=0.1') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
+args = c('r=CIvHBinaryZoonomia', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 't=ER', 'n=20', 'i=Dev')
+
+
+
+#---------------------------------------------------------------------
 # --- MakeRadialTree.R --- 
 # --------------------------------------------------------------------
 

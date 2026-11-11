@@ -29,6 +29,10 @@ ZonomNameConvertVectorCommon = function(namesVector,
   if(is.null(scientificColumn)){scientificColumn = defaultScientificColumns}
   if(is.null(commonColumn)){commonColumn = defaultCommonColumns}
   if(is.null(tipColumn)){tipColumn = defaultTipColumns}
+  
+  #allowTipNameAsCommonName
+  if((tipColumn) == "CommonName"){tipColumn = defaultCommonColumns}
+  
   }
   
   names = namesVector                                                    #make a vector of the names

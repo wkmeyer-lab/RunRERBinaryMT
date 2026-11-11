@@ -1,181 +1,159 @@
-# -- Libraries 
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-
-library(RERconverge)
-library(tools)
-source("Src/Reu/cmdArgImport.R")
-if(!clusterRun){library(xlsx)}
-
-
 # -- Usage:
-# This script is used to generate enrichment values from a correlation file. Can include permulation p values if provided. 
+# This script is used to run gene set enrichment, potentially on multiple gene sets, for all of the alternate species sets generated.
+# It is essentially a version of EnrichmentAnalysisNew, but slightly altered to target alternate species sets. 
+# Because this can take a very long time, the script is set up to automatically decline running on a local machine if it has more than 10 alternates to process. 
+# To avoid this automatic shutdown use one of the 'i' values specified below (e.g. 'all'), which disables this behavior. 
 
-#When running on the command line, note that the arguments should be formatted as:
-#r=Prefix v=forceUpdateValue etc
-#Rather than being in quotes and separated by commas. 
-#Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
-
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
+source("Src/Reu/trimGmtFilenameToSetname.R")
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
-# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
-# g = gmtFileLocation.gmt                   This is the location of the main gmt file
-
+# r = filePrefix                              REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# g = c("gene", "sets", "file", "paths")      This sets the gene sets (file names) that the script should be run on, or "gene" for use on genes. 
 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# p = <T or F or C or A>                    This sets if the code should use permulated or unpermulated values. If set to "C", will use permulations for categorical values, which are stored in the main file.
-# s = "subdirectoryName"                    This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
+# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# p = <T or F or C or A>                      This sets if the code should use permulated or unpermulated values. If set to "C", will use permulations for categorical values, which are stored in the main file.
+# s = "subdirectoryName"                      This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
+# i = run instance                            This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. Set to "all" to allow a local script to process all alternates.
 # - Overrides - 
-# y = "correlationFileOverride.rds"         This can be used to manually set the correlation file. Used primarily to target pairwise comparisons of categorical phenotypes.
-# z = "permulationPvalueFileLocation.rds"   This is a manual override to specify the script use a specific Permulation p-value file.
-  #If using permulations in a binary analysis, and using any file other than "CombinedBinaryPermulationsPValue" with no run instance number, it must be specified manually.
+# y = "correlationFileOverride.rds"           This can be used to manually set the correlation file. Used primarily to target pairwise comparisons of categorical phenotypes.
+# z = "permulationPvalueFileLocation.rds"     This is a manual override to specify the script use a specific Permulation p-value file.
+                                                #If using permulations in a binary analysis, and using any file other than "CombinedBinaryPermulationsPValue" with no run instance number, it must be specified manually.
 
 # --- End arguments list ---
 #-------------------------------
-
-
-#----------------
-#'m=c("Data/tissue_specific.gmt", "Data/GSEA-c5-HsSymbols.gmt", "Data/EnrichmentHsSymbolsFile2.gmt")'
-#'m=c("Data/DisGeNET.gmt", "Data/MGI_Mammalian_Phenotype_Level_4.gmt", "Data/GO_Biological_Process_2023.gmt")'
-
-args = c('r=CategoricalInsVertivoreTreeDuplicateLiamInference', 'm=c("Data/KeggReactome.gmt")', 'p=F', 's=c("Insectivore-Vertivore", "Herbivore-Vertivore", "Insectivore-Omnivore", "Herbivore-Omnivore", "Herbivore-Insectivore", "Overall")' )
-
-
-
-# --- Standard start-up code ---
-if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
-{  # Bracket used for collapsing purposes
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
   
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
+ 
 }
+#-------------------------------
+
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
+# ---------------------------
+# ----- SCRIPT MAIN CODE ----
+# ---------------------------
 
 # --- Argument Imports ---
-# Defaults
-gmtFileLocation = "Data/enrichmentGmtFile.gmt"
-usePermulations = FALSE
-usePermulationPValOverride = FALSE
-permulationPValOverride = NULL 
-useCorrelationOverride = FALSE
-correlationOverride = NULL
-useCategoricalPermulations = FALSE
-useSubdirectory = FALSE
-subdirectoryValueList = NULL
-validGeneArguments = c("NULL", "gene", "Gene")
-
-{ # Bracket used for collapsing purposes
-  #Gmt file location
-  if(!any(is.na(cmdArgImport('g')))){
-    gmtFileLocation = cmdArgImport('g')
-    
-    gmtFileLocation = cmdArgImport('g')
-    
-    #remove any arguments which tell later scripts to run a gene analysis 
-    gmtFileLocation = gmtFileLocation[-which(gmtFileLocation %in% validGeneArguments)]
-    
-  }else{
-    paste("No gmt location arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
-    message("No gmt location arugment, using Data/enrichmentGmtFile.gmt")
-  }
+{  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
   
-  #Permulation use
-  if(!is.na(cmdArgImport('p'))){
-    usePermulations = cmdArgImport('p')
-    if(usePermulations %in% c("C", "A")){
-      usePermulations = TRUE
-      useCategoricalPermulations = TRUE
-    }
-    usePermulations = as.logical(usePermulations)
-    if(is.na(usePermulations)){
-      usePermulations = TRUE
-      message("Use Permualtions value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
-    }
-  }else{
-    message("Use Permulations value not specified, using TRUE.")
-  }
-  if(usePermulations){
-    #Import permulation p-value Override 
-    if(!is.na(cmdArgImport('z'))){
-      usePermulationPValOverride = TRUE
-      permulationPValOverride = cmdArgImport('z')
-      message("Using Manually specified permulation p-value file.")
+  # Defaults
+  gmtFileLocation = "Data/enrichmentGmtFile.gmt"
+  usePermulations = FALSE
+  usePermulationPValOverride = FALSE
+  permulationPValOverride = NULL 
+  useCorrelationOverride = FALSE
+  correlationOverride = NULL
+  useCategoricalPermulations = FALSE
+  useSubdirectory = FALSE
+  subdirectoryValueList = NULL
+  validGeneArguments = c("NULL", "gene", "Gene")
+  alternatesSpecified = F
+  usedAlternates = NULL
+  validLocalRunAllAlternates = c("local", "sure", "all")
+  
+  
+  { # Bracket used for collapsing purposes
+    #Gmt file location
+    if(!any(is.na(cmdArgImport('g')))){
+      gmtFileLocation = cmdArgImport('g')
+      
+      gmtFileLocation = cmdArgImport('g')
+      
+      #remove any arguments which tell later scripts to run a gene analysis 
+      gmtFileLocation = gmtFileLocation[-which(gmtFileLocation %in% validGeneArguments)]
+      
     }else{
-      message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
+      paste("No gmt location arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
+      message("No gmt location arugment, using Data/enrichmentGmtFile.gmt")
     }
-  }
-  #Import correlation file override
-  if(!is.na(cmdArgImport('y'))){
-    useCorrelationOverride = TRUE
-    correlationOverride = cmdArgImport('y')
-    message("Using Manually specified correlation file.")
-  }else{
-    message("No corelation override specified.")
-  }
-  
-  #Import subdirectory
-  if(!any(is.na(cmdArgImport('s')))){
-    useSubdirectory = TRUE
-    subdirectoryValueList = cmdArgImport('s')
     
-  }else{
-    message("No subdirectory specified.")
-    alternatesFolderName = paste0(outputFolderName,"Alternates")
-    folderNames = basename(list.dirs(alternatesFolderName, full.names = TRUE, recursive = FALSE))
-    if(length(folderNames) >0 ){
+    #Permulation use
+    if(!is.na(cmdArgImport('p'))){
+      usePermulations = cmdArgImport('p')
+      if(usePermulations %in% c("C", "A")){
+        usePermulations = TRUE
+        useCategoricalPermulations = TRUE
+      }
+      usePermulations = as.logical(usePermulations)
+      if(is.na(usePermulations)){
+        usePermulations = TRUE
+        message("Use Permualtions value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
+      }
+    }else{
+      message("Use Permulations value not specified, using TRUE.")
+    }
+    if(usePermulations){
+      #Import permulation p-value Override 
+      if(!is.na(cmdArgImport('z'))){
+        usePermulationPValOverride = TRUE
+        permulationPValOverride = cmdArgImport('z')
+        message("Using Manually specified permulation p-value file.")
+      }else{
+        message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
+      }
+    }
+    #Import correlation file override
+    if(!is.na(cmdArgImport('y'))){
+      useCorrelationOverride = TRUE
+      correlationOverride = cmdArgImport('y')
+      message("Using Manually specified correlation file.")
+    }else{
+      message("No corelation override specified.")
+    }
+    
+    #Import subdirectory
+    if(!any(is.na(cmdArgImport('s')))){
       useSubdirectory = TRUE
-      subdirectoryValueList = folderNames
-      message("Folders not specified, using all folders.")
+      subdirectoryValueList = cmdArgImport('s')
+      
     }else{
-      message("Using main directory")
+      message("No subdirectory specified.")
+      alternatesFolderName = paste0(outputFolderName,"Alternates")
+      folderNames = basename(list.dirs(alternatesFolderName, full.names = TRUE, recursive = FALSE))
+      if(length(folderNames) >0 ){
+        useSubdirectory = TRUE
+        subdirectoryValueList = folderNames
+        message("Folders not specified, using all folders.")
+      }else{
+        message("Using main directory")
+      }
     }
   }
-}
-
-
-#alternate set
-if(!is.na(cmdArgImport('i'))){
-  usedAlternates = cmdArgImport('i')
-  alternatesSpecified = T
-}else{
-  message("instance not specified, running on all alternates.")
   
-}
+  
+  #alternate set
+  if(!is.na(cmdArgImport('i'))){
+    usedAlternates = cmdArgImport('i')
+    if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
+      message("Run all alternates on local machine CONFIRMED.")
+      message("Caution: May have long run times.")
+      usedAlternates = NULL
+      alternatesSpecified = F
+    }else{
+      usedAlternates = as.integer(usedAlternates)
+      alternatesSpecified = T
+    }
+  }else{
+    message("Instance not specified, running on all alternates.")
+    if(!clusterRun){
+      stop("Attempting to process all alternates on a local machine! This may have run times in excess of 24 hours. Aborting. \n If you wish to avoid this abort, use i=all")
+    }
+  }
 
+}
 
 # ---- Make required adjustments to run on alternates properly ---- 
 
@@ -276,51 +254,4 @@ for(i in usedAlternates){
       }
     }
   }
-  # --- Visualize the enrichment ----
-  
-  {
-    #This is manual only -- run-as-script does not accept a visualize output because no way to output result. 
-    #For a script version, use PvQvGoVisualize.R 
-    visualize = T
-    visualize = F
-    clean = T
-    clean = F
-    
-    if(visualize){
-      library(stringr)
-      library(insight)
-      enrichmentResult2 = enrichmentResult[[1]]
-      makeGOTable = function(data, collumn){
-        ValueHead = head(data[order(collumn, decreasing = T),], n=20)
-        ValueHead$num.genes = as.character(ValueHead$num.genes)
-        ValueHead$stat = round(ValueHead$stat, digits = 5)
-        ValueHead$stat = as.character(ValueHead$stat)
-        ValueHead = format_table(ValueHead, pretty_names = F, digits = "scientific5")
-        ValueHead
-      }
-      enrichHead = makeGOTable(enrichmentResult2, abs(enrichmentResult2$stat))
-      enrichHead
-      textplot(enrichHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
-      if(usePermulations){
-        title(main = paste("Top pathways by permulation"))
-      }else{
-        title(main = paste("Top pathways by non-permulation"))
-      }
-      
-      if(clean){
-        # ---- enrichment cleaning ----
-        pathwaysToRemove = grep("CANCER", rownames(enrichHead))
-        rowsToKeep = (!1:nrow(enrichHead) %in% pathwaysToRemove)
-        cleanedHead = enrichHead[rowsToKeep,]
-        textplot(cleanedHead[1:4], mar = c(0,0,2,0), cmar = 1.5)
-        if(usePermulations){
-          title(main = paste("Top pathways by permulation"))
-        }else{
-          title(main = paste("Top pathways by non-permulation"))
-        }
-        CleanheadFileName = paste(outputFolderName, filePrefix, "CleanedEnrichmentHead.csv", sep= "")
-        write.csv(cleanedHead, CleanheadFileName)
-      }
-    }
-  }  
 }

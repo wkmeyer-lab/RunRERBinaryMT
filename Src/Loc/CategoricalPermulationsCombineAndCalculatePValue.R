@@ -1,12 +1,7 @@
 # -- Libraries 
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
 
-library(RERconverge)
-library(data.table)
-source("Src/Reu/cmdArgImport.R")
 source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 
 
@@ -19,68 +14,36 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
-# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
-# i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
+# r = filePrefix                              REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# j = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# n = <number Of Permulations>        This is the number of permulation files the script will try to combine
-# s = <Start number>                  This is the permulation number to start at. Used for parrallelization. 
+# v = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# n = <number Of Permulations>                This is the number of permulation files the script will try to combine
+# s = <Start number>                          This is the permulation number to start at. Used for parrallelization. 
 # - Optional - 
-# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
-# c = <T or F>                        This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
-# p = <T or F>                        This value determines whether or not to calculate the pValues.
-# o = <T or F>                        This value is used to run only the p value calculation, and not the combination. 
+# h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
+# b = <T or F>                                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
+# p = <T or F>                                This value determines whether or not to calculate the pValues.
+# o = <T or F>                                This value is used to run only the p value calculation, and not the combination. 
 # - Overrides - 
-# t = <PermulationPrefix>             This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
+# y = <PermulationPrefix>                     This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
 
 # --- End arguments list ---
 #-------------------------------
-
-
-
-
-#----------------
-args = (c('r=CategoricalDiet3Phen', "n=2", "t=Dev"))
-args = (c('r=CategoricalInsVertivoreTreeLiamInference', "n=2", "s=7"))
-args = (c('r=ComplexDietCentralAnalysis', 'c=T'))
-
-# --- Standard start-up code ---
-if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
-{  # Bracket used for collapsing purposes
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
   
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){                                                #This cmdArgImport script is a way to import arguments from the command line. 
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
 }
+#-------------------------------
+
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
 
 # --- Argument Imports ---
 # Defaults
@@ -95,8 +58,8 @@ onlyCalulateValue = FALSE
 { # Bracket used for collapsing purposes
   
   #Run Instance Number
-  if(!is.na(cmdArgImport('i'))){
-    runInstanceValue = cmdArgImport('i')
+  if(!is.na(cmdArgImport('j'))){
+    runInstanceValue = cmdArgImport('j')
   }else{
     message("This script does not have a run instance value")
   }
@@ -118,15 +81,15 @@ onlyCalulateValue = FALSE
   }
   
   #Permulation Prefix
-  if(!is.na(cmdArgImport('t'))){
-    permulationPrefix = cmdArgImport('t')
+  if(!is.na(cmdArgImport('y'))){
+    permulationPrefix = cmdArgImport('y')
   }else{
     message("No filename prefix used, using no prefix.")
   }
   
   #Metacombination 
-  if(!is.na(cmdArgImport('c'))){
-    metacombineValue = cmdArgImport('c')
+  if(!is.na(cmdArgImport('b'))){
+    metacombineValue = cmdArgImport('b')
     metacombineValue = as.logical(metacombineValue)
     if(is.na(metacombineValue)){
       metacombineValue = FALSE

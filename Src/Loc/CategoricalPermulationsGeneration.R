@@ -1,72 +1,63 @@
-# -- Libraries 
-.libPaths("/share/ceph/wym219group/shared/libraries/R4") #add path to custom libraries to searched locations
-library(RERconverge)
-library(tools)
-source("Src/Reu/cmdArgImport.R")
-
-
 # -- Usage:
-# This text describes the purpose of the script 
+# This script generates permulated species sets and trees for a given phenotype. 
+# THIS IS THE ONLY PERMULATIONS SET WITH A NON-DETERMINISTIC OUTCOME. 
+# If you wish to save your exact permulations inputs at a much smaller file size, save only the outputs of this script ('PermulationsData' files). 
+# The rest of the results can be deterministicly re-generated, though at a non-trivial amount of compute time. 
 
-# -- Command arguments list
-# r = filePrefix                      This is a prefix used to organize and separate files by analysis run. Always required. 
-# v = <T or F>                        This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# m = mainTreeFilename.txt or .rds    This sets the location of the maintrees file
-# t = <ER or SYM or ARD>              This sets the model type used to estimate ancestral branches; MUST BE THE SAME AS ONE USED IN MakeCategoricalPhenotypeTree.R
-# p = <auto or stationary or flat>    This sets the probability of each state at the root of the tree.   
-# n = numberOfPermulations            This is the number of permulations to run in the script 
-# i = runInstanceValue                This is used to generate unique filenames for each instance of the script. Used in parrallelization. 
-# l = relaxationValue <int, 0-1>      This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. Recommend 0.1 if more than 3 categories
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
+#-------------------------------
+# --- Command arguments list ---
+# - Required - 
+# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# m = mainTreeFilename.txt or .rds          This sets the location of the maintrees file
+# n = numberOfPermulations                  This is the number of permulations to run in the script 
+
+# - Required, Defaults likely acceptable -
+# v = forceUpdate <T or F>                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# q = <ER or SYM or ARD>                    This sets the model type used to estimate ancestral branches; MUST BE THE SAME AS ONE USED IN MakeCategoricalPhenotypeTree.R
+# j = runInstanceValuePerms                 This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
+# u = <auto or stationary or flat>          This sets the probability of each state at the root of the tree.   
+# - Optional - 
+# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
+# x = relaxationValue <int, 0-1>            This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. Recommend 0.1 if more than 3 categories
+# - Overrides - 
+# --- End arguments list ---
+#-------------------------------
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
+  }
+#-------------------------------
+
 
 
 #----------------
-args = c('r=CategoricalDiet3Phen', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 't=ER', 'n=20', 'i=Dev', 'l=0.1') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
 
-args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'v=F', 't=ER', 'n=4', 'i=Dev', 'l=0.1') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
-args = c('r=NewHiller4Phen', 'm=data/newHillerMainTrees.rds', 'v=F', 't=ER', 'n=4', 'i=Dev', 'l=0.1') #This is a debug argument set. It is used to set arguments locally, when not running the code through a bash script.
-args = c('r=CIvHBinaryZoonomia', 'm=data/RemadeTreesAllZoonomiaSpecies.rds', 'v=F', 't=ER', 'n=20', 'i=Dev')
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
 
-# --- Standard start-up code ---
-args = commandArgs(trailingOnly = TRUE)
-{  # Bracket used for collapsing purposes
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){                                                #This cmdArgImport script is a way to import arguments from the command line. 
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
-}
+# ---------------------------
+# ----- SCRIPT MAIN CODE ----
+# ---------------------------
 
 # --- Argument Imports ---
-# Defaults
-mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
-modelType = "ER"
-rootProbability = "auto"
-permulationAmount = 100
-runInstanceValue = NULL
-useRelaxation = FALSE
-relaxationValue = NULL
 
-{ # Bracket used for collapsing purposes
+
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  # Defaults
+  mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
+  modelType = "ER"
+  rootProbability = "auto"
+  permulationAmount = 100
+  runInstanceValue = NULL
+  useRelaxation = FALSE
+  relaxationValue = NULL
+  
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
     mainTreesLocation = cmdArgImport('m')
@@ -74,14 +65,14 @@ relaxationValue = NULL
     message("No maintrees arg, using default")
   }
   #Model Type
-  if(!is.na(cmdArgImport('t'))){
-    modelType = cmdArgImport('t')
+  if(!is.na(cmdArgImport('q'))){
+    modelType = cmdArgImport('q')
   }else{
     message("No model specified, using ER.")
   }
   #Root Probability
-  if(!is.na(cmdArgImport('p'))){
-    rootProbability = cmdArgImport('p')
+  if(!is.na(cmdArgImport('u'))){
+    rootProbability = cmdArgImport('u')
   }else{
     message("No probability specified, using auto.")
   }
@@ -94,15 +85,15 @@ relaxationValue = NULL
     paste("Number of permulations not specified, using 100")
   }
   #Run instance value
-  if(!is.na(cmdArgImport('i'))){
-    runInstanceValue = cmdArgImport('i')
+  if(!is.na(cmdArgImport('j'))){
+    runInstanceValue = cmdArgImport('j')
   }else{
     paste("This script does not have a run instance value")
   }
   #Relaxation
-  if(!is.na(cmdArgImport('l'))){
+  if(!is.na(cmdArgImport('x'))){
     useRelaxation = TRUE
-    relaxationValue = cmdArgImport('l')
+    relaxationValue = cmdArgImport('x')
     relaxationValue = as.numeric(relaxationValue)
     source("Src/Reu/RelaxedRejectionPermFuncs2.R")
   }else{

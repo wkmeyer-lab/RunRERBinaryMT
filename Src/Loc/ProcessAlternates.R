@@ -1,24 +1,12 @@
-# -- Libraries 
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-
-library(RERconverge)
-library(tools)
-library(data.table)
-source("Src/Reu/cmdArgImport.R")
-
-
 # -- Usage:
-# This script can be used to run RER calculations and phenotype correlations with Binary, continuous, or categorical phenotypes.
-# It inputs a phenotype tree made by the appropriate script for the style, and outputs an RER file, a Paths file, and a Correlation file. 
+# This script is used to run RERs and Correlations, as well as the Merged Analysis versions of them, for all of the alternate species sets generated.
+# It is essentially a combined version of RunRERAndCorrelation and RunMergedAnalysis, but slightly altered to target alternate species sets. 
+# Because this can take a very long time, the script is set up to automatically decline running on a local machine if it has more than 10 alternates to process. 
+# To avoid this automatic shutdown use one of the 'i' values specified below (e.g. 'all'), which disables this behavior. 
 
-#When running on the command line, note that the arguments should be formatted as:
-#r=Prefix v=forceUpdateValue etc
-#Rather than being in quotes and separated by commas. 
-#Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
-
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
@@ -26,81 +14,55 @@ source("Src/Reu/cmdArgImport.R")
 # m = mainTreeFilename.txt or .rds                                              This sets the location of the maintrees file
 # a = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>   This prefix is used to set the type of phenotype being supplied
 
-
 # - Required, Defaults likely acceptable -
-# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# v = forceUpdate <T or F>                                                      This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# k = < "diff" or "mean" or "last" >                                            This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
 # - Optional - 
-# h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
+# h = <T>                                                                       This ARG causes the script to return its ARG list, instead of running the script. 
 # l = <min.sp value>                                                            This sets the min.sp value to be used in the correlation. 
-# i = run instance                                                              This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. 
+# i = run instance                                                              This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. Set to "all" to allow a local script to process all alternates.
 # e = c("phenotypes", "to", "merge)                                             This sets which phenotype should be combined into a single phenotype in a merged analysis. 
 # t = c("nameOfMergedPhenotype")                                                This sets the name of the now merged phenotype
 # - Overrides - 
 # --- End arguments list ---
 #-------------------------------
-
-
-#----------------
-
-args = c('r=ComplexDietCentralAnalysis', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=1')
-args = c('r=ComplexDietCentralAnalysisSimplify', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=11')
-args = c('r=ComplexDietCentralAnalysisSimplifyStrictPred', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=7')
-
-{
-  # --- Standard start-up code ---
-  if(clusterRun)args = commandArgs(trailingOnly = TRUE)
-  {  # Bracket used for collapsing purposes
-    #Arg help 
-    if(isTRUE(as.logical(cmdArgImport('h')))){
-      message("Not Running Script, instead returning ARGs for script.")
-      printArgDocumentation()
-      stop()
-    }
-    
-    #File Prefix
-    if(!is.na(cmdArgImport('r'))){
-      filePrefix = cmdArgImport('r')
-    }else{
-      stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-    }
-    
-    #  Output Directory 
-    if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-      dir.create("Output")
-    }
-    outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-    if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-      dir.create(outputFolderNameNoSlash)
-    }
-    outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-    
-    #  Force update argument
-    forceUpdate = FALSE
-    if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-      forceUpdate = cmdArgImport('v')
-      forceUpdate = as.logical(forceUpdate)
-    }else{
-      message("Force update not specified, not forcing update")
-    }
-  }
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
+  
+  args = c('r=ComplexDietCentralAnalysis', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=1')
+  args = c('r=ComplexDietCentralAnalysisSimplify', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=11')
+  args = c('r=ComplexDietCentralAnalysisSimplifyStrictPred', 's=g', 'm=Data/zoonomiaAllMammalsTrees.rds', 'l=170', 'i=7')
 }
+#-------------------------------
+
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
+# ---------------------------
+# ----- SCRIPT MAIN CODE ----
+# ---------------------------
 # --- Argument Imports ---
-# Defaults
-mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
-binaryPhenotypeTreeLocation = NULL
-speciesFilter = NULL
-phenotypeStyle = "continuous"
-continousMetric = "diff"
-validMetrics = c("diff", "mean", "last")
-minSpValue = 10
-alternatesSpecified = F
-usedAlternates = NULL
-
-toMerge = NULL
-mergeValue = NULL
-runMerge= F
-
-{ # Bracket used for collapsing purposes
+{  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  # Defaults
+  mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
+  binaryPhenotypeTreeLocation = NULL
+  speciesFilter = NULL
+  phenotypeStyle = "Categorical"
+  continousMetric = "diff"
+  validMetrics = c("diff", "mean", "last")
+  minSpValue = 10
+  alternatesSpecified = F
+  usedAlternates = NULL
+  validLocalRunAllAlternates = c("local", "sure", "all")
+  
+  toMerge = NULL
+  mergeValue = NULL
+  runMerge= F
+  
   
   #MainTrees Location
   if(!is.na(cmdArgImport('m'))){
@@ -120,6 +82,20 @@ runMerge= F
     message("PhenotypeStyle not specified, using continuous")
   }
   
+  #Continuous Metric 
+  if(!is.na(cmdArgImport('k'))){
+    continousMetric = cmdArgImport('k')
+    if(phenotypeStyle == "Continuous"){ 
+      if(!any(continousMetric == validMetrics)){
+        stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
+      }
+    }
+  }else{                                                                        #If a continuous phenotype, report using Diff
+    if(phenotypeStyle == "Continuous"){
+      message("No continuous metric specified, using diff")
+    }
+  }
+  
   #min.sp Value
   if(!is.na(cmdArgImport('l'))){
     minSpValue = cmdArgImport('l')
@@ -130,10 +106,20 @@ runMerge= F
   #alternate set
   if(!is.na(cmdArgImport('i'))){
     usedAlternates = cmdArgImport('i')
-    alternatesSpecified = T
+    if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
+      message("Run all alternates on local machine CONFIRMED.")
+      message("Caution: May have long run times.")
+      usedAlternates = NULL
+      alternatesSpecified = F
+    }else{
+      usedAlternates = as.integer(usedAlternates)
+      alternatesSpecified = T
+    }
   }else{
-    message("instance not specified, running on all alternates.")
-    
+    message("Instance not specified, running on all alternates.")
+    if(!clusterRun){
+      stop("Attempting to process all alternates on a local machine! This may have run times in excess of 24 hours. Aborting. \n If you wish to avoid this abort, use i=all")
+    }
   }
 
   
@@ -155,7 +141,7 @@ runMerge= F
     toMerge = cmdArgImport('e')
     runMerge = T
   }else{
-    message("No phenotypes set to merge. Script will effectively do nothing; if you are not running a merged phenotype, this is fine.")
+    message("No phenotypes set to merge. No merge will occur; if you are not running a merged phenotype, this is fine.")
     runMerge = F
   }
   
@@ -309,7 +295,8 @@ for(i in usedAlternates){
       correlationsPairFilename = paste(outputSubdirectory, filePrefix, pairwiseTableNames[i], "CorrelationFile",".rds", sep= "")
       saveRDS(categoricalCorrelation[[2]][[i]], correlationsPairFilename)
     }
-    
+  }else{
+    stop("WARNING: Correlation for non-categorical phenotypes has not been implemented.")
   }
   
   write.csv(correlation, file= paste(correlationFileName, ".csv", sep=""), row.names = T, quote = F) #Save correlations as csv

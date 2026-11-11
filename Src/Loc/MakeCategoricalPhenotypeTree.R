@@ -1,24 +1,14 @@
-# -- Libraries 
-runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
-clusterRun = F
-if(!runningLocally){clusterRun = T}
-if(clusterRun){.libPaths("/share/ceph/wym219group/shared/libraries/R4")} #add path to custom libraries to searched locations
-
-library(RERconverge)
-library(tools)
-source("Src/Reu/cmdArgImport.R")
-source("Src/Reu/ZonomNameConvertVectorCommon.R")
-
-
 # -- Usage:
-# This script creates a categorical tree of a phenotype which has been annotated in the Manual Annotations spreadsheet of the meyer lab. 
-# In theory, this script could be used on any spreadsheet, so long as the column containing the tip.labels is specified using the n argument, and the column with common names is named "CommonName". 
+# This script creates a phenotype tree of a phenotype with a categorical value.
+# If you wish to only include select species in the analysis, add a new column to your data as a "screen column". Set species to include to have a 1 in that column, and other species to 0. Use the 's' arg to specify the screen column's name.
+# Similarly, if you wish to only include species with specific category values, specify used categories with the 'c' argument. 
+# Note the various options to combine categories -- see the 'u' and 'o' arguments.
+# If you want to perform an analysis with a category composed of several other categories combined, see "RunMergedAnalysis.R". Include them as separate categories in this script. 
 
-#When running on the command line, note that the arguments should be formatted as:
-#r=Prefix v=forceUpdateValue etc
-#Rather than being in quotes and separated by commas. 
-#Terminal uses spaces to split indexes in a vector, where r uses indepent quotation and commas.
-
+# -- Libraries 
+source("Src/Reu/loadLibraries.R")
+loadLibraries() # Note that this library load includes cluster run detection. 
+source("Src/Reu/ZonomNameConvertVectorCommon.R")
 #-------------------------------
 # --- Command arguments list ---
 # - Required -
@@ -29,7 +19,7 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # t = "tipColumn"                                        This sets the column with the tip names as they appear in the maintrees file.
 
 # - Required, Defaults likely acceptable -
-# v = <T or F>                                           This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# v = forceUpdate <T or F>                               This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # n = "nameColumn"                                       This sets the column with common names of the species. 
 # c = <c("nameOfCategory1","nameOfCategory2")>           This sets a list of category names to be used in the analysis. Species with values not in this list will not be included in the analysis. Include ALL categories to be included (even those merged later).  
 # - Optional - 
@@ -37,7 +27,7 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # u = list(c("replace1", "with1"),c("replace2, with2"))  This combined multiple entries to a new value. The new value can be an existing category, or a new label. 
 # o = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
 # s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
-# k = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
+# q = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
 # g = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 # b = c( "colors", "in ","the", "palette")               This sets the color palette used in the tree graphs. 
 # - Pruning - 
@@ -49,53 +39,26 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # l = <T or F>                                           DO NOT USE UNLESS SPECIFIED -- This determines if the liam infrence nodes should be added 
 # --- End arguments list ---
 #-------------------------------
-
-
-
-
-
-#args = c('r=Demo', 'v=T', 'm=C:/Users/mit221/AppData/Local/R/win-library/4.2/RERconverge/extdata/SubsetMammalGeneTrees.txt', 'd=Results/DemoMergedData.csv', 'a=DemoDietPhenotype', 'c=c("Carnivore", "Herbivore", "Omnivore")', 'n=demoTreeTipName')
-
-
-# --- Standard start-up code ---
-if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
-{  # Bracket used for collapsing purposes
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
-  
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
+# -- Section to include manually-specified args --
+if(!exists("args", envir = environment(), inherits = FALSE)){
+  #This is a space where you can manually write in arguments for the script. 
+  #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
+    
 }
+#-------------------------------
+
+
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
+# ---------------------------
+# ----- SCRIPT MAIN CODE ----
+# ---------------------------
 
 # --- Argument Imports ---
-{ # Bracket used for collapsing purposes
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
 # Defaults
 mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
 spreadSheetLocation = "Data/manualAnnotationsSheet.csv"
@@ -162,8 +125,8 @@ colorSet = c( "darkgreen", "darkblue","black", "red", "yellow")
   }
   
   #Model Type
-  if(!is.na(cmdArgImport('k'))){
-    modelType = cmdArgImport('k')
+  if(!is.na(cmdArgImport('q'))){
+    modelType = cmdArgImport('q')
   }else{
     message("No model specified, using ER.")
   }
@@ -475,7 +438,7 @@ if(!useLiam){
   plotTreeCategorical(commonCategoricalTreeExtraTip, categoryLegend, master = commonMasterAdded)
   plotTreeCategorical(categoricalTreeExtraTip, categoryLegend, master = masterTreeAdded)
   dev.off()  
-  
+  rm(mainTrees) #removes the altered mainTrees object, so that it doesn't affect any other scripts. This is a potential issue unique to the mainTrees object, because it is not reloaded if detected, due to long load times.)
 }
 
 
