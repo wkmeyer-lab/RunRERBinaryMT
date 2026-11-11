@@ -8,27 +8,34 @@ loadLibraries(useVisualizePackages = T, loadAllScripts = T) # Note that this lib
 globalHasLoadedLibrariesAlready = T #because we just ran the most extensive version of library loading, we use a global variable to allow all other scripts to skip running library loading. 
 
 
+# Here included is an ABRIDGED version of the args used to control the analysis portion of the pipeline. 
+# It includes all of the args a used is likely to want to change, when running the analysis via this script. 
+# A full list of of the ARGs used, as well as which script those args are used in, can be found at "Src/Reu/ArgIndexes.R
+
 #-------------------------------
+# --- Combined Analysis Args --- 
 # --- Command arguments list ---
 # - Required - 
-# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
-# m = mainTreeFilename.txt or .rds          This sets the location of the maintrees file
-# d = spreadSheetFilename.csv               This sets the spreadsheet to read the data from 
-# a = "annotCollumn"                        This is the column in the manual annotations spreadsheet to use
-# t = "tipColumn"                           This sets the column with the tip names as they appear in the maintrees file.
-# n = "nameColumn"                          This sets the column with common names of the species. 
+# r = filePrefix                                                                REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# m = mainTreeFilename.txt or .rds                                              REQUIRED: This sets the location of the maintrees file
+# a = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>   This prefix is used to set the Analysis Style type of phenotype being supplied; it will detect automatically if not specified.
+# g = c("gene", "sets", "file", "paths")                                        This sets the gene sets (file names) that the script should be run on, or "gene" for use on genes. 
+
 # - Required, Defaults likely acceptable -
-# v = <T or F>                              This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# k = < "Diff" or "mean" or "last" >        This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
-# - Optional - 
-# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
-# s = "screenCollumn"                       This is a collumn which must have a value of 1 for the species to be included. 
-# - Pruning - 
-# z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
-# x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
-# y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
-# p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
-# - Overrides - 
+# f = forceUpdate <T or F>                                                      This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# k = < "diff" or "mean" or "last" >                                            This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# p = <T or F or C or A>                                                        This sets if the code should use permulated or unpermulated values. If set to "C" or "A", will use permulations for categorical values, which are stored in the main file. 
+# s = "subdirectoryName"                                                        This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
+# o = alternateRatio <decimal>                                                  This sets the percentage of alternates which must be significant for a result to be considered robust to alternate species selection. 
+# Permulations: q = <ER or SYM or ARD>                                          This sets the model type used to estimate ancestral branches; MUST BE THE SAME AS ONE USED IN MakeCategoricalPhenotypeTree.R
+
+# - Optional -
+# h = <T>                                                                       This ARG causes the script to return its ARG list, instead of running the script. 
+# l = <min.sp value>                                                            This sets the min.sp value to be used in the correlation. 
+# e = c("phenotypes", "to", "merge)                                             This sets which phenotype should be combined into a single phenotype in a merged analysis. 
+# t = c("nameOfMergedPhenotype")                                                This sets the name of the now merged phenotype
+# c = significance cutoff                                                       This sets the cutoff for inclusion in the significant columns
+# Permulations: x = relaxationValue <int, 0-1>                                  This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. Recommend 0.1 if more than 3 categories
 # --- End arguments list ---
 #-------------------------------
 # -- Section to include manually-specified args --
@@ -36,45 +43,15 @@ if(!exists("args", envir = environment(), inherits = FALSE)){
   #This is a space where you can manually write in arguments for the script. 
   #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
   
+
 }
 #-------------------------------
-
-
-
 # --- Standard start-up code; identical in all scripts---
-{  # Bracket used for collapsing purposes
-  if(clusterRun)args = commandArgs(trailingOnly = TRUE)
-  #Arg help 
-  if(isTRUE(as.logical(cmdArgImport('h')))){
-    message("Not Running Script, instead returning ARGs for script.")
-    printArgDocumentation()
-    stop()
-  }
-  
-  #File Prefix
-  if(!is.na(cmdArgImport('r'))){
-    filePrefix = cmdArgImport('r')
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY FILE PREFIX")
-  }
-  
-  #  Output Directory 
-  if(!dir.exists("Output")){                                      #Make output directory if it does not exist
-    dir.create("Output")
-  }
-  outputFolderNameNoSlash = paste("Output/",filePrefix, sep = "") #Set the prefix sub directory
-  if(!dir.exists(outputFolderNameNoSlash)){                       #create that directory if it does not exist
-    dir.create(outputFolderNameNoSlash)
-  }
-  outputFolderName = paste("Output/",filePrefix,"/", sep = "")
-  
-  #  Force update argument
-  forceUpdate = FALSE
-  if(!is.na(cmdArgImport('v'))){                                 #Import if update being forced with argument 
-    forceUpdate = cmdArgImport('v')
-    forceUpdate = as.logical(forceUpdate)
-  }else{
-    message("Force update not specified, not forcing update")
-  }
-}
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+
+
+
+
 

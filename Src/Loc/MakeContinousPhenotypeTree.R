@@ -3,7 +3,7 @@
 # If you wish to only include select species in the analysis, add a new column to your data as a "screen column". Set species to include to have a 1 in that column, and other species to 0. Use the 's' arg to specify the screen column's name.
 # In practice, this function actually creates a PATHs file for a continuous phenotype (the next step of processing). 
 # This is because in practice continuous values can be negative if using the 'diff' setting, which produces weird results on a tree, and all functions actually use the PATHs, not the tree. 
-# The script is named this way to retain pairity with the other Make-X-Tree functions; this is the continuous equivalent of such. 
+# The script is named this way to retain parity with the other Make-X-Tree functions; this is the continuous equivalent of such. 
 
 # -- Libraries 
 source("Src/Reu/loadLibraries.R")
@@ -11,25 +11,27 @@ loadLibraries() # Note that this library load includes cluster run detection.
 source("Src/Reu/ZonomNameConvertVectorCommon.R")
 #-------------------------------
 # --- Command arguments list ---
-# - Required - 
-# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
-# m = mainTreeFilename.txt or .rds          This sets the location of the maintrees file
-# d = spreadSheetFilename.csv               This sets the spreadsheet to read the data from 
-# a = "annotCollumn"                        This is the column in the manual annotations spreadsheet to use
-# t = "tipColumn"                           This sets the column with the tip names as they appear in the maintrees file.
-# n = "nameColumn"                          This sets the column with common names of the species. 
+# - Required -
+# r  = filePrefix                                         This is a prefix used to organize and separate files by analysis run. Always required. 
+# m  = mainTreeFilename.txt or .rds                       This sets the location of the maintrees file
+# td = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
+# tp = "phenotypeColumn"                                  This is the column with the phenotype information
+# tt = "tipColumn"                                        This sets the column with the tip names as they appear in the maintrees file.
+
 # - Required, Defaults likely acceptable -
-# f = forceUpdate <T or F>                  This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# k = < "Diff" or "mean" or "last" >        This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# f  = forceUpdate <T or F>                               This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# tn = "nameColumn"                                       This sets the column with common names of the species. 
+# k  = < "Diff" or "mean" or "last" >                     This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+
 # - Optional - 
-# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
-# s = "screenCollumn"                       This is a collumn which must have a value of 1 for the species to be included. 
+# h  = <T>                                                This ARG causes the script to return its ARG list, instead of running the script. 
+# ts = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
+
 # - Pruning - 
-# z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
-# x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
-# y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
-# p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
-# - Overrides - 
+# pm = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
+# pk = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
+# ps = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
+# pd = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
 # --- End arguments list ---
 #-------------------------------
 # -- Section to include manually-specified args --
@@ -72,8 +74,8 @@ pruningProtection = F
 manualPrunedSpecies = NULL
 
   #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
-    mainTreesLocation = cmdArgImport('m')
+  if(!is.na(cmdArgImport('m', T))){
+    mainTreesLocation = cmdArgImport('m', F)
   }else{
     message("No maintrees arg, using default")
   }
@@ -85,74 +87,79 @@ manualPrunedSpecies = NULL
   }
 
   #spreadsheet File
-  if(!is.na(cmdArgImport('d'))){
-    spreadSheetLocation = cmdArgImport('d')
+  if(!is.na(cmdArgImport('td', T))){
+    spreadSheetLocation = cmdArgImport('td', F)
   }else{
-    message("Using Data/manualAnnotationsSheet.csv spreadsheet")
+    message("Using Data/mergedData.csv spreadsheet")
   }
   
-  #Annots Column
-  if(!is.na(cmdArgImport('a'))){
-    annotColumn = cmdArgImport('a')
+  #Phenotype Column
+  if(!is.na(cmdArgImport('tp', T))){
+    annotColumn = cmdArgImport('tp', F)
   }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY ANNOTATION COLLUMN")
+    stop("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE COLUMN")
+  }
+
+  #Tip Column
+  if(!is.na(cmdArgImport('tt', T))){
+    tipCol = cmdArgImport('tt', F)
+  }else{
+    message("Tip Column not specified, using 'tipName'.")
   }
   
-  #Screen Column
-  if(!is.na(cmdArgImport('s'))){
-    useScreen = T
-    screenColumn = cmdArgImport('s')
+  #Name Column
+  if(!is.na(cmdArgImport('tn', T))){
+    nameColumn = cmdArgImport('tn', F)
   }else{
-    message("No screen column used.")
+    message("Name Column not specified, using default list.")
   }
 
   #Continuous Metric 
-  if(!is.na(cmdArgImport('k'))){
-    continousMetric = cmdArgImport('k')
+  if(!is.na(cmdArgImport('k', T))){
+    continousMetric = cmdArgImport('k', F)
     if(!any(continousMetric == validMetrics)){
       stop("Contious metric is not a valid option. Use 'Diff', 'mean', or 'last'")
     }
   }else{                                                                        #If a continuous phenotype, report using Diff
-      message("No continuous metric specified, using Diff")
+    message("No continuous metric specified, using Diff")
   }
-  #Tip Column
-  if(!is.na(cmdArgImport('t'))){
-    tipCol = cmdArgImport('t')
+  
+  #Screen Column
+  if(!is.na(cmdArgImport('ts', T))){
+    useScreen = T
+    screenColumn = cmdArgImport('ts', F)
   }else{
-    message("Tip Column not specified, using 'tipName'.")
+    message("No screen column used.")
   }
-  #Name Column
-  if(!is.na(cmdArgImport('n'))){
-    nameColumn = cmdArgImport('n')
-  }else{
-    message("Name Column not specified, using default list.")
-  }
+
+  
+  
   #Pruning cutoff
-  if(!is.na(cmdArgImport('z'))){
+  if(!is.na(cmdArgImport('pm', T))){
     usingPruning = T
     usingAutoPruning = T
-    pruningCutoff = cmdArgImport('z')
+    pruningCutoff = cmdArgImport('pm', F)
   }else{
     message("Pruning Cutoff not specified, not pruning tree.")
   }
   
   #PruningPrefrenceColumn 
-  if(!is.na(cmdArgImport('x'))){
-    pruningPrefrenceColumn = cmdArgImport('x')
+  if(!is.na(cmdArgImport('pk', T))){
+    pruningPrefrenceColumn = cmdArgImport('pk', F)
   }else{
     if(usingPruning){message("No pruning prefrence column specified")}
   }
   
   #ManualPruningProtections
-  if(!all(is.na(cmdArgImport('y')))){
-    manualPruningProtections = cmdArgImport('y')
+  if(!all(is.na(cmdArgImport('ps', T)))){
+    manualPruningProtections = cmdArgImport('ps', F)
   }else{
     if(usingPruning){message("No manually protected species specified")}
   }
   
   #ManualPruningSpecies
-  if(!all(is.na(cmdArgImport('p')))){
-    manualPruningSpecies = cmdArgImport('p')
+  if(!all(is.na(cmdArgImport('pd', T)))){
+    manualPruningSpecies = cmdArgImport('pd', F)
     usingPruning = T
   }else{
     if(usingPruning){message("No manually pruned species specified")}

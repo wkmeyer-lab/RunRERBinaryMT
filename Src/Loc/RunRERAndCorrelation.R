@@ -56,15 +56,15 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   
   
   #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
-    mainTreesLocation = cmdArgImport('m')
+  if(!is.na(cmdArgImport('m', T))){
+    mainTreesLocation = cmdArgImport('m', F)
   }else{
     message("No maintrees arg, using default")
   }
   
   #Phenotype Style
-  if(!is.na(cmdArgImport('a'))){
-    phenotypeStyle = cmdArgImport('a')
+  if(!is.na(cmdArgImport('a', T))){
+    phenotypeStyle = cmdArgImport('a', F)
     #Convert the various input options; so that the style can be specified with several names 
     if(phenotypeStyle == "b" | phenotypeStyle == "B" | phenotypeStyle == "binary"){phenotypeStyle = "Binary"}
     if(phenotypeStyle == "c" | phenotypeStyle == "C" | phenotypeStyle == "continuous"){phenotypeStyle = "Continuous"}
@@ -93,18 +93,12 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
         }
       } 
     }
-    
-    
-
-    
-    
     message("PhenotypeStyle not specified, using continuous")
-    
   }
   
   #phenotype tree location
-  if(!is.na(cmdArgImport('y'))){
-    phenotypeTreeLocation = cmdArgImport('y')
+  if(!is.na(cmdArgImport('y', T))){
+    phenotypeTreeLocation = cmdArgImport('y', F)
   }else{                                                                        #See if a pre-made tree for this prefix and style exists 
     if(phenotypeStyle == "Continuous"){
       phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "PhenotypeVector.rds", sep="")
@@ -122,8 +116,8 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   }
   
   #Species Filter   
-  if(!is.na(cmdArgImport('z'))){
-    speciesFilter = cmdArgImport('z')
+  if(!is.na(cmdArgImport('z', T))){
+    speciesFilter = cmdArgImport('z', F)
   }else{ #See if a pre-made filter for this prefix exists 
     speciesFilterFileName = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
     if (file.exists(paste(speciesFilterFileName))){                  
@@ -135,8 +129,8 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   }
   
   #Continuous Metric 
-  if(!is.na(cmdArgImport('k'))){
-    continousMetric = cmdArgImport('k')
+  if(!is.na(cmdArgImport('k', T))){
+    continousMetric = cmdArgImport('k', F)
     if(phenotypeStyle == "Continuous"){ 
       if(!any(continousMetric == validMetrics)){
         stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
@@ -147,9 +141,10 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
       message("No continuous metric specified, using diff")
     }
   }
-  #min.sp Value
-  if(!is.na(cmdArgImport('l'))){
-    minSpValue = cmdArgImport('l')
+ 
+   #min.sp Value
+  if(!is.na(cmdArgImport('l', T))){
+    minSpValue = cmdArgImport('l', F)
   }else{
     message("min.sp not specified, using 10")
   }

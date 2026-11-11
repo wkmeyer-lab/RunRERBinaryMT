@@ -17,8 +17,8 @@ source("Src/Reu/trimGmtFilenameToSetname.R")
 
 # - Required, Defaults likely acceptable -
 # f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# w = writeData  <T or F>                     This sets if the data should be saved, potentially overwriting old combinations
 # o = alternateRatio <decimal>                This sets the percentage of alternates which must be significant for a result to be considered robust to alternate species selection. 
+# w = writeData  <T or F>                     This sets if the data should be saved, potentially overwriting old combinations
 
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
@@ -52,7 +52,7 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   alternateCutoffRatio = 0.5 
   
   #genesets
-  if(!all(is.na(cmdArgImport('g')))){
+  if(!all(is.na(cmdArgImport('g', T)))){
     geneSets = cmdArgImport('g')
     if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
       usingGene = T
@@ -72,28 +72,28 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
     message("No geneset specified or gene specified, performing gene correlation.")
   }
   
-  #cutoff
-  if(!is.na(cmdArgImport('c'))){
-    significanceCutoff = as.numeric(cmdArgImport('c'))
-  }else{
-    message("pvalue cuttoff not specified, using 0.05")
-  }  
-  
   #alternate cutoff ratio
-  if(!is.na(cmdArgImport('o'))){
+  if(!is.na(cmdArgImport('o', T))){
     alternateCutoffRatio = as.numeric(cmdArgImport('o'))
   }else{
     message("Alternate ratio not specified, using 50% (0.5)")
   } 
   
-  
   #writeData 
-  if(!is.na(cmdArgImport('w'))){
+  if(!is.na(cmdArgImport('w', T))){
     writeData = as.logical(cmdArgImport('w'))
   }else{
     message("writeData not specified, using TRUE")
   }
 
+  
+  #cutoff
+  if(!is.na(cmdArgImport('c', T))){
+    significanceCutoff = as.numeric(cmdArgImport('c'))
+  }else{
+    message("pvalue cuttoff not specified, using 0.05")
+  }  
+  
 }
 
 

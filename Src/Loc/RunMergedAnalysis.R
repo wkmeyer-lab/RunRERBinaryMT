@@ -50,21 +50,21 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   runMerge= F
   
   #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
-    mainTreesLocation = cmdArgImport('m')
+  if(!is.na(cmdArgImport('m', T))){
+    mainTreesLocation = cmdArgImport('m', F)
   }else{
     message("No maintrees arg, using default")
   }
   #min.sp Value
-  if(!is.na(cmdArgImport('l'))){
-    minSpValue = cmdArgImport('l')
+  if(!is.na(cmdArgImport('l', T))){
+    minSpValue = cmdArgImport('l', F)
   }else{
     message("min.sp not specified, using 10")
   }
   
   #toMerge
-  if(!all(is.na(cmdArgImport('e')))){
-    toMerge = cmdArgImport('e')
+  if(!all(is.na(cmdArgImport('e', T)))){
+    toMerge = cmdArgImport('e', F)
     runMerge = T
   }else{
     message("No phenotypes set to merge. Script will effectively do nothing; if you are not running a merged phenotype, this is fine.")
@@ -72,8 +72,8 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   }
   
   #mergeValue
-  if(!is.na(cmdArgImport('t'))){
-    mergeValue = cmdArgImport('t')
+  if(!is.na(cmdArgImport('t', T))){
+    mergeValue = cmdArgImport('t', F)
   }else{
     if(!runMerge){
       message("No phenotypes set to merge. Script will effectively do nothing; if you are not running a merged phenotype, this is fine.")  

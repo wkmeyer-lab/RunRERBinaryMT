@@ -12,37 +12,49 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 #-------------------------------
 # --- Command arguments list ---
 # - Required -
-# r = filePrefix                                         This is a prefix used to organize and separate files by analysis run. Always required. 
-# m = mainTreeFilename.txt or .rds                       This sets the location of the maintrees file
-# d = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
-# a = "annotCollumn"                                     This is the column with the phenotype information
-# t = "tipColumn"                                        This sets the column with the tip names as they appear in the maintrees file.
+# r  = filePrefix                                         This is a prefix used to organize and separate files by analysis run. Always required. 
+# m  = mainTreeFilename.txt or .rds                       This sets the location of the mainTrees file
+# td = spreadSheetFilename.csv                            This sets the spreadsheet to read the data from 
+# tp = "phenotypeColumn"                                  This is the column with the phenotype information
+# tt = "tipColumn"                                        This sets the column with the tip names as they appear in the mainTrees file.
 
 # - Required, Defaults likely acceptable -
-# f = forceUpdate <T or F>                               This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# n = "nameColumn"                                       This sets the column with common names of the species. 
-# c = <c("nameOfCategory1","nameOfCategory2")>           This sets a list of category names to be used in the analysis. Species with values not in this list will not be included in the analysis. Include ALL categories to be included (even those merged later).  
+# f  = forceUpdate <T or F>                                This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# tn = "nameColumn"                                       This sets the column with common names of the species. 
+# tc = <c("nameOfCategory1","nameOfCategory2")>           This sets a list of category names to be used in the analysis. Species with values not in this list will not be included in the analysis. Include ALL categories to be included (even those merged later).  
 # - Optional - 
-# h = <T>                                                This ARG causes the script to return its ARG list, instead of running the script. 
-# u = list(c("replace1", "with1"),c("replace2, with2"))  This combined multiple entries to a new value. The new value can be an existing category, or a new label. 
-# o = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
-# s = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
-# q = <ER or SYM or ARD>                                 This sets the model type used to estimate ancestral branches 
-# g = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
-# b = c( "colors", "in ","the", "palette")               This sets the color palette used in the tree graphs. 
+# h = <T>                                                 This ARG causes the script to return its ARG list, instead of running the script. 
+# ts = "screenColumn"                                     This is a column which must have a value of 1 for the species to be included. 
+# tr = list(c("replace1", "with1"),c("replace2, with2"))  This combined multiple entries to a new value. The new value can be an existing category, or a new label. 
+# tm = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
+# ta = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
+# tb = c( "colors", "in ","the", "palette")               This sets the color palette used in the tree graphs. 
+# tl = <T or F>                                           This sets if alternate species sets should be created. 
+# tz = <T or F>                                           DO NOT USE UNLESS SPECIFIED -- This determines if the liam infrence nodes should be added 
+# q = <ER or SYM or ARD>                                  This sets the model type used to estimate ancestral branches 
 # - Pruning - 
-# z = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
-# x = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
-# y = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
-# p = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
-# e = <T or F>                                           This sets if alternate species sets should be created. 
-# l = <T or F>                                           DO NOT USE UNLESS SPECIFIED -- This determines if the liam infrence nodes should be added 
+# pm = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
+# pk = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
+# ps = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
+# pd = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
 # --- End arguments list ---
 #-------------------------------
 # -- Section to include manually-specified args --
 if(!exists("args", envir = environment(), inherits = FALSE)){
   #This is a space where you can manually write in arguments for the script. 
   #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
+  
+  args = c('r=ComplexDietHighSugarAllSpecies', 'm=data/zoonomiaAllMammalsTrees.rds', 'td=Data/mergedData.csv', 'tp=ComplexHerbDiet', 'f=T', 'q=ER', 'tt=ZoonomiaTip', 'tz=T', 'tl=F',
+           'tc=c(
+              "Vertivore", "Omnivore", "Invertivore", "Frugivore", "Generalist Herbivore", "Granivore", "Mixed Herbivore", "Nectivore", "Strict Frugivore", "Strict Nectivore"
+            )',
+           'tr=list(
+            c("Mixed Herbivore", "HerbivoreGeneralist"), c("Generalist Herbivore", "HerbivoreGeneralist"), c("Granivore", "HerbivoreGeneralist"), 
+            c("Strict Frugivore", "SugarHerbviore"), c("Strict Nectivore", "SugarHerbviore"),c("Frugivore", "SugarHerbviore"), c("Nectivore", "SugarHerbviore")
+           )',
+           'tb=c("darkgreen", "darkblue","black", "yellow", "red")'
+  )
+  
     
 }
 #-------------------------------
@@ -82,8 +94,8 @@ generateAlternates = F
 colorSet = c( "darkgreen", "darkblue","black", "red", "yellow")
 
   #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
-    mainTreesLocation = cmdArgImport('m')
+  if(!is.na(cmdArgImport('m', T))){
+    mainTreesLocation = cmdArgImport('m', F)
   }else{
     message("No maintrees arg, using default")
   }
@@ -95,130 +107,136 @@ colorSet = c( "darkgreen", "darkblue","black", "red", "yellow")
   }
 
   #spreadsheet File
-  if(!is.na(cmdArgImport('d'))){
-    spreadSheetLocation = cmdArgImport('d')
+  if(!is.na(cmdArgImport('td', T))){
+    spreadSheetLocation = cmdArgImport('td', F)
   }else{
     message("Using Data/manualAnnotationsSheet.csv spreadsheet")
   }
   
-  #Annots Column
-  if(!is.na(cmdArgImport('a'))){
-    annotColumn = cmdArgImport('a')
+  #Phenotype Column
+  if(!is.na(cmdArgImport('tp', T))){
+    annotColumn = cmdArgImport('tp', F)
   }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY ANNOTATION COLLUMN")
+    stop("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE COLUMN")
   }
   
+  #Tip Column
+  if(!is.na(cmdArgImport('tt', T))){
+    tipCol = cmdArgImport('tt', F)
+  }else{
+    message("Tip Column not specified, using 'tipName'.")
+  }
+
+
+
+  #Name Column
+  if(!is.na(cmdArgImport('tn', T))){
+    nameColumn = cmdArgImport('tn', F)
+  }else{
+    message("Name Column not specified, using default list.")
+  }
+
   #Category list 
-  if(!is.na(cmdArgImport('c'))){
-    categoryList = cmdArgImport('c')
+  if(!all(is.na(cmdArgImport('tc', T)))){
+    categoryList = cmdArgImport('tc', F)
   }else{
     message("Using all available categories in phenotype column.")
     categoryList = NULL
   }
   
   #Screen Column
-  if(!is.na(cmdArgImport('s'))){
+  if(!is.na(cmdArgImport('ts', T))){
     useScreen = T
-    screenColumn = cmdArgImport('s')
+    screenColumn = cmdArgImport('ts', F)
   }else{
     message("No screen column used.")
   }
   
-  #Model Type
-  if(!is.na(cmdArgImport('q'))){
-    modelType = cmdArgImport('q')
-  }else{
-    message("No model specified, using ER.")
-  }
-  
-  #Ancestral Trait
-  if(!is.na(cmdArgImport('g'))){
-    ancestralTrait = cmdArgImport('g')
-  }else{
-    message("No ancestral trait specified, using NULL")
-  }
-  
   #Substitution list 
-  if(!is.null(cmdArgImport('u'))){
-    substitutions = cmdArgImport('u')
+  if(!is.null(cmdArgImport('tr', T))){
+    substitutions = cmdArgImport('tr', F)
   }else{
     message("No substitutions provided")
   }
+  
   #Merge list 
-  if(!is.null(cmdArgImport('o'))){
-    mergeOnlys = cmdArgImport('o')
+  if(!is.null(cmdArgImport('tm', T))){
+    mergeOnlys = cmdArgImport('tm', F)
   }else{
     message("No merges provided")
   }
-  #Tip Column
-  if(!is.na(cmdArgImport('t'))){
-    tipCol = cmdArgImport('t')
+
+  #Ancestral Trait
+  if(!is.na(cmdArgImport('ta', T))){
+    ancestralTrait = cmdArgImport('ta', F)
   }else{
-    message("Tip Column not specified, using 'tipName'.")
-  }
-  #Name Column
-  if(!is.na(cmdArgImport('n'))){
-    nameColumn = cmdArgImport('n')
-  }else{
-    message("Name Column not specified, using default list.")
+    message("No ancestral trait specified, using NULL")
   }
 
+  #generate alternates
+  if(!is.na(cmdArgImport('tl', T))){
+    generateAlternates = as.logical(cmdArgImport('tl', F))
+    if(generateAlternates){message("Generating Alternates")}
+  }else{
+    message("Not Generating Alternates.")
+  }
+  
+  #Color pallete
+  if(!all(is.na(cmdArgImport('tb', T)))){
+    colorSet = cmdArgImport('tb', F)
+    message("using specified colorset")
+  }else{
+    message("Using Default palette Generating Alternates.")
+  }
+
+  #use Liam Infrence
+  if(!is.na(cmdArgImport('tz', T))){
+    useLiam = as.logical(cmdArgImport('tz', F))
+    message("Using Liam infrence -- DO NOT DO THIS UNLESS USING A SPECIFIC LIAM PHENOTYPE")
+  }else{
+    message("Liam infrence not used.")
+  }
+
+  #Model Type
+  if(!is.na(cmdArgImport('q', T))){
+    modelType = cmdArgImport('q', F)
+  }else{
+    message("No model specified, using ER.")
+  }
+
+  
+
   #Pruning cutoff
-  if(!is.na(cmdArgImport('z'))){
+  if(!is.na(cmdArgImport('pm', T))){
     usingPruning = T
     usingAutoPruning = T
-    pruningCutoff = cmdArgImport('z')
+    pruningCutoff = cmdArgImport('pm', F)
     pruningCutoff = as.numeric(pruningCutoff)
   }else{
     message("Pruning Cutoff not specified, not pruning tree.")
   }
   
   #PruningPrefrenceColumn 
-  if(!is.na(cmdArgImport('x'))){
-    pruningPrefrenceColumn = cmdArgImport('x')
+  if(!is.na(cmdArgImport('pk', T))){
+    pruningPrefrenceColumn = cmdArgImport('pk', F)
   }else{
     if(usingPruning){message("No pruning prefrence column specified")}
   }
 
   #ManualPruningProtections
-  if(!all(is.na(cmdArgImport('y')))){
-    manualPruningProtections = cmdArgImport('y')
+  if(!all(is.na(cmdArgImport('ps', T)))){
+    manualPruningProtections = cmdArgImport('ps', F)
   }else{
     if(usingPruning){message("No manually protected species specified")}
   }
 
   #ManualPruningSpecies
-  if(!all(is.na(cmdArgImport('p')))){
-    manualPruningSpecies = cmdArgImport('p')
+  if(!all(is.na(cmdArgImport('pd', T)))){
+    manualPruningSpecies = cmdArgImport('pd', F)
     usingPruning = T
   }else{
     if(usingPruning){message("No manually pruned species specified")}
   }
-
-  #use Liam Infrence
-  if(!is.na(cmdArgImport('l'))){
-    useLiam = as.logical(cmdArgImport('l'))
-    message("Using Liam infrence -- DO NOT DO THIS UNLESS USING A SPECIFIC LIAM PHENOTYPE")
-  }else{
-    message("Liam infrence not used.")
-  }
-
-  #generate alternates
-  if(!is.na(cmdArgImport('e'))){
-    generateAlternates = as.logical(cmdArgImport('e'))
-    message("Generating Alternates")
-  }else{
-    message("Not Generating Alternates.")
-  }
-
-  #Color pallete
-  if(!all(is.na(cmdArgImport('b')))){
-    colorSet = cmdArgImport('b')
-    message("using specified colorset")
-  }else{
-    message("Using Default palette Generating Alternates.")
-  }
-
 
 }
 

@@ -65,14 +65,14 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   
   
   #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
+  if(!is.na(cmdArgImport('m', T))){
     mainTreesLocation = cmdArgImport('m')
   }else{
     message("No maintrees arg, using default")
   }
   
   #Phenotype Style
-  if(!is.na(cmdArgImport('a'))){
+  if(!is.na(cmdArgImport('a', T))){
     phenotypeStyle = cmdArgImport('a')
     #Convert the various input options; so that the style can be specified with several names 
     if(phenotypeStyle == "b" | phenotypeStyle == "B" | phenotypeStyle == "binary"){phenotypeStyle = "Binary"}
@@ -83,7 +83,7 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   }
   
   #Continuous Metric 
-  if(!is.na(cmdArgImport('k'))){
+  if(!is.na(cmdArgImport('k', T))){
     continousMetric = cmdArgImport('k')
     if(phenotypeStyle == "Continuous"){ 
       if(!any(continousMetric == validMetrics)){
@@ -97,14 +97,14 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   }
   
   #min.sp Value
-  if(!is.na(cmdArgImport('l'))){
+  if(!is.na(cmdArgImport('l', T))){
     minSpValue = cmdArgImport('l')
   }else{
     message("min.sp not specified, using 10")
   }
   
   #alternate set
-  if(!is.na(cmdArgImport('i'))){
+  if(!is.na(cmdArgImport('i', T))){
     usedAlternates = cmdArgImport('i')
     if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
       message("Run all alternates on local machine CONFIRMED.")
@@ -121,23 +121,9 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
       stop("Attempting to process all alternates on a local machine! This may have run times in excess of 24 hours. Aborting. \n If you wish to avoid this abort, use i=all")
     }
   }
-
-  
-  #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
-    mainTreesLocation = cmdArgImport('m')
-  }else{
-    message("No maintrees arg, using default")
-  }
-  #min.sp Value
-  if(!is.na(cmdArgImport('l'))){
-    minSpValue = cmdArgImport('l')
-  }else{
-    message("min.sp not specified, using 10")
-  }
   
   #toMerge
-  if(!all(is.na(cmdArgImport('e')))){
+  if(!all(is.na(cmdArgImport('e', T)))){
     toMerge = cmdArgImport('e')
     runMerge = T
   }else{
@@ -146,7 +132,7 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   }
   
   #mergeValue
-  if(!is.na(cmdArgImport('t'))){
+  if(!is.na(cmdArgImport('t', T))){
     mergeValue = cmdArgImport('t')
   }else{
     if(!runMerge){

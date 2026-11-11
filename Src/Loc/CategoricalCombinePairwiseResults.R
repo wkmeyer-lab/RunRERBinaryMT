@@ -48,29 +48,13 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   usingGo = F
   usingGene = T
   validGeneArguments = c("NULL", "gene", "Gene")
-  
   writeData = T
-  
   usePermulations = F
   addPermulations = F
   
-  #pairwise Sets
-  if(!all(is.na(cmdArgImport('s')))){
-    if(all(cmdArgImport('s') == "NULL")){
-      folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
-      pairwiseSets = folderNames[grep("-", folderNames)]
-    }else{
-      pairwiseSets = cmdArgImport('s') 
-    }
-  }else{
-    folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
-    pairwiseSets = folderNames[grep("-", folderNames)]
-    message("Folders not specified, using all folders. Note that if driver analysis is active, this may cause issues.")
-  }
-
   #geneset
-  if(!all(is.na(cmdArgImport('g')))){
-    geneSets = cmdArgImport('g')
+  if(!all(is.na(cmdArgImport('g', T)))){
+    geneSets = cmdArgImport('g', F)
     if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
       usingGene = T
       message("Null geneset specified or gene specified, performing gene correlation.")
@@ -89,35 +73,49 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
     message("No geneset specified or gene specified, performing gene correlation.")
   }
   
-  #cutoff 
-  if(!is.na(cmdArgImport('c'))){
-    significanceCutoff = as.numeric(cmdArgImport('c'))
+  #pairwise Sets
+  if(!all(is.na(cmdArgImport('s', T)))){
+    if(all(cmdArgImport('s', F) == "NULL")){
+      folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
+      pairwiseSets = folderNames[grep("-", folderNames)]
+    }else{
+      pairwiseSets = cmdArgImport('s', F) 
+    }
   }else{
-    message("pvalue cuttoff not specified, using 0.05")
-  }  
-  
-  
-  #writeData 
-  if(!is.na(cmdArgImport('w'))){
-    writeData = as.logical(cmdArgImport('w'))
-  }else{
-    message("writeData not specified, using TRUE")
+    folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
+    pairwiseSets = folderNames[grep("-", folderNames)]
+    message("Folders not specified, using all folders. Note that if driver analysis is active, this may cause issues.")
   }
-  
+
   #Use Permulations 
-  if(!is.na(cmdArgImport('p'))){
-    if(cmdArgImport('p') == "A"){
+  if(!is.na(cmdArgImport('p', T))){
+    if(cmdArgImport('p', F) == "A"){
       usePermulations = T
       addPermulations = T
-    }else if(cmdArgImport('p') == "C"){
+    }else if(cmdArgImport('p', F) == "C"){
       usePermulations = T
     }else{
-      usePermulations = as.logical(cmdArgImport('p'))
+      usePermulations = as.logical(cmdArgImport('p', F))
     }
-
+    
   }else{
     message("use Permulations not specified, using FLASE")
   }
+  
+  #writeData 
+  if(!is.na(cmdArgImport('w', T))){
+    writeData = as.logical(cmdArgImport('w', F))
+  }else{
+    message("writeData not specified, using TRUE")
+  } 
+  
+  #cutoff 
+  if(!is.na(cmdArgImport('c', T))){
+    significanceCutoff = as.numeric(cmdArgImport('c', F))
+  }else{
+    message("pvalue cuttoff not specified, using 0.05")
+  }  
+
 }
 
 # ---- Main Code ----- 

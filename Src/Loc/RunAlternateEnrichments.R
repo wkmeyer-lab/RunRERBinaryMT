@@ -48,7 +48,6 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 # --- Argument Imports ---
 {  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-  
   # Defaults
   gmtFileLocation = "Data/enrichmentGmtFile.gmt"
   usePermulations = FALSE
@@ -63,11 +62,11 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   alternatesSpecified = F
   usedAlternates = NULL
   validLocalRunAllAlternates = c("local", "sure", "all")
+
   
   
-  { # Bracket used for collapsing purposes
     #Gmt file location
-    if(!any(is.na(cmdArgImport('g')))){
+    if(!any(is.na(cmdArgImport('g', T)))){
       gmtFileLocation = cmdArgImport('g')
       
       gmtFileLocation = cmdArgImport('g')
@@ -81,7 +80,7 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
     }
     
     #Permulation use
-    if(!is.na(cmdArgImport('p'))){
+    if(!is.na(cmdArgImport('p', T))){
       usePermulations = cmdArgImport('p')
       if(usePermulations %in% c("C", "A")){
         usePermulations = TRUE
@@ -95,27 +94,9 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
     }else{
       message("Use Permulations value not specified, using TRUE.")
     }
-    if(usePermulations){
-      #Import permulation p-value Override 
-      if(!is.na(cmdArgImport('z'))){
-        usePermulationPValOverride = TRUE
-        permulationPValOverride = cmdArgImport('z')
-        message("Using Manually specified permulation p-value file.")
-      }else{
-        message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
-      }
-    }
-    #Import correlation file override
-    if(!is.na(cmdArgImport('y'))){
-      useCorrelationOverride = TRUE
-      correlationOverride = cmdArgImport('y')
-      message("Using Manually specified correlation file.")
-    }else{
-      message("No corelation override specified.")
-    }
     
     #Import subdirectory
-    if(!any(is.na(cmdArgImport('s')))){
+    if(!any(is.na(cmdArgImport('s', T)))){
       useSubdirectory = TRUE
       subdirectoryValueList = cmdArgImport('s')
       
@@ -131,27 +112,45 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
         message("Using main directory")
       }
     }
-  }
   
-  
-  #alternate set
-  if(!is.na(cmdArgImport('i'))){
-    usedAlternates = cmdArgImport('i')
-    if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
-      message("Run all alternates on local machine CONFIRMED.")
-      message("Caution: May have long run times.")
-      usedAlternates = NULL
-      alternatesSpecified = F
+    #alternate set
+    if(!is.na(cmdArgImport('i', T))){
+      usedAlternates = cmdArgImport('i')
+      if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
+        message("Run all alternates on local machine CONFIRMED.")
+        message("Caution: May have long run times.")
+        usedAlternates = NULL
+        alternatesSpecified = F
+      }else{
+        usedAlternates = as.integer(usedAlternates)
+        alternatesSpecified = T
+      }
     }else{
-      usedAlternates = as.integer(usedAlternates)
-      alternatesSpecified = T
+      message("Instance not specified, running on all alternates.")
+      if(!clusterRun){
+        stop("Attempting to process all alternates on a local machine! This may have run times in excess of 24 hours. Aborting. \n If you wish to avoid this abort, use i=all")
+      }
     }
-  }else{
-    message("Instance not specified, running on all alternates.")
-    if(!clusterRun){
-      stop("Attempting to process all alternates on a local machine! This may have run times in excess of 24 hours. Aborting. \n If you wish to avoid this abort, use i=all")
+  
+    #Import permulation p-value Override  
+    if(usePermulations){
+      if(!is.na(cmdArgImport('z', T))){
+        usePermulationPValOverride = TRUE
+        permulationPValOverride = cmdArgImport('z')
+        message("Using Manually specified permulation p-value file.")
+      }else{
+        message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
+      }
     }
-  }
+  
+    #Import correlation file override
+    if(!is.na(cmdArgImport('y', T))){
+      useCorrelationOverride = TRUE
+      correlationOverride = cmdArgImport('y')
+      message("Using Manually specified correlation file.")
+    }else{
+      message("No corelation override specified.")
+    }
 
 }
 

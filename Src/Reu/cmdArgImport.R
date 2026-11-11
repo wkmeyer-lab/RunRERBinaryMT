@@ -10,7 +10,7 @@
 # jValue = cmdArgImport('j', message = "my message for a missing argument here")
 # Returns: jValue = MyString        Or       jValue = <EvaluatedCode>
 
-cmdArgImport = function(marker, message = ""){
+cmdArgImport = function(marker, print = F, message = ""){
   marker                                                           #send the marker value
   markerWhole = paste("^", marker, "=", sep='')                    #convert marker to grep format
   commandLineValue = grep(markerWhole, args, value = TRUE)         #get a string based on the identifier   
@@ -21,14 +21,14 @@ cmdArgImport = function(marker, message = ""){
     }else{                                                         #else
       commandLineOutput = commandLineString                        #use the string directly 
     }
-    message(commandLineOutput)                                     #Report the result
+    if(print){message(paste("ARG:",marker, "=", paste(commandLineOutput, collapse = "  ")))}                                     #Report the result
     return(commandLineOutput)
   }else{                                                           #if it is empty, send a message; return NA
     if(message == ""){                                             #if mo message specified
       defaultMessage = paste("Arg associated with [", marker, "] not specified") # set default message
       message = defaultMessage                                     #use default message
       }                    
-    message(message)
+    if(print){message(message)}
     return(NA)
   }
 }

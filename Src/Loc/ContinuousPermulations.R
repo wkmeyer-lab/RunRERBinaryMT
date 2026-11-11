@@ -9,18 +9,17 @@ loadLibraries() # Note that this library load includes cluster run detection.
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
-# r = filePrefix                            REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
-# m = mainTreeFilename.txt or .rds    This sets the location of the maintrees file
-# n = numberOfPermulations            This is the number of permulations to run in the script 
-# o = outgroupSpecies                 This is the outgroup species with the tip name as it appears on mainTrees$masterTree
-
+# r = filePrefix                              REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
+# m = mainTreeFilename.txt or .rds            This sets the location of the maintrees file
+# n = numberOfPermulations                    This is the number of permulations to run in the script 
+# po = outgroupSpecies                        This is the outgroup species with the tip name as it appears on mainTrees$masterTree
 
 # - Required, Defaults likely acceptable -
 # f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# j = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
+# j = runInstanceValue                        This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
 # - Optional - 
-# h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
-# p = <T or F>                        This sets if the script should calculate permulation p vals. ONLY USE THIS IF NOT PARRALLELIZING, as it only considers permulations from this script.
+# h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
+# d = <T or F>                                This sets if the script should calculate permulation p vals. ONLY USE THIS IF NOT PARRALLELIZING, as it only considers permulations from this script.
 # - Overrides - 
 # --- End arguments list ---
 #-------------------------------
@@ -49,34 +48,36 @@ calculatePVal = F
 
 { # Bracket used for collapsing purposes
   #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
+  if(!is.na(cmdArgImport('m', T))){
     mainTreesLocation = cmdArgImport('m')
   }else{
     message("No maintrees arg, using default")
   }
   
   #Number of permulations
-  if(!is.na(cmdArgImport('n'))){
+  if(!is.na(cmdArgImport('n', T))){
     permulationAmount = cmdArgImport('n')
     permulationAmount = as.numeric(permulationAmount)
   }else{
     paste("Number of permulations not specified, using 100")
   }
+  
   #Run instance value
-  if(!is.na(cmdArgImport('j'))){
+  if(!is.na(cmdArgImport('j', T))){
     runInstanceValue = cmdArgImport('j')
   }else{
     paste("This script does not have a run instance value")
   }
+  
   #Outgroup Species
-  if(!is.na(cmdArgImport('o'))){
-    outgroupVal = cmdArgImport('o')
+  if(!is.na(cmdArgImport('po', T))){
+    outgroupVal = cmdArgImport('po')
   }else{
     stop("An outgroup is required, specify outgroup species")
   }
   #Calculate P 
-  if(!is.na(cmdArgImport('p'))){
-    calculatePVal = cmdArgImport('p')
+  if(!is.na(cmdArgImport('d', T))){
+    calculatePVal = cmdArgImport('d')
   }else{
     paste("p caluclation not specified, not interally calculating p values.")
   }

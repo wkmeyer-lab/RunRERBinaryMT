@@ -51,14 +51,14 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   imageAllTips = T
   
   #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
+  if(!is.na(cmdArgImport('m', T))){
     mainTreesLocation = cmdArgImport('m')
   }else{
     message("No maintrees arg, using Data/zoonomiaAllMammalsTrees.rds")
   }
   
   #Pallette
-  if(!all(is.na(cmdArgImport('b')))){
+  if(!all(is.na(cmdArgImport('b', T)))){
     paletteValues = cmdArgImport('b')
     palette(paletteValues)
   }else{
@@ -66,41 +66,41 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   }
   
   #spreadsheet File
-  if(!is.na(cmdArgImport('d'))){
+  if(!is.na(cmdArgImport('d', T))){
     spreadSheetLocation = cmdArgImport('d')
   }else{
     message("Using Data/mergedData.csv spreadsheet")
   }
   
   #Tip Column
-  if(!is.na(cmdArgImport('t'))){
+  if(!is.na(cmdArgImport('t', T))){
     tipCol = cmdArgImport('t')
   }else{
     message("Tip Column not specified, using 'tipName'.")
   }
   #Name Column
-  if(!is.na(cmdArgImport('n'))){
+  if(!is.na(cmdArgImport('n', T))){
     nameColumn = cmdArgImport('n')
   }else{
     message("Name Column not specified, using default list.")
   }
   
   #Category replacements 
-  if(!all(is.na(cmdArgImport('c')))){
+  if(!all(is.na(cmdArgImport('c', T)))){
     CategoryReplacements = cmdArgImport('c')
   }else{
     message("No category replacements provided, using category branch lengths as labels")
   }
   
   #legend Label
-  if(!is.na(cmdArgImport('l'))){
+  if(!is.na(cmdArgImport('l', T))){
     legendText = cmdArgImport('l')
   }else{
     message("No legendText provided, legend will be unlabeled")
   }
   
   #imageAllTips
-  if(!is.na(cmdArgImport('i'))){
+  if(!is.na(cmdArgImport('i', T))){
     imageAllTips = as.logical(cmdArgImport('i'))
   }else{
     message("Use of clade labels not specified, labeling all tips")

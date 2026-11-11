@@ -15,12 +15,13 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 # --- Command arguments list ---
 # - Required - 
 # r = filePrefix                              REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
-# j = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
 
 # - Required, Defaults likely acceptable -
 # f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# n = <number Of Permulations>                This is the number of permulation files the script will try to combine
-# st = <Start number>                          This is the permulation number to start at. Used for parrallelization. 
+# j = runInstanceValue                        This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
+# nc = <number Of Permulations Files>         This is the number of permulation files the script will try to combine
+# st = <Start number>                         This is the permulation number to start at. Used for parrallelization. 
+
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
 # b = <T or F>                                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
@@ -58,37 +59,33 @@ onlyCalulateValue = FALSE
 { # Bracket used for collapsing purposes
   
   #Run Instance Number
-  if(!is.na(cmdArgImport('j'))){
+  if(!is.na(cmdArgImport('j', T))){
     runInstanceValue = cmdArgImport('j')
   }else{
     message("This script does not have a run instance value")
   }
   
-  #Number of permulations to combine
-  if(!is.na(cmdArgImport('n'))){
-    permulationNumberValue = cmdArgImport('n')
+  #Number of permulations files to combine
+  if(!is.na(cmdArgImport('nc', T))){
+    permulationNumberValue = cmdArgImport('nc')
     permulationNumberValue = as.numeric(permulationNumberValue)
   }else{
-    message("Number of permulations not specified, using 100")
+    message("Number of permulations not specified, running on all.")
+    intermediateFilenames = list.files(paste0(outputFolderName), pattern = "CategoricalPermulationsIntermediates")
+    intermediateFilenames = intermediateFilenames[-grep("Combined", intermediateFilenames)]
+    permulationNumberValue = length(intermediateFilenames)
   }
   
   #Start Number
-  if(!is.na(cmdArgImport('st'))){
+  if(!is.na(cmdArgImport('st', T))){
     startValue = cmdArgImport('st')
     startValue = as.numeric(startValue)
   }else{
     message("Start value not specified, using 1")
   }
   
-  #Permulation Prefix
-  if(!is.na(cmdArgImport('y'))){
-    permulationPrefix = cmdArgImport('y')
-  }else{
-    message("No filename prefix used, using no prefix.")
-  }
-  
   #Metacombination 
-  if(!is.na(cmdArgImport('b'))){
+  if(!is.na(cmdArgImport('b', T))){
     metacombineValue = cmdArgImport('b')
     metacombineValue = as.logical(metacombineValue)
     if(is.na(metacombineValue)){
@@ -100,7 +97,7 @@ onlyCalulateValue = FALSE
   }
   
   #Calculate P Value
-  if(!is.na(cmdArgImport('d'))){
+  if(!is.na(cmdArgImport('d', T))){
     calulateValue = cmdArgImport('d')
     calulateValue = as.logical(calulateValue)
     if(is.na(calulateValue)){
@@ -112,7 +109,7 @@ onlyCalulateValue = FALSE
   }
   
   #Only Calculate P Value
-  if(!is.na(cmdArgImport('v'))){
+  if(!is.na(cmdArgImport('v', T))){
     onlyCalulateValue = cmdArgImport('v')
     onlyCalulateValue = as.logical(calulateValue)
     if(is.na(calulateValue)){
@@ -122,6 +119,14 @@ onlyCalulateValue = FALSE
   }else{
     message("Only p-value calculation value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
   }
+  
+  #Permulation Prefix
+  if(!is.na(cmdArgImport('y', T))){
+    permulationPrefix = cmdArgImport('y')
+  }else{
+    message("No filename prefix used, using no prefix.")
+  }
+  
   
 }
 

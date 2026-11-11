@@ -49,10 +49,9 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   usingGo = F
   usingGene = T
   validGeneArguments = c("NULL", "gene", "Gene")
-  
-  
+
   #genesets
-  if(!all(is.na(cmdArgImport('g')))){
+  if(!all(is.na(cmdArgImport('g', T)))){
     geneSets = cmdArgImport('g')
     if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
       usingGene = T

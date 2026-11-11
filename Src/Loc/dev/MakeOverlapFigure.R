@@ -116,7 +116,7 @@ useMainAndRobust = F
 { # Bracket used for collapsing purposes
   
   #significance -- -NOTE THAT THIS IS ONLY FOR THE LABEL, actual numbers are based on the columns
-  if(!is.na(cmdArgImport('z'))){
+  if(!is.na(cmdArgImport('z', T))){
     significanceCutoff = cmdArgImport('z')
     significanceCutoff = as.numeric(significanceCutoff)
   }else{
@@ -124,14 +124,14 @@ useMainAndRobust = F
   }
   
   #geneset
-  if(!is.na(cmdArgImport('g'))){
+  if(!is.na(cmdArgImport('g', T))){
     geneSet = cmdArgImport('g')
   }else{
     message("No geneset specified, running only on genes")
   }
   
   #pairwise Directories
-  if(!any(is.na(cmdArgImport('s')))){
+  if(!any(is.na(cmdArgImport('s', T)))){
     pairwiseSets = cmdArgImport('s')
   }else{
     subdirectories = list.dirs(outputFolderName, recursive = F, full.names = F)
@@ -140,28 +140,28 @@ useMainAndRobust = F
   }
   
   #Venn Directories
-  if(!any(is.na(cmdArgImport('n')))){
+  if(!any(is.na(cmdArgImport('n', T)))){
     vennDiagramSet = cmdArgImport('n')
   }else{
     message("No Venn directories specified, not suing venn directories.")
   }
   
   #Use Permulations
-  if(!any(is.na(cmdArgImport('p')))){
+  if(!any(is.na(cmdArgImport('p', T)))){
     usePermulations = cmdArgImport('p')
   }else{
     message("No permulations use specified, not using permulations.")
   }
   
   #Make Directional
-  if(!any(is.na(cmdArgImport('d')))){
+  if(!any(is.na(cmdArgImport('d', T)))){
     makeDirectional = cmdArgImport('d')
   }else{
     message("No makeDirectional specified, not making directional.")
   }
   
   #Make Directional
-  if(!any(is.na(cmdArgImport('l')))){
+  if(!any(is.na(cmdArgImport('l', T)))){
     labelSet = cmdArgImport('l')
     positiveLabel = labelSet[1]
     negativeLabel = labelSet[2]
@@ -170,7 +170,7 @@ useMainAndRobust = F
   }
   
   #Use Main robust to alternates
-  if(!any(is.na(cmdArgImport('a')))){
+  if(!any(is.na(cmdArgImport('a', T)))){
     useMainAndRobust = cmdArgImport('a')
     useMainAndRobust = as.logical(useMainAndRobust)
   }else{

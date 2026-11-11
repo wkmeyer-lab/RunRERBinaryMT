@@ -63,8 +63,8 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   
   
   #Gmt file location
-  if(!any(is.na(cmdArgImport('g')))){
-    gmtFileLocation = cmdArgImport('g')
+  if(!any(is.na(cmdArgImport('g', T)))){
+    gmtFileLocation = cmdArgImport('g', F)
     
     #remove any arguments which tell later scripts to run a gene analysis 
     gmtFileLocation = gmtFileLocation[-which(gmtFileLocation %in% validGeneArguments)]
@@ -75,8 +75,8 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   }
   
   #Permulation use
-  if(!is.na(cmdArgImport('p'))){
-    usePermulations = cmdArgImport('p')
+  if(!is.na(cmdArgImport('p', T))){
+    usePermulations = cmdArgImport('p', F)
     if(usePermulations %in% c("C","A")){
       usePermulations = TRUE
       useCategoricalPermulations = TRUE
@@ -89,31 +89,11 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   }else{
     message("Use Permulations value not specified, using TRUE.")
   }
-  if(usePermulations){
-    #Import permulation p-value Override 
-    if(!is.na(cmdArgImport('z'))){
-      usePermulationPValOverride = TRUE
-      permulationPValOverride = cmdArgImport('z')
-      message("Using Manually specified permulation p-value file.")
-    }else{
-      if(!useCategoricalPermulations){
-        message("No Permulation pValue override, using standard CombinedBinaryPermulationsPValue.rds.")
-      }
-    }
-  }
-  #Import correlation file override
-  if(!is.na(cmdArgImport('y'))){
-    useCorrelationOverride = TRUE
-    correlationOverride = cmdArgImport('y')
-    message("Using Manually specified correlation file.")
-  }else{
-    message("No corelation override specified.")
-  }
   
   #Import subdirectory
-  if(!any(is.na(cmdArgImport('s')))){
+  if(!any(is.na(cmdArgImport('s', T)))){
     useSubdirectory = TRUE
-    subdirectoryValueList = cmdArgImport('s')
+    subdirectoryValueList = cmdArgImport('s', F)
     #message(paste("Using subdirectory", subdirectoryValue, "."))
     if(length(subdirectoryValueList ==1)){outputFolderName = paste(outputFolderName, subdirectoryValueList[1], "/", sep=""); subdirectoryValue = subdirectoryValueList[1]}
     
@@ -131,8 +111,33 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
       message("Using main directory")
     }
     
-
+    
   }
+  
+  
+  #Import permulation p-value Override 
+  if(usePermulations){
+    if(!is.na(cmdArgImport('z', T))){
+      usePermulationPValOverride = TRUE
+      permulationPValOverride = cmdArgImport('z', F)
+      message("Using Manually specified permulation p-value file.")
+    }else{
+      if(!useCategoricalPermulations){
+        message("No Permulation pValue override, using standard CombinedBinaryPermulationsPValue.rds.")
+      }
+    }
+  }
+  
+  #Import correlation file override
+  if(!is.na(cmdArgImport('y', T))){
+    useCorrelationOverride = TRUE
+    correlationOverride = cmdArgImport('y', F)
+    message("Using Manually specified correlation file.")
+  }else{
+    message("No corelation override specified.")
+  }
+  
+
 }
 
 

@@ -49,13 +49,21 @@ targetFileInstance = NULL
 
 { # Bracket used for collapsing purposes
   #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
+  if(!is.na(cmdArgImport('m', T))){
     mainTreesLocation = cmdArgImport('m')
   }else{
     message("No maintrees arg, using default")
   }
+  
+  #Run instance value
+  if(!is.na(cmdArgImport('j', T))){
+    runInstanceValue = cmdArgImport('j')
+  }else{
+    message("This script does not have a run instance value")
+  }
+  
   #Metacombination 
-  if(!is.na(cmdArgImport('b'))){
+  if(!is.na(cmdArgImport('b', T))){
     metacombineValue = cmdArgImport('b')
     metacombineValue = as.logical(metacombineValue)
     if(is.na(metacombineValue)){
@@ -65,14 +73,9 @@ targetFileInstance = NULL
   }else{
     message("Metacombination value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
   }
-  #Run instance value
-  if(!is.na(cmdArgImport('j'))){
-    runInstanceValue = cmdArgImport('j')
-  }else{
-    message("This script does not have a run instance value")
-  }
+  
   #target File Instance
-  if(!is.na(cmdArgImport('y'))){
+  if(!is.na(cmdArgImport('y', T))){
     targetFileInstance = cmdArgImport('y')
   }else{
     targetFileInstance = runInstanceValue

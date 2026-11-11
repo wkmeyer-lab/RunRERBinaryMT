@@ -59,39 +59,43 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   relaxationValue = NULL
   
   #MainTrees Location
-  if(!is.na(cmdArgImport('m'))){
+  if(!is.na(cmdArgImport('m', T))){
     mainTreesLocation = cmdArgImport('m')
   }else{
     message("No maintrees arg, using default")
   }
-  #Model Type
-  if(!is.na(cmdArgImport('q'))){
-    modelType = cmdArgImport('q')
-  }else{
-    message("No model specified, using ER.")
-  }
-  #Root Probability
-  if(!is.na(cmdArgImport('u'))){
-    rootProbability = cmdArgImport('u')
-  }else{
-    message("No probability specified, using auto.")
-  }
-  
+
   #Number of permulations
-  if(!is.na(cmdArgImport('n'))){
+  if(!is.na(cmdArgImport('n', T))){
     permulationAmount = cmdArgImport('n')
     permulationAmount = as.numeric(permulationAmount)
   }else{
     paste("Number of permulations not specified, using 100")
   }
+    
+  #Model Type
+  if(!is.na(cmdArgImport('q', T))){
+    modelType = cmdArgImport('q')
+  }else{
+    message("No model specified, using ER.")
+  }
+
   #Run instance value
-  if(!is.na(cmdArgImport('j'))){
+  if(!is.na(cmdArgImport('j', T))){
     runInstanceValue = cmdArgImport('j')
   }else{
     paste("This script does not have a run instance value")
   }
+    
+  #Root Probability
+  if(!is.na(cmdArgImport('u', T))){
+    rootProbability = cmdArgImport('u', T)
+  }else{
+    message("No probability specified, using auto.")
+  }
+  
   #Relaxation
-  if(!is.na(cmdArgImport('x'))){
+  if(!is.na(cmdArgImport('x', T))){
     useRelaxation = TRUE
     relaxationValue = cmdArgImport('x')
     relaxationValue = as.numeric(relaxationValue)
