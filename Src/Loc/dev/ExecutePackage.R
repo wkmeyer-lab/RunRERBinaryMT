@@ -128,8 +128,19 @@ if(phenotypeStyleExecute == "Categorical"){
 
 # --- Alternate Species Sets ---
 if(generateAlternatesExecute){
+  #Run RER and Correlation on the alternates
+  source("Src/Loc/ProcessAlternates.R")
   
+  #Run Enrichments for the alternates
+  source("Src/Loc/RunAlternateEnrichments.R")
   
+  #Combine the alternates
+  source("Src/Loc/CombineAlternates.R")
+  
+  #If running a categorical phenotype, add the alternates to the combined files 
+  if(phenotypeStyleExecute == "Categorical"){
+    source("Src/Loc/AddAlternatesToCombinations.R")
+  }
   
 }
 
