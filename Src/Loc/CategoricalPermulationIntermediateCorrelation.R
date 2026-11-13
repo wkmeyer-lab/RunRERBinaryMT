@@ -18,7 +18,7 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 # j = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
 # - Optional - 
 # h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
-# b = Metacombination <T or F>                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
+# b = Metacombination <T or F>              This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # - Overrides - 
 # y = targetFileInstance                    This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
 

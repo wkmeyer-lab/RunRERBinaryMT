@@ -57,10 +57,6 @@ if(!exists("NoArgUpdate")){ #This line allows other scripts to run this code wit
     #Load from args 
     source("Src/Reu/ArgumentImport.R")
     
-    validMetrics= c("diff", "mean", "last")
-    if(phenotypeStyle == "Continuous" && !any(continousMetric == validMetrics)){
-      stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
-    }
   }
   
   

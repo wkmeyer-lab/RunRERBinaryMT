@@ -10,7 +10,7 @@ globalHasLoadedLibrariesAlready = T #because we just ran the most extensive vers
 # Here included is an ABRIDGED version of the args used to control the pipeline. 
 # It includes all of the args a used is likely to want to change, when running the analysis via this script. 
 # This notably lacks arguments for permulations (not run via this script).
-# A full list of of the ARGs used, as well as which script those args are used in, can be found at "Src/Reu/ArgIndexes.R
+# A full list of of the ARGs used, as well as which script those args are used in, can be found at "Src/Reu/ArgImports.R
 #-------------------------------
 # --- Command arguments list ---
 # --- Combined Pipeline Args ---
@@ -42,6 +42,8 @@ globalHasLoadedLibrariesAlready = T #because we just ran the most extensive vers
 # e = c("phenotypes", "to", "merge)                       This sets which phenotype should be combined into a single phenotype in a merged analysis. 
 # t = c("nameOfMergedPhenotype")                          This sets the name of the now merged phenotype
 # tl = <T or F>                                           This sets if alternate species sets should be created. Currently supports only categorical phenotypes. 
+# ta = <number of alternates>                             This sets the number of alternate species sets to generate, if alternate species sets are generated. 
+# i = usedAlternates                                      This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. Set to "all" to allow a local script to process all alternates.
 # o = alternateRatio <decimal>                            This sets the percentage of alternates which must be significant for a result to be considered robust to alternate species selection. 
 # - Pruning - 
 # pm = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
@@ -55,80 +57,50 @@ if(!exists("args", envir = environment(), inherits = FALSE)){
   
   
 }
-# ---------------------------
-# ----- SCRIPT MAIN CODE ----
-# ---------------------------
+# --- Standard start-up code; identical in all scripts---
+source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+#This code reads the "report args" help ARG, and returns the args if it is active. 
+#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg
 
 # --- Argument Imports ---
 { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
   
   # Defaults
-  phenotypeStyleExecute = "categorical"
-  generateAlternatesExecute = F
+  phenotypeStyle = NULL
+  generateAlternates = NULL
+  usedAlternates = NULL
   
   
-  #Phenotype Style (For Execute script)
-  if(!is.na(cmdArgImport('a', T))){
-    phenotypeStyleExecute = cmdArgImport('a', F)
-    #Convert the various input options; so that the style can be specified with several names 
-    if(phenotypeStyleExecute == "b" | phenotypeStyleExecute == "B" | phenotypeStyleExecute == "binary"){phenotypeStyleExecute = "Binary"}
-    if(phenotypeStyleExecute == "c" | phenotypeStyleExecute == "C" | phenotypeStyleExecute == "continuous"){phenotypeStyleExecute = "Continuous"}
-    if(phenotypeStyleExecute == "g" | phenotypeStyleExecute == "G" | phenotypeStyleExecute == "categorical"){phenotypeStyleExecute = "Categorical"}
-  }else{
-    message("No phenotype style specified, attempting to detect automatically.")
-    
-    #Check for categorical 
-    phenotypeTreeFilename = paste(outputFolderName, filePrefix, "Categorical", "Tree.rds", sep="")
-    if(file.exists(phenotypeTreeFilename)){
-      message("Found information for Categorical phenotype, using Categorical phenotype")
-      phenotypeStyleExecute = "Categorical"
-    }else{
-      phenotypeTreeFilename = paste(outputFolderName, filePrefix, "Continuous", "PhenotypeVector.rds", sep="")
-      if(file.exists(phenotypeTreeFilename)){
-        message("Found information for continuous phenotype, using continuous phenotype")
-        phenotypeStyleExecute = "Continuous"
-      }else{
-        phenotypeTreeFilename = paste(outputFolderName, filePrefix, "Binary", "Tree.rds", sep="")
-        if(file.exists(phenotypeTreeFilename)){
-          message("Found information for binary phenotype, using binary phenotype")
-          phenotypeStyleExecute = "binary"
-        }else{
-          message("No phenotype specified and no correct tree found.")
-          message("PhenotypeStyle not specified, using categorical")
-        }
-      } 
-    }
-  }
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
   
-  #Generate alternates (for Execute Script)
-  if(!is.na(cmdArgImport('tl', T))){
-    generateAlternatesExecute = as.logical(cmdArgImport('tl', F))
-    if(generateAlternatesExecute){message("Generating Alternates")}
-  }else{
-    message("Not Generating Alternates.")
-  }
-  
-  
-  
+  phenotypeStyleExecute = phenotypeStyle
+  generateAlternatesExecute = generateAlternates
+  usedAlternatesExecute = usedAlternates
+  rm(phenotypeStyle)
+  rm(generateAlternates)
+  rm(usedAlternates)
 
 }
 
 
-
+# ---------------------------
+# ----- SCRIPT MAIN CODE ----
+# ---------------------------
 
 #---------------------------------------------------------------------
 # --- Phenotype Tree Creation  --- 
 # --------------------------------------------------------------------
 # Here included is an ABRIDGED version of the args used to control the phenotype tree portion of the pipeline. 
 # It includes all of the args a used is likely to want to change, when running the analysis via this script. 
-# A full list of of the ARGs used, as well as which script those args are used in, can be found at "Src/Reu/ArgIndexes.R
+# A full list of of the ARGs used, as well as which script those args are used in, can be found at "Src/Reu/ArgImports.R
 
 
 if(phenotypeStyleExecute == "Categorical"){
   source("Src/Loc/MakeCategoricalPhenotypeTree.R")
 }elseif(phenotypeStyleExecute == "Continuous"){
   source("Src/Loc/MakeContinousPhenotypeTree.R")
-}elseif(phenotypeStyleExecute == "Continuous"){
+}elseif(phenotypeStyleExecute == "Binary"){
   source("Src/Loc/MakeBinaryPhenotypeTree.R")
 }else{
   stop("Invalid Phenotype Style supplied.")
@@ -140,14 +112,24 @@ if(phenotypeStyleExecute == "Categorical"){
 # --- RER Analysis Section  --- 
 # --------------------------------------------------------------------
 
+#Run the RER generation, and gene correlation 
+source("Src/Loc/RunRERAndCorrelation.R")
 
+#Run the Merged Analysis Script. Only applies to categorical phenotypes, but if not applicable it safely does nothing. 
+source("Src/Loc/RunMergedAnalysis.R")
 
-# --- Standard start-up code; identical in all scripts---
-source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
-#This code reads the "report args" help ARG, and reutrns the args if it is active. 
-#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+#Run gene set enrichment analysis. If no genesets are provided, it safely does nothing. 
+source("Src/Loc/RunEnrichmentAnalysis.R")
 
+#If running a categorical phenotype, combine the pairwise results into a single table. 
+if(phenotypeStyleExecute == "Categorical"){
+  source("Src/Loc/CategoricalCombinePairwiseResults.R")
+}
 
-
-
+# --- Alternate Species Sets ---
+if(generateAlternatesExecute){
+  
+  
+  
+}
 

@@ -81,7 +81,7 @@ loadLibraries() # Note that this library load includes cluster run detection.
 #     #EnrichmentAnalysisNew.R; CategoricalCombinePairwiseResults.R; RunAlternateEnrichments.R 
 # w = writeData  <T or F>                                                       This sets if the data should be saved, potentially overwriting old combinations
 #     #CategoricalCombinePairwiseResults.R; AddAlternatesToCombination.R
-# i = run instance                                                              This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. Set to "all" to allow a local script to process all alternates.
+# i = usedAlternates                                                            This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. Set to "all" to allow a local script to process all alternates.
 #     #ProcessAlternates.R; RunAlternateEnrichments.R 
 # o = alternateRatio <decimal>                                                  This sets the percentage of alternates which must be significant for a result to be considered robust to alternate species selection. 
 #     #AddAlternatesToCombination.R
@@ -113,11 +113,11 @@ loadLibraries() # Note that this library load includes cluster run detection.
 #   Permulations:
 # x = relaxationValue <int, 0-1>                                                This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. Recommend 0.1 if more than 3 categories
 #     #CategoricalPermulationsGeneration.R
-# b = <T or F>                                                                  This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. 
+# b = b = Metacombination <T or F>                                              This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. 
 #     #CategoricalPermulationsIntermediateCorrelation.R; CategoricalPermualtionsCombineAndCalculatePValue.R
-# d = <T or F>                                                                  This value determines whether or not to calculate the pValues.
+# d = CalculatePValue <T or F>                                                  This value determines whether or not to calculate the pValues.
 #     #CategoricalPermualtionsCombineAndCalculatePValue.R; ContinousPermulations.R
-# v = <T or F>                                                                  This value is used to run only the p value calculation, and not the combination. 
+# v = v = onlyCalulateValue <T or F>                                            This value is used to run only the p value calculation, and not the combination. 
 #     #CategoricalPermualtionsCombineAndCalculatePValue.R
 
 # - Overrides - 
@@ -129,9 +129,9 @@ loadLibraries() # Note that this library load includes cluster run detection.
 #     #EnrichmentAnalysisNew.R; RunAlternateEnrichments.R
 # z = "permulationPvalueFileLocation.rds"                                       This is a manual override to specify the script use a specific Permulation p-value file.
 #     #EnrichmentAnalysisNew.R; RunAlternateEnrichments.R 
-# y = targetFileInstance              This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
+# y = targetFileInstance                                                        This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
 #     #CategoricalPermulationsIntermediateCorrelation.R
-# y = <PermulationPrefix>                     This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
+# y = PermulationPrefix                                                         This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
 #     #CategoricalPermualtionsCombineAndCalculatePValue.R
 # --- End arguments list ---
 #-------------------------------
@@ -218,8 +218,6 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 
 # ---- TREE CREATION ----- 
 
-# - MakeCategoricalPhenotypeTree.R
-
 # --- 
 #Argument: mainTreesLocation
 #Description: 
@@ -233,7 +231,6 @@ successCode = NULL
 failureCode = NULL
 
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T, reportStatus = F)
-
 
 # --- 
 #Argument: spreadsheet File
@@ -499,7 +496,10 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [MakeContinousTree.R; RunRERAndCorrelation.R; ProcessAlternates.R]
 Index = 'k'
 OutputVariable = "continousMetric"
-successCode = NULL
+successCode = ' validMetrics= c("diff", "mean", "last") 
+  if(!any(continousMetric == validMetrics)){
+    stop("Contious metric is not a valid option. Use diff, mean, or last")
+  }'
 failureCode = NULL
 
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
@@ -750,7 +750,7 @@ failureCode = NULL
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 
 # --- 
-#Argument: alternate set
+#Argument: UsedAlternates
 #Description: 
 #   [i = run instance  ]
 #   [This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. Set to "all" to allow a local script to process all alternates.]
@@ -758,7 +758,8 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [ProcessAlternates.R; RunAlternateEnrichments.R]
 Index = 'i'
 OutputVariable = "usedAlternates"
-successCode = 'if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
+successCode = 'validLocalRunAllAlternates = c("local", "sure", "all")
+    if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
     message("Run all alternates on local machine CONFIRMED.")
     message("Caution: May have long run times.")
     usedAlternates = NULL

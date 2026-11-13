@@ -20,7 +20,7 @@ loadLibraries() # Note that this library load includes cluster run detection.
 # - Optional - 
 # h = <T>                                                                       This ARG causes the script to return its ARG list, instead of running the script. 
 # l = <min.sp value>                                                            This sets the min.sp value to be used in the correlation. 
-# i = run instance                                                              This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. Set to "all" to allow a local script to process all alternates.
+# i = usedAlternates                                                            This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. Set to "all" to allow a local script to process all alternates.
 # e = c("phenotypes", "to", "merge)                                             This sets which phenotype should be combined into a single phenotype in a merged analysis. 
 # t = c("nameOfMergedPhenotype")                                                This sets the name of the now merged phenotype
 # - Overrides - 
@@ -49,9 +49,6 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 {  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
   
   # Defaults
-  validLocalRunAllAlternates = c("local", "sure", "all")
-  validMetrics= c("diff", "mean", "last")
-  
   mainTreesLocation = "Results/mainTreesFromAlignments.rds"
   continousMetric = "diff"
   phenotypeStyle = "categorical"
@@ -66,10 +63,6 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   #Load from args 
   source("Src/Reu/ArgumentImport.R")
   
-  
-  if(phenotypeStyle == "Continuous" && !any(continousMetric == validMetrics)){
-    stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
-  }
 }
 
 
