@@ -11,11 +11,11 @@ loadLibraries() # Note that this library load includes cluster run detection.
 # - Required - 
 # r = filePrefix                                                               REQUIRED: This is a prefix used to organize and separate files by analysis run. Always required. 
 # m = mainTreeFilename.txt or .rds                                             REQUIRED: This sets the location of the maintrees file
-# a = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the Analysis Style type of phenotype being supplied; it will detect automatically if not specified.
 
 # - Required, Defaults likely acceptable -
 # f = forceUpdate <T or F>                                                     This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # k = < "diff" or "mean" or "last" >                                           This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# a = < ["b" or "binary"] or ["c" or "continuous"] or ["g" or "categorical"]>  This prefix is used to set the Analysis Style type of phenotype being supplied; it will detect automatically if not specified.
 # - Optional -
 # h = <T>                                                                      This ARG causes the script to return its ARG list, instead of running the script. 
 # l = <min.sp value>                                                           This sets the min.sp value to be used in the correlation. 
@@ -29,128 +29,59 @@ if(!exists("args", envir = environment(), inherits = FALSE)){
   #This is a space where you can manually write in arguments for the script. 
   #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
   
+  args = c('r=ComplexDietHighSugarAllSpeciesTest', 'f=T', 'm=data/zoonomiaAllMammalsTrees.rds', 
+           'a=g', 'l=10'
+           
+  )
+  
 }
 #-------------------------------
 
+if(!exists("NoArgUpdate")){ #This line allows other scripts to run this code without regenerating args, if that script creates a "NoArgUpdate" variable.
+  # --- Standard start-up code; identical in all scripts---
+  source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+  #This code reads the "report args" help ARG, and returns the args if it is active. 
+  #It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
 
-# --- Standard start-up code; identical in all scripts---
-source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
-#This code reads the "report args" help ARG, and reutrns the args if it is active. 
-#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+  
+  # --- Argument Imports ---
+  { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+    #Defaults
+    mainTreesLocation = "Results/mainTreesFromAlignments.rds"
+    continousMetric = "diff"
+    phenotypeStyle = "categorical"
+    speciesFilter = NULL
+    phenotypeTreeLocation = NULL
+    minSpValue = 10
+    
+    #Load from args 
+    source("Src/Reu/ArgumentImport.R")
+    
+    validMetrics= c("diff", "mean", "last")
+    if(phenotypeStyle == "Continuous" && !any(continousMetric == validMetrics)){
+      stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
+    }
+  }
+  
+  
+  #Generate the output filenames here, so that it can be overwritten by other scripts sourcing this one. 
+  correlationFileNameValue = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "")
+  
+  if(phenotypeStyle == "Binary"){
+    phenotypeVectorFilenameValue = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
+  }else if(phenotypeStyle == "Categorical"){
+    phenotypeVectorFilenameValue = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #select the phenotype vector based on prefix
+    pairwiseCorrelationFileNameValue = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile", sep= "")
+    combinedCategoricalCorrelationFilenameValue = paste(outputFolderName, filePrefix, "CombinedCategoricalCorrelationFile", sep= "") # make this file for later functions that want it in combo
+    correlationsOverallFilenameValue = paste(outputSubdirectory, filePrefix, "OverallCorrelationFile.rds", sep= "")
+  }
+}
+#                   ------- Code Body -------- 
 
 # ---------------------------
 # ----- SCRIPT MAIN CODE ----
 # ---------------------------
 
-# --- Argument Imports ---
-{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-
-  # Defaults
-  mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
-  binaryPhenotypeTreeLocation = NULL
-  speciesFilter = NULL
-  phenotypeStyle = "continuous"
-  continousMetric = "diff"
-  validMetrics = c("diff", "mean", "last")
-  minSpValue = 10
-  
-  
-  #MainTrees Location
-  if(!is.na(cmdArgImport('m', T))){
-    mainTreesLocation = cmdArgImport('m', F)
-  }else{
-    message("No maintrees arg, using default")
-  }
-  
-  #Phenotype Style
-  if(!is.na(cmdArgImport('a', T))){
-    phenotypeStyle = cmdArgImport('a', F)
-    #Convert the various input options; so that the style can be specified with several names 
-    if(phenotypeStyle == "b" | phenotypeStyle == "B" | phenotypeStyle == "binary"){phenotypeStyle = "Binary"}
-    if(phenotypeStyle == "c" | phenotypeStyle == "C" | phenotypeStyle == "continuous"){phenotypeStyle = "Continuous"}
-    if(phenotypeStyle == "g" | phenotypeStyle == "G" | phenotypeStyle == "categorical"){phenotypeStyle = "Categorical"}
-  }else{
-    message("No phenotype style specified, attempting to detect automatically.")
-    
-    #Check for categorical 
-    phenotypeTreeFilename = paste(outputFolderName, filePrefix, "Categorical", "Tree.rds", sep="")
-    if(file.exists(phenotypeTreeFilename)){
-      message("Found information for Categorical phenotype, using Categorical phenotype")
-      phenotypeStyle = "Categorical"
-    }else{
-      phenotypeTreeFilename = paste(outputFolderName, filePrefix, "Continuous", "PhenotypeVector.rds", sep="")
-      if(file.exists(phenotypeTreeFilename)){
-        message("Found information for continuous phenotype, using continuous phenotype")
-        phenotypeStyle = "Continuous"
-      }else{
-        phenotypeTreeFilename = paste(outputFolderName, filePrefix, "Binary", "Tree.rds", sep="")
-        if(file.exists(phenotypeTreeFilename)){
-          message("Found information for binary phenotype, using binary phenotype")
-          phenotypeStyle = "binary"
-        }else{
-          message("No phenotyep specified and no correct tree found.")
-          stop()
-        }
-      } 
-    }
-    message("PhenotypeStyle not specified, using continuous")
-  }
-  
-  #phenotype tree location
-  if(!is.na(cmdArgImport('y', T))){
-    phenotypeTreeLocation = cmdArgImport('y', F)
-  }else{                                                                        #See if a pre-made tree for this prefix and style exists 
-    if(phenotypeStyle == "Continuous"){
-      phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "PhenotypeVector.rds", sep="")
-    }else{
-      phenotypeTreeFilename = paste(outputFolderName, filePrefix, phenotypeStyle, "Tree.rds", sep="")
-    }
-    
-    if(file.exists(paste(phenotypeTreeFilename))){                              #if so, use it                
-      phenotypeTreeLocation = phenotypeTreeFilename                     
-      message("Pre-made Phenotype tree found, using pre-made tree.")
-    }else{
-      #paste("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE TREE")
-      stop("THIS IS AN ISSUE MESSAGE; NO PHENOTYPE TREE/VECTOR FOUND. ENSURE PHENOTYPE TREE/VECTOR FOR SELECTED STYLE AVAILABLE AND PREFIX IS CORRECT.")
-    }
-  }
-  
-  #Species Filter   
-  if(!is.na(cmdArgImport('z', T))){
-    speciesFilter = cmdArgImport('z', F)
-  }else{ #See if a pre-made filter for this prefix exists 
-    speciesFilterFileName = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #Make the name of the location a pre-made filter would have to test for it
-    if (file.exists(paste(speciesFilterFileName))){                  
-      speciesFilter = readRDS(speciesFilterFileName)                       #if so, use it 
-      message("Pre-made filter found, using pre-made filter.")
-    }else{                                                    
-      message("No speciesFilter arg, using all species")                           #if not, use no filter
-    }
-  }
-  
-  #Continuous Metric 
-  if(!is.na(cmdArgImport('k', T))){
-    continousMetric = cmdArgImport('k', F)
-    if(phenotypeStyle == "Continuous"){ 
-      if(!any(continousMetric == validMetrics)){
-        stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
-      }
-    }
-  }else{                                                                        #If a continuous phenotype, report using Diff
-    if(phenotypeStyle == "Continuous"){
-      message("No continuous metric specified, using diff")
-    }
-  }
- 
-   #min.sp Value
-  if(!is.na(cmdArgImport('l', T))){
-    minSpValue = cmdArgImport('l', F)
-  }else{
-    message("min.sp not specified, using 10")
-  }
-}
-
-#                   ------- Code Body -------- 
 
 # -- Read in the trees --
 #MainTrees
@@ -159,6 +90,7 @@ if(file_ext(mainTreesLocation) == "rds"){
 }else{
   if(!exists("mainTrees")){mainTrees = readTrees(mainTreesLocation)} 
 }
+
 #Phenotype tree
 if(file_ext(phenotypeTreeLocation) == "rds"){                                   #if the tree is an RDS file
   phenotypeTree = readRDS(phenotypeTreeLocation)                                #Read as RDS
@@ -204,7 +136,7 @@ if(!file.exists(paste(pathsFileName)) | forceUpdate){                           
 
 
 # --- CORRELATION ---
-correlationFileName = paste(outputFolderName, filePrefix, "CorrelationFile", sep= "") #Make a correlation filename based on the prefix
+correlationFileName = correlationFileNameValue #Make a correlation filename based on the prefix, unless overwritten.
 
 if(phenotypeStyle == "Binary"){                                                 #If binary
   correlation = correlateWithBinaryPhenotype(RERObject, pathsObject, min.sp =minSpValue)#Correlate with binary phenotype
@@ -217,7 +149,7 @@ if(phenotypeStyle == "Binary"){                                                 
   names(phenotypeVector) = phenotypeTree$tip.label
   phenotypeVector[(names(phenotypeVector) %in% foregroundSpecies)] = 1
   phenotypeVector = phenotypeVector[names(phenotypeVector) %in% speciesFilter]
-  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "phenotypeVector.rds", sep="")
+  phenotypeVectorFilename = phenotypeVectorFilenameValue
   saveRDS(phenotypeVector, file = phenotypeVectorFilename)
   
 }else if(phenotypeStyle == "Continuous"){                                        #if continuous
@@ -231,7 +163,7 @@ if(phenotypeStyle == "Binary"){                                                 
   #process the pairwise outputs
   pairwiseCategorical = categoricalCorrelation[[2]]                             #select the group of pairwise comparisons
   
-  phenotypeVectorFilename = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #select the phenotype vector based on prefix
+  phenotypeVectorFilename = phenotypeVectorFilenameValue
   phenotypeVector = readRDS(phenotypeVectorFilename)                            #load in the phenotype vector 
   categories = map_to_state_space(phenotypeVector)                              #and use it to connect branch lengths to phenotype name
   categoryNames = categories$name2index                                         #store the length-phenotype connection
@@ -242,11 +174,11 @@ if(phenotypeStyle == "Binary"){                                                 
   }
   names(pairwiseCategorical) = pairwiseTableNames                               #update the dataframe titles
   
-  pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile", sep= "") #make a name for the pairwise comparisons based on prefix
+  pairwiseCorrelationFileName = pairwiseCorrelationFileNameValue
   write.csv(pairwiseCategorical, file= paste(pairwiseCorrelationFileName, ".csv", sep=""), row.names = T, quote = F) #save the correlations as a csv
   saveRDS(pairwiseCategorical, paste(pairwiseCorrelationFileName, ".rds", sep="")) #and as an rds 
   
-  combinedCategoricalCorrelationFilename = pairwiseCorrelationFileName = paste(outputFolderName, filePrefix, "CombinedCategoricalCorrelationFile", sep= "") # make this file for later functions that want it in combo
+  combinedCategoricalCorrelationFilename = combinedCategoricalCorrelationFilenameValue # make this file for later functions that want it in combo
   saveRDS(categoricalCorrelation, paste(combinedCategoricalCorrelationFilename, ".rds", sep="")) #and as an rds 
   
   #save the outputs to subdirectories 
@@ -256,7 +188,7 @@ if(phenotypeStyle == "Binary"){                                                 
   }
   outputSubdirectory = paste(outputSubdirectoryNoslash, "/", sep="")
   
-  correlationsOverallFilename = paste(outputSubdirectory, filePrefix, "OverallCorrelationFile.rds", sep= "")
+  correlationsOverallFilename = correlationsOverallFilenameValue
   saveRDS(categoricalCorrelation[[1]], correlationsOverallFilename)
   
   for(i in 1:length(pairwiseTableNames)){
