@@ -36,44 +36,48 @@ if(!exists("args", envir = environment(), inherits = FALSE)){
 }
 #-------------------------------
 
-# --- Standard start-up code; identical in all scripts---
-source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
-#This code reads the "report args" help ARG, and reutrns the args if it is active. 
-#It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+if(!exists("NoArgUpdate")){ #This line allows other scripts to run this code without regenerating args, if that script creates a "NoArgUpdate" variable.
+  # --- Standard start-up code; identical in all scripts---
+  source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
+  #This code reads the "report args" help ARG, and reutrns the args if it is active. 
+  #It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
+  
+  
+  
+  # --- Argument Imports ---
+  
+  
+  { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+    #Defaults
+    geneSets = NULL
+    validGeneArguments = c("NULL", "gene", "Gene")
+    usePermulations = FALSE
+    useCategoricalPermulations = FALSE
+    useSubdirectory = FALSE
+    subdirectoryValueList = NULL
+    usePermulationPValOverride = F
+    permulationPValOverride = NULL 
+    useCorrelationOverride = F
+    correlationOverride = NULL
+    usingGo =T
+    
+    #Load from args 
+    source("Src/Reu/ArgumentImport.R")
+    
+    #Have this script, and only this script, ignore gene gmt locations.
+    geneSets = geneSets[-which(geneSets %in% validGeneArguments)]
+  }
+}
 
+  
 # ---------------------------
 # ----- SCRIPT MAIN CODE ----
 # ---------------------------
-
-# --- Argument Imports ---
-
-
-{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-  #Defaults
-  geneSets = "Data/enrichmentGmtFile.gmt"
-  validGeneArguments = c("NULL", "gene", "Gene")
-  usePermulations = FALSE
-  useCategoricalPermulations = FALSE
-  useSubdirectory = FALSE
-  subdirectoryValueList = NULL
-  usePermulationPValOverride = F
-  permulationPValOverride = NULL 
-  useCorrelationOverride = F
-  correlationOverride = NULL
-  usingGo =T
-  
-  #Load from args 
-  source("Src/Reu/ArgumentImport.R")
-  
-  #Have this script, and only this script, ignore gene gmt locations.
-  geneSets = geneSets[-which(geneSets %in% validGeneArguments)]
-}
-
-
 #                   ------- Code Body -------- 
+coreOutputFolderName = outputFolderName
 if(usingGo){
   for(i in 1:length(subdirectoryValueList)){
-      outputFolderName = paste("Output/",filePrefix,"/", sep = "")
+      outputFolderName = coreOutputFolderName
       message(paste("Using subdirectory", subdirectoryValueList[i], "."))
       if(useSubdirectory){
         outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
@@ -92,8 +96,12 @@ if(usingGo){
     
     if(usePermulations){                                                            #If permualtions are being used   
       if(useCategoricalPermulations){
-          correlationData$P = correlationData$permP
+        if(exists(correlationData$PermP.adj)){
+          correlationData$P = correlationData$permP.adj
         }else{
+          correlationData$P = correlationData$permP
+        }
+      }else{
         if(usePermulationPValOverride){                                               #check for a location override
           permulationFileLocation = paste(outputFolderName, permulationPValOverride, sep="")                           #if so, use it 
         }else{                                                                        #if not, use the default 
@@ -119,29 +127,29 @@ if(usingGo){
     }
     if(!clusterRun){file.remove(enrichmentCsvName)}
     for(j in 1:length(geneSets)){
-    #Load the gmt annotations 
-    gmtAnnotations = read.gmt(geneSets[j])                                      #read the gmt file
-    annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
-    enrichmentListName = sub("\\.gmt$", "", sub(".*/", "", geneSets[j])) #subset the file location to only the set's Name
-    #enrichmentListName = substring(geneSets[j], 6, last = (nchar(geneSets[j]) - 4)) #Old code to make a set name based on the file name. 
-    names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
-    
-    enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
-    
-    #This version run it on all of the genesets, regardless of the numebr f included genes; useful for order consistency. 
-    #enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =0) #run enrichment analysis 
-    
-    #save the enrichment output
-    if(usePermulations == F){
-      enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
-    }else{
-      enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-Permulation-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
-    }
-    saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
-    gc()
-    if(!i == 0){ #stops from writing two copies of the same sheet when no subdirectories. 
-      if(!clusterRun){write.xlsx(enrichmentResult[[1]], file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T, append = T)}
-    }
+      #Load the gmt annotations 
+      gmtAnnotations = read.gmt(geneSets[j])                                      #read the gmt file
+      annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
+      enrichmentListName = sub("\\.gmt$", "", sub(".*/", "", geneSets[j])) #subset the file location to only the set's Name
+      #enrichmentListName = substring(geneSets[j], 6, last = (nchar(geneSets[j]) - 4)) #Old code to make a set name based on the file name. 
+      names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
+      
+      enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
+      
+      #This version run it on all of the genesets, regardless of the numebr f included genes; useful for order consistency. 
+      #enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =0) #run enrichment analysis 
+      
+      #save the enrichment output
+      if(usePermulations == F){
+        enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+      }else{
+        enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-Permulation-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
+      }
+      saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
+      gc()
+      if(!i == 0){ #stops from writing two copies of the same sheet when no subdirectories. 
+        if(!clusterRun){write.xlsx(enrichmentResult[[1]], file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T, append = T)}
+      }
     }
   }
 }else{

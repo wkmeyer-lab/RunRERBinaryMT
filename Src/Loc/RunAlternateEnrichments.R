@@ -7,7 +7,6 @@
 # -- Libraries 
 source("Src/Reu/loadLibraries.R")
 loadLibraries() # Note that this library load includes cluster run detection. 
-source("Src/Reu/trimGmtFilenameToSetname.R")
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
@@ -48,110 +47,26 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 # --- Argument Imports ---
 {  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-  # Defaults
-  gmtFileLocation = "Data/enrichmentGmtFile.gmt"
+  #Defaults
+  geneSets = NULL
+  validGeneArguments = c("NULL", "gene", "Gene")
   usePermulations = FALSE
+  useCategoricalPermulations = FALSE
+  useSubdirectory = FALSE
+  subdirectoryValueList = NULL
   usePermulationPValOverride = FALSE
   permulationPValOverride = NULL 
   useCorrelationOverride = FALSE
   correlationOverride = NULL
-  useCategoricalPermulations = FALSE
-  useSubdirectory = FALSE
-  subdirectoryValueList = NULL
-  validGeneArguments = c("NULL", "gene", "Gene")
+  usingGo = T
+  
   alternatesSpecified = F
   usedAlternates = NULL
   validLocalRunAllAlternates = c("local", "sure", "all")
-
   
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
   
-    #Gmt file location
-    if(!any(is.na(cmdArgImport('g', T)))){
-      gmtFileLocation = cmdArgImport('g')
-      
-      gmtFileLocation = cmdArgImport('g')
-      
-      #remove any arguments which tell later scripts to run a gene analysis 
-      gmtFileLocation = gmtFileLocation[-which(gmtFileLocation %in% validGeneArguments)]
-      
-    }else{
-      paste("No gmt location arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
-      message("No gmt location arugment, using Data/enrichmentGmtFile.gmt")
-    }
-    
-    #Permulation use
-    if(!is.na(cmdArgImport('p', T))){
-      usePermulations = cmdArgImport('p')
-      if(usePermulations %in% c("C", "A")){
-        usePermulations = TRUE
-        useCategoricalPermulations = TRUE
-      }
-      usePermulations = as.logical(usePermulations)
-      if(is.na(usePermulations)){
-        usePermulations = TRUE
-        message("Use Permualtions value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
-      }
-    }else{
-      message("Use Permulations value not specified, using TRUE.")
-    }
-    
-    #Import subdirectory
-    if(!any(is.na(cmdArgImport('s', T)))){
-      useSubdirectory = TRUE
-      subdirectoryValueList = cmdArgImport('s')
-      
-    }else{
-      message("No subdirectory specified.")
-      alternatesFolderName = paste0(outputFolderName,"Alternates")
-      folderNames = basename(list.dirs(alternatesFolderName, full.names = TRUE, recursive = FALSE))
-      if(length(folderNames) >0 ){
-        useSubdirectory = TRUE
-        subdirectoryValueList = folderNames
-        message("Folders not specified, using all folders.")
-      }else{
-        message("Using main directory")
-      }
-    }
-  
-    #alternate set
-    if(!is.na(cmdArgImport('i', T))){
-      usedAlternates = cmdArgImport('i')
-      if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
-        message("Run all alternates on local machine CONFIRMED.")
-        message("Caution: May have long run times.")
-        usedAlternates = NULL
-        alternatesSpecified = F
-      }else{
-        usedAlternates = as.integer(usedAlternates)
-        alternatesSpecified = T
-      }
-    }else{
-      message("Instance not specified, running on all alternates.")
-      if(!clusterRun){
-        stop("Attempting to process all alternates on a local machine! This may have run times in excess of 24 hours. Aborting. \n If you wish to avoid this abort, use i=all")
-      }
-    }
-  
-    #Import permulation p-value Override  
-    if(usePermulations){
-      if(!is.na(cmdArgImport('z', T))){
-        usePermulationPValOverride = TRUE
-        permulationPValOverride = cmdArgImport('z')
-        message("Using Manually specified permulation p-value file.")
-      }else{
-        message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
-      }
-    }
-  
-    #Import correlation file override
-    if(!is.na(cmdArgImport('y', T))){
-      useCorrelationOverride = TRUE
-      correlationOverride = cmdArgImport('y')
-      message("Using Manually specified correlation file.")
-    }else{
-      message("No corelation override specified.")
-    }
-
 }
 
 # ---- Make required adjustments to run on alternates properly ---- 
@@ -159,9 +74,9 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 alternateSets = readRDS(paste0("Output/",filePrefix,"/", filePrefix, "AlternatePruningSpecies.rds"))
 
 mainOutputFolderName = outputFolderName
-
-outputFolderName = paste0(outputFolderName, "Alternates/")
 primaryFilePrefix = filePrefix
+outputFolderName = paste0(outputFolderName, "Alternates/")
+
 
 
 #                   ------- Code Body -------- 
@@ -176,81 +91,12 @@ for(i in usedAlternates){
   filePrefix = paste0("Alternate", i, primaryFilePrefix)
 
 
-
-  #                   ------- Code Body -------- 
-  for(i in 1:length(subdirectoryValueList)){
-    outputFolderName = paste("Output/",primaryFilePrefix,"/", "Alternates/", sep = "")
-    message(paste("Using subdirectory", subdirectoryValueList[i], "."))
-    if(useSubdirectory){
-      outputFolderName = paste(outputFolderName, subdirectoryValueList[i], "/", sep="")
-    }
-    subdirectoryValue = subdirectoryValueList[i]
+  
+  alreadyBlockingArgImports = exists("NoArgUpdate")
+  if(!alreadyBlockingArgImports){NoArgUpdate = "Exists"}
+  
+  source("Src/Loc/RunEnrichmentAnalysis.R")
+  
+  if(!alreadyBlockingArgImports){rm(NoArgUpdate)}
     
-    #Load correlation file
-    correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "CorrelationFile.rds", sep= "") #get the correlation file location based on prefix 
-    if(useCategoricalPermulations){
-      correlationFileLocation = paste(outputFolderName, filePrefix, subdirectoryValue, "PermulationsCorrelationFile", ".rds", sep= "")
-    }
-    if(useCorrelationOverride){                                                     #if a correlation override was specified, replace it with that
-      correlationFileLocation = paste(outputFolderName, correlationOverride, sep="")                                      
-    }
-    correlationData = readRDS(correlationFileLocation)                              #Import the correlation data (non-permulated)
-    
-    if(usePermulations){                                                            #If permualtions are being used   
-      if(useCategoricalPermulations){
-        if(exists(correlationData$PermP.adj)){
-          correlationData$P = correlationData$permP.adj
-        }else{
-          correlationData$P = correlationData$permP
-        }
-      }else{
-        if(usePermulationPValOverride){                                               #check for a location override
-          permulationFileLocation = paste(outputFolderName, permulationPValOverride, sep="")                           #if so, use it 
-        }else{                                                                        #if not, use the default 
-          permulationFileLocation = paste(outputFolderName, filePrefix, "CombinedPrunedFastAllPermulationsPValue.rds", sep= "") #get the default location based on prefix 
-        }
-        permulationValues = readRDS(permulationFileLocation)                          #read the permulation file
-        if(ncol(permulationValues)>1){                                              # add handling for continuous permulations having two columns
-          correlationData$P = permulationValues$permpval                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
-          #correlationData$Rho = permulationValues$permstats
-        }else{
-          correlationData$P = permulationValues                                         #replace the P column in the correlation data with the permulation values. This is the only column that the later function checks. 
-        }
-        comparePermulationsTable = cbind(readRDS(correlationFileLocation), permulationValues)
-      }
-    }
-    
-    rerStats = getStat(correlationData)                                             #processes the RERs somewhat into stat values. only uses the P column, and the sign of the Rho column. 
-    
-    if(usePermulations == F){
-      enrichmentCsvName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
-    }else{
-      enrichmentCsvName = paste(outputFolderName, filePrefix, subdirectoryValue, "Permulation-Enrichments.xlsx", sep= "") #make a filename based on the prefix and geneset
-    }
-    if(!clusterRun){file.remove(enrichmentCsvName)}
-    for(j in 1:length(gmtFileLocation)){
-      #Load the gmt annotations 
-      gmtAnnotations = read.gmt(gmtFileLocation[j])                                      #read the gmt file
-      annotationsList = list(gmtAnnotations)                                          #reformat it into the format the next fuction expects
-      enrichmentListName = substring(gmtFileLocation[j], 6, last = (nchar(gmtFileLocation[j]) - 4)) #make a geneset name based on the filename 
-      names(annotationsList) = enrichmentListName                                     #name geneset list with that name 
-      
-      enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =2) #run enrichment analysis 
-      
-      #This version run it on all of the genesets, regardless of the numebr f included genes; useful for order consistency. 
-      #enrichmentResult = fastwilcoxGMTall(rerStats, annotationsList, outputGeneVals = T, num.g =0) #run enrichment analysis 
-      
-      #save the enrichment output
-      if(usePermulations == F){
-        enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
-      }else{
-        enrichmentFileName = paste(outputFolderName, filePrefix, subdirectoryValue, "Enrichment-Permulation-", enrichmentListName, ".rds", sep= "") #make a filename based on the prefix and geneset
-      }
-      saveRDS(enrichmentResult, enrichmentFileName)                                   #Save the enrichment 
-      gc()
-      if(!i == 0){ #stops from writing two copies of the same sheet when no subdirectories. 
-        if(!clusterRun){write.xlsx(enrichmentResult[[1]], file=enrichmentCsvName, sheetName=enrichmentListName, row.names=T, append = T)}
-      }
-    }
-  }
 }
