@@ -39,48 +39,19 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 
 # --- Argument Imports ---
-# Defaults
-mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
-permulationAmount = 100
-runInstanceValue = NULL
-outgroupVal = "Debug"
-calculatePVal = F
 
-{ # Bracket used for collapsing purposes
-  #MainTrees Location
-  if(!is.na(cmdArgImport('m', T))){
-    mainTreesLocation = cmdArgImport('m')
-  }else{
-    message("No maintrees arg, using default")
-  }
+
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  #Defaults
+  mainTreesLocation = "Results/mainTreesFromAlignments.rds"
+  permulationAmount = 100
+  runInstanceValue = NULL
+  outgroupVal = NULL
+  calulateValue = F
   
-  #Number of permulations
-  if(!is.na(cmdArgImport('n', T))){
-    permulationAmount = cmdArgImport('n')
-    permulationAmount = as.numeric(permulationAmount)
-  }else{
-    paste("Number of permulations not specified, using 100")
-  }
-  
-  #Run instance value
-  if(!is.na(cmdArgImport('j', T))){
-    runInstanceValue = cmdArgImport('j')
-  }else{
-    paste("This script does not have a run instance value")
-  }
-  
-  #Outgroup Species
-  if(!is.na(cmdArgImport('po', T))){
-    outgroupVal = cmdArgImport('po')
-  }else{
-    stop("An outgroup is required, specify outgroup species")
-  }
-  #Calculate P 
-  if(!is.na(cmdArgImport('d', T))){
-    calculatePVal = cmdArgImport('d')
-  }else{
-    paste("p caluclation not specified, not interally calculating p values.")
-  }
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
+
 }
 
 
@@ -133,7 +104,7 @@ message(paste("Time to save permulations: ", (saveEndTime - saveStartTime), attr
 
 # -- Calculate p values (optional) --
 
-if(calculatePVal){
+if(calulateValue){
   permulatedPVals = permpvalcor(correlationsObject, permulationData)
   
   

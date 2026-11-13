@@ -43,57 +43,18 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 # --- Argument Imports ---
 {  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-  # Defaults
-  significanceCutoff = 0.05
-  geneSet = NULL
+  geneSets = NULL
+  usingGo = F
   usingGene = T
   validGeneArguments = c("NULL", "gene", "Gene")
-  writeData = T
   alternateCutoffRatio = 0.5 
+  writeData = T
+  significanceCutoff = 0.05
   
-  #genesets
-  if(!all(is.na(cmdArgImport('g', T)))){
-    geneSets = cmdArgImport('g')
-    if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
-      usingGene = T
-      message("Null geneset specified or gene specified, performing gene correlation.")
-    }else{
-      usingGene = F
-    }
-    
-    if(any(!geneSets %in% validGeneArguments)){
-      usingGo = T
-      geneSets = trimGmtFilenameToSetname(geneSets)
-    }else{
-      usingGo = F
-    }
-    
-  }else{
-    message("No geneset specified or gene specified, performing gene correlation.")
-  }
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
   
-  #alternate cutoff ratio
-  if(!is.na(cmdArgImport('o', T))){
-    alternateCutoffRatio = as.numeric(cmdArgImport('o'))
-  }else{
-    message("Alternate ratio not specified, using 50% (0.5)")
-  } 
-  
-  #writeData 
-  if(!is.na(cmdArgImport('w', T))){
-    writeData = as.logical(cmdArgImport('w'))
-  }else{
-    message("writeData not specified, using TRUE")
-  }
-
-  
-  #cutoff
-  if(!is.na(cmdArgImport('c', T))){
-    significanceCutoff = as.numeric(cmdArgImport('c'))
-  }else{
-    message("pvalue cuttoff not specified, using 0.05")
-  }  
-  
+  geneSets = trimGmtFilenameToSetname(geneSets)
 }
 
 

@@ -226,7 +226,7 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [m  = mainTreeFilename.txt or .rds]
 #   [This sets the location of the mainTrees file]
 #Scripts: 
-#   [MakeCategoricalTree.R; MakeContinousTree.R; RunRERAndCorrelation.R; RunMergedAnalysis.R; ProcessAlternates.R]
+#   [MakeCategoricalTree.R; MakeContinousTree.R; RunRERAndCorrelation.R; RunMergedAnalysis.R; ProcessAlternates.R; CategoricalPermulationsCorrelation.R; CategoricalPermualtionsIntermediateCorrelation.R; ContinousPermulations.R]
 Index = 'm'
 OutputVariable = "mainTreesLocation"
 successCode = NULL
@@ -428,7 +428,7 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [q = <ER or SYM or ARD>  ]
 #   [This sets the model type used to estimate ancestral branches. ]
 #Scripts: 
-#   [MakeCategoricalTree.R]
+#   [MakeCategoricalTree.R; CategoricalPermulationsGeneration]
 Index = 'q'
 OutputVariable = "modelType"
 successCode = NULL
@@ -628,9 +628,9 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [ g = c("gene", "sets", "file", "paths")]
 #   [This sets the gene sets (file names) that the script should be run on, or "gene" for use on genes. ]
 #Scripts: 
-#   [RunEnrichmentAnalysis.R; CategoricalCombinePairwiseResults.R]
+#   [RunEnrichmentAnalysis.R; CategoricalCombinePairwiseResults.R; RunAlternateEnrichments.R; CombineAlternates.R; AddAlternatesToCombination.R]
 Index = 'g'
-OutputVariable = "gmtFileLocation"
+OutputVariable = "geneSets"
 successCode = 'if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
     usingGene = T
     message("Null geneset specified or gene specified, performing gene correlation.")
@@ -638,14 +638,13 @@ successCode = 'if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
     usingGene = F
   }
   
-  if(any(!geneSet %in% validGeneArguments)){
+  if(any(!geneSets %in% validGeneArguments)){
     usingGo = T
-    geneSet = trimGmtFilenameToSetname(geneSet)
   }else{
     usingGo = F
   }
 '
-failureCode = 'message("No geneset specified or gene specified, performing gene correlation."); usingGo = F'
+failureCode = 'message("No geneset specified, performing gene correlation."); usingGo = F; usingGene = T'
 
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 
@@ -655,7 +654,7 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [p = permulations use <T or F or C or A>]
 #   [This sets if the code should use permulated or unpermulated values. If set to "C" or "A", will use permulations for categorical values, which are stored in the main file. ]
 #Scripts: 
-#   [RunEnrichmentAnalysis.R; CategoricalCombinePairwiseResults.R]
+#   [RunEnrichmentAnalysis.R; CategoricalCombinePairwiseResults.R; RunAlternateEnrichments.R]
 Index = 'p'
 OutputVariable = "usePermulations"
 successCode = '  if(usePermulations %in% c("C","A")){
@@ -675,10 +674,10 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [s = c("subdirectory", "Names")]
 #   [This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. ]
 #Scripts: 
-#   [RunEnrichmentAnalysis.R; CategoricalCombinePairwiseResults.R]
+#   [RunEnrichmentAnalysis.R; CategoricalCombinePairwiseResults.R; RunAlternateEnrichments.R]
 Index = 's'
 OutputVariable = "subdirectoryValueList"
-successCode = 'if(length(subdirectoryValueList ==1)){outputFolderName = paste(outputFolderName, subdirectoryValueList[1], "/", sep=""); subdirectoryValue = subdirectoryValueList[1]}'
+successCode = 'useSubdirectory = TRUE; if(length(subdirectoryValueList ==1)){outputFolderName = paste(outputFolderName, subdirectoryValueList[1], "/", sep=""); subdirectoryValue = subdirectoryValueList[1]}'
 failureCode = 'message("No subdirectory specified.")
   folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
   if(length(folderNames) >0 ){
@@ -698,7 +697,7 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [z = "permulationPvalueFileLocation.rds"]
 #   [This is a manual override to specify the script use a specific Permulation p-value file.]
 #Scripts: 
-#   [RunEnrichmentAnalysis.R]
+#   [RunEnrichmentAnalysis.R; RunAlternateEnrichments.R]
 Index = 'z'
 OutputVariable = "permulationPValOverride"
 successCode = 'usePermulationPValOverride = TRUE; message("Using Manually specified permulation p-value file.")'
@@ -714,7 +713,7 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [y = "correlationFileOverride.rds"]
 #   [This can be used to manually set the correlation file. Used primarily to target pairwise comparisons of categorical phenotypes.]
 #Scripts: 
-#   [RunEnrichmentAnalysis.R]
+#   [RunEnrichmentAnalysis.R; RunAlternateEnrichments.R]
 Index = 'y'
 OutputVariable = "correlationOverride"
 successCode = 'useCorrelationOverride = TRUE; message("Using Manually specified correlation file.")'
@@ -728,7 +727,7 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [w = writeData  <T or F>]
 #   [This sets if the data should be saved, potentially overwriting old combinations. ]
 #Scripts: 
-#   [CategoricalCombinePairwiseResults.R]
+#   [CategoricalCombinePairwiseResults.R; AddAlternatesToCombination.R]
 Index = 'w'
 OutputVariable = "writeData"
 successCode = NULL
@@ -742,7 +741,7 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [c = significance cutoff]
 #   [This sets the cutoff for inclusion in the significant columns ]
 #Scripts: 
-#   [CategoricalCombinePairwiseResults.R]
+#   [CategoricalCombinePairwiseResults.R; AddAlternatesToCombination.R]
 Index = 'c'
 OutputVariable = "significanceCutoff"
 successCode = NULL
@@ -756,7 +755,7 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [i = run instance  ]
 #   [This sets which alternate(s) to run on for parallelization. if left blank, will run on all alternates. Set to "all" to allow a local script to process all alternates.]
 #Scripts: 
-#   [ProcessAlternates.R]
+#   [ProcessAlternates.R; RunAlternateEnrichments.R]
 Index = 'i'
 OutputVariable = "usedAlternates"
 successCode = 'if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
@@ -775,86 +774,208 @@ failureCode = 'message("Instance not specified, running on all alternates.")
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 
 # --- 
-#Argument: FRAMEWORK
+#Argument: Alternate cuttof ratio 
 #Description: 
-#   []
-#   []
+#   [o = alternateRatio <decimal>]
+#   [This sets the percentage of alternates which must be significant for a result to be considered robust to alternate species selection.]
 #Scripts: 
-#   []
-Index = 'index'
-OutputVariable = "outVar"
+#   [AddAlternatesToCombination.R]
+Index = 'o'
+OutputVariable = "alternateCutoffRatio"
+successCode = NULL
+failureCode = NULL
+
+readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
+
+
+
+# --- Permulations ---
+
+
+
+
+# --- 
+#Argument: Number of permulations
+#Description: 
+#   [n = numberOfPermulations]
+#   [This is the number of permulations to run in the script]
+#Scripts: 
+#   [CategoricalPermulationsGeneration.R; ContinousPermulations.R]
+Index = 'n'
+OutputVariable = "permulationAmount"
 successCode = NULL
 failureCode = NULL
 
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 
 # --- 
-#Argument: FRAMEWORK
+#Argument: Run instance value
 #Description: 
-#   []
-#   []
+#   [j = runInstanceValuePerms]
+#   [This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.]
 #Scripts: 
-#   []
-Index = 'index'
-OutputVariable = "outVar"
+#   [CategoricalPermulationsGeneration.R; CategoricalPermulationsIntermediateCorrelation.R; CategoricalPermulationsCombineAndCalculatePValue.R; ContinousPermulations.R]
+Index = 'j'
+OutputVariable = "runInstanceValue"
+successCode = NULL
+failureCode = 'message("This script does not have a run instance value")'
+
+readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
+
+# --- 
+#Argument: Root Probability
+#Description: 
+#   [u = <auto or stationary or flat>]
+#   [This sets the probability of each state at the root of the tree.]
+#Scripts: 
+#   [CategoricalPermulationsGeneration.R]
+Index = 'u'
+OutputVariable = "rootProbability"
 successCode = NULL
 failureCode = NULL
 
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 
 # --- 
-#Argument: FRAMEWORK
+#Argument: Relaxation
 #Description: 
-#   []
-#   []
+#   [x = relaxationValue <int, 0-1>]
+#   [This is a value between 0 and 1, the percentage off of exact a permulation is allowed to be. Increases runspeed, but reduces permulation accuracy. Recommend 0.1 if more than 3 categories]
 #Scripts: 
-#   []
-Index = 'index'
-OutputVariable = "outVar"
+#   [CategoricalPermulationsGeneration.R]
+Index = 'x'
+OutputVariable = "relaxationValue"
+successCode = 'useRelaxation = TRUE'
+failureCode = 'message("By default, permulations are relaxed to require only 90% matching.")'
+
+readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
+
+# --- 
+#Argument: Metacombination
+#Description: 
+#   [b = Metacombination <T or F> ]
+#   [This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. ]
+#Scripts: 
+#   [CategoricalPermulationsIntermediateCorrelation.R; CategoricalPermulationsCombineAndCalculatePValue.R]
+Index = 'b'
+OutputVariable = "metacombineValue"
+successCode = 'metacombineValue = as.logical(metacombineValue)
+  if(is.na(metacombineValue)){
+    metacombineValue = FALSE
+    message("Metacombination value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }'
+failureCode = 'message("Metacombination value not specified, using FALSE. If you are not parrallelizing, do not worry about this.")
+'
+
+readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
+
+# --- 
+#Argument: target File Instance
+#Description: 
+#   [y = targetFileInstance ]
+#   [This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. ]
+#Scripts: 
+#   [CategoricalPermulationsIntermediateCorrelation.R]
+Index = 'y'
+OutputVariable = "targetFileInstance"
+successCode = NULL
+failureCode = '  targetFileInstance = runInstanceValue
+  message("No target file Instance specified, defaulting to this scripts run instance.")'
+
+readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
+
+# --- 
+#Argument: Number of permulations files to combine
+#Description: 
+#   [nc = <number Of Permulations Files>]
+#   [This is the number of permulation files the script will try to combine]
+#Scripts: 
+#   [CategoricalPermulationsCombineAndCalculatePValue.R]
+Index = 'nc'
+OutputVariable = "permulationNumberValue"
+successCode = NULL
+failureCode = '  message("Number of permulations not specified, running on all.")
+  intermediateFilenames = list.files(paste0(outputFolderName), pattern = "CategoricalPermulationsIntermediates")
+  intermediateFilenames = intermediateFilenames[-grep("Combined", intermediateFilenames)]
+  permulationNumberValue = length(intermediateFilenames)'
+
+readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
+
+# --- 
+#Argument: Start Number
+#Description: 
+#   [st = <Start number>  ]
+#   [This is the permulation number to start at. Used for parrallelization.]
+#Scripts: 
+#   [CategoricalPermulationsCombineAndCalculatePValue.R]
+Index = 'st'
+OutputVariable = "startValue"
 successCode = NULL
 failureCode = NULL
 
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 
 # --- 
-#Argument: FRAMEWORK
+#Argument: Calculate P Value
 #Description: 
-#   []
-#   []
+#   [d = CalculatePValue <T or F>]
+#   [This value determines whether or not to calculate the pValues.]
 #Scripts: 
-#   []
-Index = 'index'
-OutputVariable = "outVar"
+#   [CategoricalPermulationsCombineAndCalculatePValue.R; ContinousPermulations.R]
+Index = 'd'
+OutputVariable = "calulateValue"
+successCode = '  calulateValue = as.logical(calulateValue)
+  if(is.na(calulateValue)){
+    calulateValue = FALSE
+    message("p-value calculation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }'
+failureCode = 'message("p-value calculation value not specified, using TRUE. If you are not parrallelizing, do not worry about this.")'
+
+readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
+
+# --- 
+#Argument: Only Calculate P Value
+#Description: 
+#   [v = onlyCalulateValue <T or F> ]
+#   [This value is used to run only the p value calculation, and not the combination. ]
+#Scripts: 
+#   [CategoricalPermulationsCombineAndCalculatePValue.R]
+Index = 'v'
+OutputVariable = "onlyCalulateValue"
+successCode = 'onlyCalulateValue = as.logical(calulateValue)
+  if(is.na(calulateValue)){
+    onlyCalulateValue = FALSE
+    message("Only p-value calculation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }'
+failureCode = 'message("Only p-value calculation value not specified, using FALSE. If you are not parrallelizing, do not worry about this.")'
+
+readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
+
+# --- 
+#Argument: Permulation Prefix
+#Description: 
+#   [y = "PermulationPrefix" ]
+#   [This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.]
+#Scripts: 
+#   [CategoricalPermulationsCombineAndCalculatePValue.R]
+Index = 'y'
+OutputVariable = "permulationPrefix"
 successCode = NULL
 failureCode = NULL
 
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 
 # --- 
-#Argument: FRAMEWORK
+#Argument: Outgroup Species
 #Description: 
-#   []
-#   []
+#   [po = outgroupSpecies ]
+#   [This is the outgroup species with the tip name as it appears on mainTrees$masterTree]
 #Scripts: 
-#   []
-Index = 'index'
-OutputVariable = "outVar"
+#   [ContinousPermulations.R]
+Index = 'po'
+OutputVariable = "outgroupVal"
 successCode = NULL
-failureCode = NULL
-
-readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
-
-# --- 
-#Argument: FRAMEWORK
-#Description: 
-#   []
-#   []
-#Scripts: 
-#   []
-Index = 'index'
-OutputVariable = "outVar"
-successCode = NULL
-failureCode = NULL
+failureCode = 'stop("An outgroup is required, specify outgroup species")'
 
 readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 

@@ -18,9 +18,9 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 # j = runInstanceValue                      This is used to generate unique filenames for each instance of the script. Used in parrallelization. Set as j to avoid overlap with alternates.
 # - Optional - 
 # h = <T>                                   This ARG causes the script to return its ARG list, instead of running the script. 
-# b = <T or F>                              This is used to set if the script is targeting metacombined permulations. Called "metacombination". Used for parrallelization. 
+# b = Metacombination <T or F>                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
 # - Overrides - 
-# y = targetFileInstance              This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
+# y = targetFileInstance                    This is used to manually set an instance value of the permulations data to be loaded (ie, instance "Dev"). Effects the filename to be loaded in. Defaults to this script's run instance value. Used in parallelization and debugging. 
 
 # --- End arguments list ---
 #-------------------------------
@@ -41,47 +41,15 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 
 # --- Argument Imports ---
-# Defaults
-mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
-metacombineValue = FALSE
-runInstanceValue = NULL
-targetFileInstance = NULL
-
-{ # Bracket used for collapsing purposes
-  #MainTrees Location
-  if(!is.na(cmdArgImport('m', T))){
-    mainTreesLocation = cmdArgImport('m')
-  }else{
-    message("No maintrees arg, using default")
-  }
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  #Defaults
+  mainTreesLocation = "Results/mainTreesFromAlignments.rds"
+  runInstanceValue = NULL
+  metacombineValue = FALSE
+  targetFileInstance = NULL
   
-  #Run instance value
-  if(!is.na(cmdArgImport('j', T))){
-    runInstanceValue = cmdArgImport('j')
-  }else{
-    message("This script does not have a run instance value")
-  }
-  
-  #Metacombination 
-  if(!is.na(cmdArgImport('b', T))){
-    metacombineValue = cmdArgImport('b')
-    metacombineValue = as.logical(metacombineValue)
-    if(is.na(metacombineValue)){
-      metacombineValue = FALSE
-      message("Metacombination value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
-    }
-  }else{
-    message("Metacombination value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
-  }
-  
-  #target File Instance
-  if(!is.na(cmdArgImport('y', T))){
-    targetFileInstance = cmdArgImport('y')
-  }else{
-    targetFileInstance = runInstanceValue
-    message("No target file Instance specified, defaulting to this scripts run instance.")
-  }
-  
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
 }
 
 

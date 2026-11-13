@@ -1,4 +1,328 @@
 #---------------------------------------------------------------------
+# --- ContinousPermulations.R  --- 
+# --------------------------------------------------------------------
+
+# Defaults
+mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
+permulationAmount = 100
+runInstanceValue = NULL
+outgroupVal = "Debug"
+calculatePVal = F
+
+#MainTrees Location
+if(!is.na(cmdArgImport('m', T))){
+  mainTreesLocation = cmdArgImport('m')
+}else{
+  message("No maintrees arg, using default")
+}
+
+#Number of permulations
+if(!is.na(cmdArgImport('n', T))){
+  permulationAmount = cmdArgImport('n')
+  permulationAmount = as.numeric(permulationAmount)
+}else{
+  paste("Number of permulations not specified, using 100")
+}
+
+#Run instance value
+if(!is.na(cmdArgImport('j', T))){
+  runInstanceValue = cmdArgImport('j')
+}else{
+  paste("This script does not have a run instance value")
+}
+
+#Outgroup Species
+if(!is.na(cmdArgImport('po', T))){
+  outgroupVal = cmdArgImport('po')
+}else{
+  stop("An outgroup is required, specify outgroup species")
+}
+#Calculate P 
+if(!is.na(cmdArgImport('d', T))){
+  calculatePVal = cmdArgImport('d')
+}else{
+  paste("p caluclation not specified, not interally calculating p values.")
+}
+
+#---------------------------------------------------------------------
+# --- CategoricalPermulationsCombineAndCalculatePValue.R  --- 
+# --------------------------------------------------------------------
+
+# Defaults
+runInstanceValue = NULL
+permulationNumberValue = 100
+startValue = 1
+permulationPrefix = NULL
+metacombineValue = FALSE
+calulateValue = TRUE
+onlyCalulateValue = FALSE
+
+
+#Run Instance Number
+if(!is.na(cmdArgImport('j', T))){
+  runInstanceValue = cmdArgImport('j')
+}else{
+  message("This script does not have a run instance value")
+}
+
+#Number of permulations files to combine
+if(!is.na(cmdArgImport('nc', T))){
+  permulationNumberValue = cmdArgImport('nc')
+  permulationNumberValue = as.numeric(permulationNumberValue)
+}else{
+  message("Number of permulations not specified, running on all.")
+  intermediateFilenames = list.files(paste0(outputFolderName), pattern = "CategoricalPermulationsIntermediates")
+  intermediateFilenames = intermediateFilenames[-grep("Combined", intermediateFilenames)]
+  permulationNumberValue = length(intermediateFilenames)
+}
+
+#Start Number
+if(!is.na(cmdArgImport('st', T))){
+  startValue = cmdArgImport('st')
+  startValue = as.numeric(startValue)
+}else{
+  message("Start value not specified, using 1")
+}
+
+#Metacombination 
+if(!is.na(cmdArgImport('b', T))){
+  metacombineValue = cmdArgImport('b')
+  metacombineValue = as.logical(metacombineValue)
+  if(is.na(metacombineValue)){
+    metacombineValue = FALSE
+    message("Metacombination value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }
+}else{
+  message("Metacombination value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
+}
+
+#Calculate P Value
+if(!is.na(cmdArgImport('d', T))){
+  calulateValue = cmdArgImport('d')
+  calulateValue = as.logical(calulateValue)
+  if(is.na(calulateValue)){
+    calulateValue = FALSE
+    message("p-value calculation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }
+}else{
+  message("p-value calculation value not specified, using TRUE. If you aren't parrallelizing, don't worry about this.")
+}
+
+#Only Calculate P Value
+if(!is.na(cmdArgImport('v', T))){
+  onlyCalulateValue = cmdArgImport('v')
+  onlyCalulateValue = as.logical(calulateValue)
+  if(is.na(calulateValue)){
+    onlyCalulateValue = FALSE
+    message("Only p-value calculation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }
+}else{
+  message("Only p-value calculation value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
+}
+
+#Permulation Prefix
+if(!is.na(cmdArgImport('y', T))){
+  permulationPrefix = cmdArgImport('y')
+}else{
+  message("No filename prefix used, using no prefix.")
+}
+
+
+#---------------------------------------------------------------------
+# --- CategoricalPermulationsIntermediateCorrelation.R  --- 
+# --------------------------------------------------------------------
+# Defaults
+mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
+metacombineValue = FALSE
+runInstanceValue = NULL
+targetFileInstance = NULL
+#MainTrees Location
+if(!is.na(cmdArgImport('m', T))){
+  mainTreesLocation = cmdArgImport('m')
+}else{
+  message("No maintrees arg, using default")
+}
+
+#Run instance value
+if(!is.na(cmdArgImport('j', T))){
+  runInstanceValue = cmdArgImport('j')
+}else{
+  message("This script does not have a run instance value")
+}
+
+#Metacombination 
+if(!is.na(cmdArgImport('b', T))){
+  metacombineValue = cmdArgImport('b')
+  metacombineValue = as.logical(metacombineValue)
+  if(is.na(metacombineValue)){
+    metacombineValue = FALSE
+    message("Metacombination value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
+  }
+}else{
+  message("Metacombination value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
+}
+
+#target File Instance
+if(!is.na(cmdArgImport('y', T))){
+  targetFileInstance = cmdArgImport('y')
+}else{
+  targetFileInstance = runInstanceValue
+  message("No target file Instance specified, defaulting to this scripts run instance.")
+}
+
+#---------------------------------------------------------------------
+# --- CategoricalPermulationsGeneration.R  --- 
+# --------------------------------------------------------------------
+
+# Defaults
+mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
+modelType = "ER"
+rootProbability = "auto"
+permulationAmount = 100
+runInstanceValue = NULL
+useRelaxation = FALSE
+relaxationValue = NULL
+
+#MainTrees Location
+if(!is.na(cmdArgImport('m', T))){
+  mainTreesLocation = cmdArgImport('m')
+}else{
+  message("No maintrees arg, using default")
+}
+
+#Number of permulations
+if(!is.na(cmdArgImport('n', T))){
+  permulationAmount = cmdArgImport('n')
+  permulationAmount = as.numeric(permulationAmount)
+}else{
+  paste("Number of permulations not specified, using 100")
+}
+
+#Model Type
+if(!is.na(cmdArgImport('q', T))){
+  modelType = cmdArgImport('q')
+}else{
+  message("No model specified, using ER.")
+}
+
+#Run instance value
+if(!is.na(cmdArgImport('j', T))){
+  runInstanceValue = cmdArgImport('j')
+}else{
+  paste("This script does not have a run instance value")
+}
+
+#Root Probability
+if(!is.na(cmdArgImport('u', T))){
+  rootProbability = cmdArgImport('u', T)
+}else{
+  message("No probability specified, using auto.")
+}
+
+#Relaxation
+if(!is.na(cmdArgImport('x', T))){
+  useRelaxation = TRUE
+  relaxationValue = cmdArgImport('x')
+  relaxationValue = as.numeric(relaxationValue)
+  source("Src/Reu/RelaxedRejectionPermFuncs2.R")
+}else{
+  paste("Not relaxing permulations.")
+}
+
+
+
+#---------------------------------------------------------------------
+# --- AddAlternatesToCombination.R  --- 
+# --------------------------------------------------------------------
+
+# Defaults
+significanceCutoff = 0.05
+geneSet = NULL
+usingGene = T
+validGeneArguments = c("NULL", "gene", "Gene")
+writeData = T
+alternateCutoffRatio = 0.5 
+
+#genesets
+if(!all(is.na(cmdArgImport('g', T)))){
+  geneSets = cmdArgImport('g')
+  if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
+    usingGene = T
+    message("Null geneset specified or gene specified, performing gene correlation.")
+  }else{
+    usingGene = F
+  }
+  
+  if(any(!geneSets %in% validGeneArguments)){
+    usingGo = T
+    geneSets = trimGmtFilenameToSetname(geneSets)
+  }else{
+    usingGo = F
+  }
+  
+}else{
+  message("No geneset specified or gene specified, performing gene correlation.")
+}
+
+#alternate cutoff ratio
+if(!is.na(cmdArgImport('o', T))){
+  alternateCutoffRatio = as.numeric(cmdArgImport('o'))
+}else{
+  message("Alternate ratio not specified, using 50% (0.5)")
+} 
+
+#writeData 
+if(!is.na(cmdArgImport('w', T))){
+  writeData = as.logical(cmdArgImport('w'))
+}else{
+  message("writeData not specified, using TRUE")
+}
+
+
+#cutoff
+if(!is.na(cmdArgImport('c', T))){
+  significanceCutoff = as.numeric(cmdArgImport('c'))
+}else{
+  message("pvalue cuttoff not specified, using 0.05")
+}  
+
+
+
+
+
+#---------------------------------------------------------------------
+# --- CombineAlternates.R  --- 
+# --------------------------------------------------------------------
+
+# Defaults
+geneSets = NULL
+usingGo = F
+usingGene = T
+validGeneArguments = c("NULL", "gene", "Gene")
+
+#genesets
+if(!all(is.na(cmdArgImport('g', T)))){
+  geneSets = cmdArgImport('g')
+  if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
+    usingGene = T
+    message("Null geneset specified or gene specified, performing gene correlation.")
+  }else{
+    usingGene = F
+  }
+  
+  if(any(!geneSets %in% validGeneArguments)){
+    usingGo = T
+    geneSets = trimGmtFilenameToSetname(geneSets)
+  }else{
+    usingGo = F
+  }
+  
+}else{
+  message("No geneset specified or gene specified, performing gene correlation.")
+}
+
+
+#---------------------------------------------------------------------
 # --- RunAlternateEnrichments.R  --- 
 # --------------------------------------------------------------------
 # Defaults

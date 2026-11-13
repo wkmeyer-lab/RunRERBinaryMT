@@ -24,11 +24,11 @@ source("Src/Reu/CategoricalPermulationsParallelFunctions.R")
 
 # - Optional - 
 # h = <T>                                     This ARG causes the script to return its ARG list, instead of running the script. 
-# b = <T or F>                                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
-# d = <T or F>                                This value determines whether or not to calculate the pValues.
-# v = <T or F>                                This value is used to run only the p value calculation, and not the combination. 
+# b = Metacombination <T or F>                This is used to set if the script is being run to combine previous combinations. Called "metacombination". Used for parrallelization. 
+# d = CalculatePValue <T or F>                This value determines whether or not to calculate the pValues.
+# v = onlyCalulateValue <T or F>              This value is used to run only the p value calculation, and not the combination. 
 # - Overrides - 
-# y = <PermulationPrefix>                     This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
+# y = "PermulationPrefix"                     This is used to add a prefix (eg. FastPruned) to permulations if present in the filename.
 
 # --- End arguments list ---
 #-------------------------------
@@ -47,87 +47,17 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 
 # --- Argument Imports ---
-# Defaults
-runInstanceValue = NULL
-permulationNumberValue = 100
-startValue = 1
-permulationPrefix = NULL
-metacombineValue = FALSE
-calulateValue = TRUE
-onlyCalulateValue = FALSE
-
-{ # Bracket used for collapsing purposes
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  runInstanceValue = NULL
+  permulationNumberValue = NULL
+  startValue = 1
+  metacombineValue = FALSE
+  calulateValue = TRUE
+  onlyCalulateValue = FALSE
+  permulationPrefix = NULL
   
-  #Run Instance Number
-  if(!is.na(cmdArgImport('j', T))){
-    runInstanceValue = cmdArgImport('j')
-  }else{
-    message("This script does not have a run instance value")
-  }
-  
-  #Number of permulations files to combine
-  if(!is.na(cmdArgImport('nc', T))){
-    permulationNumberValue = cmdArgImport('nc')
-    permulationNumberValue = as.numeric(permulationNumberValue)
-  }else{
-    message("Number of permulations not specified, running on all.")
-    intermediateFilenames = list.files(paste0(outputFolderName), pattern = "CategoricalPermulationsIntermediates")
-    intermediateFilenames = intermediateFilenames[-grep("Combined", intermediateFilenames)]
-    permulationNumberValue = length(intermediateFilenames)
-  }
-  
-  #Start Number
-  if(!is.na(cmdArgImport('st', T))){
-    startValue = cmdArgImport('st')
-    startValue = as.numeric(startValue)
-  }else{
-    message("Start value not specified, using 1")
-  }
-  
-  #Metacombination 
-  if(!is.na(cmdArgImport('b', T))){
-    metacombineValue = cmdArgImport('b')
-    metacombineValue = as.logical(metacombineValue)
-    if(is.na(metacombineValue)){
-      metacombineValue = FALSE
-      message("Metacombination value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
-    }
-  }else{
-    message("Metacombination value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
-  }
-  
-  #Calculate P Value
-  if(!is.na(cmdArgImport('d', T))){
-    calulateValue = cmdArgImport('d')
-    calulateValue = as.logical(calulateValue)
-    if(is.na(calulateValue)){
-      calulateValue = FALSE
-      message("p-value calculation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
-    }
-  }else{
-    message("p-value calculation value not specified, using TRUE. If you aren't parrallelizing, don't worry about this.")
-  }
-  
-  #Only Calculate P Value
-  if(!is.na(cmdArgImport('v', T))){
-    onlyCalulateValue = cmdArgImport('v')
-    onlyCalulateValue = as.logical(calulateValue)
-    if(is.na(calulateValue)){
-      onlyCalulateValue = FALSE
-      message("Only p-value calculation value not interpretable as logical. Did you remember to capitalize? Using FALSE.")
-    }
-  }else{
-    message("Only p-value calculation value not specified, using FALSE. If you aren't parrallelizing, don't worry about this.")
-  }
-  
-  #Permulation Prefix
-  if(!is.na(cmdArgImport('y', T))){
-    permulationPrefix = cmdArgImport('y')
-  }else{
-    message("No filename prefix used, using no prefix.")
-  }
-  
-  
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
 }
 
 

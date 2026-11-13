@@ -44,32 +44,15 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 # --- Argument Imports ---
 {  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-  # Defaults
   geneSets = NULL
   usingGo = F
   usingGene = T
   validGeneArguments = c("NULL", "gene", "Gene")
-
-  #genesets
-  if(!all(is.na(cmdArgImport('g', T)))){
-    geneSets = cmdArgImport('g')
-    if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
-      usingGene = T
-      message("Null geneset specified or gene specified, performing gene correlation.")
-    }else{
-      usingGene = F
-    }
-    
-    if(any(!geneSets %in% validGeneArguments)){
-      usingGo = T
-      geneSets = trimGmtFilenameToSetname(geneSets)
-    }else{
-      usingGo = F
-    }
-    
-  }else{
-    message("No geneset specified or gene specified, performing gene correlation.")
-  }
+  
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
+  
+  geneSets = trimGmtFilenameToSetname(geneSets)
 }
 # --- Main code ---
 

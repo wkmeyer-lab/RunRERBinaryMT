@@ -7,6 +7,7 @@
 # -- Libraries 
 source("Src/Reu/loadLibraries.R")
 loadLibraries() # Note that this library load includes cluster run detection. 
+source("Src/Reu/RelaxedRejectionPermFuncs2.R")
 #-------------------------------
 # --- Command arguments list ---
 # - Required - 
@@ -41,71 +42,27 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 #This code reads the "report args" help ARG, and reutrns the args if it is active. 
 #It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
 
+
+# --- Argument Imports ---
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  #Defaults
+  mainTreesLocation = "Results/mainTreesFromAlignments.rds"
+  permulationAmount = 100
+  modelType = "ER"
+  runInstanceValue = NULL
+  rootProbability = "auto"
+  useRelaxation = TRUE
+  relaxationValue = 0.1
+  
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
+  
+  if(relaxationValue ==0){useRelaxation = FALSE}
+}
+
 # ---------------------------
 # ----- SCRIPT MAIN CODE ----
 # ---------------------------
-
-# --- Argument Imports ---
-
-
-{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-  # Defaults
-  mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"  #this is the standard location on Sol 
-  modelType = "ER"
-  rootProbability = "auto"
-  permulationAmount = 100
-  runInstanceValue = NULL
-  useRelaxation = FALSE
-  relaxationValue = NULL
-  
-  #MainTrees Location
-  if(!is.na(cmdArgImport('m', T))){
-    mainTreesLocation = cmdArgImport('m')
-  }else{
-    message("No maintrees arg, using default")
-  }
-
-  #Number of permulations
-  if(!is.na(cmdArgImport('n', T))){
-    permulationAmount = cmdArgImport('n')
-    permulationAmount = as.numeric(permulationAmount)
-  }else{
-    paste("Number of permulations not specified, using 100")
-  }
-    
-  #Model Type
-  if(!is.na(cmdArgImport('q', T))){
-    modelType = cmdArgImport('q')
-  }else{
-    message("No model specified, using ER.")
-  }
-
-  #Run instance value
-  if(!is.na(cmdArgImport('j', T))){
-    runInstanceValue = cmdArgImport('j')
-  }else{
-    paste("This script does not have a run instance value")
-  }
-    
-  #Root Probability
-  if(!is.na(cmdArgImport('u', T))){
-    rootProbability = cmdArgImport('u', T)
-  }else{
-    message("No probability specified, using auto.")
-  }
-  
-  #Relaxation
-  if(!is.na(cmdArgImport('x', T))){
-    useRelaxation = TRUE
-    relaxationValue = cmdArgImport('x')
-    relaxationValue = as.numeric(relaxationValue)
-    source("Src/Reu/RelaxedRejectionPermFuncs2.R")
-  }else{
-    paste("Not relaxing permulations.")
-  }
-}
-
-
 #                   ------- Code Body -------- 
 
 # -- Read in files -- 
