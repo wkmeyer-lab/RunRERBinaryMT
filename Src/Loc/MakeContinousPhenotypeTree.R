@@ -28,10 +28,10 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # ts = "screenCollumn"                                    This is a collumn which must have a value of 1 for the species to be included. 
 
 # - Pruning - 
-# pm = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
+# pm = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
+# pc = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
 # pk = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
 # ps = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
-# pd = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
 # --- End arguments list ---
 #-------------------------------
 # -- Section to include manually-specified args --
@@ -55,129 +55,46 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 # --- Argument Imports ---
 { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-# Defaults
-mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
-spreadSheetLocation = "Data/mergedData.csv"
-annotColumn = NULL
-categoryList = NULL
-useScreen = F
-screenColumn = NULL
-nameColumn = NULL
-tipCol = NULL
-continousMetric = "diff"
-validMetrics= c("diff", "mean", "last")
-usingPruning = F
-usingAutoPruning = F
-manualPruningProtections = NULL
-pruningPrefrenceColumn = NA
-pruningProtection = F
-manualPrunedSpecies = NULL
-
-  #MainTrees Location
-  if(!is.na(cmdArgImport('m', T))){
-    mainTreesLocation = cmdArgImport('m', F)
-  }else{
-    message("No maintrees arg, using default")
-  }
-  #read in the tree based on filetype extension
-  if(file_ext(mainTreesLocation) == "rds"){
-    if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
-  }else{
-    if(!exists("mainTrees")){mainTrees = readTrees(mainTreesLocation)} 
-  }
-
-  #spreadsheet File
-  if(!is.na(cmdArgImport('td', T))){
-    spreadSheetLocation = cmdArgImport('td', F)
-  }else{
-    message("Using Data/mergedData.csv spreadsheet")
-  }
+  # Defaults
+  mainTreesLocation = "Results/mainTreesFromAlignments.rds"
+  spreadSheetLocation = "Data/mergedData.csv"
+  phenotypeColumn = NULL
+  tipCol = "tipName"
+  nameColumn = NULL
+  continousMetric = "diff"
+  useScreen = F
+  screenColumn = NULL
+  usingPruning = F
+  manualPruningSpecies = NULL
+  pruningCutoff = NULL
   
-  #Phenotype Column
-  if(!is.na(cmdArgImport('tp', T))){
-    annotColumn = cmdArgImport('tp', F)
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE COLUMN")
-  }
-
-  #Tip Column
-  if(!is.na(cmdArgImport('tt', T))){
-    tipCol = cmdArgImport('tt', F)
-  }else{
-    message("Tip Column not specified, using 'tipName'.")
-  }
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
   
-  #Name Column
-  if(!is.na(cmdArgImport('tn', T))){
-    nameColumn = cmdArgImport('tn', F)
-  }else{
-    message("Name Column not specified, using default list.")
-  }
-
-  #Continuous Metric 
-  if(!is.na(cmdArgImport('k', T))){
-    continousMetric = cmdArgImport('k', F)
-    if(!any(continousMetric == validMetrics)){
-      stop("Contious metric is not a valid option. Use 'Diff', 'mean', or 'last'")
-    }
-  }else{                                                                        #If a continuous phenotype, report using Diff
-    message("No continuous metric specified, using Diff")
-  }
-  
-  #Screen Column
-  if(!is.na(cmdArgImport('ts', T))){
-    useScreen = T
-    screenColumn = cmdArgImport('ts', F)
-  }else{
-    message("No screen column used.")
-  }
-
-  
-  
-  #Pruning cutoff
-  if(!is.na(cmdArgImport('pm', T))){
-    usingPruning = T
-    usingAutoPruning = T
-    pruningCutoff = cmdArgImport('pm', F)
-  }else{
-    message("Pruning Cutoff not specified, not pruning tree.")
-  }
-  
-  #PruningPrefrenceColumn 
-  if(!is.na(cmdArgImport('pk', T))){
-    pruningPrefrenceColumn = cmdArgImport('pk', F)
-  }else{
-    if(usingPruning){message("No pruning prefrence column specified")}
-  }
-  
-  #ManualPruningProtections
-  if(!all(is.na(cmdArgImport('ps', T)))){
-    manualPruningProtections = cmdArgImport('ps', F)
-  }else{
-    if(usingPruning){message("No manually protected species specified")}
-  }
-  
-  #ManualPruningSpecies
-  if(!all(is.na(cmdArgImport('pd', T)))){
-    manualPruningSpecies = cmdArgImport('pd', F)
-    usingPruning = T
-  }else{
-    if(usingPruning){message("No manually pruned species specified")}
+  validMetrics= c("diff", "mean", "last")
+  if(!any(continousMetric == validMetrics)){
+    stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")
   }
 }
 
 
 #                   ------- Code Body --------  
+if(file_ext(mainTreesLocation) == "rds"){
+  if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
+}else{
+  if(!exists("mainTrees")){mainTrees = readTrees(mainTreesLocation)} 
+}
+
 
 manualAnnots = read.csv(spreadSheetLocation)                      #load the manual annotations file holding the phenotype data
-manualAnnots[[annotColumn]] = trimws(manualAnnots[[annotColumn]])               #trim away whitespace to allow for better matching 
+manualAnnots[[phenotypeColumn]] = trimws(manualAnnots[[phenotypeColumn]])               #trim away whitespace to allow for better matching 
 
 # - Species Filter - 
 speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",sep="") #set a filename for the species filter based on the prefix 
 
 if(!file.exists(speciesFilterFilename) | forceUpdate){                          #if no filter exists or update is forced, make a filter 
   # --- subset the manual annots to only those with data in the categories used, and optionally by the screen column
-  relevantSpecies = manualAnnots[!is.na(manualAnnots[[annotColumn]]),]#remove all species which are not part of the specified categories
+  relevantSpecies = manualAnnots[!is.na(manualAnnots[[phenotypeColumn]]),]#remove all species which are not part of the specified categories
   if(useScreen){                                                                #if using a screening collumn 
     relevantSpecies = relevantSpecies[ relevantSpecies[[screenColumn]] %in% 1, ]  #remove all species not positive for that collumn 
   }
@@ -246,7 +163,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
 
 # - Phenotype Vector - 
 relevantSpecies = relevantSpecies[relevantSpecies[[tipCol]] %in% speciesFilter, ] 
-speciesValues = relevantSpecies[[annotColumn]]                                  #extract the category of each species (in same order)
+speciesValues = relevantSpecies[[phenotypeColumn]]                                  #extract the category of each species (in same order)
 speciesNames = relevantSpecies[[tipCol]]                                         #Exract the tip name of each species
 
 phenotypeVector = speciesValues                                                 #combine those into⌄

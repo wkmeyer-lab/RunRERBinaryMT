@@ -19,7 +19,7 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # tt = "tipColumn"                                        This sets the column with the tip names as they appear in the mainTrees file.
 
 # - Required, Defaults likely acceptable -
-# f  = forceUpdate <T or F>                                This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
+# f  = forceUpdate <T or F>                               This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
 # tn = "nameColumn"                                       This sets the column with common names of the species. 
 # tc = <c("nameOfCategory1","nameOfCategory2")>           This sets a list of category names to be used in the analysis. Species with values not in this list will not be included in the analysis. Include ALL categories to be included (even those merged later).  
 # - Optional - 
@@ -30,13 +30,14 @@ source("Src/Reu/ZonomNameConvertVectorCommon.R")
 # ta = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 # tb = c( "colors", "in ","the", "palette")               This sets the color palette used in the tree graphs. 
 # tl = <T or F>                                           This sets if alternate species sets should be created. 
+# ta = <number of alternates>                             This sets the number of alternate species sets to generate, if alternate species sets are generated. 
 # tz = <T or F>                                           DO NOT USE UNLESS SPECIFIED -- This determines if the liam infrence nodes should be added 
-# q = <ER or SYM or ARD>                                  This sets the model type used to estimate ancestral branches 
+# q = <ER or SYM or ARD>                                  This sets the model type used to estimate ancestral branches.  
 # - Pruning - 
-# pm = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
+# pm = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
+# pc = <minimum branch length>                            This sets the minimum branch length for terminal branches in the master tree. Branches shorter than this will be removed. 
 # pk = "pruningPrefrenceColumn"                           This sets a column, where if the value is 1, the tip will be preferentially kept. If the value is TRUE, the tip will never be pruned.
 # ps = "c('unprunedtip1', 'unprunedtip2')"                This allows you to add a list of specific tips to not be dropped during pruning. Must use the tip name, not common name. 
-# pd = "c('prunedtip1', 'prunedtip2')"                    This allows you to manually specify additional branches to be pruned
 # --- End arguments list ---
 #-------------------------------
 # -- Section to include manually-specified args --
@@ -44,7 +45,7 @@ if(!exists("args", envir = environment(), inherits = FALSE)){
   #This is a space where you can manually write in arguments for the script. 
   #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
   
-  args = c('r=ComplexDietHighSugarAllSpecies', 'm=data/zoonomiaAllMammalsTrees.rds', 'td=Data/mergedData.csv', 'tp=ComplexHerbDiet', 'f=T', 'q=ER', 'tt=ZoonomiaTip', 'tz=T', 'tl=F',
+  args = c('r=ComplexDietHighSugarAllSpeciesTest', 'm=data/zoonomiaAllMammalsTrees.rds', 'td=Data/mergedData.csv', 'tp=ComplexHerbDiet', 'f=T', 'q=ER', 'tt=ZoonomiaTip', 'tz=T', 'tl=F',
            'tc=c(
               "Vertivore", "Omnivore", "Invertivore", "Frugivore", "Generalist Herbivore", "Granivore", "Mixed Herbivore", "Nectivore", "Strict Frugivore", "Strict Nectivore"
             )',
@@ -65,190 +66,60 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 #This code reads the "report args" help ARG, and reutrns the args if it is active. 
 #It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
 
+
+# --- Argument Imports ---
+{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  #usedArgs = c('r', 'm', 'td', 'tp', 'tt', 
+  #             'f', 'tn','tc',
+  #             'h', 'ts', 'tr', 'tm', 'ta', 'tb', 'tl', 'ta', 'tz', 'q',
+  #             'pm', 'pk', 'ps', 'pd')
+  
+  # Defaults
+  mainTreesLocation = "Results/mainTreesFromAlignments.rds"
+  spreadSheetLocation = "Data/mergedData.csv"
+  phenotypeColumn = NULL
+  tipCol = "tipName"
+  nameColumn = NULL
+  categoryList = NULL
+  screenColumn = NULL
+  useScreen = F
+  substitutions = NULL
+  mergeOnlys = NULL
+  ancestralTrait = NULL
+  colorSet = c( "darkgreen", "darkblue","black", "red", "yellow")
+  generateAlternates = F
+  useLiam = F
+  modelType = "ER"
+  usingPruning = F
+  manualPruningSpecies = NULL
+  pruningCutoff = NULL
+  
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
+
+}
+palette(colorSet)
+
 # ---------------------------
 # ----- SCRIPT MAIN CODE ----
 # ---------------------------
 
-# --- Argument Imports ---
-{ # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-# Defaults
-mainTreesLocation = "/share/ceph/wym219group/shared/projects/MammalDiet/Zoonomia/RemadeTreesAllZoonomiaSpecies.rds"
-spreadSheetLocation = "Data/manualAnnotationsSheet.csv"
-annotColumn = NULL
-categoryList = NULL
-useScreen = F
-screenColumn = NULL
-modelType = "ER"
-ancestralTrait = NULL
-substitutions = NULL
-tipCol = "tipName"
-nameColumn = NULL
-usingPruning = F
-usingAutoPruning = F
-manualPruningProtections = NULL
-pruningPrefrenceColumn = NA
-pruningProtection = F
-manualPruningSpecies = NULL
-useLiam = F
-generateAlternates = F
-colorSet = c( "darkgreen", "darkblue","black", "red", "yellow")
 
-  #MainTrees Location
-  if(!is.na(cmdArgImport('m', T))){
-    mainTreesLocation = cmdArgImport('m', F)
-  }else{
-    message("No maintrees arg, using default")
-  }
-  #read in the tree based on filetype extension
-  if(file_ext(mainTreesLocation) == "rds"){
-    if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
-  }else{
-    if(!exists("mainTrees")){mainTrees = readTrees(mainTreesLocation)} 
-  }
-
-  #spreadsheet File
-  if(!is.na(cmdArgImport('td', T))){
-    spreadSheetLocation = cmdArgImport('td', F)
-  }else{
-    message("Using Data/manualAnnotationsSheet.csv spreadsheet")
-  }
-  
-  #Phenotype Column
-  if(!is.na(cmdArgImport('tp', T))){
-    annotColumn = cmdArgImport('tp', F)
-  }else{
-    stop("THIS IS AN ISSUE MESSAGE; SPECIFY PHENOTYPE COLUMN")
-  }
-  
-  #Tip Column
-  if(!is.na(cmdArgImport('tt', T))){
-    tipCol = cmdArgImport('tt', F)
-  }else{
-    message("Tip Column not specified, using 'tipName'.")
-  }
-
-
-
-  #Name Column
-  if(!is.na(cmdArgImport('tn', T))){
-    nameColumn = cmdArgImport('tn', F)
-  }else{
-    message("Name Column not specified, using default list.")
-  }
-
-  #Category list 
-  if(!all(is.na(cmdArgImport('tc', T)))){
-    categoryList = cmdArgImport('tc', F)
-  }else{
-    message("Using all available categories in phenotype column.")
-    categoryList = NULL
-  }
-  
-  #Screen Column
-  if(!is.na(cmdArgImport('ts', T))){
-    useScreen = T
-    screenColumn = cmdArgImport('ts', F)
-  }else{
-    message("No screen column used.")
-  }
-  
-  #Substitution list 
-  if(!is.null(cmdArgImport('tr', T))){
-    substitutions = cmdArgImport('tr', F)
-  }else{
-    message("No substitutions provided")
-  }
-  
-  #Merge list 
-  if(!is.null(cmdArgImport('tm', T))){
-    mergeOnlys = cmdArgImport('tm', F)
-  }else{
-    message("No merges provided")
-  }
-
-  #Ancestral Trait
-  if(!is.na(cmdArgImport('ta', T))){
-    ancestralTrait = cmdArgImport('ta', F)
-  }else{
-    message("No ancestral trait specified, using NULL")
-  }
-
-  #generate alternates
-  if(!is.na(cmdArgImport('tl', T))){
-    generateAlternates = as.logical(cmdArgImport('tl', F))
-    if(generateAlternates){message("Generating Alternates")}
-  }else{
-    message("Not Generating Alternates.")
-  }
-  
-  #Color pallete
-  if(!all(is.na(cmdArgImport('tb', T)))){
-    colorSet = cmdArgImport('tb', F)
-    message("using specified colorset")
-  }else{
-    message("Using Default palette Generating Alternates.")
-  }
-
-  #use Liam Infrence
-  if(!is.na(cmdArgImport('tz', T))){
-    useLiam = as.logical(cmdArgImport('tz', F))
-    message("Using Liam infrence -- DO NOT DO THIS UNLESS USING A SPECIFIC LIAM PHENOTYPE")
-  }else{
-    message("Liam infrence not used.")
-  }
-
-  #Model Type
-  if(!is.na(cmdArgImport('q', T))){
-    modelType = cmdArgImport('q', F)
-  }else{
-    message("No model specified, using ER.")
-  }
-
-  
-
-  #Pruning cutoff
-  if(!is.na(cmdArgImport('pm', T))){
-    usingPruning = T
-    usingAutoPruning = T
-    pruningCutoff = cmdArgImport('pm', F)
-    pruningCutoff = as.numeric(pruningCutoff)
-  }else{
-    message("Pruning Cutoff not specified, not pruning tree.")
-  }
-  
-  #PruningPrefrenceColumn 
-  if(!is.na(cmdArgImport('pk', T))){
-    pruningPrefrenceColumn = cmdArgImport('pk', F)
-  }else{
-    if(usingPruning){message("No pruning prefrence column specified")}
-  }
-
-  #ManualPruningProtections
-  if(!all(is.na(cmdArgImport('ps', T)))){
-    manualPruningProtections = cmdArgImport('ps', F)
-  }else{
-    if(usingPruning){message("No manually protected species specified")}
-  }
-
-  #ManualPruningSpecies
-  if(!all(is.na(cmdArgImport('pd', T)))){
-    manualPruningSpecies = cmdArgImport('pd', F)
-    usingPruning = T
-  }else{
-    if(usingPruning){message("No manually pruned species specified")}
-  }
-
+#                   ------- Code Body --------  
+#read in the tree based on filetype extension
+if(file_ext(mainTreesLocation) == "rds"){
+  if(!exists("mainTrees")){mainTrees = readRDS(mainTreesLocation)}
+}else{
+  if(!exists("mainTrees")){mainTrees = readTrees(mainTreesLocation)} 
 }
 
-palette(colorSet)
-#                   ------- Code Body --------  
 
 manualAnnots = read.csv(spreadSheetLocation)                      #load the manual annotations file holding the phenotype data
-manualAnnots[[annotColumn]] = trimws(manualAnnots[[annotColumn]])               #trim away whitespace to allow for better matching 
+manualAnnots[[phenotypeColumn]] = trimws(manualAnnots[[phenotypeColumn]])               #trim away whitespace to allow for better matching 
 
 #Use all categories, if no categories specified. 
 if(is.null(categoryList)){
-  categoryList = unique(manualAnnots[[annotColumn]])
+  categoryList = unique(manualAnnots[[phenotypeColumn]])
   message("Using all categories in phenotype column.")
   print(categoryList)
 }
@@ -259,11 +130,11 @@ if(!is.null(substitutions) & !all(is.na(substitutions))){                       
   for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
     substitutePhenotypes = substitutions[[i]]
     message(paste("Combining", substitutePhenotypes[1], "/", substitutePhenotypes[2]))
-    entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[annotColumn]])
-    entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[annotColumn]])
+    entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[phenotypeColumn]])
+    entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[phenotypeColumn]])
     combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
     combineIndexes = entriesWithPhen1[combineEntries]
-    manualAnnots[[annotColumn]][combineIndexes] = substitutePhenotypes[2]
+    manualAnnots[[phenotypeColumn]][combineIndexes] = substitutePhenotypes[2]
   }
 }
 
@@ -271,11 +142,11 @@ if(!is.null(mergeOnlys) & ! all(is.na(mergeOnlys))){                            
   for( i in 1:length(mergeOnlys)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
     substitutePhenotypes = mergeOnlys[[i]]
     message(paste("Merging Hybrids of", substitutePhenotypes[1], "/", substitutePhenotypes[2], "to", substitutePhenotypes[2]))
-    entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[annotColumn]])
-    entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[annotColumn]])
+    entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[phenotypeColumn]])
+    entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[phenotypeColumn]])
     combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
     combineIndexes = entriesWithPhen1[combineEntries]
-    manualAnnots[[annotColumn]][combineIndexes] = substitutePhenotypes[2]
+    manualAnnots[[phenotypeColumn]][combineIndexes] = substitutePhenotypes[2]
   }
 }
 
@@ -285,7 +156,7 @@ speciesFilterFilename = paste(outputFolderName, filePrefix, "SpeciesFilter.rds",
 
 if(!file.exists(speciesFilterFilename) | forceUpdate){                          #if no filter exists or update is forced, make a filter 
   # --- subset the manual annots to only those with data in the categories used, and optionally by the screen column
-  relevantSpecies = manualAnnots[manualAnnots[[annotColumn]] %in% categoryList,]#remove all species which are not part of the specified categories
+  relevantSpecies = manualAnnots[manualAnnots[[phenotypeColumn]] %in% categoryList,]#remove all species which are not part of the specified categories
   if(useScreen){                                                                #if using a screening collumn 
     relevantSpecies = relevantSpecies[ relevantSpecies[[screenColumn]] %in% 1, ]  #remove all species not positive for that collumn 
   }
@@ -351,7 +222,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
 }else{ #if not, use the existing one 
   relevantSpecieslist = readRDS(speciesFilterFilename)                          #if not, use the existing list 
   speciesFilter = relevantSpecieslist                                           #make the speciesFilter object for later 
-  relevantSpecies = manualAnnots[manualAnnots[[annotColumn]] %in% categoryList,]#remove all species which are not part of the specified categories
+  relevantSpecies = manualAnnots[manualAnnots[[phenotypeColumn]] %in% categoryList,]#remove all species which are not part of the specified categories
   if(useScreen){                                                                #if using a screening collumn 
     relevantSpecies = relevantSpecies[ relevantSpecies[[screenColumn]] %in% 1, ]  #remove all species not positive for that collumn 
   }
@@ -361,7 +232,7 @@ if(!file.exists(speciesFilterFilename) | forceUpdate){                          
 # - Phenotype Vector - 
 filteredSpecies = relevantSpecies[relevantSpecies[[tipCol]] %in% speciesFilter, ] 
 speciesNames = filteredSpecies[[tipCol]]                                         #Exract the tip name of each species
-speciesCategories = filteredSpecies[[annotColumn]]                              #extract the category of each species (in same order)
+speciesCategories = filteredSpecies[[phenotypeColumn]]                              #extract the category of each species (in same order)
 
 phenotypeVector = speciesCategories                                             #combine those into⌄
 names(phenotypeVector) = speciesNames                                           #the format the functions expect
@@ -421,7 +292,7 @@ if(!useLiam){
   
   # - Make common name versions of objects (used in visualization) - 
   commonMainTrees = mainTrees
-  commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(commonMainTrees$masterTree$tip.label, manualAnnotLocation = spreadSheetLocation, tipCol = tipCol, commonColumn = nameColumn)
+  commonMainTrees$masterTree$tip.label = ZonomNameConvertVectorCommon(commonMainTrees$masterTree$tip.label, annotationLocation = spreadSheetLocation, tipCol = tipCol, commonColumn = nameColumn)
   commonPhenotypeVector = phenotypeVector
   names(commonPhenotypeVector) = ZonomNameConvertVectorCommon(names(commonPhenotypeVector), annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
   commonSpeciesFilter = ZonomNameConvertVectorCommon(speciesFilter, annotationLocation = spreadSheetLocation, tipColumn = tipCol, commonColumn = nameColumn)
@@ -526,7 +397,7 @@ if(generateAlternates){
     phenotypeSizes = table(phenotypeVector)
     
     fullSpeciesNames = relevantSpecies[[tipCol]]                                         #Exract the tip name of each species
-    fullSpeciesCategories = relevantSpecies[[annotColumn]]                              #extract the category of each species (in same order)
+    fullSpeciesCategories = relevantSpecies[[phenotypeColumn]]                              #extract the category of each species (in same order)
     fullDataPhenotype = fullSpeciesCategories
     names(fullDataPhenotype) = fullSpeciesNames 
     if(!is.null(substitutions) & !all(is.na(substitutions))){

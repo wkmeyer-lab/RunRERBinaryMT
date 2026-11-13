@@ -136,6 +136,68 @@ if(!exists("args", envir = environment(), inherits = FALSE)){
 # --------------------------------------------------------------------
 
 
+
+
+
+#Argument: Phenotype Style // Analysis Style
+#Index: 'a'
+#Description: 
+#This prefix is used to set the Analysis Style type of phenotype being supplied; it will detect automatically if not specified.
+#Scripts: 
+
+
+styleConversion ='
+  if(outputVariable == "b" | outputVariable == "B" | outputVariable == "binary"){outputVariable = "Binary"}
+  if(outputVariable == "c" | outputVariable == "C" | outputVariable == "continuous"){outputVariable = "Continuous"}
+  if(outputVariable == "g" | outputVariable == "G" | outputVariable == "categorical"){outputVariable = "Categorical"}
+'
+
+
+test = readArg('a', phenotypeStyle, styleConversion)
+
+
+is.character (styleConversion)
+
+
+args = c('m=Test')
+inUse = c('m', 'td', 'tp')
+spreadSheetLocation = "Demo"
+outputVariable = spreadSheetLocation
+outputVariable = "spreadSheetLocation"
+
+
+eval = "T"
+test = type.convert(eval)
+
+
+if(Index %in% usedIndexes){
+  readSuccess = readArg(Index, OutputVariable)
+  
+  if(readSuccess){
+    
+  }else{
+    
+  }
+}
+
+readArgIfUsed = function(Index, OutputVariable,
+                         successCode = NULL, failureCode = NULL, usedIndexes = inUse, returnIfSuccesful = F) {
+  if(Index %in% usedIndexes){
+    readSuccess = readArg(Index, OutputVariable)
+    
+    if(readSuccess){
+      
+    }else{
+      
+    }
+    
+    if(returnIfSuccesful){return(readSuccess)}
+  }
+  
+  if(returnIfSuccesful){return(FALSE)}
+}
+
+
 #Dependency list
 runningLocally =identical(Sys.getenv("RSTUDIO"), "1")
 clusterRun = F

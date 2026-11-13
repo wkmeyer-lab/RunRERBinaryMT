@@ -15,7 +15,7 @@ source("Src/Reu/trimGmtFilenameToSetname.R")
 
 # - Required, Defaults likely acceptable -
 # f = forceUpdate <T or F>                    This prefix is used to force the regeneration of the script's output, even if the files already exist. Not required, not always used.
-# s = pairwise Sets                           This sets the subdirectories that the code should be run using. 
+# s = c("subdirectory", "Names")              This is used to specify a subdirectory for the analysis to be run in. Primarily used for the components of categorical results. 
 # p = permulations use <T or F or C or A>     This sets if the code should use permulated or unpermulated values. If set to "A", it will add permulations data, but use the unpermulationed data for significance. It also accepts "C" as "T" for compatibility with upstream functions which use "C" to denote the categorical permulations used by this script.
 # w = writeData  <T or F>                     This sets if the data should be saved, potentially overwriting old combinations. 
 # - Optional - 
@@ -34,87 +34,28 @@ if(!exists("args", envir = environment(), inherits = FALSE)){
 
 # --- Standard start-up code; identical in all scripts---
 source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code block at this location, ensuring identity across scripts. 
-#This code reads the "report args" help ARG, and reutrns the args if it is active. 
+#This code reads the "report args" help ARG, and returns the args if it is active. 
 #It then reads the filePrefix and sets the output directory to that file prefix, and reads the forceUpdate arg. 
 
 
 # --- Argument Imports ---
 { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-  
   # Defaults
-  significanceCutoff = 0.05
-  pairwiseSets = NULL
   geneSet = NULL
-  usingGo = F
-  usingGene = T
   validGeneArguments = c("NULL", "gene", "Gene")
-  writeData = T
+  pairwiseSets
+  subdirectoryValueList = NULL
   usePermulations = F
   addPermulations = F
+  writeData = T
+  significanceCutoff = 0.05
   
-  #geneset
-  if(!all(is.na(cmdArgImport('g', T)))){
-    geneSets = cmdArgImport('g', F)
-    if(is.null(geneSets) | any(geneSets %in% validGeneArguments)){
-      usingGene = T
-      message("Null geneset specified or gene specified, performing gene correlation.")
-    }else{
-      usingGene = F
-    }
-    
-    if(any(!geneSet %in% validGeneArguments)){
-      usingGo = T
-      geneSet = trimGmtFilenameToSetname(geneSet)
-    }else{
-      usingGo = F
-    }
-    
-  }else{
-    message("No geneset specified or gene specified, performing gene correlation.")
-  }
   
-  #pairwise Sets
-  if(!all(is.na(cmdArgImport('s', T)))){
-    if(all(cmdArgImport('s', F) == "NULL")){
-      folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
-      pairwiseSets = folderNames[grep("-", folderNames)]
-    }else{
-      pairwiseSets = cmdArgImport('s', F) 
-    }
-  }else{
-    folderNames = basename(list.dirs(outputFolderName, full.names = TRUE, recursive = FALSE))
-    pairwiseSets = folderNames[grep("-", folderNames)]
-    message("Folders not specified, using all folders. Note that if driver analysis is active, this may cause issues.")
-  }
-
-  #Use Permulations 
-  if(!is.na(cmdArgImport('p', T))){
-    if(cmdArgImport('p', F) == "A"){
-      usePermulations = T
-      addPermulations = T
-    }else if(cmdArgImport('p', F) == "C"){
-      usePermulations = T
-    }else{
-      usePermulations = as.logical(cmdArgImport('p', F))
-    }
-    
-  }else{
-    message("use Permulations not specified, using FLASE")
-  }
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
   
-  #writeData 
-  if(!is.na(cmdArgImport('w', T))){
-    writeData = as.logical(cmdArgImport('w', F))
-  }else{
-    message("writeData not specified, using TRUE")
-  } 
-  
-  #cutoff 
-  if(!is.na(cmdArgImport('c', T))){
-    significanceCutoff = as.numeric(cmdArgImport('c', F))
-  }else{
-    message("pvalue cuttoff not specified, using 0.05")
-  }  
+  #Have this script only run on folders with the pairwise comparison format
+  pairwiseSets = pairwiseSets[grep("-", pairwiseSets)]
 
 }
 
@@ -144,7 +85,7 @@ overallResults = readRDS(overallCorrelationFilename)
 overall = list(overallResults)
 names(overall)[[1]] = "Overall"
 correlationResults = append(correlationResults, overall)
-pairwiseSets = append(pairwiseSets, "Overall")
+subdirectoryValueList = append(subdirectoryValueList, "Overall")
 
 if(usingGene){
   combinedResults = NA
@@ -154,8 +95,8 @@ if(usingGene){
   prefixList = NULL
   
   { # load in the data 
-    for(i in 1:length(pairwiseSets)){
-      currentSet = pairwiseSets[i]
+    for(i in 1:length(subdirectoryValueList)){
+      currentSet = subdirectoryValueList[i]
       if(grepl(" ", currentSet)){
         correlationSubsetName = gsub("-", " - ", currentSet)
       }else{
@@ -214,8 +155,8 @@ if(usingGo){
     geneSet = j
     
     GOResults = list()
-    for(i in 1:length(pairwiseSets)){
-      currentSet = pairwiseSets[i]
+    for(i in 1:length(subdirectoryValueList)){
+      currentSet = subdirectoryValueList[i]
       correlationSubsetName = gsub("-", " - ", currentSet)
       correlationPrefix = paste(substr(strsplit(currentSet, split = "-")[[1]],1,1), collapse = '')
       
