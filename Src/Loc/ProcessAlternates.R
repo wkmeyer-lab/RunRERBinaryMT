@@ -63,6 +63,9 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   runMerge= F
   
   
+  #Load from args 
+  source("Src/Reu/ArgumentImport.R")
+  
   
   if(phenotypeStyle == "Continuous" && !any(continousMetric == validMetrics)){
     stop("Contious metric is not a valid option. Use 'diff', 'mean', or 'last'")

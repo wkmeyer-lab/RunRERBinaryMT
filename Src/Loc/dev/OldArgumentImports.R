@@ -1,4 +1,113 @@
 #---------------------------------------------------------------------
+# --- RunAlternateEnrichments.R  --- 
+# --------------------------------------------------------------------
+# Defaults
+gmtFileLocation = "Data/enrichmentGmtFile.gmt"
+usePermulations = FALSE
+usePermulationPValOverride = FALSE
+permulationPValOverride = NULL 
+useCorrelationOverride = FALSE
+correlationOverride = NULL
+useCategoricalPermulations = FALSE
+useSubdirectory = FALSE
+subdirectoryValueList = NULL
+validGeneArguments = c("NULL", "gene", "Gene")
+alternatesSpecified = F
+usedAlternates = NULL
+validLocalRunAllAlternates = c("local", "sure", "all")
+
+
+
+#Gmt file location
+if(!any(is.na(cmdArgImport('g', T)))){
+  gmtFileLocation = cmdArgImport('g')
+  
+  gmtFileLocation = cmdArgImport('g')
+  
+  #remove any arguments which tell later scripts to run a gene analysis 
+  gmtFileLocation = gmtFileLocation[-which(gmtFileLocation %in% validGeneArguments)]
+  
+}else{
+  paste("No gmt location arugment, using Data/enrichmentGmtFile.gmt")                          #Report using default
+  message("No gmt location arugment, using Data/enrichmentGmtFile.gmt")
+}
+
+#Permulation use
+if(!is.na(cmdArgImport('p', T))){
+  usePermulations = cmdArgImport('p')
+  if(usePermulations %in% c("C", "A")){
+    usePermulations = TRUE
+    useCategoricalPermulations = TRUE
+  }
+  usePermulations = as.logical(usePermulations)
+  if(is.na(usePermulations)){
+    usePermulations = TRUE
+    message("Use Permualtions value not interpretable as logical. Did you remember to capitalize? Using TRUE.")
+  }
+}else{
+  message("Use Permulations value not specified, using TRUE.")
+}
+
+#Import subdirectory
+if(!any(is.na(cmdArgImport('s', T)))){
+  useSubdirectory = TRUE
+  subdirectoryValueList = cmdArgImport('s')
+  
+}else{
+  message("No subdirectory specified.")
+  alternatesFolderName = paste0(outputFolderName,"Alternates")
+  folderNames = basename(list.dirs(alternatesFolderName, full.names = TRUE, recursive = FALSE))
+  if(length(folderNames) >0 ){
+    useSubdirectory = TRUE
+    subdirectoryValueList = folderNames
+    message("Folders not specified, using all folders.")
+  }else{
+    message("Using main directory")
+  }
+}
+
+#alternate set
+if(!is.na(cmdArgImport('i', T))){
+  usedAlternates = cmdArgImport('i')
+  if(tolower(usedAlternates) %in% tolower(validLocalRunAllAlternates)){
+    message("Run all alternates on local machine CONFIRMED.")
+    message("Caution: May have long run times.")
+    usedAlternates = NULL
+    alternatesSpecified = F
+  }else{
+    usedAlternates = as.integer(usedAlternates)
+    alternatesSpecified = T
+  }
+}else{
+  message("Instance not specified, running on all alternates.")
+  if(!clusterRun){
+    stop("Attempting to process all alternates on a local machine! This may have run times in excess of 24 hours. Aborting. \n If you wish to avoid this abort, use i=all")
+  }
+}
+
+#Import permulation p-value Override  
+if(usePermulations){
+  if(!is.na(cmdArgImport('z', T))){
+    usePermulationPValOverride = TRUE
+    permulationPValOverride = cmdArgImport('z')
+    message("Using Manually specified permulation p-value file.")
+  }else{
+    message("No Permulation pValue override, using standard CombinedPrunedFastAllPermulationsPValue.rds.")
+  }
+}
+
+#Import correlation file override
+if(!is.na(cmdArgImport('y', T))){
+  useCorrelationOverride = TRUE
+  correlationOverride = cmdArgImport('y')
+  message("Using Manually specified correlation file.")
+}else{
+  message("No corelation override specified.")
+}
+
+
+
+#---------------------------------------------------------------------
 # --- ProcessAlternates.R  --- 
 # --------------------------------------------------------------------
 

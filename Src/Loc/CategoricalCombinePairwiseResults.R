@@ -41,7 +41,7 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 # --- Argument Imports ---
 { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
   # Defaults
-  geneSet = NULL
+  geneSets = NULL
   validGeneArguments = c("NULL", "gene", "Gene")
   pairwiseSets
   subdirectoryValueList = NULL
@@ -56,6 +56,8 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
   
   #Have this script only run on folders with the pairwise comparison format
   pairwiseSets = pairwiseSets[grep("-", pairwiseSets)]
+  #Convert geneset paths to geneset indicators
+  geneSets = trimGmtFilenameToSetname(geneSets)
 
 }
 
