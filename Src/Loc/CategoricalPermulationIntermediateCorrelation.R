@@ -42,6 +42,7 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 # --- Argument Imports ---
 { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  CurrentScript = "CategoricalPermulationIntermediateCorrelation.R"
   #Defaults
   mainTreesLocation = "Results/mainTreesFromAlignments.rds"
   runInstanceValue = NULL

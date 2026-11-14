@@ -47,6 +47,7 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 # --- Argument Imports ---
 {  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  CurrentScript = "RunAlternateEnrichments.R"
   #Defaults
   geneSets = NULL
   validGeneArguments = c("NULL", "gene", "Gene")
@@ -94,7 +95,7 @@ for(i in usedAlternates){
   
   alreadyBlockingArgImports = exists("NoArgUpdate")
   if(!alreadyBlockingArgImports){NoArgUpdate = "Exists"}
-  
+  CurrentScript = paste("ProcessAlternates", currentSet, "-> RunEnrichmentAnalysis.R")
   source("Src/Loc/RunEnrichmentAnalysis.R")
   
   if(!alreadyBlockingArgImports){rm(NoArgUpdate)}

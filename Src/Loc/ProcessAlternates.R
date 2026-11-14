@@ -47,7 +47,7 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 # ---------------------------
 # --- Argument Imports ---
 {  # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
-  
+  CurrentScript = "ProcessAlternates.R"
   # Defaults
   mainTreesLocation = "Results/mainTreesFromAlignments.rds"
   continousMetric = "diff"
@@ -113,7 +113,7 @@ for(i in usedAlternates){
   #Run the RER and Correlation 
   alreadyBlockingArgImports = exists("NoArgUpdate")
   if(!alreadyBlockingArgImports){NoArgUpdate = "Exists"}
-  
+  CurrentScript = paste("ProcessAlternates", currentSet, "-> RunRERAndCorrelation.R")
   source("Src/Loc/RunRERAndCorrelation.R")
   
   if(!alreadyBlockingArgImports){rm(NoArgUpdate)}
@@ -124,7 +124,7 @@ for(i in usedAlternates){
   if(runMerge){
     alreadyBlockingArgImports = exists("NoArgUpdate")
     if(!alreadyBlockingArgImports){NoArgUpdate = "Exists"}
-    
+    CurrentScript = paste("ProcessAlternates", currentSet, "-> RunMergedAnalysis.R")
     source("Src/Loc/RunMergedAnalysis.R")
     
     if(!alreadyBlockingArgImports){rm(NoArgUpdate)}

@@ -48,6 +48,7 @@ if(!exists("NoArgUpdate")){ #This line allows other scripts to run this code wit
   
   
   { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+    CurrentScript = "RunEnrichmentAnalysis.R"
     #Defaults
     geneSets = NULL
     validGeneArguments = c("NULL", "gene", "Gene")

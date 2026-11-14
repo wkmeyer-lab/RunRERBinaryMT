@@ -42,11 +42,12 @@ if(!exists("NoArgUpdate")){ #This line allows other scripts to run this code wit
   
   # --- Argument Imports ---
   {   # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+    CurrentScript = "RunMergedAnalysis.R"
     #Defaults
     mainTreesLocation = "Results/mainTreesFromAlignments.rds"
     minSpValue = 10
     toMerge = NULL
-    mergeValue = NULL
+    #mergeValue = NULL #This has been set to only load if the toMerge argument has a value. 
     runMerge= F
     
     #Load from args 
@@ -120,6 +121,7 @@ if(runMerge){ # This is a check that allows the script to report when it is doin
   alreadyBlockingArgImports = exists("NoArgUpdate")
   if(!alreadyBlockingArgImports){NoArgUpdate = "Exists"}
   
+  CurrentScript = "RunMergedAnalysis -> RunRERAndCorrelation.R"
   source("Src/Loc/RunRERAndCorrelation.R")
   
   if(!alreadyBlockingArgImports){rm(NoArgUpdate)}

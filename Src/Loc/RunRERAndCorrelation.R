@@ -46,6 +46,7 @@ if(!exists("NoArgUpdate")){ #This line allows other scripts to run this code wit
   
   # --- Argument Imports ---
   { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+    CurrentScript = "RunRERAndCorrelation.R"
     #Defaults
     mainTreesLocation = "Results/mainTreesFromAlignments.rds"
     continousMetric = "diff"
@@ -69,7 +70,7 @@ if(!exists("NoArgUpdate")){ #This line allows other scripts to run this code wit
     phenotypeVectorFilenameValue = paste(outputFolderName, filePrefix, "CategoricalPhenotypeVector.rds",sep="") #select the phenotype vector based on prefix
     pairwiseCorrelationFileNameValue = paste(outputFolderName, filePrefix, "PairwiseCorrelationFile", sep= "")
     combinedCategoricalCorrelationFilenameValue = paste(outputFolderName, filePrefix, "CombinedCategoricalCorrelationFile", sep= "") # make this file for later functions that want it in combo
-    correlationsOverallFilenameValue = paste(outputSubdirectory, filePrefix, "OverallCorrelationFile.rds", sep= "")
+    correlationsOverallFilenameValue = paste(outputFolderName,"Overall/", filePrefix, "OverallCorrelationFile.rds", sep= "")
   }
 }
 #                   ------- Code Body -------- 
