@@ -1,3 +1,4 @@
+controlFileLocation = "Src/Loc/dev/controlFile.R"
 loadLibraries = function(returnClusterRun = T, install = F, useVisualizePackages = F, additionalLibraryLocations = NULL, loadAllScripts = F){
   
   #This line of code checks a global variable which can be set to let it know that libraries have already been loaded, to prevent re-runs on mulitple scripts.
@@ -93,6 +94,7 @@ loadLibraries = function(returnClusterRun = T, install = F, useVisualizePackages
     #Only the most core scripts are loaded here, to make other dependencies clear in the relevant script
     #However, any other scripts which are sourced by the included scripts are included here, as a centralized resource, but not laoded by default. 
     source("Src/Reu/cmdArgImport.R")
+    source(controlFileLocation)
     if(loadAllScripts){
       #Main additional scripts
       source("Src/Reu/ZonomNameConvertVectorCommon.R")

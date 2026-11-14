@@ -1,4 +1,4 @@
-source("Src/Reu/ZoonomTreeNameToCommon.R")
+source("Src/Reu/ZonomNameConvertVectorCommon.R")
 
 
 
@@ -112,8 +112,11 @@ tipDropPlot = function(nameConversionColumn, nameConversionData, masterTree, tri
   }
   
   if(!is.na(nameConversionColumn)){
-    plotMasterTree = ZoonomTreeNameToCommon(masterTree, manualAnnotLocation = nameConversionData, tipCol = nameConversionColumn, plot = F)
-    plotTrimmedTree = ZoonomTreeNameToCommon(trimmedTree, manualAnnotLocation = nameConversionData, tipCol = nameConversionColumn, plot = F)
+    plotMasterTree = masterTree
+    plotMasterTree$tip.label = ZonomNameConvertVectorCommon(plotMasterTree$tip.label, annotationLocation = nameConversionData, tipColumn = nameConversionColumn)
+    plotTrimmedTree = trimmedTree
+    plotTrimmedTree$tip.label = ZonomNameConvertVectorCommon(plotTrimmedTree$tip.label, annotationLocation = nameConversionData, tipColumn = nameConversionColumn)
+    
     plotDroppedTips = ZonomNameConvertVectorCommon(droppedTips, annotationLocation = nameConversionData, tipCol = nameConversionColumn)
     plotSkippedTips = ZonomNameConvertVectorCommon(skippedTips, annotationLocation = nameConversionData, tipCol = nameConversionColumn)
   }else{

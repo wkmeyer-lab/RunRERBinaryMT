@@ -134,8 +134,10 @@ if(!exists("args", envir = environment(), inherits = FALSE)){
 #---------------------------------------------------------------------
 # --- Updating scripts for walkthrough use  --- 
 # --------------------------------------------------------------------
+phenotypeColumn = NULL
 
 
+args = c('tp=NA')
 
 
 

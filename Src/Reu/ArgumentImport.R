@@ -31,7 +31,7 @@ loadLibraries() # Note that this library load includes cluster run detection.
 #  Categorical:
 # tc = <c("nameOfCategory1","nameOfCategory2")>           This sets a list of category names to be used in the analysis. Species with values not in this list will not be included in the analysis. Include ALL categories to be included (even those merged later).  
 #  Continuous:
-# k  = < "Diff" or "mean" or "last" >                     This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
+# k  = < "diff" or "mean" or "last" >                     This is used for continuous traits, to determine if the metic should be the difference between the nodes (diff), the mean(mean of the two nodes), or last(the downstream value). Note that Mean and Last are not phylogenetically independent, and do not have downstream processing. 
 
 # - Optional - 
 # h  = <T>                                                This ARG causes the script to return its ARG list, instead of running the script. 
@@ -39,7 +39,7 @@ loadLibraries() # Note that this library load includes cluster run detection.
 #  Categorical:
 # tr = list(c("replace1", "with1"),c("replace2, with2"))  This combined multiple entries to a new value. The new value can be an existing category, or a new label. 
 # tm = list(c("phenotype1", "intophen1"), c("2", "i2"))   This causes combination phenotypes to be merged into the second phenotype, but does not replace standalone phenotypes
-# ta = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
+# tn = "ancestralTrait"                                   This can be used to set all non-terminal branches to this category. Use be one of the categories in the list. 
 # tb = c( "colors", "in ","the", "palette")               This sets the color palette used in the tree graphs. 
 # tl = <T or F>                                           This sets if alternate species sets should be created. 
 # ta = <number of alternates>                             This sets the number of alternate species sets to generate, if alternate species sets are generated. 
@@ -151,7 +151,7 @@ readArg = function(index, outputVariable = NULL,
   }else{RunThisArg = T}
   
   if(RunThisArg){
-    readArgSuccess = !all(is.na(cmdArgImport(index, T)))
+    readArgSuccess = !all(is.na(type.convert(cmdArgImport(index, T),as.is = TRUE)))
     
     if(readArgSuccess){
       evaluation = cmdArgImport(index, F)
@@ -214,7 +214,14 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #---------------------------------------------------------------------
 # --- Argument Import Code   --- 
 # --------------------------------------------------------------------
-
+message("-------------------")
+if(exists("CurrentScript")){
+  message(paste("Importing Args For:", CurrentScript))
+}else{
+  message("Importing Args for Unspecified Script; likely called by another script.")
+}
+message("-------------------")
+rm(CurrentScript)
 
 # ---- TREE CREATION ----- 
 
@@ -351,11 +358,11 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 # --- 
 #Argument: Ancestral Trait
 #Description: 
-#   [ta = "ancestralTrait" ]
+#   [tn = "ancestralTrait" ]
 #   [This can be used to set all non-terminal branches to this category. Use be one of the categories in the list.]
 #Scripts: 
 #   [MakeCategoricalTree.R]
-Index = 'ta'
+Index = 'tn'
 OutputVariable = "ancestralTrait"
 successCode = NULL
 failureCode = NULL
@@ -602,7 +609,7 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 #   [RunMergedAnalysis.R; ProcessAlternates.R]
 Index = 'e'
 OutputVariable = "toMerge"
-successCode = "runMerge = T"
+successCode = "runMerge = T; mergeValue = NULL"
 failureCode = 'message("No phenotypes set to merge. Script will effectively do nothing; if you are not running a merged phenotype, this is fine.")
 runMerge = F'
 
@@ -683,7 +690,7 @@ failureCode = 'message("No subdirectory specified.")
   if(length(folderNames) >0 ){
     useSubdirectory = TRUE
     subdirectoryValueList = folderNames
-    subdirectoryValueList = subdirectoryValueList[!(subdirectoryValueList == "Alternates")]
+    subdirectoryValueList = subdirectoryValueList[!(subdirectoryValueList %in% c("Alternates", "AllSpecies"))]
     message("Folders not specified, using all folders but Alternates.")
   }else{
     message("Using main directory")
@@ -1000,6 +1007,9 @@ readArg(Index, OutputVariable, successCode, failureCode, onlyIfUsed = T)
 
 
 
+
+#Message to indicate end of arg loading 
+message("-------------------")
 
 
 

@@ -1,5 +1,21 @@
 # --- Standard start-up code ---
+
+# - Load in args from either the command line or control file -
 if(clusterRun){args = commandArgs(trailingOnly = TRUE)}
+
+if(!is.vector(args)){
+  message("No ARGs supplied, using control file ARGs.")
+  args = controlFileArgs
+}else if(exists("controlFileForceAlways")){ #Load args from the control file if none exist, or Always Force is on
+  message("Control File always-force is active, using control file ARGs instead of supplied ARGs!")
+  args = controlFileArgs
+}else if(clusterRun && exists("controlFileForceCluster")){ #Load args from the control file if running on a cluster, and Cluster Force is on
+  message("Control File cluster-force is active, using control file ARGs instead of supplied ARGs!")
+  args = controlFileArgs
+} 
+
+
+# - Import core arguments used by all scripts -
 {  # Bracket used for collapsing purposes
   #Arg help 
   if(isTRUE(as.logical(cmdArgImport('h')))){

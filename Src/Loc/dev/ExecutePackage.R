@@ -54,7 +54,7 @@ globalHasLoadedLibrariesAlready = T #because we just ran the most extensive vers
 if(!exists("args", envir = environment(), inherits = FALSE)){
   #This is a space where you can manually write in arguments for the script. 
   #The above if statement ensures these lines will not override any existing args if the script is run whole-sale. 
-  
+  #Additionally, if no args exist and the script is being run locally, it will load args from the control file.
   
 }
 # --- Standard start-up code; identical in all scripts---
@@ -64,6 +64,7 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 # --- Argument Imports ---
 { # This bracket allows this code to be collapsed in Rstudio; it serves no code purpose. 
+  CurrentScript = "ExecutePackage.R"
   
   # Defaults
   phenotypeStyle = NULL
@@ -98,9 +99,9 @@ source("Src/Reu/StandardizedStartupCode.R") #This runs the standardized code blo
 
 if(phenotypeStyleExecute == "Categorical"){
   source("Src/Loc/MakeCategoricalPhenotypeTree.R")
-}elseif(phenotypeStyleExecute == "Continuous"){
+}else if(phenotypeStyleExecute == "Continuous"){
   source("Src/Loc/MakeContinousPhenotypeTree.R")
-}elseif(phenotypeStyleExecute == "Binary"){
+}else if(phenotypeStyleExecute == "Binary"){
   source("Src/Loc/MakeBinaryPhenotypeTree.R")
 }else{
   stop("Invalid Phenotype Style supplied.")
